@@ -32,6 +32,20 @@ for (const { path } of entries) {
 
 render();
 
+/* self-test (#selftest) : cliquer une chip doit FORCER l'état, sans geste. */
+if (location.hash === "#selftest") {
+	await new Promise((r) => requestAnimationFrame(r));
+	const sec = document.getElementById("z-button");
+	const inst = sec.querySelector("z-button");
+	const chip = [...sec.querySelectorAll(".chip")].find((c) => c.dataset.state === "releaseOut");
+	chip.click();
+	await new Promise((r) => requestAnimationFrame(r));
+	const ok = inst.matches(":state(releaseOut)") && chip.classList.contains("on");
+	const res = el("div", { text: `SELF-TEST : clic sur la chip « releaseOut » → z-button en :state(releaseOut) = ${ok ? "✅" : "❌"}` });
+	res.style.cssText = "position:fixed;bottom:0;left:0;right:0;padding:.6rem 1rem;background:#1a1a1a;color:#fff;font:13px ui-monospace,monospace;z-index:99999";
+	document.body.append(res);
+}
+
 /* ── rendu ─────────────────────────────────────────────────── */
 
 function groupOf(path) {
@@ -90,10 +104,17 @@ function visualizer(d) {
 	inst.textContent = "Exemple";
 	stage.append(inst);
 
+	/*
+		CHAQUE CHIP EST UN BOUTON : clique-la pour FORCER l'état → tu le VOIS, sans avoir
+		à déclencher le geste (adieu le releaseOut au forceps). Elle s'allume aussi toute
+		seule quand l'instance passe l'état (interaction réelle). Afficher ET commander.
+	*/
 	const chipsBox = el("div", { class: "chips viz-chips" });
 	const chips = (d.cssStates || []).map((s) => {
-		const c = el("span", { class: "chip", text: s.name });
+		const c = el("button", { class: "chip", text: s.name });
 		c.dataset.state = s.name;
+		c.title = "clique pour forcer cet état";
+		c.addEventListener("click", () => inst.toggleState?.(s.name));
 		chipsBox.append(c);
 		return c;
 	});
@@ -101,20 +122,10 @@ function visualizer(d) {
 	inst.addEventListener("z-state", (e) => light(e.detail.states));
 	requestAnimationFrame(() => light(inst.states || []));   /* sync initial */
 
-	/* boutons pour forcer les états durables présents chez cet élément */
-	const durable = (d.cssStates || []).map((s) => s.name).filter((n) => DURABLE_STATES.includes(n));
-	const controls = el("div", { class: "viz-controls" });
-	for (const name of durable) {
-		const b = el("button", { class: "viz-btn", text: name });
-		b.addEventListener("click", () => { inst.toggleState?.(name); b.classList.toggle("on"); });
-		controls.append(b);
-	}
-	const reset = el("button", { class: "viz-btn", text: "reset" });
-	reset.addEventListener("click", () => { for (const n of durable) inst.setState?.(n, false); for (const b of controls.querySelectorAll(".viz-btn")) b.classList.remove("on"); });
-	controls.append(reset);
+	const reset = el("button", { class: "viz-reset", text: "tout éteindre" });
+	reset.addEventListener("click", () => { for (const c of chips) if (inst.states?.includes(c.dataset.state)) inst.toggleState?.(c.dataset.state); });
 
-	box.append(stage, chipsBox);
-	if (durable.length) box.append(el("p", { class: "viz-hint", text: "Forcer un état durable :" }), controls);
+	box.append(stage, el("p", { class: "viz-hint", text: "Clique un état pour le forcer — ou survole/presse l'instance." }), chipsBox, reset);
 	return box;
 }
 
