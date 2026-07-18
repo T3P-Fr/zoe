@@ -13,6 +13,9 @@ import "../examples/skin-switch.js";   /* le pacte : sélecteur de peau */
 
 const ROOT = new URL("../", import.meta.url).href;   /* …/zoé/ */
 
+/* les états durables qu'on peut FORCER par un bouton (les autres sont interactifs). */
+const DURABLE_STATES = ["current", "loading", "busy", "disabled", "error", "success"];
+
 /* charge les presets de mouvement (les composants en ont besoin pour animer) */
 addLink(`${ROOT}tools/z-motion/z-motion.css`);
 
@@ -60,12 +63,10 @@ function entrySection(d) {
 	sec.append(el("h2", { text: `<${d.tagName}>` }));
 	sec.append(el("p", { class: "summary", text: d.summary || "" }));
 
-	/* démo live : une instance de l'élément (interactive). */
-	const demo = el("div", { class: "demo" });
-	const inst = document.createElement(d.tagName);
-	inst.textContent = "Exemple";
-	demo.append(inst);
-	sec.append(demo);
+	/* VISUALISEUR D'ÉTATS : l'instance vivante + toutes ses chips (qui s'allument en
+	   direct) + des boutons pour FORCER les états durables. La démo que Christophe adore,
+	   rendue générique par le manifeste. */
+	sec.append(visualizer(d));
 
 	if (d.attributes?.length) sec.append(heading("Attributs"), table(["Attribut", "Type", "Rôle"],
 		d.attributes.map((a) => [code(a.name), a.type?.text || "", a.description || ""])));
@@ -75,6 +76,46 @@ function entrySection(d) {
 	if (d.cssProperties?.length) sec.append(heading("Variables CSS"), table(["Variable", "Rôle"],
 		d.cssProperties.map((v) => [code(v.name), v.description || ""])));
 	return sec;
+}
+
+/*
+	Le VISUALISEUR d'états, générique : une instance vivante + la rangée de TOUTES ses
+	chips (allumées en direct via l'événement z-state) + des boutons pour forcer les
+	états durables. Survole/presse l'instance → les chips d'interaction s'allument.
+*/
+function visualizer(d) {
+	const box = el("div", { class: "viz" });
+	const stage = el("div", { class: "viz-stage" });
+	const inst = document.createElement(d.tagName);
+	inst.textContent = "Exemple";
+	stage.append(inst);
+
+	const chipsBox = el("div", { class: "chips viz-chips" });
+	const chips = (d.cssStates || []).map((s) => {
+		const c = el("span", { class: "chip", text: s.name });
+		c.dataset.state = s.name;
+		chipsBox.append(c);
+		return c;
+	});
+	const light = (active) => { const set = new Set(active); for (const c of chips) c.classList.toggle("on", set.has(c.dataset.state)); };
+	inst.addEventListener("z-state", (e) => light(e.detail.states));
+	requestAnimationFrame(() => light(inst.states || []));   /* sync initial */
+
+	/* boutons pour forcer les états durables présents chez cet élément */
+	const durable = (d.cssStates || []).map((s) => s.name).filter((n) => DURABLE_STATES.includes(n));
+	const controls = el("div", { class: "viz-controls" });
+	for (const name of durable) {
+		const b = el("button", { class: "viz-btn", text: name });
+		b.addEventListener("click", () => { inst.toggleState?.(name); b.classList.toggle("on"); });
+		controls.append(b);
+	}
+	const reset = el("button", { class: "viz-btn", text: "reset" });
+	reset.addEventListener("click", () => { for (const n of durable) inst.setState?.(n, false); for (const b of controls.querySelectorAll(".viz-btn")) b.classList.remove("on"); });
+	controls.append(reset);
+
+	box.append(stage, chipsBox);
+	if (durable.length) box.append(el("p", { class: "viz-hint", text: "Forcer un état durable :" }), controls);
+	return box;
 }
 
 /* ── petits helpers DOM ────────────────────────────────────── */

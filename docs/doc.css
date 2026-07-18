@@ -24,7 +24,17 @@ body { margin: 0; background: var(--z-page); color: var(--z-ink); font-family: v
 .entry h2 { font-family: ui-monospace, monospace; font-size: 1.3rem; margin: 0 0 .3rem; }
 .entry .summary { color: var(--z-ink-soft); margin: 0 0 1.4rem; }
 
-.demo { padding: 1.6rem; border: 1px solid var(--z-line-soft); border-radius: var(--z-radius, 8px); background: var(--z-surface-raised); margin-bottom: 1.4rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+/* ── Le visualiseur d'états ── */
+.viz { border: 1px solid var(--z-line-soft); border-radius: var(--z-radius, 8px); background: var(--z-surface-raised); margin-bottom: 1.4rem; overflow: hidden; }
+.viz-stage { padding: 1.8rem 1.6rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+.viz-chips { padding: 0 1.6rem 1.2rem; }
+.chip { font-family: ui-monospace, monospace; font-size: .75rem; padding: .25rem .55rem; border-radius: 6px; border: 1px solid var(--z-line-soft); background: var(--z-surface); color: var(--z-ink-soft); opacity: .5; transition: all var(--z-dur, .2s) var(--z-ease, ease); }
+.chip.on { opacity: 1; background: var(--z-accent); border-color: var(--z-accent); color: var(--z-accent-ink); transform: translateY(-1px); }
+.viz-hint { margin: 0 1.6rem .4rem; font-size: .78rem; color: var(--z-ink-soft); }
+.viz-controls { display: flex; gap: .5rem; flex-wrap: wrap; padding: 0 1.6rem 1.4rem; }
+.viz-btn { appearance: none; font: inherit; font-size: .8rem; padding: .35rem .8rem; border: 1px solid var(--z-line); border-radius: var(--z-radius, 6px); background: var(--z-surface); color: var(--z-ink); cursor: pointer; }
+.viz-btn:hover { border-color: var(--z-accent); }
+.viz-btn.on { background: var(--z-accent); border-color: var(--z-accent); color: var(--z-accent-ink); }
 
 h3 { font: 600 .72rem/1 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .08em; color: var(--z-ink-soft); margin: 1.4rem 0 .6rem; }
 table { width: 100%; border-collapse: collapse; font-size: .85rem; }
