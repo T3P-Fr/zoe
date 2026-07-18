@@ -39,6 +39,11 @@ const DURABLE = ["current", "loading", "busy", "disabled", "error", "success"];
    dans son état par DÉFAUT (nommé `default`, adressable comme les autres). */
 const STATUS = ["loading", "busy", "disabled", "error", "success"];
 
+/* Cache des états déclarés-en-CSS. Au niveau MODULE (pas un `static #privé` : un
+   membre privé statique n'est pas lisible quand `this` est une sous-classe — le
+   navigateur lit ZButton.observedAttributes et planterait). */
+let discoveredCache = null;
+
 /* L'ARIA que chaque statut reflète (quand il s'applique). */
 const STATUS_ARIA = {
 	loading: "aria-busy",
@@ -83,9 +88,8 @@ export class ZElement extends HTMLElement {
 		Zoé le MATÉRIALISE — pilotable par attribut `<z-element x>` / setState("x"), et
 		stylable `:state(x)`. Le CSS crée le JS.
 	*/
-	static #discovered = null;
 	static discoveredStates() {
-		if (this.#discovered) return this.#discovered;
+		if (discoveredCache) return discoveredCache;
 		const found = [];
 		const PREFIX = "--z-state__";
 		for (const sheet of document.styleSheets) {
@@ -97,7 +101,7 @@ export class ZElement extends HTMLElement {
 				}
 			}
 		}
-		return (this.#discovered = found);
+		return (discoveredCache = found);
 	}
 
 	/* Attributs observés = les durables + les états déclarés-en-CSS découverts à la
