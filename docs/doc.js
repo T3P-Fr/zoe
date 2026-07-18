@@ -32,16 +32,24 @@ for (const { path } of entries) {
 
 render();
 
-/* self-test (#selftest) : cliquer une chip doit FORCER l'état, sans geste. */
+/* self-test (#selftest) : GLISSER le bouton doit poser drag puis release, et le
+   bouton doit BOUGER. Les points de la liste doivent suivre. */
 if (location.hash === "#selftest") {
 	await new Promise((r) => requestAnimationFrame(r));
 	const sec = document.getElementById("z-button");
 	const inst = sec.querySelector("z-button");
-	const chip = [...sec.querySelectorAll(".chip")].find((c) => c.dataset.state === "releaseOut");
-	chip.click();
+	const r = inst.getBoundingClientRect();
+	const send = (type, x, y) => inst.dispatchEvent(new PointerEvent(type, { bubbles: true, clientX: x, clientY: y, pointerId: 1 }));
+	const dotOn = (name) => [...sec.querySelectorAll(".viz-states li")].some((li) => li.textContent.trim() === name && li.querySelector(".dot").classList.contains("on"));
+	send("pointerdown", r.left + 40, r.top + 30);
+	send("pointermove", r.left + 90, r.top + 30);          /* dépasse le seuil → drag + bouge */
+	const dragging = inst.matches(":state(drag)");
+	const moved = inst.style.transform.includes("translate");
+	const dragDot = dotOn("drag");
+	send("pointerup", r.left + 90, r.top + 30);            /* dedans → release */
 	await new Promise((r) => requestAnimationFrame(r));
-	const ok = inst.matches(":state(releaseOut)") && chip.classList.contains("on");
-	const res = el("div", { text: `SELF-TEST : clic sur la chip « releaseOut » → z-button en :state(releaseOut) = ${ok ? "✅" : "❌"}` });
+	const released = inst.matches(":state(release)");
+	const res = el("div", { text: `SELF-TEST glissé : drag=${dragging ? "✅" : "❌"} · bouge=${moved ? "✅" : "❌"} · point « drag » allumé=${dragDot ? "✅" : "❌"} · release au lâcher=${released ? "✅" : "❌"}` });
 	res.style.cssText = "position:fixed;bottom:0;left:0;right:0;padding:.6rem 1rem;background:#1a1a1a;color:#fff;font:13px ui-monospace,monospace;z-index:99999";
 	document.body.append(res);
 }
@@ -97,35 +105,55 @@ function entrySection(d) {
 	chips (allumées en direct via l'événement z-state) + des boutons pour forcer les
 	états durables. Survole/presse l'instance → les chips d'interaction s'allument.
 */
+/*
+	Le VISUALISEUR : un gros « Testez-moi », DRAGUABLE pour de vrai (il bouge à la
+	souris → déclenche naturellement press/drag/release/releaseOut), et une liste
+	d'états à côté, chacun avec un POINT qui s'allume quand l'état est actif. On teste
+	au doigt, les points suivent — pas de forçage au clavier.
+*/
 function visualizer(d) {
 	const box = el("div", { class: "viz" });
 	const stage = el("div", { class: "viz-stage" });
 	const inst = document.createElement(d.tagName);
-	inst.textContent = "Exemple";
+	inst.className = "viz-instance";
+	inst.textContent = "Testez-moi";
 	stage.append(inst);
 
-	/*
-		CHAQUE CHIP EST UN BOUTON : clique-la pour FORCER l'état → tu le VOIS, sans avoir
-		à déclencher le geste (adieu le releaseOut au forceps). Elle s'allume aussi toute
-		seule quand l'instance passe l'état (interaction réelle). Afficher ET commander.
-	*/
-	const chipsBox = el("div", { class: "chips viz-chips" });
-	const chips = (d.cssStates || []).map((s) => {
-		const c = el("button", { class: "chip", text: s.name });
-		c.dataset.state = s.name;
-		c.title = "clique pour forcer cet état";
-		c.addEventListener("click", () => inst.toggleState?.(s.name));
-		chipsBox.append(c);
-		return c;
+	/* DRAGUABLE POUR DE VRAI : on suit le pointeur (API pointer). z-element pose ses
+	   états tout seul (press → drag → release/releaseOut) ; ici on ne fait que bouger. */
+	let start = null;
+	const base = { x: 0, y: 0 };
+	inst.addEventListener("pointerdown", (e) => {
+		start = { x: e.clientX, y: e.clientY };
+		try { inst.setPointerCapture(e.pointerId); } catch { /* ok */ }
 	});
-	const light = (active) => { const set = new Set(active); for (const c of chips) c.classList.toggle("on", set.has(c.dataset.state)); };
+	inst.addEventListener("pointermove", (e) => {
+		if (!start) return;
+		inst.style.transform = `translate(${base.x + e.clientX - start.x}px, ${base.y + e.clientY - start.y}px)`;
+	});
+	const drop = (e) => {
+		if (!start) return;
+		base.x += e.clientX - start.x; base.y += e.clientY - start.y; start = null;
+	};
+	inst.addEventListener("pointerup", drop);
+	inst.addEventListener("pointercancel", drop);
+
+	/* La liste d'états : un point + le nom. Le point s'allume quand l'état est actif. */
+	const list = el("ul", { class: "viz-states" });
+	const dots = new Map();
+	for (const s of d.cssStates || []) {
+		const li = document.createElement("li");
+		const dot = el("span", { class: "dot" });
+		li.append(dot, document.createTextNode(s.name));
+		list.append(li);
+		dots.set(s.name, dot);
+	}
+	const light = (active) => { const set = new Set(active); for (const [name, dot] of dots) dot.classList.toggle("on", set.has(name)); };
 	inst.addEventListener("z-state", (e) => light(e.detail.states));
-	requestAnimationFrame(() => light(inst.states || []));   /* sync initial */
+	requestAnimationFrame(() => light(inst.states || []));
 
-	const reset = el("button", { class: "viz-reset", text: "tout éteindre" });
-	reset.addEventListener("click", () => { for (const c of chips) if (inst.states?.includes(c.dataset.state)) inst.toggleState?.(c.dataset.state); });
-
-	box.append(stage, el("p", { class: "viz-hint", text: "Clique un état pour le forcer — ou survole/presse l'instance." }), chipsBox, reset);
+	stage.append(el("p", { class: "viz-hint", text: "Survole, presse, GLISSE-le (lâche dedans / dehors) — les points suivent." }));
+	box.append(stage, list);
 	return box;
 }
 

@@ -24,17 +24,19 @@ body { margin: 0; background: var(--z-page); color: var(--z-ink); font-family: v
 .entry h2 { font-family: ui-monospace, monospace; font-size: 1.3rem; margin: 0 0 .3rem; }
 .entry .summary { color: var(--z-ink-soft); margin: 0 0 1.4rem; }
 
-/* ── Le visualiseur d'états ── */
-.viz { border: 1px solid var(--z-line-soft); border-radius: var(--z-radius, 8px); background: var(--z-surface-raised); margin-bottom: 1.4rem; overflow: hidden; }
-.viz-stage { padding: 1.8rem 1.6rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
-/* les chips SONT des boutons : cliquables (forcer l'état) + s'allument (état actif). */
-.viz-chips { display: flex; gap: .4rem; flex-wrap: wrap; padding: 0 1.6rem 1rem; }
-.chip { appearance: none; font-family: ui-monospace, monospace; font-size: .75rem; padding: .3rem .6rem; border-radius: 6px; border: 1px solid var(--z-line-soft); background: var(--z-surface); color: var(--z-ink-soft); opacity: .55; cursor: pointer; transition: all var(--z-dur, .2s) var(--z-ease, ease); }
-.chip:hover { opacity: 1; border-color: var(--z-accent); }
-.chip.on { opacity: 1; background: var(--z-accent); border-color: var(--z-accent); color: var(--z-accent-ink); transform: translateY(-1px); }
-.viz-hint { margin: 0 1.6rem .5rem; font-size: .78rem; color: var(--z-ink-soft); }
-.viz-reset { appearance: none; font: inherit; font-size: .78rem; margin: 0 1.6rem 1.4rem; padding: .3rem .8rem; border: 1px solid var(--z-line); border-radius: var(--z-radius, 6px); background: var(--z-surface); color: var(--z-ink-soft); cursor: pointer; }
-.viz-reset:hover { border-color: var(--z-accent); color: var(--z-ink); }
+/* ── Le visualiseur : gros bouton draggable + liste d'états à points ── */
+.viz { display: grid; grid-template-columns: 1fr 180px; gap: 1.2rem; border: 1px solid var(--z-line-soft); border-radius: var(--z-radius, 8px); background: var(--z-surface-raised); margin-bottom: 1.4rem; padding: 1.4rem; }
+.viz-stage { position: relative; min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; border: 1px dashed var(--z-line-soft); border-radius: var(--z-radius, 8px); overflow: hidden; }
+/* le sujet : plus GROS que la normale, saisissable. */
+.viz-instance { font-size: 1.3rem !important; min-width: 200px; min-height: 74px; justify-content: center; cursor: grab; touch-action: none; }
+.viz-instance:active { cursor: grabbing; }
+.viz-hint { margin: 0; font-size: .76rem; color: var(--z-ink-soft); text-align: center; max-width: 90%; }
+/* la liste : un point + le nom ; le point s'allume quand l'état est actif. */
+.viz-states { list-style: none; margin: 0; padding: .2rem 0; font-family: ui-monospace, monospace; font-size: .8rem; align-self: start; }
+.viz-states li { display: flex; align-items: center; gap: .55rem; padding: .2rem 0; color: var(--z-ink-soft); }
+.dot { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--z-line); background: transparent; flex: none; transition: all var(--z-dur, .2s) var(--z-ease, ease); }
+.dot.on { background: var(--z-accent); border-color: var(--z-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 25%, transparent); }
+.viz-states li:has(.dot.on) { color: var(--z-ink); font-weight: 600; }
 
 h3 { font: 600 .72rem/1 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .08em; color: var(--z-ink-soft); margin: 1.4rem 0 .6rem; }
 table { width: 100%; border-collapse: collapse; font-size: .85rem; }
