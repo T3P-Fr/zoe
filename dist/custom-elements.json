@@ -269,6 +269,124 @@
           }
         }
       ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-button/z-button.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZButton",
+          "tagName": "z-button",
+          "summary": "Un bouton — hérite tous les états de z-element, skinnable par les peaux.",
+          "attributes": [
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Désactivé : coupe l'interaction."
+            },
+            {
+              "name": "loading",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "En chargement (balayage skeleton, non cliquable)."
+            },
+            {
+              "name": "busy",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Occupé (pulse)."
+            },
+            {
+              "name": "error",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "En erreur (liseré danger + secousse)."
+            },
+            {
+              "name": "success",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Validé (liseré succès)."
+            }
+          ],
+          "events": [
+            {
+              "name": "z-state",
+              "description": "Émis à chaque changement d'état. detail : { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "busy"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-button",
+          "declaration": {
+            "name": "ZButton"
+          }
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,68 @@
+/*
+	============================================================
+	skin · HIGHTECH — le thème par défaut (un jeu de tokens)
+	------------------------------------------------------------
+	Une peau Zoé = des VALEURS (pas des formes). Toute la mécanique (composants,
+	tools) lit ces tokens via var(--z-*). Changer de peau = remplacer ce fichier.
+
+	Identité : un plan d'ingénieur — IBM Plex Mono sur papier greige, angles vifs
+	(radius 0), zéro ombre portée, le bleu #006eff en filet seulement.
+	Styleguide skin.hightech
+	============================================================
+*/
+
+:root {
+	/* couleurs — papier greige, encre, bleu filet */
+	--z-page: #f4f2ec;
+	--z-surface: #e0ddd5;
+	--z-surface-raised: #efece7;
+	--z-surface-sunken: #d7d3ca;
+	--z-ink: #1a1a1a;
+	--z-ink-soft: #6b675f;
+	--z-line: #6b675f;
+	--z-line-soft: #b7b3ab;
+	--z-accent: #006eff;
+	--z-accent-ink: #ffffff;
+	--z-accent-soft: #e6ecf5;
+	--z-focus-halo: #e6e3dc;
+	--z-disabled: #b7b3ab;
+	/* statut métier */
+	--z-danger: #c8371f;
+	--z-success: #1f8a4c;
+
+	/* typographie — IBM Plex Mono */
+	--z-font: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	--z-font-title: "IBM Plex Mono", ui-monospace, monospace;
+	--z-font-size: 13px;
+	--z-font-size-sm: 11px;
+	--z-font-weight: 500;
+	--z-font-weight-strong: 600;
+	--z-letter: 0.3px;
+
+	/* forme — angles vifs (l'ADN hightech) */
+	--z-radius: 0px;
+	--z-radius-pill: 999px;
+	--z-border-width: 1px;
+
+	/* espacement par facteurs */
+	--z-unit: 4px;
+	--z-pad-x: calc(var(--z-unit) * 3.5);
+	--z-pad-y: calc(var(--z-unit) * 1.75);
+	--z-gap: calc(var(--z-unit) * 2);
+	--z-control-height: calc(var(--z-unit) * 8);
+
+	/* mouvement — sec (.2s ease), ressort réservé aux pièces qui « attrapent » */
+	--z-ease: ease;
+	--z-ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+	--z-dur: 0.2s;
+	--z-dur-enter: 260ms;
+	--z-dur-exit: 200ms;
+	--z-dur-release: 320ms;
+	--z-dur-releaseOut: 220ms;
+	--z-dur-select: 260ms;
+	--z-dur-unselect: 200ms;
+	--z-dur-open: 280ms;
+	--z-dur-close: 220ms;
+
+	color-scheme: light;
+}

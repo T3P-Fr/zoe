@@ -1,0 +1,44 @@
+/*
+	============================================================
+	z-motion — LES PRESETS DE MOUVEMENT (@keyframes offerts par Zoé)
+	------------------------------------------------------------
+	Une bibliothèque de @keyframes RÉUTILISABLES, à brancher sur n'importe quel état,
+	des deux chemins :
+	  · Chemin A (composant) : z-checkbox.css fait `animation: pop …` sur :state(select)
+	  · Chemin B (ton élément) : `z-state:state(error) > button { animation: shake … }`
+
+	Ce sont des GESTES purs (transform/opacity) — la couleur reste au CSS employeur.
+	Durées/easings passent en paramètre (`animation: shake var(--z-dur) var(--z-ease)`),
+	donc tokenisables par la peau.
+
+	Menu : slideLeft/Right/Up/Down · slideOut* · pop · shake · pulse · spin · fadeIn/Out
+	       · shimmer · ripple
+	Styleguide tool.motion
+	============================================================
+*/
+
+/* ── Entrée dirigée : le contenu arrive en glissant DANS la direction nommée. ── */
+@keyframes slideLeft  { from { transform: translateX(40%);  opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideRight { from { transform: translateX(-40%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideUp    { from { transform: translateY(40%);  opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes slideDown  { from { transform: translateY(-40%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* ── Sortie dirigée. ── */
+@keyframes slideOutLeft  { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-40%); opacity: 0; } }
+@keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(40%);  opacity: 0; } }
+@keyframes slideOutUp    { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-40%); opacity: 0; } }
+@keyframes slideOutDown  { from { transform: translateY(0); opacity: 1; } to { transform: translateY(40%);  opacity: 0; } }
+
+/* ── Emphase ── */
+@keyframes pop   { 0% { transform: scale(.7); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
+@keyframes shake { 10%, 90% { transform: translateX(-2px); } 30%, 70% { transform: translateX(3px); } 50% { transform: translateX(-3px); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+@keyframes spin  { to { transform: rotate(360deg); } }
+
+/* ── Fondu ── */
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+/* ── Surface ── */
+@keyframes shimmer { from { background-position: 250% 0; } to { background-position: -250% 0; } }
+@keyframes ripple  { from { opacity: .55; transform: scale(1); } to { opacity: 0; transform: scale(1.6); } }

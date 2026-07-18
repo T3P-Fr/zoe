@@ -72,6 +72,37 @@
           "values": []
         }
       ]
+    },
+    {
+      "name": "z-button",
+      "description": "Un bouton — hérite tous les états de z-element, skinnable par les peaux.",
+      "attributes": [
+        {
+          "name": "disabled",
+          "description": "Désactivé : coupe l'interaction.",
+          "values": []
+        },
+        {
+          "name": "loading",
+          "description": "En chargement (balayage skeleton, non cliquable).",
+          "values": []
+        },
+        {
+          "name": "busy",
+          "description": "Occupé (pulse).",
+          "values": []
+        },
+        {
+          "name": "error",
+          "description": "En erreur (liseré danger + secousse).",
+          "values": []
+        },
+        {
+          "name": "success",
+          "description": "Validé (liseré succès).",
+          "values": []
+        }
+      ]
     }
   ]
 }

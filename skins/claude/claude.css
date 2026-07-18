@@ -1,0 +1,66 @@
+/*
+	============================================================
+	skin · CLAUDE — « encre chaude » (un jeu de tokens)
+	------------------------------------------------------------
+	Le contre-pied de HighTech, sans look SaaS générique : encre chaude sur papier
+	crème, accent argile/terre cuite, serif humaniste, mouvement qui REBONDIT.
+	Signée par Claude, invitée par Christophe. Remplace hightech.css → tout suit.
+	Styleguide skin.claude
+	============================================================
+*/
+
+:root {
+	/* couleurs — crème, encre brun-noir, terre cuite */
+	--z-page: #f5efe4;
+	--z-surface: #ede4d4;
+	--z-surface-raised: #f3ecdf;
+	--z-surface-sunken: #e2d7c3;
+	--z-ink: #2a2320;
+	--z-ink-soft: #7c7061;
+	--z-line: #cdbfa6;
+	--z-line-soft: #e0d5c1;
+	--z-accent: #c4562f;
+	--z-accent-ink: #fbf5ec;
+	--z-accent-soft: #f0dccf;
+	--z-focus-halo: #eccdb9;
+	--z-disabled: #c4b8a3;
+	/* statut métier */
+	--z-danger: #c0362f;
+	--z-success: #2f8a54;
+
+	/* typographie — serif humaniste (livrée par l'OS) */
+	--z-font: "Sitka Text", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+	--z-font-title: "Sitka", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+	--z-font-size: 14px;
+	--z-font-size-sm: 12px;
+	--z-font-weight: 400;
+	--z-font-weight-strong: 700;
+	--z-letter: 0;
+
+	/* forme — doux mais présent */
+	--z-radius: 9px;
+	--z-radius-pill: 999px;
+	--z-border-width: 1.5px;
+
+	/* espacement — un peu plus d'air */
+	--z-unit: 4px;
+	--z-pad-x: calc(var(--z-unit) * 4);
+	--z-pad-y: calc(var(--z-unit) * 2.25);
+	--z-gap: calc(var(--z-unit) * 2.5);
+	--z-control-height: calc(var(--z-unit) * 9);
+
+	/* mouvement — L'ÂME : un ressort qui DÉPASSE puis se cale */
+	--z-ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+	--z-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--z-dur: 0.24s;
+	--z-dur-enter: 320ms;
+	--z-dur-exit: 220ms;
+	--z-dur-release: 440ms;
+	--z-dur-releaseOut: 260ms;
+	--z-dur-select: 340ms;
+	--z-dur-unselect: 240ms;
+	--z-dur-open: 340ms;
+	--z-dur-close: 240ms;
+
+	color-scheme: light;
+}

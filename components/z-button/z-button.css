@@ -1,0 +1,88 @@
+/*
+	============================================================
+	z-button.css — le rendu de z-button (états de z-element + presets z-motion)
+	------------------------------------------------------------
+	Peint z-button sur lui-même, en lisant les tokens de la peau et en consommant les
+	presets de z-motion (pop, shake, shimmer, ripple…). Aucun @keyframes ici : la
+	structure est figée (Chemin A), le look est skinnable.
+	Requiert : une peau (tokens) + tools/z-motion (les @keyframes).
+	Styleguide 1.0
+	============================================================
+*/
+
+z-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	overflow: hidden;
+	gap: .5em;
+	padding: var(--z-pad-y, .7em) var(--z-pad-x, 1.3em);
+	border: var(--z-border-width) solid var(--z-line);
+	border-radius: var(--z-radius);
+	background: var(--z-surface);
+	color: var(--z-ink);
+	font: inherit;
+	font-family: var(--z-font);
+	font-weight: var(--z-font-weight, 500);
+	cursor: pointer;
+	user-select: none;
+	touch-action: manipulation;
+	vertical-align: middle;
+	outline: none;
+	transition:
+		background-color var(--z-dur) var(--z-ease),
+		border-color var(--z-dur) var(--z-ease),
+		color var(--z-dur) var(--z-ease),
+		transform var(--z-dur) var(--z-ease-spring),
+		box-shadow var(--z-dur) var(--z-ease);
+}
+
+/* ── interaction ── */
+z-button:state(over)  { border-color: var(--z-accent); background: var(--z-surface-raised); }
+z-button:state(focus) { box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 40%, transparent); }
+z-button:state(press) { transform: scale(.97); }
+
+/* release / releaseOut : l'onde (preset ripple), du centre. */
+z-button::after {
+	content: "";
+	position: absolute; inset: 0;
+	border-radius: inherit;
+	border: 2px solid var(--z-accent);
+	opacity: 0; pointer-events: none;
+	transform-origin: center;
+}
+z-button:state(release)::after    { animation: ripple var(--z-dur-release) var(--z-ease); }
+z-button:state(releaseOut)::after { animation: ripple var(--z-dur-releaseOut) var(--z-ease); }
+
+/* ── cycle de vie ── */
+z-button:state(enter) { animation: pop var(--z-dur-enter) var(--z-ease-spring); }
+
+/* ── statut métier ── */
+z-button:state(loading) { color: color-mix(in srgb, var(--z-ink) 35%, transparent); cursor: progress; pointer-events: none; }
+z-button:state(loading)::before {
+	content: "";
+	position: absolute; inset: 0; border-radius: inherit;
+	background: linear-gradient(100deg, transparent 35%, color-mix(in srgb, var(--z-accent) 22%, transparent) 50%, transparent 65%);
+	background-size: 250% 100%;
+	animation: shimmer 1.15s linear infinite;
+	pointer-events: none;
+}
+z-button:state(busy) { cursor: wait; animation: pulse 1s ease-in-out infinite; }
+z-button:state(disabled) {
+	background: var(--z-surface-sunken);
+	border-color: var(--z-disabled);
+	color: var(--z-disabled);
+	cursor: not-allowed;
+	box-shadow: none;
+}
+z-button:state(error) {
+	border-color: var(--z-danger);
+	color: var(--z-danger);
+	animation: shake .35s var(--z-ease);
+}
+z-button:state(success) {
+	border-color: var(--z-success);
+	color: var(--z-success);
+	background: color-mix(in srgb, var(--z-success) 12%, var(--z-surface));
+}
