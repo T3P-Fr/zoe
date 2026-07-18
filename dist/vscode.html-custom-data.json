@@ -38,42 +38,6 @@
       ]
     },
     {
-      "name": "z-state",
-      "description": "Décore ton propre élément d'états (Chemin B). Même moteur que z-element.",
-      "attributes": [
-        {
-          "name": "current",
-          "description": "Sélection durable (coché, onglet actif) — posée par un composant sélectionnable.",
-          "values": []
-        },
-        {
-          "name": "loading",
-          "description": "Statut : en chargement.",
-          "values": []
-        },
-        {
-          "name": "busy",
-          "description": "Statut : occupé / traitement en cours.",
-          "values": []
-        },
-        {
-          "name": "disabled",
-          "description": "Désactivé : coupe l'interaction.",
-          "values": []
-        },
-        {
-          "name": "error",
-          "description": "Statut : en erreur.",
-          "values": []
-        },
-        {
-          "name": "success",
-          "description": "Statut : validé.",
-          "values": []
-        }
-      ]
-    },
-    {
       "name": "z-button",
       "description": "Un bouton — hérite tous les états de z-element, skinnable par les peaux.",
       "attributes": [

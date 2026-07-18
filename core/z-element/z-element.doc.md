@@ -2,7 +2,11 @@
 
 La brique de tout Zoé. Un custom element qui **porte les états d'interaction** en
 `:state()`, les émet (`z-state`), et les laisse piloter par attribut, JS ou CSS.
-Tout composant en hérite ; utilisé en décorateur, c'est le tool [`z-state`](../../tools/z-state/z-state.doc.md).
+Deux usages, **un seul élément** :
+- **Chemin A** — un composant l'**étend** : `class ZButton extends ZElement {}`.
+- **Chemin B** — tu l'**enroules** autour de ton propre élément :
+  `<z-element><button><img>…</button></z-element>` → ton bouton hérite des états, tu
+  écris ton CSS. (C'est ce qu'on appelait « z-state » — c'était le même, renommé.)
 
 ## Les états
 

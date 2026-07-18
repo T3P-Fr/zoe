@@ -11,9 +11,11 @@ et **animés**, pour le « gradev » (mi-graphiste / mi-dev). *Less code, more c
 ## La carte
 
 **Le noyau**
-- **`core/z-element`** — la brique vivante. Un custom element qui **porte les états**
-  nativement (`:state()` + événement `z-state` + attributs + `@property`). Tout
-  composant en hérite. *« z-state, dans son concept, EST le z-element. »*
+- **`core/z-element`** — la brique vivante, **une seule**. Un custom element qui **porte
+  les états** nativement (`:state()` + événement `z-state` + attributs + `@property`).
+  Deux usages : un composant l'**étend** (Chemin A) · tu l'**enroules** autour de ton
+  élément (Chemin B, `<z-element><button/></z-element>`). *« z-state, c'était son nom de
+  prototype ; il EST le z-element. »*
 
 **Les états** (le cœur de z-element)
 - cycle : `default ⇄ over → press → release / releaseOut` · `drag` · `focus`
@@ -22,11 +24,13 @@ et **animés**, pour le « gradev » (mi-graphiste / mi-dev). *Less code, more c
   déclarables en CSS (`@property --z-state__x`).
 
 **Les tools** — s'appliquent au HTML nu **ET** à z-element (`tools/`)
-- **`z-state`** — poser des états sur ton propre élément (Chemin B)
 - **`z-motion`** — animer (presets : shake, slide, pop, ripple, shimmer…)
 - **`z-stager`** — décaler en cascade (stagger)
 - **`z-grid`** — mettre en page
 - **`z-channel`** — faire dialoguer des composants par variables CSS (*le CSS pilote*)
+
+*(« z-state » n'est plus un tool : poser des états sur ton élément = l'enrouler dans
+`z-element`, Chemin B. Un seul nom.)*
 
 **Les composants** (`components/`) — structure figée, skinnable (Chemin A)
 
