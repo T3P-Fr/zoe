@@ -42,6 +42,16 @@ body { margin: 0; background: var(--z-page); color: var(--z-ink); font-family: v
 .dot.on { background: var(--z-accent); border-color: var(--z-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 25%, transparent); }
 .viz-row:has(.dot.on) { color: var(--z-ink); font-weight: 600; }
 
+/* ── « ce que tu écris » : le HTML minimal + la promesse zéro JS ── */
+.usage { margin-bottom: 1.2rem; }
+.usage pre { background: color-mix(in srgb, var(--z-ink) 92%, #000); color: var(--z-page); padding: .9rem 1.1rem; border-radius: var(--z-radius, 8px); overflow-x: auto; font-size: .85rem; line-height: 1.7; margin: 0 0 .6rem; }
+.usage pre code { font-family: ui-monospace, monospace; }
+.promise { margin: 0; font-size: .85rem; color: var(--z-ink-soft); }
+.promise b { color: var(--z-accent); }
+/* aperçu d'un composant (quelques états, pas le tester) */
+.preview { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; padding: 1.6rem; border: 1px solid var(--z-line-soft); border-radius: var(--z-radius, 8px); background: var(--z-surface-raised); margin-bottom: 1.4rem; }
+.seealso { padding: 1rem 1.2rem; border: 1px dashed var(--z-line-soft); border-radius: var(--z-radius, 8px); color: var(--z-ink-soft); font-size: .85rem; margin-bottom: 1.4rem; }
+
 h3 { font: 600 .72rem/1 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .08em; color: var(--z-ink-soft); margin: 1.4rem 0 .6rem; }
 table { width: 100%; border-collapse: collapse; font-size: .85rem; }
 th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid var(--z-line-soft); vertical-align: top; }

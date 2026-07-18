@@ -37,8 +37,8 @@ render();
    bouton doit BOUGER. Les points de la liste doivent suivre. */
 if (location.hash === "#selftest") {
 	await new Promise((r) => requestAnimationFrame(r));
-	const sec = document.getElementById("z-button");
-	const inst = sec.querySelector("z-button");
+	const sec = document.getElementById("z-element");   /* le tester est sur la base, une seule fois */
+	const inst = sec.querySelector(".viz-instance");
 	const r = inst.getBoundingClientRect();
 	const send = (type, x, y) => inst.dispatchEvent(new PointerEvent(type, { bubbles: true, clientX: x, clientY: y, pointerId: 1 }));
 	const rowOn = (name) => [...sec.querySelectorAll(".viz-row")].some((li) => li.textContent.trim() === name && li.querySelector(".dot").classList.contains("on"));
@@ -83,20 +83,23 @@ function render() {
 		menu.append(g);
 		for (const e of list) {
 			menu.append(el("a", { href: `#${e.decl.tagName}`, text: `<${e.decl.tagName}>` }));
-			main.append(entrySection(e.decl));
+			main.append(entrySection(e.decl, name));
 		}
 	}
 }
 
-function entrySection(d) {
+function entrySection(d, group) {
 	const sec = el("section", { class: "entry", id: d.tagName });
 	sec.append(el("h2", { text: `<${d.tagName}>` }));
 	sec.append(el("p", { class: "summary", text: d.summary || "" }));
+	sec.append(usageBlock(d));
 
-	/* VISUALISEUR D'ÉTATS : l'instance vivante + toutes ses chips (qui s'allument en
-	   direct) + des boutons pour FORCER les états durables. La démo que Christophe adore,
-	   rendue générique par le manifeste. */
-	sec.append(visualizer(d));
+	/* Le TESTER interactif (Testez-moi + les 2 familles) UNE SEULE fois, sur la base
+	   (le noyau, là où vivent les états). Un composant montre juste un aperçu stylé ;
+	   un tool renvoie à la base (mêmes états). Fini les 3 démos identiques. */
+	if (group === "noyau") sec.append(visualizer(d));
+	else if (group === "composants") sec.append(preview(d));
+	else sec.append(el("p", { class: "seealso", text: "Mêmes états que z-element — teste-les là-haut." }));
 
 	if (d.attributes?.length) sec.append(heading("Attributs"), table(["Attribut", "Type", "Rôle"],
 		d.attributes.map((a) => [code(a.name), a.type?.text || "", a.description || ""])));
@@ -193,6 +196,38 @@ function group(title, names, clickable, inst, dots) {
 		dots.set(name, dot);
 	}
 	return g;
+}
+
+/* Le bloc « ce que tu écris » : le HTML minimal + la promesse zéro JS. */
+function usageBlock(d) {
+	const wrap = el("div", { class: "usage" });
+	const pre = document.createElement("pre");
+	const code = document.createElement("code");
+	const lines = [`<${d.tagName}>Exemple</${d.tagName}>`];
+	const attr = (d.attributes || [])[0];
+	if (attr) lines.push(`<${d.tagName} ${attr.name}>…</${d.tagName}>`);
+	code.textContent = lines.join("\n");
+	pre.append(code);
+	const promise = el("p", { class: "promise" });
+	promise.append(document.createTextNode("États · interaction · animation : "));
+	promise.append(el("b", { text: "zéro JS à gérer." }));
+	promise.append(document.createTextNode(" Tu écris ce HTML — et ton CSS pour :state()."));
+	wrap.append(pre, promise);
+	return wrap;
+}
+
+/* Aperçu d'un COMPOSANT : l'instance stylée dans quelques états (pas le tester). */
+function preview(d) {
+	const box = el("div", { class: "preview" });
+	const has = new Set((d.cssStates || []).map((s) => s.name));
+	const show = ["", ...["loading", "error", "disabled"].filter((s) => has.has(s))];
+	for (const s of show) {
+		const inst = document.createElement(d.tagName);
+		if (s) inst.setAttribute(s, "");
+		inst.textContent = s || "défaut";
+		box.append(inst);
+	}
+	return box;
 }
 
 /* ── petits helpers DOM ────────────────────────────────────── */
