@@ -1,0 +1,158 @@
+/*
+	============================================================
+	z-manifest — L'OUTIL de doc de Zoé (artisanal, mais un vrai outil)
+	------------------------------------------------------------
+	UNE source (le bloc `static api` de chaque composant/tool) → PLUSIEURS sorties,
+	toutes cohérentes entre elles :
+
+	  dist/custom-elements.json        → Custom Elements Manifest (standard) : la DOC + interop
+	  dist/vscode.html-custom-data.json → format VSCode : AUTOCOMPLÉTION + survol des <z-*>
+	  dist/llms.txt                     → texte pour l'IA / les LLM (Zoé IA-compatible)
+
+	Comment il lit l'API sans navigateur : il pose un mini-shim (HTMLElement,
+	customElements…) puis IMPORTE chaque module en Node. `static api` est un simple
+	objet, évalué à la définition de la classe — aucune API navigateur n'est touchée
+	à l'import. On récupère alors, sur chaque export, sa propriété statique `api`.
+
+	Usage :  node scripts/z-manifest/z-manifest.js
+	Zéro dépendance. Ajoute un composant (dossier + `static api`) → il apparaît partout.
+
+	Styleguide tool.manifest
+	============================================================
+*/
+
+import { readdir, readFile, writeFile, mkdir } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { dirname, join, relative } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(HERE, "..", "..");            /* scripts/z-manifest → racine du projet */
+const SCAN_DIRS = ["core", "tools", "components"];
+
+/*
+	MINI-SHIM : de quoi charger un custom element en Node sans navigateur. `static api`
+	ne touche rien de tout ça ; ces stubs servent juste à ce que `class X extends
+	HTMLElement` et `customElements.define(...)` (au bas des modules) ne plantent pas.
+*/
+function installShim() {
+	globalThis.HTMLElement = class HTMLElement {};
+	const registry = new Map();
+	globalThis.customElements = {
+		get: (name) => registry.get(name),
+		define: (name, ctor) => registry.set(name, ctor)
+	};
+	globalThis.window = globalThis;
+	globalThis.document = { styleSheets: [] };
+	globalThis.getComputedStyle = () => ({ getPropertyValue: () => "" });
+	globalThis.CSSPropertyRule = class CSSPropertyRule {};
+}
+
+/* Trouve le module principal de chaque dossier scanné : <dir>/<name>/<name>.js */
+async function findModules() {
+	const modules = [];
+	for (const dir of SCAN_DIRS) {
+		const base = join(ROOT, dir);
+		if (!existsSync(base)) continue;
+		for (const name of await readdir(base)) {
+			const file = join(base, name, `${name}.js`);
+			if (existsSync(file)) modules.push({ dir, name, file });
+		}
+	}
+	return modules;
+}
+
+/* Importe un module et en extrait le premier export porteur d'un `static api`. */
+async function readApi(file) {
+	const mod = await import(pathToFileURL(file).href);
+	for (const value of Object.values(mod)) {
+		if (typeof value === "function" && value.api && value.api.tag) return value.api;
+	}
+	return null;
+}
+
+/* ── Les trois sorties ─────────────────────────────────────── */
+
+/* Custom Elements Manifest (forme simplifiée mais conforme au schéma). */
+function toManifest(entries) {
+	return {
+		schemaVersion: "1.0.0",
+		readme: "Généré par z-manifest depuis les blocs `static api`. Ne pas éditer à la main.",
+		modules: entries.map(({ rel, api, className }) => ({
+			kind: "javascript-module",
+			path: rel,
+			declarations: [{
+				kind: "class",
+				name: className,
+				tagName: api.tag,
+				summary: api.summary || "",
+				attributes: (api.attributes || []).map((a) => ({ name: a.name, type: { text: a.type || "string" }, description: a.description || "" })),
+				events: (api.events || []).map((e) => ({ name: e.name, description: e.description || "" })),
+				cssProperties: (api.cssVars || []).map((v) => ({ name: v.name, description: v.description || "" })),
+				cssStates: (api.states || []).map((s) => ({ name: s }))
+			}],
+			exports: [{ kind: "custom-element-definition", name: api.tag, declaration: { name: className } }]
+		}))
+	};
+}
+
+/* Format VSCode HTML Custom Data → autocomplétion + survol dans les .html. */
+function toVscode(entries) {
+	return {
+		version: 1.1,
+		tags: entries.map(({ api }) => ({
+			name: api.tag,
+			description: api.summary || "",
+			attributes: (api.attributes || []).map((a) => ({
+				name: a.name,
+				description: a.description || "",
+				values: a.type === "boolean" ? [] : undefined
+			}))
+		}))
+	};
+}
+
+/* llms.txt → un résumé lisible par une IA. */
+function toLlms(entries) {
+	const lines = ["# Zoé — composants & tools (généré)", ""];
+	for (const { api, dir } of entries) {
+		lines.push(`## <${api.tag}> (${dir})`, api.summary || "");
+		if (api.attributes?.length) lines.push("Attributs : " + api.attributes.map((a) => `${a.name} (${a.type || "string"})`).join(", "));
+		if (api.events?.length) lines.push("Événements : " + api.events.map((e) => e.name).join(", "));
+		if (api.states?.length) lines.push("États :state() : " + api.states.join(", "));
+		lines.push("");
+	}
+	return lines.join("\n");
+}
+
+/* ── Main ──────────────────────────────────────────────────── */
+
+async function main() {
+	installShim();
+	const found = await findModules();
+	const entries = [];
+	for (const { dir, name, file } of found) {
+		const api = await readApi(file);
+		if (!api) { console.warn(`  (pas de static api) ${dir}/${name}`); continue; }
+		/* le nom de classe : on relit l'export porteur pour le nommer proprement */
+		const mod = await import(pathToFileURL(file).href);
+		const className = Object.entries(mod).find(([, v]) => typeof v === "function" && v.api === api)?.[0] || name;
+		entries.push({ dir, name, api, className, rel: relative(ROOT, file).replace(/\\/g, "/") });
+	}
+
+	await mkdir(join(ROOT, "dist"), { recursive: true });
+	await writeFile(join(ROOT, "dist", "custom-elements.json"), JSON.stringify(toManifest(entries), null, 2));
+	await writeFile(join(ROOT, "dist", "vscode.html-custom-data.json"), JSON.stringify(toVscode(entries), null, 2));
+	await writeFile(join(ROOT, "dist", "llms.txt"), toLlms(entries));
+
+	/* branche l'autocomplétion : settings VSCode → notre custom data */
+	await mkdir(join(ROOT, ".vscode"), { recursive: true });
+	await writeFile(join(ROOT, ".vscode", "settings.json"), JSON.stringify({
+		"html.customData": ["./dist/vscode.html-custom-data.json"]
+	}, null, 2));
+
+	console.log(`✓ z-manifest : ${entries.length} élément(s) → dist/{custom-elements.json, vscode.html-custom-data.json, llms.txt} + .vscode/settings.json`);
+	for (const e of entries) console.log(`   · <${e.api.tag}>  (${e.rel})`);
+}
+
+main().catch((err) => { console.error("z-manifest a échoué :", err); process.exit(1); });
