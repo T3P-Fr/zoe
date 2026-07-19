@@ -1,2 +1,5 @@
 node_modules/
 .DS_Store
+
+# Cache local de reprise, réécrit à chaque tour — pas de l'historique
+.claude/ETAT.md
