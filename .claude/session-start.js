@@ -11,19 +11,40 @@
 
 import { readFileSync } from "node:fs";
 
-let etat = "";
-try {
-  etat = readFileSync(".claude/ETAT.md", "utf8");
-} catch {
-  /* Première session : pas encore d'état, ce n'est pas une erreur. */
+/**
+ * Lit un fichier sans jamais planter s'il n'existe pas encore.
+ * @param {string} path
+ * @returns {string}
+ */
+function readOrEmpty(path) {
+  try {
+    return readFileSync(path, "utf8");
+  } catch {
+    return "";
+  }
 }
 
+/* Deux sources de reprise, complémentaires :
+   - JOURNAL.md : le résumé RICHE écrit par la commande /fin (décisions, prochain
+     pas). On n'injecte que le début (entrées récentes en haut) pour rester léger.
+   - ETAT.md : le snapshot Git AUTO (derniers pas + travail en cours). */
+const journal = readOrEmpty(".claude/JOURNAL.md").slice(0, 2000);
+const etat = readOrEmpty(".claude/ETAT.md");
+
+const blocs = [];
+if (journal.trim()) {
+  blocs.push("JOURNAL (décisions récentes, la plus récente en haut) :\n\n" + journal);
+}
 if (etat.trim()) {
+  blocs.push("ÉTAT au dernier arrêt (snapshot Git auto) :\n\n" + etat);
+}
+
+if (blocs.length) {
   const payload = {
     hookSpecificOutput: {
       hookEventName: "SessionStart",
       additionalContext:
-        "Reprise automatique — voici l'état laissé au dernier arrêt :\n\n" + etat,
+        "Reprise automatique — voici où on en était :\n\n" + blocs.join("\n\n---\n\n"),
     },
   };
   process.stdout.write(JSON.stringify(payload));
