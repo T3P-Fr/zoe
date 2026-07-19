@@ -60,17 +60,17 @@ export class ZElement extends HTMLElement {
 	*/
 	static api = {
 		tag: "z-element",
-		summary: "La base vivante : porte les états d'interaction en :state() et émet z-state.",
+		summary: "The living base: carries interaction states as :state() and emits z-state.",
 		attributes: [
-			{ name: "current", type: "boolean", description: "Sélection durable (coché, onglet actif) — posée par un composant sélectionnable." },
-			{ name: "loading", type: "boolean", description: "Statut : en chargement." },
-			{ name: "busy", type: "boolean", description: "Statut : occupé / traitement en cours." },
-			{ name: "disabled", type: "boolean", description: "Désactivé : coupe l'interaction." },
-			{ name: "error", type: "boolean", description: "Statut : en erreur." },
-			{ name: "success", type: "boolean", description: "Statut : validé." }
+			{ name: "current", type: "boolean", description: "Durable selection (checked, active tab) — set by a selectable component." },
+			{ name: "loading", type: "boolean", description: "Status: loading." },
+			{ name: "busy", type: "boolean", description: "Status: busy / processing." },
+			{ name: "disabled", type: "boolean", description: "Disabled: blocks interaction." },
+			{ name: "error", type: "boolean", description: "Status: error." },
+			{ name: "success", type: "boolean", description: "Status: valid / done." }
 		],
 		events: [
-			{ name: "z-state", description: "Émis à chaque changement d'état. detail : { states, changed, on }." }
+			{ name: "z-state", description: "Emitted on every state change. detail: { states, changed, on }." }
 		],
 		states: [
 			"default", "over", "press", "release", "releaseOut", "drag", "focus",
@@ -78,8 +78,8 @@ export class ZElement extends HTMLElement {
 			"loading", "busy", "disabled", "error", "success"
 		],
 		cssVars: [
-			{ name: "--z-dur-enter", description: "Durée de l'état transitoire `enter` (lue dans la cascade)." },
-			{ name: "--z-dur-release", description: "Durée de l'onde `release`." }
+			{ name: "--z-dur-enter", description: "Duration of the transient `enter` state (read from the cascade)." },
+			{ name: "--z-dur-release", description: "Duration of the `release` ripple." }
 		]
 	};
 

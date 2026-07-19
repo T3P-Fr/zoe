@@ -3,67 +3,67 @@
   "tags": [
     {
       "name": "z-element",
-      "description": "La base vivante : porte les états d'interaction en :state() et émet z-state.",
+      "description": "The living base: carries interaction states as :state() and emits z-state.",
       "attributes": [
         {
           "name": "current",
-          "description": "Sélection durable (coché, onglet actif) — posée par un composant sélectionnable.",
+          "description": "Durable selection (checked, active tab) — set by a selectable component.",
           "values": []
         },
         {
           "name": "loading",
-          "description": "Statut : en chargement.",
+          "description": "Status: loading.",
           "values": []
         },
         {
           "name": "busy",
-          "description": "Statut : occupé / traitement en cours.",
+          "description": "Status: busy / processing.",
           "values": []
         },
         {
           "name": "disabled",
-          "description": "Désactivé : coupe l'interaction.",
+          "description": "Disabled: blocks interaction.",
           "values": []
         },
         {
           "name": "error",
-          "description": "Statut : en erreur.",
+          "description": "Status: error.",
           "values": []
         },
         {
           "name": "success",
-          "description": "Statut : validé.",
+          "description": "Status: valid / done.",
           "values": []
         }
       ]
     },
     {
       "name": "z-button",
-      "description": "Un bouton — hérite tous les états de z-element, skinnable par les peaux.",
+      "description": "A button — inherits all z-element states, skinnable by themes.",
       "attributes": [
         {
           "name": "disabled",
-          "description": "Désactivé : coupe l'interaction.",
+          "description": "Disabled: blocks interaction.",
           "values": []
         },
         {
           "name": "loading",
-          "description": "En chargement (balayage skeleton, non cliquable).",
+          "description": "Loading (skeleton sweep, not clickable).",
           "values": []
         },
         {
           "name": "busy",
-          "description": "Occupé (pulse).",
+          "description": "Busy (pulse).",
           "values": []
         },
         {
           "name": "error",
-          "description": "En erreur (liseré danger + secousse).",
+          "description": "Error (danger border + shake).",
           "values": []
         },
         {
           "name": "success",
-          "description": "Validé (liseré succès).",
+          "description": "Valid (success border).",
           "values": []
         }
       ]

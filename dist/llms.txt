@@ -1,13 +1,13 @@
-# Zoé — composants & tools (généré)
+# Zoé — components & tools (generated)
 
 ## <z-element> (core)
-La base vivante : porte les états d'interaction en :state() et émet z-state.
-Attributs : current (boolean), loading (boolean), busy (boolean), disabled (boolean), error (boolean), success (boolean)
-Événements : z-state
-États :state() : default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, busy, disabled, error, success
+The living base: carries interaction states as :state() and emits z-state.
+Attributes: current (boolean), loading (boolean), busy (boolean), disabled (boolean), error (boolean), success (boolean)
+Events: z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, busy, disabled, error, success
 
 ## <z-button> (components)
-Un bouton — hérite tous les états de z-element, skinnable par les peaux.
-Attributs : disabled (boolean), loading (boolean), busy (boolean), error (boolean), success (boolean)
-Événements : z-state
-États :state() : default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, busy, disabled, error, success
+A button — inherits all z-element states, skinnable by themes.
+Attributes: disabled (boolean), loading (boolean), busy (boolean), error (boolean), success (boolean)
+Events: z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, busy, disabled, error, success

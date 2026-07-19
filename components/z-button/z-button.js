@@ -21,15 +21,15 @@ import { ZElement } from "../../core/z-element/z-element.js";
 export class ZButton extends ZElement {
 	static api = {
 		tag: "z-button",
-		summary: "Un bouton — hérite tous les états de z-element, skinnable par les peaux.",
+		summary: "A button — inherits all z-element states, skinnable by themes.",
 		attributes: [
-			{ name: "disabled", type: "boolean", description: "Désactivé : coupe l'interaction." },
-			{ name: "loading", type: "boolean", description: "En chargement (balayage skeleton, non cliquable)." },
-			{ name: "busy", type: "boolean", description: "Occupé (pulse)." },
-			{ name: "error", type: "boolean", description: "En erreur (liseré danger + secousse)." },
-			{ name: "success", type: "boolean", description: "Validé (liseré succès)." }
+			{ name: "disabled", type: "boolean", description: "Disabled: blocks interaction." },
+			{ name: "loading", type: "boolean", description: "Loading (skeleton sweep, not clickable)." },
+			{ name: "busy", type: "boolean", description: "Busy (pulse)." },
+			{ name: "error", type: "boolean", description: "Error (danger border + shake)." },
+			{ name: "success", type: "boolean", description: "Valid (success border)." }
 		],
-		events: [{ name: "z-state", description: "Émis à chaque changement d'état. detail : { states, changed, on }." }],
+		events: [{ name: "z-state", description: "Emitted on every state change. detail: { states, changed, on }." }],
 		states: ZElement.api.states
 	};
 
