@@ -60,17 +60,21 @@ export class ZElement extends HTMLElement {
 	*/
 	static api = {
 		tag: "z-element",
-		summary: "The living base: carries interaction states as :state() and emits z-state.",
+		summary: {
+			en: "The living base: carries interaction states as :state() and emits z-state.",
+			fr: "La base vivante : porte les états d'interaction en :state() et émet z-state.",
+			es: "La base viva: lleva los estados de interacción como :state() y emite z-state."
+		},
 		attributes: [
-			{ name: "current", type: "boolean", description: "Durable selection (checked, active tab) — set by a selectable component." },
-			{ name: "loading", type: "boolean", description: "Status: loading." },
-			{ name: "busy", type: "boolean", description: "Status: busy / processing." },
-			{ name: "disabled", type: "boolean", description: "Disabled: blocks interaction." },
-			{ name: "error", type: "boolean", description: "Status: error." },
-			{ name: "success", type: "boolean", description: "Status: valid / done." }
+			{ name: "current", type: "boolean", description: { en: "Durable selection (checked, active tab) — set by a selectable component.", fr: "Sélection durable (coché, onglet actif) — posée par un composant sélectionnable.", es: "Selección duradera (marcado, pestaña activa) — puesta por un componente seleccionable." } },
+			{ name: "loading", type: "boolean", description: { en: "Status: loading.", fr: "Statut : en chargement.", es: "Estado: cargando." } },
+			{ name: "busy", type: "boolean", description: { en: "Status: busy / processing.", fr: "Statut : occupé / traitement.", es: "Estado: ocupado / procesando." } },
+			{ name: "disabled", type: "boolean", description: { en: "Disabled: blocks interaction.", fr: "Désactivé : coupe l'interaction.", es: "Deshabilitado: bloquea la interacción." } },
+			{ name: "error", type: "boolean", description: { en: "Status: error.", fr: "Statut : en erreur.", es: "Estado: error." } },
+			{ name: "success", type: "boolean", description: { en: "Status: valid / done.", fr: "Statut : validé.", es: "Estado: válido / hecho." } }
 		],
 		events: [
-			{ name: "z-state", description: "Emitted on every state change. detail: { states, changed, on }." }
+			{ name: "z-state", description: { en: "Emitted on every state change. detail: { states, changed, on }.", fr: "Émis à chaque changement d'état. detail : { states, changed, on }.", es: "Emitido en cada cambio de estado. detail: { states, changed, on }." } }
 		],
 		states: [
 			"default", "over", "press", "release", "releaseOut", "drag", "focus",
@@ -78,8 +82,8 @@ export class ZElement extends HTMLElement {
 			"loading", "busy", "disabled", "error", "success"
 		],
 		cssVars: [
-			{ name: "--z-dur-enter", description: "Duration of the transient `enter` state (read from the cascade)." },
-			{ name: "--z-dur-release", description: "Duration of the `release` ripple." }
+			{ name: "--z-dur-enter", description: { en: "Duration of the transient `enter` state (read from the cascade).", fr: "Durée de l'état transitoire `enter` (lue dans la cascade).", es: "Duración del estado transitorio `enter` (leída en la cascada)." } },
+			{ name: "--z-dur-release", description: { en: "Duration of the `release` ripple.", fr: "Durée de l'onde `release`.", es: "Duración de la onda `release`." } }
 		]
 	};
 
