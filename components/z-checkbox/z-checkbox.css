@@ -1,0 +1,110 @@
+/*
+	============================================================
+	z-checkbox.css — le rendu de z-checkbox (anatomie marker + label)
+	------------------------------------------------------------
+	Preuve de la grammaire du pacte : chaque part se peint par un token
+	`--z-checkbox--{part}__{prop}` (double séparateur), et le sujet lui-même par
+	`--z-checkbox__{prop}`. Défauts qui CONSOMMENT la peau (var(--z-accent), --z-line,
+	--z-radius…) → marche sur HighTech ET Claude sans refonte. Aucune balise injectée :
+	le marker est un `::before`.
+	Requiert : une peau (tokens) + tools/z-motion (@keyframes pop).
+	Styleguide 1.0
+	============================================================
+*/
+
+/*
+	z-checkbox — le sujet
+	Une ligne cliquable : le marker (::before) à gauche, TON label (light DOM) à droite.
+	Styleguide 1.1
+*/
+z-checkbox {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--z-checkbox__gap, var(--z-gap, .55em));
+	color: var(--z-ink);
+	font: inherit;
+	font-family: var(--z-font);
+	cursor: pointer;
+	user-select: none;
+	touch-action: manipulation;
+	vertical-align: middle;
+	outline: none;
+	-webkit-tap-highlight-color: transparent;
+	transition: color var(--z-dur) var(--z-ease), text-shadow var(--z-dur) var(--z-ease);
+}
+
+/*
+	z-checkbox — le marker (la case)
+	UN seul ::before : la bordure = le contour, et un carré blanc central (background-
+	image) dont la taille passe de 0 à 60 % au coché → « il zoome du fond ». Aucun 2e
+	pseudo : alignement parfait, le carré naît EXACTEMENT au centre de la case.
+	Styleguide 1.2
+*/
+z-checkbox::before {
+	content: "";
+	flex: 0 0 auto;
+	box-sizing: border-box;
+	width: var(--z-checkbox--marker__size, 1.15em);
+	height: var(--z-checkbox--marker__size, 1.15em);
+	border: var(--z-border-width, 1.5px) solid var(--z-checkbox--marker__border, var(--z-line));
+	border-radius: var(--z-checkbox--marker__radius, var(--z-radius));
+	background-color: var(--z-checkbox--marker__background, var(--z-surface));
+	background-image: linear-gradient(var(--z-checkbox--check__color, #fff), var(--z-checkbox--check__color, #fff));
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 0% 0%;                       /* le carré blanc, invisible au repos */
+	transition:
+		background-color var(--z-dur) var(--z-ease),
+		border-color var(--z-dur) var(--z-ease),
+		box-shadow var(--z-dur) var(--z-ease),
+		transform var(--z-dur) var(--z-ease-spring),
+		background-size var(--z-dur-select, .26s) var(--z-ease-spring);
+}
+
+/*
+	z-checkbox — interaction (héritée de z-element)
+	Styleguide 1.3
+*/
+z-checkbox:state(over)::before  { border-color: var(--z-accent); }
+z-checkbox:state(press)::before { transform: scale(.9); }
+z-checkbox:state(focus)::before { box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 35%, transparent); }
+
+/*
+	z-checkbox — coché (current)
+	La case se remplit d'accent, le carré blanc ZOOME du fond (background-size 0→60 %,
+	ressort). Le label s'épaissit sans saut de pixel (faux-bold text-shadow) ; une peau
+	peut préférer un vrai poids via --z-checkbox--label__weight.
+	Styleguide 1.4
+*/
+z-checkbox:state(current)::before {
+	border-color: var(--z-checkbox--marker__border-checked, var(--z-accent));
+	background-color: var(--z-checkbox--marker__background-checked, var(--z-accent));
+	background-size: 60% 60%;
+}
+z-checkbox:state(current) {
+	font-weight: var(--z-checkbox--label__weight, inherit);
+	text-shadow: var(--z-checkbox--label__emphasis, .012em 0 0 currentColor, -.012em 0 0 currentColor);
+}
+/* select : le geste posé par le socle quand current s'allume → un pop de la case. */
+z-checkbox:state(select)::before { animation: pop var(--z-dur-select, .26s) var(--z-ease-spring); }
+
+/*
+	z-checkbox — statut métier
+	Styleguide 1.5
+*/
+z-checkbox:state(disabled) {
+	color: var(--z-disabled);
+	cursor: not-allowed;
+}
+z-checkbox:state(disabled)::before {
+	border-color: var(--z-disabled);
+	background-color: var(--z-surface-sunken);
+}
+/* cochée ET verrouillée : la coche RESTE lisible — accent ATTÉNUÉ (mix accent + fond)
+   plutôt que le gris de disabled, sinon la combinaison current+disabled la laverait. */
+z-checkbox:state(current):state(disabled)::before {
+	border-color: var(--z-disabled);
+	background-color: color-mix(in srgb, var(--z-accent) 32%, var(--z-surface-sunken));
+}
+z-checkbox:state(error)::before   { border-color: var(--z-danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-danger) 22%, transparent); }
+z-checkbox:state(success)::before { border-color: var(--z-success); }

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-checkbox — démo</title>
+<link rel="stylesheet" href="../../tools/z-motion/z-motion.css">
+<link rel="stylesheet" href="./z-checkbox.css">
+<style>
+  body { background:var(--z-page); color:var(--z-ink); font-family:var(--z-font); padding:2.5rem; max-width:760px; margin:auto; }
+  h1 { font-size:1.2rem; } .lead { color:var(--z-ink-soft); font-size:.9rem; margin:.2rem 0 1.6rem; }
+  .stack { display:flex; flex-direction:column; gap:1rem; align-items:flex-start; margin-bottom:1.6rem; }
+  .note { color:var(--z-ink-soft); font-size:.82rem; margin-top:.4rem; }
+</style>
+
+<h1><code>z-checkbox</code></h1>
+<p class="lead">Anatomie <b>marker + label</b> — Zoé n'injecte rien : le carré est un <code>::before</code>, le texte est à toi. Coche : le carré blanc <b>zoome du fond</b>. Change la peau en haut à droite — tout suit.</p>
+
+<div class="stack">
+  <z-checkbox>J'accepte les conditions</z-checkbox>
+  <z-checkbox current>Recevoir la newsletter</z-checkbox>
+  <z-checkbox error>Champ requis (erreur)</z-checkbox>
+  <z-checkbox success>Vérifiée (succès)</z-checkbox>
+  <z-checkbox disabled>Indisponible</z-checkbox>
+  <z-checkbox current disabled>Cochée, verrouillée</z-checkbox>
+</div>
+
+<p class="note">Clic ou <kbd>Espace</kbd> : coche/décoche. Chaque bascule émet <code>change</code> — lis <code>.checked</code>.</p>
+
+<script type="module">
+  import "../../examples/skin-switch.js";
+  import "./z-checkbox.js";
+</script>
+</html>

@@ -38,6 +38,32 @@
       ]
     },
     {
+      "name": "z-checkbox",
+      "description": "A checkbox — inherits all z-element states, marker + label anatomy, painted by the skin.",
+      "attributes": [
+        {
+          "name": "current",
+          "description": "Checked: a durable selection set by the component (click / Space).",
+          "values": []
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled: blocks interaction.",
+          "values": []
+        },
+        {
+          "name": "error",
+          "description": "Invalid (e.g. required and unchecked).",
+          "values": []
+        },
+        {
+          "name": "success",
+          "description": "Valid.",
+          "values": []
+        }
+      ]
+    },
+    {
       "name": "z-button",
       "description": "A button — inherits all z-element states, skinnable by themes.",
       "attributes": [

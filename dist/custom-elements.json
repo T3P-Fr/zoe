@@ -138,6 +138,121 @@
     },
     {
       "kind": "javascript-module",
+      "path": "components/z-checkbox/z-checkbox.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZCheckbox",
+          "tagName": "z-checkbox",
+          "summary": "A checkbox — inherits all z-element states, marker + label anatomy, painted by the skin.",
+          "attributes": [
+            {
+              "name": "current",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Checked: a durable selection set by the component (click / Space)."
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disabled: blocks interaction."
+            },
+            {
+              "name": "error",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Invalid (e.g. required and unchecked)."
+            },
+            {
+              "name": "success",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Valid."
+            }
+          ],
+          "events": [
+            {
+              "name": "change",
+              "description": "Emitted when the checked state toggles. Read `.checked`."
+            },
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "busy"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-checkbox",
+          "declaration": {
+            "name": "ZCheckbox"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "components/z-button/z-button.js",
       "declarations": [
         {

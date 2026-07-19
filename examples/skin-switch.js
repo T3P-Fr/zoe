@@ -20,8 +20,12 @@ const KEY = "zoe-skin";
 /* profondeur : depuis examples/ ou un dossier de composant, on remonte à la racine puis skins/. */
 const ROOT = new URL("../", import.meta.url).href;   /* …/zoé/ */
 
+/* priorité : ?skin= (deep-link, comme ?lang=) > choix mémorisé > 1re peau. */
+const forced = new URLSearchParams(location.search).get("skin");
 const saved = localStorage.getItem(KEY);
-const current = SKINS.some((s) => s.id === saved) ? saved : SKINS[0].id;
+const current = SKINS.some((s) => s.id === forced) ? forced
+	: SKINS.some((s) => s.id === saved) ? saved
+	: SKINS[0].id;
 
 const link = document.createElement("link");
 link.rel = "stylesheet";
