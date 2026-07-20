@@ -7,65 +7,58 @@
 <!--
 	index.html — LA PORTE D'ENTRÉE de l'atelier Zoé.
 	Une seule URL à retenir : http://localhost:5173/
-	Toutes les pages du projet sont ici, servies (jamais en file://, sinon les
-	modules ES sont bloqués par le navigateur et les pages paraissent mortes).
-	Volontairement SANS dépendance : cette page doit s'afficher même si tout
-	le reste est cassé — c'est le point de secours.
+
+	ELLE PORTE LA PEAU, comme tout le reste. Elle a longtemps eu SA propre palette —
+	treize couleurs inventées et un mode sombre à elle : une troisième peau clandestine,
+	exactement le contraire de ce que Zoé raconte. Corrigé le 2026-07-20.
+
+	Elle reste pour autant LE POINT DE SECOURS : elle doit s'afficher même si la peau ne
+	charge pas (page ouverte en file://, fichier manquant, JS coupé). D'où la règle de
+	tout ce fichier — chaque couleur s'écrit `var(--z-token, REPLI)`, et le repli est une
+	COULEUR SYSTÈME (Canvas, CanvasText, LinkText, GrayText) : celles du navigateur, qui
+	suivent déjà le thème clair/sombre de l'OS. Zéro couleur inventée, zéro mode sombre à
+	maintenir en double.
+
+	Seule exception : le rouge du bandeau file:// plus bas. Il doit crier même quand plus
+	rien ne fonctionne — il ne peut donc dépendre de rien.
 -->
 
 <style>
-	:root {
-		color-scheme: light dark;
-		--bg: #f6f0e6;
-		--ink: #241d17;
-		--soft: #7a6a58;
-		--line: #e0d5c3;
-		--card: #fffdf9;
-		--accent: #c4502a;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		:root {
-			--bg: #16130f;
-			--ink: #f3ece0;
-			--soft: #a2917c;
-			--line: #322a22;
-			--card: #1e1a15;
-			--accent: #e0714a;
-		}
-	}
-
 	body {
 		margin: 0;
 		padding: 3rem 1.5rem 5rem;
-		background: var(--bg);
-		color: var(--ink);
-		font: 15px/1.6 ui-sans-serif, system-ui, sans-serif;
+		background: var(--z-page, Canvas);
+		color: var(--z-ink, CanvasText);
+		font-family: var(--z-font, ui-sans-serif, system-ui, sans-serif);
+		font-size: 15px;
+		line-height: 1.6;
 	}
 
 	main {
-		max-width: 720px;
+		max-width: 1280px;
 		margin: auto;
 	}
 
 	h1 {
 		margin: 0;
+		font-family: var(--z-font-title, inherit);
 		font-size: 1.5rem;
 		letter-spacing: -.01em;
 	}
 
 	.lead {
 		margin: .4rem 0 2.5rem;
-		color: var(--soft);
+		color: var(--z-ink-soft, GrayText);
 	}
 
+	/* Les intertitres reprennent le sur-titre des peaux : petit, espacé, en sourdine. */
 	h2 {
 		margin: 2.2rem 0 .8rem;
 		font-size: .75rem;
 		font-weight: 700;
-		letter-spacing: .12em;
+		letter-spacing: var(--z-letter-eyebrow, .12em);
 		text-transform: uppercase;
-		color: var(--soft);
+		color: var(--z-ink-soft, GrayText);
 	}
 
 	/*
@@ -78,7 +71,7 @@
 	.cartes {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
-		gap: .55rem;
+		gap: var(--z-gap, .55rem);
 	}
 
 	/* Une carte = une destination. Cible large : on clique sans viser. */
@@ -87,33 +80,43 @@
 		flex-direction: column;
 		gap: .25rem;
 		padding: .7rem .85rem;
-		border: 1px solid var(--line);
-		border-radius: 10px;
-		background: var(--card);
+		border: var(--z-border-width, 1px) solid var(--z-line, GrayText);
+		border-radius: var(--z-radius, 10px);
+		background: var(--z-surface, Canvas);
 		color: inherit;
 		text-decoration: none;
-		transition: border-color .18s, transform .18s;
+		transition:
+			border-color var(--z-dur, .18s) var(--z-ease, ease),
+			transform var(--z-dur, .18s) var(--z-ease, ease);
 	}
 
 	/* Le survol soulève au lieu de décaler : dans une grille, un décalage latéral
-	   bouscule visuellement les voisines de la même ligne. */
+	   bousculerait visuellement les voisines de la même ligne. */
 	a.card:hover {
-		border-color: var(--accent);
+		border-color: var(--z-accent, LinkText);
 		transform: translateY(-2px);
 	}
 
 	a.card b {
-		font: 600 13px/1.3 ui-monospace, monospace;
-		color: var(--accent);
+		font-family: var(--z-font, ui-monospace, monospace);
+		font-size: 13px;
+		font-weight: 600;
+		line-height: 1.3;
+		color: var(--z-accent, LinkText);
 	}
 
 	a.card span {
-		color: var(--soft);
+		color: var(--z-ink-soft, GrayText);
 		font-size: .8rem;
 		line-height: 1.35;
 	}
 
-	/* Le garde-fou file:// — voir le script en bas. */
+	/*
+		LE BANDEAU D'URGENCE — la seule chose de ce fichier qui ne dépend de RIEN.
+		Il s'affiche quand la page est ouverte en file://, c'est-à-dire quand les modules
+		ES sont bloqués : ni peau, ni composants, ni sélecteur. Ses couleurs sont donc
+		écrites en dur, à dessein. Une alarme qui a besoin du courant n'est pas une alarme.
+	*/
 	#filewarn {
 		display: none;
 		padding: 1rem 1.2rem;
@@ -132,13 +135,13 @@
 
 <main>
 	<h1>Zoé — l'atelier</h1>
-	<p class="lead">Toutes les pages du projet. Une seule URL à retenir.</p>
+	<p class="lead">Toutes les pages du projet. Une seule URL à retenir — et elle porte la peau, comme le reste.</p>
 
 	<div id="filewarn">
 		<b>Cette page est ouverte en <code>file://</code>.</b><br>
-		Le navigateur bloque les modules ES : les composants ne se définiront pas et
-		les pages paraîtront mortes. Lance <code>node scripts/serve.mjs 5173</code>
-		puis ouvre <code>http://localhost:5173/</code>.
+		Le navigateur bloque les modules ES : la peau ne se chargera pas et les pages
+		paraîtront mortes. Double-clique sur <code>ZOE.cmd</code>, ou lance
+		<code>node scripts/serve.mjs 5173</code> puis ouvre <code>http://localhost:5173/</code>.
 	</div>
 
 	<h2>La doc</h2>
@@ -171,10 +174,15 @@
 </main>
 
 <!--
-	Script CLASSIQUE (surtout pas `type="module"`) : c'est le seul qui s'exécute
-	encore quand la page est ouverte en file:// — donc le seul capable de prévenir.
+	Script CLASSIQUE (surtout pas `type="module"`) : c'est le seul qui s'exécute encore
+	quand la page est ouverte en file:// — donc le seul capable de prévenir.
 -->
 <script>
 	if (location.protocol === "file:") document.getElementById("filewarn").style.display = "block";
+</script>
+
+<!-- La peau et son sélecteur (le pacte : toute page de l'atelier peut changer de peau). -->
+<script type="module">
+	import "./examples/skin-switch.js";
 </script>
 </html>
