@@ -200,6 +200,72 @@
 		font-family: ui-monospace, monospace;
 	}
 
+	/*
+		L'ÉCHELLE SUR AUTRE CHOSE QU'UN BOUTON — texte, bloc, espaces
+		Styleguide essai.variables.6
+
+		La démonstration tient à une seule condition : TOUT est écrit en `em`. Le
+		`size` ne change que la taille du texte de l'élément ; l'épaisseur du filet, le
+		padding, le rayon, les gouttières et les marges suivent parce qu'ils sont tous
+		exprimés dans cette unité. Une seule valeur en `px` ici, et ce cran-là décrocherait
+		— c'est exactement ce qu'on veut rendre visible.
+	*/
+	/*
+		Le bloc consomme les MÊMES trois tokens que z-button — alors que ce n'est pas un
+		composant, juste une boîte. C'est ce que `tone` vaut : il ne peint rien lui-même,
+		il pose un vocabulaire, et n'importe quoi peut le lire. Chaque token a son REPLI :
+		sans attribut `tone`, le bloc garde les valeurs de la peau.
+	*/
+	.bloc {
+		display: block;
+		padding: 1em 1.2em;
+		border: .08em solid var(--z-tone__line, var(--z-line));
+		border-radius: .6em;
+		background: var(--z-tone__fill, var(--z-surface));
+		color: var(--z-tone__ink, var(--z-ink));
+	}
+
+	/* Le texte secondaire doit rester lisible sur un fond de ton : sur `main` il vit sur
+	   l'accent, donc il emprunte l'encre du ton et se contente d'un voile de transparence
+	   au lieu d'une couleur à lui. */
+	.bloc p {
+		color: color-mix(in srgb, currentColor 70%, transparent);
+	}
+
+	.bloc h3 {
+		margin: 0 0 .4em;
+		font-size: 1.1em;
+	}
+
+	.bloc p {
+		margin: 0 0 .8em;
+		font-size: .85em;
+	}
+
+	/* Les pastilles suivent le filet du ton, elles aussi. */
+	.bloc .pastilles span {
+		border-color: var(--z-tone__line, var(--z-line));
+	}
+
+	/* Les espaces : gouttière ET marge en `em`, donc à l'échelle du bloc qui les porte. */
+	.bloc .pastilles {
+		display: flex;
+		gap: .5em;
+	}
+
+	.bloc .pastilles span {
+		padding: .25em .6em;
+		border: .08em solid var(--z-line);
+		border-radius: .4em;
+		font-size: .8em;
+	}
+
+	/* Les blocs sont empilés avec une marge en `em` : l'écart entre deux blocs grandit
+	   avec eux. C'est ça, « les facteurs se composent » vu de loin. */
+	.pile > * + * {
+		margin-top: 1em;
+	}
+
 	/* ── l'habillage de la page, sans intérêt pour l'essai ── */
 	body { background: var(--z-page); color: var(--z-ink); font-family: var(--z-font); padding: 2.5rem; max-width: 820px; margin: auto; }
 	h1 { font-size: 1.2rem; }
@@ -292,6 +358,90 @@
 		<z-layer part="contact"></z-layer>
 	</z-button>
 </div>
+
+<h2>1 ter · La même échelle sur du <b>texte</b>, des <b>blocs</b>, des <b>espaces</b></h2>
+<p class="note">
+	Le même attribut <code>size</code>, sur un <code>&lt;z-element&gt;</code> qui n'est pas un
+	bouton. Rien n'est écrit deux fois : seule la taille du texte change, et le filet, le
+	padding, le rayon, les gouttières et les marges suivent — <b>tout est en <code>em</code></b>.
+</p>
+
+<div class="molettes">
+	<label>écart de l'échelle <input type="range" id="ratio" min="105" max="160" step="5" value="120"><output for="ratio">×1.20</output></label>
+	<button type="button" id="rendre">reprendre l'échelle de la peau</button>
+</div>
+
+<div class="pile">
+	<z-element size="xs" class="bloc">
+		<h3>xs — le plus discret</h3>
+		<p>Un texte de bloc, avec ses espaces et son filet.</p>
+		<div class="pastilles"><span>une</span><span>deux</span><span>trois</span></div>
+	</z-element>
+
+	<z-element size="s" class="bloc">
+		<h3>s — resserré</h3>
+		<p>Un texte de bloc, avec ses espaces et son filet.</p>
+		<div class="pastilles"><span>une</span><span>deux</span><span>trois</span></div>
+	</z-element>
+
+	<z-element class="bloc">
+		<h3>m — le défaut</h3>
+		<p>Un texte de bloc, avec ses espaces et son filet.</p>
+		<div class="pastilles"><span>une</span><span>deux</span><span>trois</span></div>
+	</z-element>
+
+	<z-element size="l" class="bloc">
+		<h3>l — plus d'air</h3>
+		<p>Un texte de bloc, avec ses espaces et son filet.</p>
+		<div class="pastilles"><span>une</span><span>deux</span><span>trois</span></div>
+	</z-element>
+
+	<z-element size="xl" class="bloc">
+		<h3>xl — la pleine voix</h3>
+		<p>Un texte de bloc, avec ses espaces et son filet.</p>
+		<div class="pastilles"><span>une</span><span>deux</span><span>trois</span></div>
+	</z-element>
+</div>
+
+<p class="verdict">
+	Regarde les <b>écarts entre les blocs</b>, pas seulement les blocs : ils grandissent
+	aussi. Un cran de <code>size</code> ne grossit pas un texte — il fait <b>respirer tout
+	un ensemble</b>, texte, cadres et vides compris.
+</p>
+
+<h2>1 quater · Le même <code>tone</code>, sur un bloc — pas sur un bouton</h2>
+<p class="note">
+	Ces cartes ne sont pas des composants : ce sont des boîtes qui lisent les trois tokens
+	posés par <code>tone</code> (<code>--z-tone__fill</code>, <code>__ink</code>,
+	<code>__line</code>). Le variant ne peint rien lui-même — il pose un vocabulaire, et
+	n'importe quoi peut le lire.
+</p>
+
+<div class="row" style="align-items:stretch">
+	<z-element tone="main" class="bloc" style="flex:1">
+		<h3>main</h3>
+		<p>L'action principale. Il prend la lumière, il n'y en a qu'un par écran.</p>
+		<div class="pastilles"><span>une</span><span>deux</span></div>
+	</z-element>
+
+	<z-element tone="complement" class="bloc" style="flex:1">
+		<h3>complement</h3>
+		<p>Le second rôle. Présent, lisible, mais il ne réclame rien.</p>
+		<div class="pastilles"><span>une</span><span>deux</span></div>
+	</z-element>
+
+	<z-element tone="soft" class="bloc" style="flex:1">
+		<h3>soft</h3>
+		<p>Estompé. Il n'existe que quand on le cherche — ni surface, ni filet.</p>
+		<div class="pastilles"><span>une</span><span>deux</span></div>
+	</z-element>
+</div>
+
+<p class="verdict">
+	Les trois cartes ont <b>exactement le même CSS</b> : un seul jeu de règles qui lit les
+	tokens. Et les deux axes se croisent — <code>size="l" tone="soft"</code> se comporte
+	comme on l'attend, sans qu'on ait écrit la combinaison nulle part.
+</p>
 
 <h2>2 · La fuite — et la ligne qui l'arrête</h2>
 <p class="note">
@@ -400,6 +550,33 @@
 		Les trois réglages sont décrits par une seule table (nom → unité) plutôt que par
 		trois écouteurs copiés : ajouter une molette = ajouter une ligne ici et un <input>.
 	*/
+	/*
+		L'ÉCART DE L'ÉCHELLE — un seul curseur pour les cinq crans.
+		Chaque cran est une puissance du ratio : xs = 1/r², s = 1/r, m = 1, l = r, xl = r².
+		Une échelle géométrique se lit mieux qu'une liste de nombres choisis un par un —
+		et un seul curseur vaut mieux que cinq quand on cherche une proportion.
+		« Reprendre l'échelle de la peau » efface simplement ce qu'on a écrit sur la
+		racine : les valeurs de la peau redeviennent les seules en vigueur.
+	*/
+	const CRANS = { xs: -2, s: -1, m: 0, l: 1, xl: 2 };
+	const ratio = document.getElementById("ratio");
+	const lectureRatio = document.querySelector('output[for="ratio"]');
+
+	ratio.addEventListener("input", () => {
+		const r = ratio.value / 100;
+		for (const [cran, puissance] of Object.entries(CRANS)) {
+			document.documentElement.style.setProperty(`--z-scale-${cran}`, (r ** puissance).toFixed(3));
+		}
+		lectureRatio.textContent = `×${r.toFixed(2)}`;
+	});
+
+	document.getElementById("rendre").addEventListener("click", () => {
+		for (const cran of Object.keys(CRANS)) {
+			document.documentElement.style.removeProperty(`--z-scale-${cran}`);
+		}
+		lectureRatio.textContent = "peau";
+	});
+
 	const MOLETTES = { taille: "px", force: "%", bord: "%" };
 
 	for (const [nom, unite] of Object.entries(MOLETTES)) {
