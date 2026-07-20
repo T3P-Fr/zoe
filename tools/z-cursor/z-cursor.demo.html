@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-cursor — le sillage du pointeur</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis passe par <code>http://localhost:5173/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../z-motion/z-motion.css">
+<link rel="stylesheet" href="../z-contact/z-contact.css">
+<link rel="stylesheet" href="./z-cursor.css">
+<link rel="stylesheet" href="../../core/z-element/z-element.css">
+<link rel="stylesheet" href="../../core/z-layer/z-layer.css">
+<link rel="stylesheet" href="../../components/z-button/z-button.css">
+
+<style>
+	body {
+		background: var(--z-page);
+		color: var(--z-ink);
+		font-family: var(--z-font);
+		padding: 2.5rem;
+		max-width: 820px;
+		margin: auto;
+	}
+
+	h1 { font-size: 1.2rem; }
+	h2 { font-size: .95rem; margin: 2.2rem 0 .4rem; }
+	p.lead, p.note { color: var(--z-ink-soft); font-size: .85rem; }
+	.row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; margin: .8rem 0; }
+
+	/* Une aire large et vide : le sillage a besoin de place pour se voir. Un mouvement
+	   ne se juge pas dans une boîte de la taille d'un bouton. */
+	.piste {
+		height: 320px;
+		border: var(--z-border-width, 1px) dashed var(--z-line);
+		border-radius: var(--z-radius);
+		background: var(--z-surface);
+		display: grid;
+		place-items: center;
+		color: var(--z-ink-soft);
+		font-size: .85rem;
+	}
+
+	.molettes {
+		display: flex;
+		gap: 1.4rem;
+		flex-wrap: wrap;
+		align-items: center;
+		padding: .7rem .9rem;
+		border: 1px solid var(--z-line);
+		border-radius: var(--z-radius);
+		background: var(--z-surface);
+		font-size: .78rem;
+		margin: .8rem 0;
+	}
+
+	.molettes label { display: flex; gap: .5rem; align-items: center; color: var(--z-ink-soft); }
+	.molettes input { width: 110px; accent-color: var(--z-accent); }
+	.molettes output { display: inline-block; min-width: 3.4em; color: var(--z-ink); font-family: ui-monospace, monospace; }
+	code { font-family: ui-monospace, monospace; }
+</style>
+
+<!-- LE CADEAU DE ZOÉ : une balise, et le sillage est là. -->
+<z-cursor></z-cursor>
+
+<!-- l'effet d'impact au clic (l'autre moitié du couple) -->
+<z-contact></z-contact>
+
+<h1><code>z-cursor</code> — le sillage du pointeur</h1>
+<p class="lead">
+	Une <b>seule balise</b> à poser dans la page, à plat, et la souris laisse un ruban
+	derrière elle. Rien à câbler, rien à importer par composant. Change la peau en haut à
+	droite — la couleur du sillage suit.
+</p>
+
+<pre style="background:var(--z-surface-sunken);padding:.8rem 1rem;border-radius:var(--z-radius);font-size:.85rem;overflow:auto"><code>&lt;z-cursor&gt;&lt;/z-cursor&gt;              <span style="color:var(--z-ink-soft)">le ruban qui suit (défaut)</span>
+&lt;z-cursor fx="smear"&gt;&lt;/z-cursor&gt;   <span style="color:var(--z-ink-soft)">la comète QUI EST le curseur</span>
+&lt;z-cursor fx="none"&gt;&lt;/z-cursor&gt;    <span style="color:var(--z-ink-soft)">rien</span></code></pre>
+
+<h2>La piste</h2>
+<p class="note">Balade-toi ici. Vite, lentement, en arrêt brusque — c'est là que le ruban se lit.</p>
+<div class="piste">bouge la souris</div>
+
+<h2>Les réglages</h2>
+<p class="note">
+	Les tokens du ruban vivent sur <code>:root</code> : le moteur les relit à chaque image,
+	donc tout bouge sous tes yeux. Quand tu as trouvé, les valeurs se recopient dans la peau.
+</p>
+
+<div class="molettes">
+	<label>grosseur <input type="range" id="thickness" min="2" max="40" step="1" value="14"><output for="thickness">14</output></label>
+	<label>longueur <input type="range" id="fade" min="100" max="1500" step="50" value="500"><output for="fade">500ms</output></label>
+	<label>fluidité <input type="range" id="smooth" min="10" max="100" step="5" value="50"><output for="smooth">0.50</output></label>
+</div>
+
+<h2>Le couple</h2>
+<p class="note">
+	<code>z-cursor</code> est le <b>sillage</b> (le trajet), <code>z-contact</code> est
+	l'<b>impact</b> (le point d'arrivée). Deux balises, deux moitiés du même geste — clique
+	dans la piste pour les voir se répondre.
+</p>
+<div class="row">
+	<z-button>Un bouton, pour cliquer quelque part</z-button>
+	<z-button tone="complement">Un autre</z-button>
+</div>
+
+<script type="module">
+	import "../../examples/skin-switch.js";
+	import "../z-contact/z-contact.js";
+	import "../../core/z-layer/z-layer.js";
+	import "../../components/z-button/z-button.js";
+	import "./z-cursor.js";
+
+	/*
+		Les molettes écrivent les tokens du ruban sur la racine ; le moteur les relit à
+		chaque image, il n'y a donc rien à redémarrer. Une table (id → token → unité)
+		plutôt que trois écouteurs copiés : ajouter un réglage = ajouter une ligne.
+	*/
+	const REGLAGES = {
+		thickness: { token: "--z-trail-thickness", unite: "", lire: (v) => v },
+		fade: { token: "--z-trail-fade", unite: "", lire: (v) => v, afficher: (v) => `${v}ms` },
+		smooth: { token: "--z-trail-smooth", unite: "", lire: (v) => (v / 100).toFixed(2) }
+	};
+
+	for (const [id, regle] of Object.entries(REGLAGES)) {
+		const curseur = document.getElementById(id);
+		const lecture = document.querySelector(`output[for="${id}"]`);
+		curseur.addEventListener("input", () => {
+			const valeur = regle.lire(curseur.value);
+			document.documentElement.style.setProperty(regle.token, valeur);
+			lecture.textContent = regle.afficher ? regle.afficher(valeur) : valeur;
+		});
+	}
+</script>
+</html>
