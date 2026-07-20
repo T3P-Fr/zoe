@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-radio-group — vérification</title>
+<link rel="stylesheet" href="../z-radio/z-radio.css">
+<link rel="stylesheet" href="./z-radio-group.css">
+<style> body{font:14px monospace;padding:2rem} .ok{color:#0a0} .ko{color:#c00;font-weight:bold} </style>
+<z-radio-group id="g" value="b">
+  <z-radio value="a">A</z-radio>
+  <z-radio value="b">B</z-radio>
+  <z-radio value="c" disabled>C</z-radio>
+  <z-radio value="d">D</z-radio>
+</z-radio-group>
+<z-radio-group id="outer" value="x">
+  <z-radio value="x">X</z-radio>
+  <z-radio-group id="inner" value="1"><z-radio value="1">1</z-radio><z-radio value="2">2</z-radio></z-radio-group>
+</z-radio-group>
+<ul id="out"></ul>
+<script type="module">
+  import "./z-radio-group.js";
+  const out = document.getElementById("out");
+  const t = (name, got, want) => {
+    const ok = String(got) === String(want);
+    out.insertAdjacentHTML("beforeend", `<li class="${ok ? "ok" : "ko"}">${ok ? "OK " : "ÉCHEC "} ${name} → ${got}${ok ? "" : " (attendu " + want + ")"}</li>`);
+  };
+  const g = document.getElementById("g"), r = g.radios;
+  const key = (el, k) => el.dispatchEvent(new KeyboardEvent("keydown", { key: k, bubbles: true }));
+
+  t("présélection par value", g.value, "b");
+  t("un seul current", g.radios.filter(x => x.checked).length, 1);
+  t("roving : un seul tabindex 0", r.filter(x => x.tabIndex === 0).length, 1);
+  t("roving : c'est le choisi", r.find(x => x.tabIndex === 0).value, "b");
+
+  r[0].click();
+  t("clic → exclusivité", g.value, "a");
+  t("re-clic ne dé-sélectionne pas", (r[0].click(), g.value), "a");
+  g.value = "d"; t("API .value", g.value, "d");
+
+  /* L'écouteur ne vit que le temps de CE test (sinon il re-vérifierait à chaque flèche
+     plus bas, avec une attente périmée). */
+  let changes = 0, seen = null;
+  const spy = () => { changes++; seen = g.value; };
+  g.addEventListener("change", spy);
+  r[0].click();
+  g.removeEventListener("change", spy);
+  t("un seul change émis", changes, 1);
+  t("value déjà à jour dans change", seen, "a");
+
+  key(r[0], "ArrowDown"); t("flèche ↓ choisit la suivante", g.value, "b");
+  key(r[1], "ArrowDown"); t("flèche saute la verrouillée", g.value, "d");
+  key(r[3], "ArrowDown"); t("flèche boucle", g.value, "a");
+  key(r[0], "ArrowUp");   t("flèche ↑ boucle à l'envers", g.value, "d");
+  key(r[3], "Home");      t("Home", g.value, "a");
+  key(r[0], "End");       t("End (saute la verrouillée)", g.value, "d");
+
+  const inner = document.getElementById("inner"), outer = document.getElementById("outer");
+  t("imbrication : scope des radios", outer.radios.length, 1);
+  key(inner.radios[0], "ArrowDown");
+  t("imbrication : le dedans bouge", inner.value, "2");
+  t("imbrication : le dehors ne bouge pas", outer.value, "x");
+</script>
+</html>

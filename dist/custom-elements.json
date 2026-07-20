@@ -368,6 +368,252 @@
           }
         }
       ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-radio/z-radio.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZRadio",
+          "tagName": "z-radio",
+          "summary": "A radio button — z-element states, marker + label anatomy, selects but never unselects itself.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "The value this radio carries — read by z-radio-group."
+            },
+            {
+              "name": "current",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Selected: a durable selection set by the component (click / Space / Enter)."
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disabled: blocks interaction."
+            },
+            {
+              "name": "error",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Invalid (e.g. a required choice is missing)."
+            },
+            {
+              "name": "success",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Valid."
+            }
+          ],
+          "events": [
+            {
+              "name": "change",
+              "description": "Emitted when this radio becomes selected. Read `.checked` / `.value`."
+            },
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "busy"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-radio",
+          "declaration": {
+            "name": "ZRadio"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-radio-group/z-radio-group.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZRadioGroup",
+          "tagName": "z-radio-group",
+          "summary": "A group of z-radio: single choice, arrow-key navigation, roving tabindex, one value.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "The selected radio's value — set it to preselect, read it to know the choice."
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables the whole group."
+            },
+            {
+              "name": "error",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "The group's choice is invalid (e.g. required and empty)."
+            },
+            {
+              "name": "success",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "The group's choice is valid."
+            }
+          ],
+          "events": [
+            {
+              "name": "change",
+              "description": "Bubbles from the chosen radio; the group's `.value` is already up to date."
+            },
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [
+            {
+              "name": "--z-radio-group__gap",
+              "description": "Space between the radios."
+            },
+            {
+              "name": "--z-radio-group__direction",
+              "description": "Layout direction: column (default) or row."
+            }
+          ],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "busy"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-radio-group",
+          "declaration": {
+            "name": "ZRadioGroup"
+          }
+        }
+      ]
     }
   ]
 }

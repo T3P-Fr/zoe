@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-radio — démo</title>
+<link rel="stylesheet" href="../../tools/z-motion/z-motion.css">
+<link rel="stylesheet" href="./z-radio.css">
+<style>
+  body { background:var(--z-page); color:var(--z-ink); font-family:var(--z-font); padding:2.5rem; max-width:760px; margin:auto; }
+  h1 { font-size:1.2rem; } .lead { color:var(--z-ink-soft); font-size:.9rem; margin:.2rem 0 1.6rem; }
+  .stack { display:flex; flex-direction:column; gap:1rem; align-items:flex-start; margin-bottom:1.6rem; }
+  .note { color:var(--z-ink-soft); font-size:.82rem; margin-top:.4rem; }
+</style>
+
+<h1><code>z-radio</code></h1>
+<p class="lead">Anatomie <b>marker + label</b>, comme la case — mais <b>ronde</b>, et elle ne s'éteint <b>jamais</b> toute seule : re-clique la même, il ne se passe rien. Change la peau en haut à droite — tout suit.</p>
+
+<div class="stack">
+  <z-radio value="fr">Français</z-radio>
+  <z-radio value="en" current>English</z-radio>
+  <z-radio value="es" error>Español (erreur)</z-radio>
+  <z-radio value="it" success>Italiano (validée)</z-radio>
+  <z-radio value="de" disabled>Deutsch (indisponible)</z-radio>
+  <z-radio value="pt" current disabled>Português (choisie, verrouillée)</z-radio>
+</div>
+
+<p class="note">Seules, ces radios s'ignorent : chacune s'allume dans son coin. L'exclusivité et les flèches arrivent avec <code>&lt;z-radio-group&gt;</code>.</p>
+
+<script type="module">
+  import "../../examples/skin-switch.js";
+  import "./z-radio.js";
+</script>
+</html>

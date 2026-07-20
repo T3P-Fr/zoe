@@ -1,0 +1,113 @@
+/*
+	============================================================
+	z-radio.css — le rendu de z-radio (anatomie marker + label)
+	------------------------------------------------------------
+	Même grammaire que z-checkbox — `--z-radio--{part}__{prop}` — et le MÊME geste
+	(le point zoome du fond), mais rond : c'est la forme, pas le mouvement, qui dit
+	« un seul choix ». Défauts qui CONSOMMENT la peau (var(--z-accent), --z-line…)
+	→ marche sur HighTech ET Claude sans refonte. Aucune balise injectée : le marker
+	est un `::before`.
+	Requiert : une peau (tokens) + tools/z-motion (@keyframes pop).
+	Styleguide 2.0
+	============================================================
+*/
+
+/*
+	z-radio — le sujet
+	Une ligne cliquable : le marker (::before) à gauche, TON label (light DOM) à droite.
+	Styleguide 2.1
+*/
+z-radio {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--z-radio__gap, var(--z-gap, .55em));
+	color: var(--z-ink);
+	font: inherit;
+	font-family: var(--z-font);
+	cursor: pointer;
+	user-select: none;
+	touch-action: manipulation;
+	vertical-align: middle;
+	outline: none;
+	-webkit-tap-highlight-color: transparent;
+	transition: color var(--z-dur) var(--z-ease), text-shadow var(--z-dur) var(--z-ease);
+}
+
+/*
+	z-radio — le marker (le rond)
+	UN seul ::before, comme la case : la bordure = le contour, et un point central
+	(background-image) dont la taille passe de 0 à 50 % au choix → « il zoome du fond ».
+	Le rayon est le SEUL écart avec z-checkbox : 50 % = rond, et l'œil sait aussitôt
+	qu'un seul choix est possible.
+	Styleguide 2.2
+*/
+z-radio::before {
+	content: "";
+	flex: 0 0 auto;
+	box-sizing: border-box;
+	width: var(--z-radio--marker__size, 1.15em);
+	height: var(--z-radio--marker__size, 1.15em);
+	border: var(--z-border-width, 1.5px) solid var(--z-radio--marker__border, var(--z-line));
+	border-radius: var(--z-radio--marker__radius, 50%);
+	background-color: var(--z-radio--marker__background, var(--z-surface));
+	/* closest-side : sans lui, le cercle du dégradé vise le COIN de la boîte et déborde
+	   → le « point » se rendrait carré. Le rayon doit s'arrêter au bord le plus proche. */
+	background-image: radial-gradient(circle closest-side, var(--z-radio--dot__color, #fff) 100%, transparent 100%);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 0% 0%;                       /* le point, invisible au repos */
+	transition:
+		background-color var(--z-dur) var(--z-ease),
+		border-color var(--z-dur) var(--z-ease),
+		box-shadow var(--z-dur) var(--z-ease),
+		transform var(--z-dur) var(--z-ease-spring),
+		background-size var(--z-dur-select, .26s) var(--z-ease-spring);
+}
+
+/*
+	z-radio — interaction (héritée de z-element)
+	Styleguide 2.3
+*/
+z-radio:state(over)::before  { border-color: var(--z-accent); }
+z-radio:state(press)::before { transform: scale(.9); }
+z-radio:state(focus)::before { box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 35%, transparent); }
+
+/*
+	z-radio — choisie (current)
+	Le rond se remplit d'accent, le point ZOOME du fond (background-size 0→50 %, ressort).
+	Le label s'épaissit sans saut de pixel (faux-bold text-shadow) ; une peau peut
+	préférer un vrai poids via --z-radio--label__weight.
+	Styleguide 2.4
+*/
+z-radio:state(current)::before {
+	border-color: var(--z-radio--marker__border-checked, var(--z-accent));
+	background-color: var(--z-radio--marker__background-checked, var(--z-accent));
+	background-size: 50% 50%;
+}
+z-radio:state(current) {
+	font-weight: var(--z-radio--label__weight, inherit);
+	text-shadow: var(--z-radio--label__emphasis, .012em 0 0 currentColor, -.012em 0 0 currentColor);
+}
+/* select : le geste posé par le socle quand current s'allume → un pop du rond. */
+z-radio:state(select)::before { animation: pop var(--z-dur-select, .26s) var(--z-ease-spring); }
+
+/*
+	z-radio — statut métier
+	Styleguide 2.5
+*/
+z-radio:state(disabled) {
+	color: var(--z-disabled);
+	cursor: not-allowed;
+}
+z-radio:state(disabled)::before {
+	border-color: var(--z-disabled);
+	background-color: var(--z-surface-sunken);
+}
+/* choisie ET verrouillée : le choix RESTE lisible — accent ATTÉNUÉ (mix accent + fond)
+   plutôt que le gris de disabled, sinon current+disabled laverait la sélection. */
+z-radio:state(current):state(disabled)::before {
+	border-color: var(--z-disabled);
+	background-color: color-mix(in srgb, var(--z-accent) 32%, var(--z-surface-sunken));
+}
+z-radio:state(error)::before   { border-color: var(--z-danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-danger) 22%, transparent); }
+z-radio:state(success)::before { border-color: var(--z-success); }

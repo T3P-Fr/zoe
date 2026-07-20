@@ -74,7 +74,7 @@ live, params temps réel). Ajouter un composant = son dossier → il apparaît p
 
 ```
 core/z-element/       — la base
-tools/z-*/            — z-state · z-motion · z-stager · z-grid · z-channel
+tools/z-*/             — z-motion · z-stager · z-grid · z-channel
 components/z-*/        — .js · .css · .doc.md · .demo.html
 skins/*/               — .css · .doc.md
 scripts/z-manifest/    — l'outil (code → doc + autocomplétion + IA)

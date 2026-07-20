@@ -1,0 +1,48 @@
+/*
+	============================================================
+	z-radio-group.css — la mise en rang du choix unique
+	------------------------------------------------------------
+	Le groupe ne PEINT rien de la radio : il l'aligne, et il descend son verrou. Deux
+	tokens suffisent (`--z-radio-group__direction` / `__gap`) ; tout le reste du look
+	appartient à z-radio. Aucune balise injectée.
+	Requiert : une peau (tokens) + components/z-radio/z-radio.css.
+	Styleguide 2.6
+	============================================================
+*/
+
+/*
+	z-radio-group — le sujet
+	Une pile de choix (colonne par défaut, `row` en une variable — l'auteur ne réécrit
+	pas un flex à la main pour ça).
+	Styleguide 2.7
+*/
+z-radio-group {
+	display: inline-flex;
+	flex-direction: var(--z-radio-group__direction, column);
+	flex-wrap: wrap;
+	gap: var(--z-radio-group__gap, var(--z-gap, .55em));
+	align-items: var(--z-radio-group__align, flex-start);
+	font: inherit;
+	font-family: var(--z-font);
+	outline: none;
+}
+
+/*
+	z-radio-group — verrouillé / en statut
+	Le verrou du groupe DESCEND sur ses radios (elles ne le connaissent pas — c'est le
+	groupe qui sait qu'il enferme un choix). Scopé aux radios DIRECTES : un groupe
+	imbriqué garde les siennes.
+	Styleguide 2.8
+*/
+z-radio-group:state(disabled) > z-radio {
+	pointer-events: none;
+	color: var(--z-disabled);
+}
+z-radio-group:state(disabled) > z-radio::before {
+	border-color: var(--z-disabled);
+	background-color: var(--z-surface-sunken);
+}
+/* L'erreur se pose sur le GROUPE (« choisis-en un »), pas sur une radio en particulier :
+   c'est le choix qui manque, pas une case qui serait fausse. */
+z-radio-group:state(error) > z-radio::before   { border-color: var(--z-danger); }
+z-radio-group:state(success) > z-radio:state(current)::before { border-color: var(--z-success); }
