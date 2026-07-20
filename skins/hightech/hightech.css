@@ -9,8 +9,12 @@
 	Si la source manque, on s'arrête et on demande — on ne redessine pas de mémoire.
 
 	LA CHARTE — cinq lois, écrites en INTERDITS (le reste en découle) :
-	  1. ANGLE 0. Rien n'est arrondi. Le rayon n'est pas un réglage, c'est l'ADN.
+	  1. L'ANGLE EST CASSÉ, JAMAIS ARRONDI. 2px, pas un de plus : de quoi adoucir
+	     l'arête, pas de quoi lire « bouton rond ». Rien ici n'est une pastille.
 	     (Seul le rond d'une radio l'est : c'est une FORME de sens, pas une décoration.)
+	     ⚠ RÉVISÉ le 2026-07-20 par Christophe (« légèrement arrondi ») — la source dit
+	     0px. C'est un écart ASSUMÉ à la source, pas une dérive de mémoire : la loi des
+	     peaux interdit de redessiner sans lui, pas de décider avec lui.
 	  2. LE FILET, JAMAIS L'APLAT. Tout se délimite par un trait de 1px. Une surface
 	     colorée est un événement, pas un fond.
 	  3. UNE SEULE OMBRE : le halo. Zéro ombre portée, zéro élévation. Le halo de focus
@@ -58,14 +62,20 @@
 	--z-ink-25: #babbb4;
 	--z-ink-50: #858381;
 	--z-ink-75: #4f4f4d;
-	--z-ink-100: #1a1a1a;
 
-	/* Rôles — dérivés de l'échelle, jamais des valeurs neuves. Les panneaux sont
-	   BLANCS sur le papier greige : c'est ce contraste qui fait « planche ». */
+	/* L'encre la plus sombre n'est PAS un noir : #2e2e2c, un gris très foncé légèrement
+	   chaud. Le noir pur sur fond clair vibre et fatigue — et une planche technique
+	   s'écrit à l'encre, pas au marqueur. (2026-07-20 : « le texte pas full noir ».) */
+	--z-ink-100: #2e2e2c;
+
+	/* Rôles — dérivés de l'échelle, jamais des valeurs neuves. Les panneaux se détachent
+	   du papier greige : c'est ce contraste qui fait « planche ». Ils ne sont plus BLANCS
+	   mais très légèrement grisés (2026-07-20 : « fond un peu grisé ») — le blanc pur
+	   éblouissait à côté du papier et écrasait les filets. */
 	--z-page: var(--z-ink-00);
-	--z-surface: #ffffff;
-	--z-surface-raised: #ffffff;
-	--z-surface-sunken: #f7f5f2;
+	--z-surface: #f8f7f4;
+	--z-surface-raised: #fcfbf9;      /* ce qui remonte est plus clair, pas plus blanc */
+	--z-surface-sunken: #eeece7;
 	--z-ink: var(--z-ink-100);
 	--z-ink-soft: var(--z-ink-50);
 	--z-line: #e0ddd5;                /* le filet ordinaire — celui de la source */
@@ -112,15 +122,23 @@
 		(padding, gap, marqueur, icône : ils sont en `em`).
 		HighTech resserre : une planche d'ingénieur est dense, les écarts y sont courts.
 	*/
+
+	/* Le facteur de BASE : tout HighTech rend un cran plus petit que la taille du texte
+	   qui l'entoure. C'est ce qui donne l'échelle d'une planche technique — dense, sans
+	   qu'on ait à écrire `size` nulle part. */
+	--z-scale-base: .9;
+
 	--z-scale-xs: .85;
 	--z-scale-s: .92;
 	--z-scale-m: 1;
 	--z-scale-l: 1.15;
 	--z-scale-xl: 1.4;
 
-	/* FORME — angle 0 (loi 1). Le filet fait 1px, toujours (loi 2). */
-	--z-radius: 0px;
-	--z-radius-pill: 0px;             /* même les « pills » sont carrées ici */
+	/* FORME — l'angle est CASSÉ, pas arrondi (loi 1, révisée le 2026-07-20 par
+	   Christophe : « légèrement arrondi »). 2px : assez pour adoucir l'arête, trop peu
+	   pour qu'on lise « bouton rond ». Le filet fait 1px, toujours (loi 2). */
+	--z-radius: 2px;
+	--z-radius-pill: 2px;             /* même les « pills » restent des rectangles ici */
 	--z-border-width: 1px;
 
 	/* Espacement par facteurs — dense, comme un tableau de bord. */
@@ -170,11 +188,9 @@
 	   non en dur : si l'accent de la peau change, la signature suit. */
 	--z-contact-color: var(--z-accent);
 
-	/* Le remplissage de l'anneau, du rond de départ jusqu'au rectangle d'arrivée.
-	   TRANSLUCIDE (18 %) : le composant reste lisible pendant que la couleur passe
-	   dessus. Monter au-delà de ~25 % le masque à l'instant où on le regarde ; mettre 0
-	   (ou retirer la ligne) revient au contour nu. */
-	--z-contact-fill: color-mix(in srgb, var(--z-accent) 18%, transparent);
+	/* PAS de remplissage — essayé le 2026-07-20, retiré aussitôt : la tache bleue
+	   « sortait d'on ne sait où » (Christophe). Le contour seul suffit et respecte la
+	   loi 2. La recette expose `--z-contact-fill` si une autre peau en veut un. */
 
 	color-scheme: light;
 }

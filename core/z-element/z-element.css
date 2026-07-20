@@ -44,11 +44,20 @@
 	doit être gros aussi) ; passer en `rem` au cas par cas si un composant doit garder sa
 	taille absolue.
 */
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="xs"] { font-size: calc(1em * var(--z-scale-xs, .8)); }
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="s"]  { font-size: calc(1em * var(--z-scale-s, .9)); }
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="m"]  { font-size: calc(1em * var(--z-scale-m, 1)); }
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="l"]  { font-size: calc(1em * var(--z-scale-l, 1.2)); }
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="xl"] { font-size: calc(1em * var(--z-scale-xl, 1.6)); }
+/* Le cran de repos : sans attribut `size`, un composant vaut le facteur de BASE de la
+   peau. C'est le réglage d'ensemble — une peau qui se veut dense pose .9 et tout
+   rapetisse d'un coup, sans qu'on touche à un seul composant. */
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group) {
+	font-size: calc(1em * var(--z-scale-base, 1));
+}
+
+/* Les crans multiplient la base : régler l'ensemble et régler un cran restent deux
+   gestes indépendants. */
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="xs"] { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-xs, .8)); }
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="s"]  { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-s, .9)); }
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="m"]  { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-m, 1)); }
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="l"]  { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-l, 1.2)); }
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="xl"] { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-xl, 1.6)); }
 
 /*
 	TONE — l'importance, pas l'apparence
