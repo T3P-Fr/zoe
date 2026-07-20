@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zoé — l'atelier</title>
+
+<!--
+	index.html — LA PORTE D'ENTRÉE de l'atelier Zoé.
+	Une seule URL à retenir : http://localhost:5173/
+	Toutes les pages du projet sont ici, servies (jamais en file://, sinon les
+	modules ES sont bloqués par le navigateur et les pages paraissent mortes).
+	Volontairement SANS dépendance : cette page doit s'afficher même si tout
+	le reste est cassé — c'est le point de secours.
+-->
+
+<style>
+	:root {
+		color-scheme: light dark;
+		--bg: #f6f0e6;
+		--ink: #241d17;
+		--soft: #7a6a58;
+		--line: #e0d5c3;
+		--card: #fffdf9;
+		--accent: #c4502a;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:root {
+			--bg: #16130f;
+			--ink: #f3ece0;
+			--soft: #a2917c;
+			--line: #322a22;
+			--card: #1e1a15;
+			--accent: #e0714a;
+		}
+	}
+
+	body {
+		margin: 0;
+		padding: 3rem 1.5rem 5rem;
+		background: var(--bg);
+		color: var(--ink);
+		font: 15px/1.6 ui-sans-serif, system-ui, sans-serif;
+	}
+
+	main {
+		max-width: 720px;
+		margin: auto;
+	}
+
+	h1 {
+		margin: 0;
+		font-size: 1.5rem;
+		letter-spacing: -.01em;
+	}
+
+	.lead {
+		margin: .4rem 0 2.5rem;
+		color: var(--soft);
+	}
+
+	h2 {
+		margin: 2.2rem 0 .8rem;
+		font-size: .75rem;
+		font-weight: 700;
+		letter-spacing: .12em;
+		text-transform: uppercase;
+		color: var(--soft);
+	}
+
+	/* Une carte = une destination. Cible large : on clique sans viser. */
+	a.card {
+		display: flex;
+		align-items: baseline;
+		gap: .8rem;
+		padding: .85rem 1rem;
+		border: 1px solid var(--line);
+		border-radius: 10px;
+		margin-bottom: .5rem;
+		background: var(--card);
+		color: inherit;
+		text-decoration: none;
+		transition: border-color .18s, transform .18s;
+	}
+
+	a.card:hover {
+		border-color: var(--accent);
+		transform: translateX(3px);
+	}
+
+	a.card b {
+		font: 600 14px/1 ui-monospace, monospace;
+		color: var(--accent);
+	}
+
+	a.card span {
+		color: var(--soft);
+		font-size: .88rem;
+	}
+
+	/* Le garde-fou file:// — voir le script en bas. */
+	#filewarn {
+		display: none;
+		padding: 1rem 1.2rem;
+		border-radius: 10px;
+		margin-bottom: 2rem;
+		background: #7a1d0c;
+		color: #fff;
+	}
+
+	#filewarn code {
+		background: rgba(0, 0, 0, .35);
+		padding: .15em .45em;
+		border-radius: 4px;
+	}
+</style>
+
+<main>
+	<h1>Zoé — l'atelier</h1>
+	<p class="lead">Toutes les pages du projet. Une seule URL à retenir.</p>
+
+	<div id="filewarn">
+		<b>Cette page est ouverte en <code>file://</code>.</b><br>
+		Le navigateur bloque les modules ES : les composants ne se définiront pas et
+		les pages paraîtront mortes. Lance <code>node scripts/serve.mjs 5173</code>
+		puis ouvre <code>http://localhost:5173/</code>.
+	</div>
+
+	<h2>La doc</h2>
+	<a class="card" href="./docs/index.html"><b>docs</b><span>la doc officielle, générée depuis le code (EN / FR / ES)</span></a>
+
+	<h2>Les composants — démos vivantes</h2>
+	<a class="card" href="./components/z-button/z-button.demo.html"><b>z-button</b><span>forme courte et forme en calques, tous les états</span></a>
+	<a class="card" href="./components/z-checkbox/z-checkbox.demo.html"><b>z-checkbox</b><span>deux écritures, même rendu</span></a>
+	<a class="card" href="./components/z-radio/z-radio.demo.html"><b>z-radio</b><span>le bouton radio</span></a>
+	<a class="card" href="./components/z-radio-group/z-radio-group.demo.html"><b>z-radio-group</b><span>le groupe et sa sélection</span></a>
+
+	<h2>Les tools</h2>
+	<a class="card" href="./tools/z-contact/z-contact.check.html"><b>z-contact</b><span>l'effet de clic et son sillage</span></a>
+
+	<h2>Les planches de contrôle</h2>
+	<a class="card" href="./components/z-radio-group/z-radio-group.check.html"><b>z-radio-group.check</b><span>vérification visuelle</span></a>
+</main>
+
+<!--
+	Script CLASSIQUE (surtout pas `type="module"`) : c'est le seul qui s'exécute
+	encore quand la page est ouverte en file:// — donc le seul capable de prévenir.
+-->
+<script>
+	if (location.protocol === "file:") document.getElementById("filewarn").style.display = "block";
+</script>
+</html>

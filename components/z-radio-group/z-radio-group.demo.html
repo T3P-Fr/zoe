@@ -2,6 +2,22 @@
 <html lang="fr">
 <meta charset="utf-8">
 <title>z-radio-group — démo</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis passe par <code>http://localhost:5173/</code>.</div>'
+	);
+</script>
+
 <link rel="stylesheet" href="../../tools/z-motion/z-motion.css">
 <link rel="stylesheet" href="../../tools/z-contact/z-contact.css">
 <link rel="stylesheet" href="../z-radio/z-radio.css">
@@ -20,7 +36,7 @@
 </style>
 
 <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
-<z-contact fx="morph"></z-contact>
+<z-contact></z-contact>
 
 <h1><code>z-radio-group</code></h1>
 <p class="lead">Le niveau <b>groupe</b> : exclusivité, flèches ← ↑ → ↓ (naviguer <i>c'est</i> choisir), <b>une seule</b> tabulation pour tout le groupe, une valeur. Change la peau en haut à droite.</p>
