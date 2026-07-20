@@ -12,12 +12,7 @@
         },
         {
           "name": "loading",
-          "description": "Status: loading.",
-          "values": []
-        },
-        {
-          "name": "busy",
-          "description": "Status: busy / processing.",
+          "description": "Status: loading / processing.",
           "values": []
         },
         {
@@ -53,7 +48,7 @@
       "attributes": [
         {
           "name": "fx",
-          "description": "The impact effect: morph (a dot born under the cursor dies taking the component's shape) · implode · explode · none."
+          "description": "Kill switch: fx=\"none\" disables the effect on this page. WHICH effect is shown is chosen by the skin (it imports a recipe from effects/), never by the page."
         },
         {
           "name": "disabled",
@@ -100,11 +95,6 @@
         {
           "name": "loading",
           "description": "Loading (skeleton sweep, not clickable).",
-          "values": []
-        },
-        {
-          "name": "busy",
-          "description": "Busy (pulse).",
           "values": []
         },
         {

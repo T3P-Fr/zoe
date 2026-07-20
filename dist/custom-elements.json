@@ -24,14 +24,7 @@
               "type": {
                 "text": "boolean"
               },
-              "description": "Status: loading."
-            },
-            {
-              "name": "busy",
-              "type": {
-                "text": "boolean"
-              },
-              "description": "Status: busy / processing."
+              "description": "Status: loading / processing."
             },
             {
               "name": "disabled",
@@ -112,9 +105,6 @@
               "name": "loading"
             },
             {
-              "name": "busy"
-            },
-            {
               "name": "disabled"
             },
             {
@@ -184,7 +174,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "The impact effect: morph (a dot born under the cursor dies taking the component's shape) · implode · explode · none."
+              "description": "Kill switch: fx=\"none\" disables the effect on this page. WHICH effect is shown is chosen by the skin (it imports a recipe from effects/), never by the page."
             },
             {
               "name": "disabled",
@@ -322,9 +312,6 @@
               "name": "loading"
             },
             {
-              "name": "busy"
-            },
-            {
               "name": "disabled"
             },
             {
@@ -369,13 +356,6 @@
                 "text": "boolean"
               },
               "description": "Loading (skeleton sweep, not clickable)."
-            },
-            {
-              "name": "busy",
-              "type": {
-                "text": "boolean"
-              },
-              "description": "Busy (pulse)."
             },
             {
               "name": "error",
@@ -438,9 +418,6 @@
             },
             {
               "name": "loading"
-            },
-            {
-              "name": "busy"
             },
             {
               "name": "disabled"
@@ -562,9 +539,6 @@
               "name": "loading"
             },
             {
-              "name": "busy"
-            },
-            {
               "name": "disabled"
             },
             {
@@ -684,9 +658,6 @@
             },
             {
               "name": "loading"
-            },
-            {
-              "name": "busy"
             },
             {
               "name": "disabled"

@@ -2,9 +2,9 @@
 
 ## <z-element> (core)
 The living base: carries interaction states as :state() and emits z-state.
-Attributes: current (boolean), loading (boolean), busy (boolean), disabled (boolean), error (boolean), success (boolean)
+Attributes: current (boolean), loading (boolean), disabled (boolean), error (boolean), success (boolean)
 Events: z-state
-States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, busy, disabled, error, success
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
 
 ## <z-layer> (core)
 A layer: one piece of a component, carrying one role (part). Painted by the skin, placed by the component.
@@ -19,22 +19,22 @@ Events: zoe:contact
 A checkbox — inherits all z-element states, marker + label anatomy, painted by the skin.
 Attributes: current (boolean), disabled (boolean), error (boolean), success (boolean)
 Events: change, z-state
-States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, busy, disabled, error, success
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
 
 ## <z-button> (components)
 A button — inherits all z-element states, skinnable by themes.
-Attributes: disabled (boolean), loading (boolean), busy (boolean), error (boolean), success (boolean)
+Attributes: disabled (boolean), loading (boolean), error (boolean), success (boolean)
 Events: z-state
-States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, busy, disabled, error, success
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
 
 ## <z-radio> (components)
 A radio button — z-element states, marker + label anatomy, selects but never unselects itself.
 Attributes: value (string), current (boolean), disabled (boolean), error (boolean), success (boolean)
 Events: change, z-state
-States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, busy, disabled, error, success
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
 
 ## <z-radio-group> (components)
 A group of z-radio: single choice, arrow-key navigation, roving tabindex, one value.
 Attributes: value (string), disabled (boolean), error (boolean), success (boolean)
 Events: change, z-state
-States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, busy, disabled, error, success
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success

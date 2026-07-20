@@ -3,7 +3,7 @@
 	z-button — un bouton, bâti SUR z-element (Chemin A)
 	------------------------------------------------------------
 	`ZButton extends ZElement` : il hérite de TOUTE la palette d'états (over, press,
-	release, releaseOut, focus, loading, busy, error, success…) sans en écrire une
+	release, releaseOut, focus, loading, error, success…) sans en écrire une
 	ligne. Il n'ajoute que sa sémantique de bouton (rôle ARIA, focusabilité) et peint
 	le sien dans z-button.css. Structure figée → skinnable par les peaux.
 
@@ -29,7 +29,6 @@ export class ZButton extends ZElement {
 		attributes: [
 			{ name: "disabled", type: "boolean", description: { en: "Disabled: blocks interaction.", fr: "Désactivé : coupe l'interaction.", es: "Deshabilitado: bloquea la interacción." } },
 			{ name: "loading", type: "boolean", description: { en: "Loading (skeleton sweep, not clickable).", fr: "En chargement (balayage skeleton, non cliquable).", es: "Cargando (barrido skeleton, no clicable)." } },
-			{ name: "busy", type: "boolean", description: { en: "Busy (pulse).", fr: "Occupé (pulse).", es: "Ocupado (pulso)." } },
 			{ name: "error", type: "boolean", description: { en: "Error (danger border + shake).", fr: "En erreur (liseré danger + secousse).", es: "Error (borde de peligro + sacudida)." } },
 			{ name: "success", type: "boolean", description: { en: "Valid (success border).", fr: "Validé (liseré succès).", es: "Válido (borde de éxito)." } }
 		],

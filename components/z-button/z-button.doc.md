@@ -33,7 +33,7 @@ même élément — donc le même mouvement. Les deux formes lisent les mêmes t
 ## États (hérités de z-element)
 
 Interaction : `over` · `press` · `release` / `releaseOut` · `focus`.
-Statut (par attribut) : `loading` (balayage skeleton) · `busy` (pulse) · `disabled` ·
+Statut (par attribut) : `loading` (balayage skeleton) · `disabled` ·
 `error` (secousse) · `success`.
 
 ```js

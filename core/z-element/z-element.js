@@ -7,19 +7,25 @@
 	de deux façons :
 	  · comme BASE : `class ZButton extends ZElement { … }` → le composant hérite de
 	    TOUS nos états, gratuitement, et n'a plus qu'à peindre le sien (son CSS) ;
-	  · comme TOOL (voir tools/z-state) : `<z-state>` décore un élément quelconque.
-	  Même moteur, deux usages — « z-state, dans son concept, EST le z-element ».
+	  · comme ENVELOPPE : `<z-element><button>…</button></z-element>` → ton propre
+	    élément hérite des états, tu écris son CSS. (C'est ce qu'on appelait
+	    « z-state » : c'était le même moteur — un seul nom désormais.)
 
 	NOS états — la palette normée :
 	  · interaction (transitoire) : over · press · release · releaseOut · drag · focus
-	  · cycle de vie (transitoire): enter · exit
+	  · cycle de vie (transitoire): enter (posé par le socle) · exit (posé par QUI RETIRE)
 	  · sélection                 : current (durable) · select · unselect (gestes)
-	  · statut métier (durable)   : loading · busy · disabled · error · success
+	  · statut métier (durable)   : loading · disabled · error · success
 	  · repos                     : default (posé tant qu'aucun statut n'est actif)
+
+	`exit` n'est PAS posé par le socle : quand l'élément part, disconnectedCallback
+	arrive trop tard pour animer. C'est celui qui RETIRE (tools/z-stager) qui fait
+	`await el.play("exit")` puis retire le nœud. Le socle ne connaît pas z-stager :
+	il rend seulement `play()` attendable.
 
 	Deux mécaniques :
 	  – TRANSITOIRE : posé par les événements ou play(word), retiré tout seul ;
-	  – DURABLE : porté par un ATTRIBUT (<z-element busy>, el.setState("busy")) et
+	  – DURABLE : porté par un ATTRIBUT (<z-element loading>, el.setState("loading")) et
 	    reflété en :state(). L'attribut est la source de vérité.
 
 	La doc narrative est dans z-element.doc.md ; l'API machine dans `static api`
@@ -33,11 +39,13 @@
 const DRAG_THRESHOLD = 4;
 
 /* Les états DURABLES : pilotables par attribut, reflétés en :state(). */
-const DURABLE = ["current", "loading", "busy", "disabled", "error", "success"];
+const DURABLE = ["current", "loading", "disabled", "error", "success"];
 
 /* Les STATUTS métier exclusifs du repos : tant qu'aucun n'est posé, l'élément est
-   dans son état par DÉFAUT (nommé `default`, adressable comme les autres). */
-const STATUS = ["loading", "busy", "disabled", "error", "success"];
+   dans son état par DÉFAUT (nommé `default`, adressable comme les autres).
+   Pas de `busy` : il doublonnait `loading` (même sens, même ARIA) et deux mots pour
+   un seul visuel finissent toujours par diverger. Un seul mot : loading. */
+const STATUS = ["loading", "disabled", "error", "success"];
 
 /* Cache des états déclarés-en-CSS. Au niveau MODULE (pas un `static #privé` : un
    membre privé statique n'est pas lisible quand `this` est une sous-classe — le
@@ -47,7 +55,6 @@ let discoveredCache = null;
 /* L'ARIA que chaque statut reflète (quand il s'applique). */
 const STATUS_ARIA = {
 	loading: "aria-busy",
-	busy: "aria-busy",
 	disabled: "aria-disabled",
 	error: "aria-invalid"
 	// success : pas d'ARIA standard — c'est un retour visuel.
@@ -67,8 +74,7 @@ export class ZElement extends HTMLElement {
 		},
 		attributes: [
 			{ name: "current", type: "boolean", description: { en: "Durable selection (checked, active tab) — set by a selectable component.", fr: "Sélection durable (coché, onglet actif) — posée par un composant sélectionnable.", es: "Selección duradera (marcado, pestaña activa) — puesta por un componente seleccionable." } },
-			{ name: "loading", type: "boolean", description: { en: "Status: loading.", fr: "Statut : en chargement.", es: "Estado: cargando." } },
-			{ name: "busy", type: "boolean", description: { en: "Status: busy / processing.", fr: "Statut : occupé / traitement.", es: "Estado: ocupado / procesando." } },
+			{ name: "loading", type: "boolean", description: { en: "Status: loading / processing.", fr: "Statut : en chargement / traitement.", es: "Estado: cargando / procesando." } },
 			{ name: "disabled", type: "boolean", description: { en: "Disabled: blocks interaction.", fr: "Désactivé : coupe l'interaction.", es: "Deshabilitado: bloquea la interacción." } },
 			{ name: "error", type: "boolean", description: { en: "Status: error.", fr: "Statut : en erreur.", es: "Estado: error." } },
 			{ name: "success", type: "boolean", description: { en: "Status: valid / done.", fr: "Statut : validé.", es: "Estado: válido / hecho." } }
@@ -79,7 +85,7 @@ export class ZElement extends HTMLElement {
 		states: [
 			"default", "over", "press", "release", "releaseOut", "drag", "focus",
 			"enter", "exit", "current", "select", "unselect",
-			"loading", "busy", "disabled", "error", "success"
+			"loading", "disabled", "error", "success"
 		],
 		cssVars: [
 			{ name: "--z-dur-enter", description: { en: "Duration of the transient `enter` state (read from the cascade).", fr: "Durée de l'état transitoire `enter` (lue dans la cascade).", es: "Duración del estado transitorio `enter` (leída en la cascada)." } },
@@ -151,7 +157,7 @@ export class ZElement extends HTMLElement {
 
 	/*
 		Un attribut durable a changé → on reflète l'état + l'ARIA. Pont DÉCLARATIF :
-		<z-element busy> pose :state(busy), tout comme el.setState("busy").
+		<z-element loading> pose :state(loading), tout comme el.setState("loading").
 	*/
 	attributeChangedCallback(name, _old, value) {
 		const on = value !== null;
@@ -201,9 +207,16 @@ export class ZElement extends HTMLElement {
 		this.setState(name, !this.#internals.states.has(name));
 	}
 
-	/* Rejoue un état TRANSITOIRE à la demande (enter, exit, release…). @param {string} word */
+	/*
+		Joue un état TRANSITOIRE à la demande (enter, exit, release…) et REND LA MAIN
+		quand il est retiré. C'est ce qui rend `exit` utilisable : celui qui retire
+		l'élément (tools/z-stager) fait `await el.play("exit")` PUIS `el.remove()` —
+		sinon la sortie ne peut pas s'animer (disconnectedCallback arrive trop tard).
+		@param {string} word
+		@returns {Promise<void>} résolue à la fin de l'état (durée --z-dur-<mot>)
+	*/
 	play(word) {
-		this.#flash(word);
+		return this.#flash(word);
 	}
 
 	/* Désactivé ? (coupe l'interaction). @returns {boolean} */
@@ -226,10 +239,13 @@ export class ZElement extends HTMLElement {
 	}
 
 	/* Joue un état TRANSITOIRE : posé puis retiré après `ms` (ou la durée lue dans la
-	   cascade --z-dur-<word>). Une seule horloge pour l'anim ET le retrait du mot. */
+	   cascade --z-dur-<word>). Une seule horloge pour l'anim ET le retrait du mot.
+	   Rend une promesse : les appels internes l'ignorent, `play()` la propage. */
 	#flash(word, ms) {
 		this.#set(word, true);
-		setTimeout(() => this.#set(word, false), ms ?? this.#dur(word, 300));
+		return new Promise((done) => {
+			setTimeout(() => { this.#set(word, false); done(); }, ms ?? this.#dur(word, 300));
+		});
 	}
 
 	/* Émet `z-state` avec la liste COMPLÈTE des états actifs + ce qui a changé. */

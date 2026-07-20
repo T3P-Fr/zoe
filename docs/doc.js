@@ -17,7 +17,7 @@ const ROOT = new URL("../", import.meta.url).href;   /* …/zoé/ */
 
 /* Les deux familles d'états, testées différemment (les noms d'états ne se traduisent pas). */
 const MOUSE = ["over", "press", "release", "releaseOut", "drag", "focus"];       /* au geste */
-const UTILITY = ["current", "loading", "busy", "disabled", "error", "success"]; /* au clic */
+const UTILITY = ["current", "loading", "disabled", "error", "success"];        /* au clic */
 
 /* Langue courante + dictionnaire de l'UI de la doc (l'API vit dans les static api). */
 let LANG = new URLSearchParams(location.search).get("lang") || localStorage.getItem("zoe-lang") || "en";

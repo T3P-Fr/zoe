@@ -50,7 +50,7 @@ Schéma : `core/z-layer/z-layer.anatomie.txt`.
 
 **Les états** (le cœur de z-element)
 - cycle : `default ⇄ over → press → release / releaseOut` · `drag` · `focus`
-- durable : `current` (sélection) · statut métier (`loading/busy/disabled/error/success`)
+- durable : `current` (sélection) · statut métier (`loading/disabled/error/success`)
 - combinables (`:state(a):state(b)`), imbricables (scopés), séquençables (`from-<x>`),
   déclarables en CSS (`@property --z-state__x`).
 
