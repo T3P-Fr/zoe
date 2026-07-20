@@ -68,34 +68,49 @@
 		color: var(--soft);
 	}
 
+	/*
+		Les destinations se rangent de GAUCHE À DROITE et passent à la ligne toutes
+		seules. En colonne, une par ligne, la page deviendrait un couloir sans fin le jour
+		où il y aura quarante pages — et l'œil devrait tout parcourir pour en trouver une.
+		`auto-fill` + `minmax` : le navigateur met autant de tuiles par ligne que la
+		largeur le permet, sans qu'on ait à décider d'un nombre de colonnes.
+	*/
+	.cartes {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+		gap: .55rem;
+	}
+
 	/* Une carte = une destination. Cible large : on clique sans viser. */
 	a.card {
 		display: flex;
-		align-items: baseline;
-		gap: .8rem;
-		padding: .85rem 1rem;
+		flex-direction: column;
+		gap: .25rem;
+		padding: .7rem .85rem;
 		border: 1px solid var(--line);
 		border-radius: 10px;
-		margin-bottom: .5rem;
 		background: var(--card);
 		color: inherit;
 		text-decoration: none;
 		transition: border-color .18s, transform .18s;
 	}
 
+	/* Le survol soulève au lieu de décaler : dans une grille, un décalage latéral
+	   bouscule visuellement les voisines de la même ligne. */
 	a.card:hover {
 		border-color: var(--accent);
-		transform: translateX(3px);
+		transform: translateY(-2px);
 	}
 
 	a.card b {
-		font: 600 14px/1 ui-monospace, monospace;
+		font: 600 13px/1.3 ui-monospace, monospace;
 		color: var(--accent);
 	}
 
 	a.card span {
 		color: var(--soft);
-		font-size: .88rem;
+		font-size: .8rem;
+		line-height: 1.35;
 	}
 
 	/* Le garde-fou file:// — voir le script en bas. */
@@ -127,22 +142,32 @@
 	</div>
 
 	<h2>La doc</h2>
-	<a class="card" href="./docs/index.html"><b>docs</b><span>la doc officielle, générée depuis le code (EN / FR / ES)</span></a>
+	<div class="cartes">
+		<a class="card" href="./docs/index.html"><b>docs</b><span>la doc officielle, générée depuis le code (EN / FR / ES)</span></a>
+	</div>
 
 	<h2>Les composants — démos vivantes</h2>
-	<a class="card" href="./components/z-button/z-button.demo.html"><b>z-button</b><span>forme courte et forme en calques, tous les états</span></a>
-	<a class="card" href="./components/z-checkbox/z-checkbox.demo.html"><b>z-checkbox</b><span>deux écritures, même rendu</span></a>
-	<a class="card" href="./components/z-radio/z-radio.demo.html"><b>z-radio</b><span>le bouton radio</span></a>
-	<a class="card" href="./components/z-radio-group/z-radio-group.demo.html"><b>z-radio-group</b><span>le groupe et sa sélection</span></a>
+	<div class="cartes">
+		<a class="card" href="./components/z-button/z-button.demo.html"><b>z-button</b><span>forme courte et forme en calques, tous les états</span></a>
+		<a class="card" href="./components/z-checkbox/z-checkbox.demo.html"><b>z-checkbox</b><span>deux écritures, même rendu</span></a>
+		<a class="card" href="./components/z-radio/z-radio.demo.html"><b>z-radio</b><span>le bouton radio</span></a>
+		<a class="card" href="./components/z-radio-group/z-radio-group.demo.html"><b>z-radio-group</b><span>le groupe et sa sélection</span></a>
+	</div>
 
 	<h2>Les essais — rien de tranché, à voir bouger</h2>
-	<a class="card" href="./components/z-button/z-button.essai-variables.html"><b>variables du composant</b><span>une variable peut-elle appartenir à un composant sans Shadow DOM ?</span></a>
+	<div class="cartes">
+		<a class="card" href="./components/z-button/z-button.essai-variables.html"><b>variables du composant</b><span>une variable peut-elle appartenir à un composant sans Shadow DOM ? · les variants <code>size</code> / <code>tone</code> / <code>width</code></span></a>
+	</div>
 
 	<h2>Les tools</h2>
-	<a class="card" href="./tools/z-contact/z-contact.check.html"><b>z-contact</b><span>l'effet de clic et son sillage</span></a>
+	<div class="cartes">
+		<a class="card" href="./tools/z-contact/z-contact.check.html"><b>z-contact</b><span>l'effet de clic et son sillage</span></a>
+	</div>
 
 	<h2>Les planches de contrôle</h2>
-	<a class="card" href="./components/z-radio-group/z-radio-group.check.html"><b>z-radio-group.check</b><span>vérification visuelle</span></a>
+	<div class="cartes">
+		<a class="card" href="./components/z-radio-group/z-radio-group.check.html"><b>z-radio-group.check</b><span>vérification visuelle</span></a>
+	</div>
 </main>
 
 <!--
