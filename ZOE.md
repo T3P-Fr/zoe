@@ -17,6 +17,12 @@ et **animés**, pour le « gradev » (mi-graphiste / mi-dev). *Less code, more c
   élément (Chemin B, `<z-element><button/></z-element>`). *« z-state, c'était son nom de
   prototype ; il EST le z-element. »*
 
+- **`core/z-layer`** — le **calque** : une pièce d'un composant, portant **un rôle**
+  (`<z-layer part="marker">`). z-element porte les états (le vivant), z-layer porte les
+  pièces (le visible). Une balise, un ensemble de rôles **ouvert** — la traduction en
+  HTML du `--{part}` du pacte. Les rôles se partagent entre composants. *(C'est ce que
+  l'ADR-0016 appelait `z-part`.)*
+
 **Les états** (le cœur de z-element)
 - cycle : `default ⇄ over → press → release / releaseOut` · `drag` · `focus`
 - durable : `current` (sélection) · statut métier (`loading/busy/disabled/error/success`)
@@ -73,8 +79,9 @@ live, params temps réel). Ajouter un composant = son dossier → il apparaît p
 ## L'arbre
 
 ```
-core/z-element/       — la base
-tools/z-*/             — z-motion · z-stager · z-grid · z-channel
+core/z-element/        — la base vivante (les états)
+core/z-layer/          — le calque (les pièces, un rôle chacune)
+tools/z-*/             — z-contact · z-motion · z-stager · z-grid · z-channel
 components/z-*/        — .js · .css · .doc.md · .demo.html
 skins/*/               — .css · .doc.md
 scripts/z-manifest/    — l'outil (code → doc + autocomplétion + IA)

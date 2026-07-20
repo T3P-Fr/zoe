@@ -1,15 +1,44 @@
 # z-checkbox
 
 Une case à cocher bâtie sur [`z-element`](../../core/z-element/z-element.doc.md) — le
-**premier composant à anatomie**. Deux parts : le **marker** (la case) et le **label**
-(ton texte). Zoé n'injecte **aucune balise** : le marker est un `::before` peint par la
-peau, le label reste ton light DOM. Structure figée → **skinnable** (Chemin A).
+**premier composant à anatomie**, et il s'écrit de **deux façons**. Zoé n'injecte
+**aucune balise** (ADR-0018) : c'est toi — ou l'éditeur Zoé — qui choisis le niveau de
+détail.
+
+**Forme courte** — le CSS peint l'hôte, un `::before` fait la case :
 
 ```html
 <z-checkbox>J'accepte les conditions</z-checkbox>
 <z-checkbox current>Déjà cochée</z-checkbox>
 <z-checkbox disabled>Indisponible</z-checkbox>
 ```
+
+**Forme en calques** ([`z-layer`](../../core/z-layer/z-layer.doc.md)) — chaque pièce est
+un élément, donc **animable seule** :
+
+```html
+<z-checkbox>
+  <z-layer part="background"></z-layer>
+  <z-layer part="marker"></z-layer>
+  <z-layer part="ring"></z-layer>
+  <z-layer part="dot"></z-layer>
+  <z-layer part="label">J'accepte les conditions</z-layer>
+</z-checkbox>
+```
+
+| Rôle | La pièce |
+|---|---|
+| `background` | le fond de toute la ligne (souvent transparent — il porte les effets) |
+| `marker` | la case, sa surface |
+| `ring` | son cerclage — animable seul (il peut tourner, pointiller) |
+| `dot` | la marque qui apparaît une fois cochée |
+| `label` | ton texte |
+| `icon` | optionnel, avant le label |
+
+Les deux formes lisent **exactement les mêmes tokens** : une skin écrite pour l'une
+marche sur l'autre. Le comportement est identique — le JS ne sait même pas quelle forme
+il porte. Ce que les calques débloquent : trois pièces, trois mouvements, **trois
+horloges** dans une seule case (démo, section 3) — impossible avec un `::before` unique.
 
 ## Cochée = `current`
 

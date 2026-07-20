@@ -1,0 +1,36 @@
+/*
+	============================================================
+	z-layer.css — le calque nu
+	------------------------------------------------------------
+	Le strict minimum pour qu'un calque EXISTE, et rien de plus. Aucune position, aucune
+	couleur, aucune taille : c'est le CSS du composant qui place chaque rôle, et la peau
+	qui le peint. Si ce fichier grossit un jour, c'est qu'une décision a fui du composant
+	vers le noyau — il faut la renvoyer chez elle.
+	Styleguide 0.2
+	============================================================
+*/
+
+/*
+	z-layer — le calque
+	Bloc, et boîte prévisible. `transform-box` cale les transformations sur la boîte du
+	calque : une skin qui fait tourner ou pivoter une pièce tourne autour d'ELLE, pas
+	d'un centre hérité au hasard.
+	Styleguide 0.2.1
+*/
+z-layer {
+	display: block;
+	box-sizing: border-box;
+	transform-origin: center;
+}
+
+/*
+	z-layer — les calques DÉCORATIFS ne prennent pas le clic
+	Un calque qui ne porte pas de contenu (le fond, le marker, l'anneau, le point) est
+	là pour être VU, pas touché : il laisserait sinon passer un pointerdown avec une
+	cible différente du composant, et volerait le geste à ses voisins. Les calques qui
+	contiennent (label, icon) gardent le leur — on sélectionne un texte.
+	Styleguide 0.2.2
+*/
+z-layer:empty {
+	pointer-events: none;
+}

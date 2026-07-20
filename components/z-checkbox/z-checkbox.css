@@ -1,26 +1,44 @@
 /*
 	============================================================
-	z-checkbox.css — le rendu de z-checkbox (anatomie marker + label)
+	z-checkbox.css — le rendu de z-checkbox, EN CALQUES
 	------------------------------------------------------------
-	Preuve de la grammaire du pacte : chaque part se peint par un token
-	`--z-checkbox--{part}__{prop}` (double séparateur), et le sujet lui-même par
-	`--z-checkbox__{prop}`. Défauts qui CONSOMMENT la peau (var(--z-accent), --z-line,
-	--z-radius…) → marche sur HighTech ET Claude sans refonte. Aucune balise injectée :
-	le marker est un `::before`.
-	Requiert : une peau (tokens) + tools/z-motion (@keyframes pop).
+	DEUX ÉCRITURES, UN COMPOSANT — et c'est voulu (ADR-0018 : Zoé n'injecte RIEN, ce
+	que tu écris est ce que tu debug) :
+
+	  · FORME COURTE — <z-checkbox>J'accepte</z-checkbox>
+	    Aucun calque écrit : le CSS peint l'HÔTE (un `::before` fait la case). Une ligne
+	    à taper, rien à apprendre. C'est la porte d'entrée.
+
+	  · FORME EN CALQUES — <z-checkbox><z-layer part="marker">…
+	    Chaque pièce est un élément à elle : on peut la peindre, la bouger, l'animer
+	    SÉPARÉMENT. C'est ce que produit l'éditeur Zoé, et ce qui permet les animations
+	    « de ouf » — l'anneau tourne pendant que le point rebondit et que le fond respire.
+
+	Le CSS choisit tout seul, par `:has(z-layer)`. Les deux formes lisent EXACTEMENT les
+	mêmes tokens : une skin écrite pour l'une marche sur l'autre.
+
+	LES RÔLES (partagés avec les autres composants — même mot, même chose) :
+	    background · le fond de toute la ligne (souvent transparent, il sert aux effets)
+	    marker     · la case (sa surface)
+	    ring       · le cerclage de la case — animable seul (il peut tourner, pointiller)
+	    dot        · la marque qui apparaît une fois cochée
+	    label      · TON texte
+	    icon       · optionnel, avant le label
+
+	Requiert : une peau (tokens) + core/z-layer + tools/z-motion (@keyframes pop, ripple).
 	Styleguide 1.0
 	============================================================
 */
 
 /*
-	z-checkbox — le sujet
-	Une ligne cliquable : le marker (::before) à gauche, TON label (light DOM) à droite.
+	z-checkbox — le sujet (commun aux deux formes)
+	Une ligne cliquable : la case à gauche, TON label à droite.
 	Styleguide 1.1
 */
 z-checkbox {
 	display: inline-flex;
 	align-items: center;
-	position: relative;                           /* ancre du halo (::after), voir 1.3 */
+	position: relative;                           /* ancre des calques ET du halo */
 	gap: var(--z-checkbox__gap, var(--z-gap, .55em));
 	color: var(--z-ink);
 	font: inherit;
@@ -35,22 +53,23 @@ z-checkbox {
 }
 
 /*
-	z-checkbox — le marker (la case)
-	UN seul ::before : la bordure = le contour, et un carré blanc central (background-
-	image) dont la taille passe de 0 à 60 % au coché → « il zoome du fond ». Aucun 2e
-	pseudo : alignement parfait, le carré naît EXACTEMENT au centre de la case.
+	═══ FORME COURTE — aucun calque écrit : le CSS peint l'hôte ═══
 	Styleguide 1.2
+
+	La case = UN seul ::before : la bordure fait le contour, et un carré blanc central
+	(background-image) passe de 0 à 60 % au coché → « il zoome du fond ». Aucun 2e
+	pseudo : le carré naît EXACTEMENT au centre de la case.
 */
-z-checkbox::before {
+z-checkbox:not(:has(z-layer))::before {
 	content: "";
 	flex: 0 0 auto;
 	box-sizing: border-box;
 	width: var(--z-checkbox--marker__size, 1.15em);
 	height: var(--z-checkbox--marker__size, 1.15em);
-	border: var(--z-border-width, 1.5px) solid var(--z-checkbox--marker__border, var(--z-line));
+	border: var(--z-border-width, 1.5px) solid var(--z-checkbox--ring__color, var(--z-line));
 	border-radius: var(--z-checkbox--marker__radius, var(--z-radius));
 	background-color: var(--z-checkbox--marker__background, var(--z-surface));
-	background-image: linear-gradient(var(--z-checkbox--check__color, #fff), var(--z-checkbox--check__color, #fff));
+	background-image: linear-gradient(var(--z-checkbox--dot__color, #fff), var(--z-checkbox--dot__color, #fff));
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 0% 0%;                       /* le carré blanc, invisible au repos */
@@ -61,19 +80,156 @@ z-checkbox::before {
 		transform var(--z-dur) var(--z-ease-spring),
 		background-size var(--z-dur-select, .26s) var(--z-ease-spring);
 }
+z-checkbox:not(:has(z-layer)):state(over)::before  { border-color: var(--z-accent); }
+z-checkbox:not(:has(z-layer)):state(press)::before { transform: scale(.9); }
+z-checkbox:not(:has(z-layer)):state(focus)::before { box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-accent) 35%, transparent)); }
+z-checkbox:not(:has(z-layer)):state(current)::before {
+	border-color: var(--z-checkbox--ring__color-checked, var(--z-accent));
+	background-color: var(--z-checkbox--marker__background-checked, var(--z-accent));
+	background-size: 60% 60%;
+}
+z-checkbox:not(:has(z-layer)):state(select)::before { animation: pop var(--z-dur-select, .26s) var(--z-ease-spring); }
+z-checkbox:not(:has(z-layer)):state(disabled)::before {
+	border-color: var(--z-disabled);
+	background-color: var(--z-surface-sunken);
+}
+z-checkbox:not(:has(z-layer)):state(current):state(disabled)::before {
+	border-color: var(--z-disabled);
+	background-color: color-mix(in srgb, var(--z-accent) 32%, var(--z-surface-sunken));
+}
+z-checkbox:not(:has(z-layer)):state(error)::before   { border-color: var(--z-danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-danger) 22%, transparent); }
+z-checkbox:not(:has(z-layer)):state(success)::before { border-color: var(--z-success); }
 
 /*
-	z-checkbox — interaction (héritée de z-element)
+	═══ FORME EN CALQUES — chaque pièce est un élément à elle ═══
+	Styleguide 1.3
+
+	Le composant PLACE les rôles, la peau les PEINT. Trois calques (marker · ring · dot)
+	occupent la même zone à gauche : le marker tient la place dans le flux, les deux
+	autres se superposent à lui. Le label suit dans le flux, le background couvre tout
+	par-derrière.
+
+	Chaque pièce a son transform à elle → on peut faire tourner l'anneau PENDANT que le
+	point rebondit, sans qu'aucune n'écrase l'autre. C'est tout l'intérêt des calques.
+*/
+z-checkbox > z-layer[part="background"] {
+	position: absolute;
+	inset: calc(var(--z-checkbox--background__bleed, .3em) * -1) calc(var(--z-checkbox--background__bleed, .3em) * -1);
+	z-index: 0;
+	border-radius: var(--z-checkbox--background__radius, var(--z-radius));
+	background: var(--z-checkbox--background__color, transparent);
+	transition: background var(--z-dur) var(--z-ease), scale var(--z-dur) var(--z-ease-spring);
+}
+
+/* le marker TIENT LA PLACE dans le flux : c'est lui qui pousse le label à droite */
+z-checkbox > z-layer[part="marker"] {
+	position: relative;
+	z-index: 1;
+	flex: 0 0 auto;
+	width: var(--z-checkbox--marker__size, 1.15em);
+	height: var(--z-checkbox--marker__size, 1.15em);
+	border-radius: var(--z-checkbox--marker__radius, var(--z-radius));
+	background: var(--z-checkbox--marker__background, var(--z-surface));
+	transition: background var(--z-dur) var(--z-ease), scale var(--z-dur) var(--z-ease-spring);
+}
+
+/* ring et dot se superposent au marker — centrés sur SA zone, pas sur la ligne */
+z-checkbox > z-layer[part="ring"],
+z-checkbox > z-layer[part="dot"] {
+	position: absolute;
+	left: 0;
+	top: 50%;
+	z-index: 2;
+	/* centrage par la MARGE, pas par un translate : `translate` reste libre pour les
+	   animations de la peau (une pièce qui glisse, qui rebondit…). */
+	margin-top: calc(var(--z-checkbox--marker__size, 1.15em) / -2);
+	width: var(--z-checkbox--marker__size, 1.15em);
+	height: var(--z-checkbox--marker__size, 1.15em);
+}
+
+z-checkbox > z-layer[part="ring"] {
+	border: var(--z-border-width, 1.5px) solid var(--z-checkbox--ring__color, var(--z-line));
+	border-radius: var(--z-checkbox--marker__radius, var(--z-radius));
+	transition:
+		border-color var(--z-dur) var(--z-ease),
+		box-shadow var(--z-dur) var(--z-ease),
+		rotate var(--z-dur-select, .26s) var(--z-ease-spring),
+		scale var(--z-dur) var(--z-ease-spring);
+}
+
+/* le point : une pièce à part entière, posée au centre de la case, absente au repos */
+z-checkbox > z-layer[part="dot"] {
+	left: calc(var(--z-checkbox--marker__size, 1.15em) / 2);
+	top: 50%;
+	margin-top: 0;
+	/* En LONGUEUR, dérivée de la case — surtout pas en % : un pourcentage se mesure sur
+	   le composant ENTIER (la ligne, label compris), et le point traverserait l'écran. */
+	width: var(--z-checkbox--dot__size, calc(var(--z-checkbox--marker__size, 1.15em) * .6));
+	height: var(--z-checkbox--dot__size, calc(var(--z-checkbox--marker__size, 1.15em) * .6));
+	z-index: 3;
+	translate: -50% -50%;
+	scale: 0;
+	border-radius: var(--z-checkbox--dot__radius, 0);
+	background: var(--z-checkbox--dot__color, #fff);
+	transition: scale var(--z-dur-select, .26s) var(--z-ease-spring), background var(--z-dur) var(--z-ease);
+}
+
+z-checkbox > z-layer[part="label"],
+z-checkbox > z-layer[part="icon"] {
+	position: relative;
+	z-index: 1;
+}
+z-checkbox > z-layer[part="icon"] {
+	display: inline-flex;
+	align-items: center;
+	color: var(--z-checkbox--icon__color, currentColor);
+}
+
+/* ── les états, sur les calques ── */
+z-checkbox:has(z-layer):state(over)  > z-layer[part="ring"] { border-color: var(--z-accent); }
+z-checkbox:has(z-layer):state(press) > z-layer[part="marker"],
+z-checkbox:has(z-layer):state(press) > z-layer[part="ring"] { scale: .9; }
+z-checkbox:has(z-layer):state(focus) > z-layer[part="ring"] { box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-accent) 35%, transparent)); }
+
+z-checkbox:has(z-layer):state(current) > z-layer[part="marker"] { background: var(--z-checkbox--marker__background-checked, var(--z-accent)); }
+z-checkbox:has(z-layer):state(current) > z-layer[part="ring"]   { border-color: var(--z-checkbox--ring__color-checked, var(--z-accent)); }
+z-checkbox:has(z-layer):state(current) > z-layer[part="dot"]    { scale: 1; }
+
+/* select : le geste posé par le socle quand current s'allume. Chaque pièce y répond à
+   SA façon — c'est ça, une anatomie en calques. */
+z-checkbox:has(z-layer):state(select) > z-layer[part="marker"] { animation: pop var(--z-dur-select, .26s) var(--z-ease-spring); }
+
+z-checkbox:has(z-layer):state(disabled) > z-layer[part="marker"] { background: var(--z-surface-sunken); }
+z-checkbox:has(z-layer):state(disabled) > z-layer[part="ring"]   { border-color: var(--z-disabled); }
+z-checkbox:has(z-layer):state(current):state(disabled) > z-layer[part="marker"] {
+	background: color-mix(in srgb, var(--z-accent) 32%, var(--z-surface-sunken));
+}
+z-checkbox:has(z-layer):state(error)   > z-layer[part="ring"] { border-color: var(--z-danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-danger) 22%, transparent); }
+z-checkbox:has(z-layer):state(success) > z-layer[part="ring"] { border-color: var(--z-success); }
+
+/*
+	═══ COMMUN AUX DEUX FORMES ═══
+	Styleguide 1.4
+*/
+
+/* le label s'épaissit sans saut de pixel (faux-bold) ; une peau peut préférer un vrai
+   poids via --z-checkbox--label__weight */
+z-checkbox:state(current) {
+	font-weight: var(--z-checkbox--label__weight, inherit);
+	text-shadow: var(--z-checkbox--label__emphasis, .012em 0 0 currentColor, -.012em 0 0 currentColor);
+}
+z-checkbox:state(disabled) {
+	color: var(--z-disabled);
+	cursor: not-allowed;
+}
+
+/*
 	Le HALO au clic : l'onde (preset ripple de z-motion) part de la CASE, pas de la ligne
 	entière — le geste appartient au marker, c'est lui qu'on vise. Même signature que
-	z-button et z-radio : tout Zoé répond pareil au doigt. Lâché dehors (releaseOut) :
-	l'onde est plus courte, elle dit « annulé ».
-	Styleguide 1.3
+	z-button et z-radio. Lâché dehors (releaseOut) : l'onde est plus courte, elle dit
+	« annulé ». Posé sur l'hôte → vaut pour les deux formes.
+	Styleguide 1.5
 */
-z-checkbox:state(over)::before  { border-color: var(--z-accent); }
-z-checkbox:state(press)::before { transform: scale(.9); }
-z-checkbox:state(focus)::before { box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-accent) 35%, transparent)); }
-
 z-checkbox::after {
 	content: "";
 	position: absolute;
@@ -84,52 +240,11 @@ z-checkbox::after {
 	box-sizing: border-box;
 	border: 2px solid var(--z-checkbox--halo__color, var(--z-accent));
 	border-radius: var(--z-checkbox--marker__radius, var(--z-radius));
-	/* centré sur le marker par une MARGE, pas par un translate : l'anim `ripple` pilote
-	   `transform` — un translate ici serait écrasé et le halo tomberait sous la ligne. */
 	margin-top: calc(var(--z-checkbox--marker__size, 1.15em) / -2);
 	transform-origin: center;
 	opacity: 0;
 	pointer-events: none;
+	z-index: 4;
 }
 z-checkbox:state(release)::after    { animation: ripple var(--z-dur-release) var(--z-ease); }
 z-checkbox:state(releaseOut)::after { animation: ripple var(--z-dur-releaseOut) var(--z-ease); }
-
-/*
-	z-checkbox — coché (current)
-	La case se remplit d'accent, le carré blanc ZOOME du fond (background-size 0→60 %,
-	ressort). Le label s'épaissit sans saut de pixel (faux-bold text-shadow) ; une peau
-	peut préférer un vrai poids via --z-checkbox--label__weight.
-	Styleguide 1.4
-*/
-z-checkbox:state(current)::before {
-	border-color: var(--z-checkbox--marker__border-checked, var(--z-accent));
-	background-color: var(--z-checkbox--marker__background-checked, var(--z-accent));
-	background-size: 60% 60%;
-}
-z-checkbox:state(current) {
-	font-weight: var(--z-checkbox--label__weight, inherit);
-	text-shadow: var(--z-checkbox--label__emphasis, .012em 0 0 currentColor, -.012em 0 0 currentColor);
-}
-/* select : le geste posé par le socle quand current s'allume → un pop de la case. */
-z-checkbox:state(select)::before { animation: pop var(--z-dur-select, .26s) var(--z-ease-spring); }
-
-/*
-	z-checkbox — statut métier
-	Styleguide 1.5
-*/
-z-checkbox:state(disabled) {
-	color: var(--z-disabled);
-	cursor: not-allowed;
-}
-z-checkbox:state(disabled)::before {
-	border-color: var(--z-disabled);
-	background-color: var(--z-surface-sunken);
-}
-/* cochée ET verrouillée : la coche RESTE lisible — accent ATTÉNUÉ (mix accent + fond)
-   plutôt que le gris de disabled, sinon la combinaison current+disabled la laverait. */
-z-checkbox:state(current):state(disabled)::before {
-	border-color: var(--z-disabled);
-	background-color: color-mix(in srgb, var(--z-accent) 32%, var(--z-surface-sunken));
-}
-z-checkbox:state(error)::before   { border-color: var(--z-danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-danger) 22%, transparent); }
-z-checkbox:state(success)::before { border-color: var(--z-success); }

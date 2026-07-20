@@ -38,6 +38,31 @@
       ]
     },
     {
+      "name": "z-layer",
+      "description": "A layer: one piece of a component, carrying one role (part). Painted by the skin, placed by the component.",
+      "attributes": [
+        {
+          "name": "part",
+          "description": "The role this layer plays (background, marker, ring, dot, label, icon…). Shared across components: the same word means the same thing everywhere."
+        }
+      ]
+    },
+    {
+      "name": "z-contact",
+      "description": "The click leaves a mark where the pointer touched. Write it once, flat: the whole page answers.",
+      "attributes": [
+        {
+          "name": "fx",
+          "description": "The impact effect: morph (a dot born under the cursor dies taking the component's shape) · implode · explode · none."
+        },
+        {
+          "name": "disabled",
+          "description": "Set by the engine on every source but the last one — the last declared wins.",
+          "values": []
+        }
+      ]
+    },
+    {
       "name": "z-checkbox",
       "description": "A checkbox — inherits all z-element states, marker + label anatomy, painted by the skin.",
       "attributes": [

@@ -6,6 +6,15 @@ Attributes: current (boolean), loading (boolean), busy (boolean), disabled (bool
 Events: z-state
 States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, busy, disabled, error, success
 
+## <z-layer> (core)
+A layer: one piece of a component, carrying one role (part). Painted by the skin, placed by the component.
+Attributes: part (string)
+
+## <z-contact> (tools)
+The click leaves a mark where the pointer touched. Write it once, flat: the whole page answers.
+Attributes: fx (string), disabled (boolean)
+Events: zoe:contact
+
 ## <z-checkbox> (components)
 A checkbox — inherits all z-element states, marker + label anatomy, painted by the skin.
 Attributes: current (boolean), disabled (boolean), error (boolean), success (boolean)

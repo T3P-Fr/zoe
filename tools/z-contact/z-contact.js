@@ -172,7 +172,35 @@ export const contact = {
 	CSS (`z-contact z-foreground { … }`). Il est enregistré ICI, chez son moteur —
 	et non dans un registre commun : une balise appartient au code qui la fait vivre.
 */
-export class ZContact extends HTMLElement {}
+export class ZContact extends HTMLElement {
+	/*
+		L'API MACHINE (lue par scripts/z-manifest → autocomplétion + doc + llms.txt).
+		Elle décrit la SOURCE, la seule chose qu'un auteur écrit : `<z-contact fx="…">`.
+		L'effet éphémère, lui, est créé par le moteur — personne ne le tape à la main.
+	*/
+	static api = {
+		tag: "z-contact",
+		summary: {
+			en: "The click leaves a mark where the pointer touched. Write it once, flat: the whole page answers.",
+			fr: "Le clic laisse une trace là où le pointeur a touché. Écrit une fois, à plat : toute la page répond.",
+			es: "El clic deja una marca donde el puntero tocó. Se escribe una vez, plano: toda la página responde."
+		},
+		attributes: [
+			{ name: "fx", type: "string", description: { en: "The impact effect: morph (a dot born under the cursor dies taking the component's shape) · implode · explode · none.", fr: "L'effet d'impact : morph (un rond né sous la souris meurt en prenant la forme du composant) · implode · explode · none.", es: "El efecto de impacto: morph (un punto nacido bajo el cursor muere tomando la forma del componente) · implode · explode · none." } },
+			{ name: "disabled", type: "boolean", description: { en: "Set by the engine on every source but the last one — the last declared wins.", fr: "Posé par le moteur sur toutes les sources sauf la dernière — la dernière déclarée gagne.", es: "Puesto por el motor en todas las fuentes menos la última — la última declarada gana." } }
+		],
+		events: [
+			{ name: "zoe:contact", description: { en: "Emitted on the touched target. detail: { fx, x, y, size, duration, pointerType }.", fr: "Émis sur la cible touchée. detail : { fx, x, y, size, duration, pointerType }.", es: "Emitido en el objetivo tocado. detail: { fx, x, y, size, duration, pointerType }." } }
+		],
+		states: [],
+		cssVars: [
+			{ name: "--z-contact-size", description: { en: "Size of the starting dot.", fr: "La taille du rond de départ.", es: "El tamaño del punto inicial." } },
+			{ name: "--z-contact-width", description: { en: "Thickness of the outline.", fr: "L'épaisseur du contour.", es: "El grosor del contorno." } },
+			{ name: "--z-contact-duration", description: { en: "Duration of the effect.", fr: "La durée de l'effet.", es: "La duración del efecto." } },
+			{ name: "--z-contact-color", description: { en: "Colour — defaults to the accent of the touched element.", fr: "La couleur — par défaut l'accent de l'élément touché.", es: "El color — por defecto el acento del elemento tocado." } }
+		]
+	};
+}
 
 /* Enregistre <z-contact>. Garde-fou contre la double définition. */
 export function defineZContact() {
@@ -185,4 +213,11 @@ export function defineZContact() {
 	écrit dans la page, `effectOf()` renvoie "none" et il ne se passe rien.
 */
 defineZContact();
-startContact();
+/*
+	…mais on ne DÉMARRE le moteur que s'il y a un vrai DOM à écouter. Hors navigateur
+	(Node : z-manifest lit `static api` en important le module, un rendu serveur ferait
+	pareil), il n'y a personne à écouter et `document` n'est qu'un décor.
+*/
+if (typeof document !== "undefined" && typeof document.querySelectorAll === "function") {
+	startContact();
+}

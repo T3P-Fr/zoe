@@ -1,0 +1,128 @@
+═══════════════════════════════════════════════════════════════════════════════
+  z-layer — L'ANATOMIE EN CALQUES
+  une balise, un rôle · le composant place, la peau peint
+═══════════════════════════════════════════════════════════════════════════════
+
+
+1. LE NOYAU : DEUX BRIQUES, DEUX MÉTIERS
+────────────────────────────────────────────────────────────────────────────────
+
+        z-element                          z-layer
+        ─────────                          ───────
+        porte les ÉTATS                    porte les PIÈCES
+        (le vivant)                        (le visible)
+
+        over · press · release             background · marker · ring
+        current · disabled · error         dot · label · icon
+        :state(x)                          [part="x"]
+
+        « QUAND ça change »                « CE QU'ON PEINT »
+
+
+2. UN COMPOSANT = UNE PILE DE RÔLES
+────────────────────────────────────────────────────────────────────────────────
+
+  <z-checkbox>                         ← l'hôte : il porte les états
+    <z-layer part="background">        ← le fond de toute la ligne
+    <z-layer part="marker">            ← la case (sa surface)
+    <z-layer part="ring">              ← son cerclage
+    <z-layer part="dot">               ← la marque, une fois cochée
+    <z-layer part="label">J'accepte    ← TON texte
+    <z-layer part="icon">              ← optionnel
+  </z-checkbox>
+
+  Vu de face :                    Vu en tranches (l'ordre d'empilement) :
+
+   ┌───────────────────────┐        icon/label  ─────────────  z-index 1
+   │ ▣  J'accepte          │        dot         ───────────    z-index 3
+   └───────────────────────┘        ring        ─────────      z-index 2
+     ↑    ↑                         marker      ───────        z-index 1
+     │    └── label                 background  ───────────────────  0
+     └─────── marker + ring + dot
+              (superposés, même zone)
+
+
+3. LE MOT UNIQUE — TROIS ÉCRITURES
+────────────────────────────────────────────────────────────────────────────────
+
+  Le pacte disait déjà « --{part} ». Il lui manquait son élément. Maintenant les
+  trois couches de l'écriture disent LE MÊME MOT :
+
+      --z-checkbox--marker__background      la SKIN peint
+      z-checkbox z-layer[part="marker"]     le CSS vise
+      <z-layer part="marker">               l'AUTEUR écrit
+                       └────┘
+                       un seul mot : marker
+
+
+4. POURQUOI PAS UNE BALISE PAR RÔLE
+────────────────────────────────────────────────────────────────────────────────
+
+   UN DICTIONNAIRE (refusé)            UNE GRAMMAIRE (retenu)
+   ───────────────────────            ──────────────────────
+   <z-marker>                          <z-layer part="marker">
+   <z-ring>                            <z-layer part="ring">
+   <z-dot>                             <z-layer part="dot">
+   <z-track>   ← slider                <z-layer part="track">
+   <z-thumb>   ← slider                <z-layer part="thumb">
+   <z-tick>    ← slider                <z-layer part="tick">
+   <z-fill>    ← jauge                 <z-layer part="fill">
+        …un mot de plus à                   …zéro mot de plus.
+        CHAQUE composant                    L'éditeur invente ses
+                                            rôles tout seul.
+
+   Et les rôles SE PARTAGENT : le `dot` d'une case et celui d'une radio, c'est
+   le même mot → une skin les peint d'un coup.
+
+     z-layer[part="dot"] { background: var(--ma-couleur); }   /* les deux */
+
+
+5. DEUX ÉCRITURES, UN COMPOSANT (Zoé n'injecte RIEN — ADR-0018)
+────────────────────────────────────────────────────────────────────────────────
+
+   FORME COURTE                        FORME EN CALQUES
+   ────────────                        ────────────────
+   <z-checkbox>J'accepte</z-checkbox>  <z-checkbox>
+                                         <z-layer part="marker">
+   Le CSS peint l'HÔTE                   <z-layer part="ring">
+   (un ::before fait la case)            <z-layer part="dot">
+                                         <z-layer part="label">J'accepte
+   1 ligne · rien à apprendre          </z-checkbox>
+   1 seul mouvement à la fois
+                                       Chaque pièce animable SEULE
+                                       ce que l'éditeur Zoé produit
+
+   Le CSS choisit tout seul :  :has(z-layer)  /  :not(:has(z-layer))
+   Les deux lisent les MÊMES tokens → une skin marche sur les deux.
+
+
+6. CE QUE ÇA DÉBLOQUE : TROIS HORLOGES DANS UNE CASE
+────────────────────────────────────────────────────────────────────────────────
+
+   Au coché, sans une ligne de JS :
+
+      ring        ↻  tourne d'un quart de tour, grossit un peu
+      background  ◠  respire (scale 1.06)
+      dot         ●  arrive EN RETARD (transition-delay .08s) et rebondit
+
+   Impossible sur la forme courte : là-bas tout tient dans UN ::before, donc un
+   seul mouvement. C'est ça, l'intérêt des calques — pas la beauté du HTML.
+
+
+7. LES LOIS
+────────────────────────────────────────────────────────────────────────────────
+
+  · Un rôle est une INTENTION, jamais une propriété CSS.
+       part="ring"   ✔ la pièce
+       part="border" ✘ la propriété           (loi « nom = RÔLE » du socle)
+
+  · Le calque ne décide de RIEN : le composant place, la peau peint.
+    Si z-layer.css grossit, une décision a fui du composant vers le noyau.
+
+  · Les calques ne sont JAMAIS obligatoires. Zoé n'injecte rien : ce que tu
+    écris est ce que tu debug.
+
+  · Ce qui s'appelait `z-part` (ADR-0016) s'appelle désormais `z-layer` —
+    le calque, mot de Photoshop et de Flash. Une seule forme, jamais deux.
+
+═══════════════════════════════════════════════════════════════════════════════

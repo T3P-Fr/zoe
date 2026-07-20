@@ -2,14 +2,26 @@
 	============================================================
 	z-checkbox — une case à cocher, bâtie SUR z-element (Chemin A)
 	------------------------------------------------------------
-	Premier composant à ANATOMIE : un marker (la case) + un label (TON texte). Zoé
-	n'injecte AUCUNE balise — le marker est un `::before` peint par la peau, le label
-	reste ton light DOM. C'est la 1re preuve de la grammaire à double séparateur du
-	pacte : `--z-checkbox--marker__background`, `--z-checkbox--label__weight`…
+	Premier composant à ANATOMIE, et il s'écrit de DEUX façons — Zoé n'injecte jamais
+	rien (ADR-0018), c'est l'auteur (ou l'éditeur Zoé) qui décide du niveau de détail :
 
+	    FORME COURTE — le CSS peint l'hôte, un `::before` fait la case
 	    <z-checkbox>J'accepte les conditions</z-checkbox>
 	    <z-checkbox current>Déjà cochée</z-checkbox>
 	    <z-checkbox disabled>Indisponible</z-checkbox>
+
+	    FORME EN CALQUES — chaque pièce est un élément, donc animable SEULE
+	    <z-checkbox>
+	      <z-layer part="background"></z-layer>
+	      <z-layer part="marker"></z-layer>
+	      <z-layer part="ring"></z-layer>
+	      <z-layer part="dot"></z-layer>
+	      <z-layer part="label">J'accepte les conditions</z-layer>
+	    </z-checkbox>
+
+	Les deux lisent les MÊMES tokens (`--z-checkbox--marker__background`,
+	`--z-checkbox--dot__color`…) : une skin écrite pour l'une marche sur l'autre. Le
+	comportement, lui, est identique — ce fichier ne sait même pas quelle forme il porte.
 
 	`current` = cochée : une SÉLECTION durable, posée EXPRÈS par le composant (clic /
 	Espace) — jamais par le clic du socle (z-element ne touche plus current). ZButton
@@ -41,7 +53,21 @@ export class ZCheckbox extends ZElement {
 			{ name: "change", description: { en: "Emitted when the checked state toggles. Read `.checked`.", fr: "Émis quand la coche bascule. Lire `.checked`.", es: "Emitido cuando cambia el marcado. Leer `.checked`." } },
 			{ name: "z-state", description: { en: "Emitted on every state change. detail: { states, changed, on }.", fr: "Émis à chaque changement d'état. detail : { states, changed, on }.", es: "Emitido en cada cambio de estado. detail: { states, changed, on }." } }
 		],
-		states: ZElement.api.states
+		states: ZElement.api.states,
+		/*
+			LES CALQUES du composant — la liste des rôles qu'il connaît, dans l'ordre où on
+			les écrit. C'est ce que l'éditeur Zoé produira, et ce que la doc affiche.
+			Les rôles se PARTAGENT entre composants : `dot` veut dire la même chose ici et
+			sur une radio, donc une skin peut les peindre d'un coup.
+		*/
+		layers: [
+			{ part: "background", required: false, description: { en: "The backdrop of the whole line — usually transparent, it carries effects.", fr: "Le fond de toute la ligne — souvent transparent, il porte les effets.", es: "El fondo de toda la línea — normalmente transparente, lleva los efectos." } },
+			{ part: "marker", required: true, description: { en: "The box itself (its surface).", fr: "La case elle-même (sa surface).", es: "La casilla en sí (su superficie)." } },
+			{ part: "ring", required: true, description: { en: "The box outline — animatable on its own (it can spin, dash…).", fr: "Le cerclage de la case — animable seul (il peut tourner, pointiller…).", es: "El cerco de la casilla — animable por sí solo (puede girar, punteado…)." } },
+			{ part: "dot", required: true, description: { en: "The mark that appears once checked.", fr: "La marque qui apparaît une fois cochée.", es: "La marca que aparece al marcar." } },
+			{ part: "label", required: true, description: { en: "Your text.", fr: "Ton texte.", es: "Tu texto." } },
+			{ part: "icon", required: false, description: { en: "Optional, before the label.", fr: "Optionnel, avant le label.", es: "Opcional, antes de la etiqueta." } }
+		]
 	};
 
 	connectedCallback() {

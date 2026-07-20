@@ -138,6 +138,101 @@
     },
     {
       "kind": "javascript-module",
+      "path": "core/z-layer/z-layer.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZLayer",
+          "tagName": "z-layer",
+          "summary": "A layer: one piece of a component, carrying one role (part). Painted by the skin, placed by the component.",
+          "attributes": [
+            {
+              "name": "part",
+              "type": {
+                "text": "string"
+              },
+              "description": "The role this layer plays (background, marker, ring, dot, label, icon…). Shared across components: the same word means the same thing everywhere."
+            }
+          ],
+          "events": [],
+          "cssProperties": [],
+          "cssStates": []
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-layer",
+          "declaration": {
+            "name": "ZLayer"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "tools/z-contact/z-contact.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZContact",
+          "tagName": "z-contact",
+          "summary": "The click leaves a mark where the pointer touched. Write it once, flat: the whole page answers.",
+          "attributes": [
+            {
+              "name": "fx",
+              "type": {
+                "text": "string"
+              },
+              "description": "The impact effect: morph (a dot born under the cursor dies taking the component's shape) · implode · explode · none."
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Set by the engine on every source but the last one — the last declared wins."
+            }
+          ],
+          "events": [
+            {
+              "name": "zoe:contact",
+              "description": "Emitted on the touched target. detail: { fx, x, y, size, duration, pointerType }."
+            }
+          ],
+          "cssProperties": [
+            {
+              "name": "--z-contact-size",
+              "description": "Size of the starting dot."
+            },
+            {
+              "name": "--z-contact-width",
+              "description": "Thickness of the outline."
+            },
+            {
+              "name": "--z-contact-duration",
+              "description": "Duration of the effect."
+            },
+            {
+              "name": "--z-contact-color",
+              "description": "Colour — defaults to the accent of the touched element."
+            }
+          ],
+          "cssStates": []
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-contact",
+          "declaration": {
+            "name": "ZContact"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "components/z-checkbox/z-checkbox.js",
       "declarations": [
         {
