@@ -46,6 +46,18 @@
 	--z-font-weight-strong: 700;
 	--z-letter: 0;
 
+	/*
+		L'ÉCHELLE DES TAILLES — les facteurs de l'attribut `size` (core/z-element.css).
+		Chaque cran multiplie la taille du texte du composant, et tout le reste suit
+		(padding, gap, marqueur, icône : ils sont en `em`).
+		Claude étale un peu : elle respire, elle n'est pas dense.
+	*/
+	--z-scale-xs: .8;
+	--z-scale-s: .9;
+	--z-scale-m: 1;
+	--z-scale-l: 1.25;
+	--z-scale-xl: 1.7;
+
 	/* forme — doux mais présent */
 	--z-radius: 9px;
 	--z-radius-pill: 999px;

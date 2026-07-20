@@ -65,7 +65,9 @@ z-button {
 	gap: .5em;
 	padding: var(--z-pad-y, .7em) var(--z-pad-x, 1.3em);
 	border-radius: var(--z-radius);
-	color: var(--z-ink);
+	/* La couleur du texte suit le TON quand il y en a un (voir core/z-element.css) ;
+	   sans `tone`, c'est l'encre de la peau, comme avant. */
+	color: var(--z-tone__ink, var(--z-ink));
 
 	/* `font: inherit` D'ABORD : un custom element n'hérite pas de la typo comme <button>.
 	   Les deux lignes suivantes affinent ce qu'on vient d'hériter — l'ordre compte. */
@@ -99,10 +101,15 @@ z-button {
 	*/
 
 	/* La transition liste ici les propriétés que SEULE cette forme anime — la forme en
-	   calques les anime sur sa pièce `background`, pas sur l'hôte. */
+	   calques les anime sur sa pièce `background`, pas sur l'hôte.
+
+	   Les trois `--z-tone__*` viennent du variant `tone` (core/z-element.css) et sont
+	   VIDES par défaut : sans attribut `tone`, le bouton retombe sur les valeurs de la
+	   peau et ne bouge pas d'un pixel. */
 	&:not(:has(z-layer)) {
-		border: var(--z-border-width) solid var(--z-line);
-		background: var(--z-surface);
+		border: var(--z-border-width) solid var(--z-tone__line, var(--z-line));
+		background: var(--z-tone__fill, var(--z-surface));
+		color: var(--z-tone__ink, var(--z-ink));
 		transition:
 			background-color var(--z-dur) var(--z-ease),
 			border-color var(--z-dur) var(--z-ease),
@@ -159,9 +166,9 @@ z-button {
 	   `scale` est dans la transition parce que ce fond a le droit de respirer sans
 	   emmener le texte — c'est toute la raison d'être de cette forme. */
 	> [part=background] {
-		border: var(--z-border-width) solid var(--z-button--background__border, var(--z-line));
+		border: var(--z-border-width) solid var(--z-button--background__border, var(--z-tone__line, var(--z-line)));
 		border-radius: inherit;
-		background: var(--z-button--background__color, var(--z-surface));
+		background: var(--z-button--background__color, var(--z-tone__fill, var(--z-surface)));
 		transition:
 			background var(--z-dur) var(--z-ease),
 			border-color var(--z-dur) var(--z-ease),

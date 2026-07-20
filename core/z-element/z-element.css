@@ -1,0 +1,103 @@
+/*
+	============================================================
+	z-element.css — LES VARIANTS, écrits UNE fois pour tous les composants
+	------------------------------------------------------------
+	Un VARIANT dit ce que l'élément EST (sa place, son importance, sa largeur). Un ÉTAT
+	dit ce qui lui ARRIVE (survolé, en erreur, choisi). Ne jamais les mélanger :
+	`error` et `success` sont des états, pas des variants — ils ont déjà leur mécanique
+	(:state(), attribut durable, ARIA).
+
+	ZÉRO JAVASCRIPT. Ce sont des attributs lus par des sélecteurs CSS, rien de plus. Un
+	composant n'a rien à déclarer pour en profiter : il hérite de ces règles du seul fait
+	d'être un composant Zoé.
+
+	  size   : xs · s · m (défaut) · l · xl
+	  tone   : main (défaut) · complement · soft
+	  width  : auto (défaut) · full
+
+	⚠ LA LISTE DE BALISES, ci-dessous — on ne peut pas écrire `[size=l]` tout court : ça
+	   attraperait un <input size="20"> natif, qui n'a rien à voir. La liste est donc
+	   explicite. Elle est TENUE À LA MAIN aujourd'hui (5 balises) ; `scripts/z-manifest`
+	   connaît déjà toutes les balises du repo et pourra la générer le jour où elle
+	   deviendra pénible. Tant qu'elle tient sur une ligne, la main suffit.
+
+	Requiert : une peau qui pose les facteurs (--z-scale-*) et les couleurs.
+	Styleguide 0.5
+	============================================================
+*/
+
+/*
+	SIZE — un seul facteur, appliqué à UN SEUL endroit
+	Styleguide 0.5.1
+
+	Tout, dans nos composants, est déjà en `em` : padding, gap, la case d'une checkbox,
+	l'icône, le halo. Il suffit donc de changer la taille du texte et TOUT suit — c'est
+	pour ça qu'on ne multiplie pas le facteur dans chaque propriété (on l'écrirait vingt
+	fois par composant, et on en oublierait une).
+
+	Les facteurs appartiennent à la PEAU : une peau dense resserre son échelle, une peau
+	généreuse l'étale. Les valeurs de repli ci-dessous ne servent que si aucune peau
+	n'est chargée.
+
+	CONSÉQUENCE À CONNAÎTRE : `em` s'hérite, donc les facteurs SE COMPOSENT. Un composant
+	`s` dans un composant `l` vaut 0,9 × 1,2. C'est voulu (un badge dans un gros bouton
+	doit être gros aussi) ; passer en `rem` au cas par cas si un composant doit garder sa
+	taille absolue.
+*/
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="xs"] { font-size: calc(1em * var(--z-scale-xs, .8)); }
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="s"]  { font-size: calc(1em * var(--z-scale-s, .9)); }
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="m"]  { font-size: calc(1em * var(--z-scale-m, 1)); }
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="l"]  { font-size: calc(1em * var(--z-scale-l, 1.2)); }
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="xl"] { font-size: calc(1em * var(--z-scale-xl, 1.6)); }
+
+/*
+	TONE — l'importance, pas l'apparence
+	Styleguide 0.5.2
+
+	Le variant ne PEINT rien : il pose trois tokens, et chaque composant les consomme à
+	sa façon (un bouton remplit son fond, une case colore son marqueur). C'est la règle
+	de la frontière : un token sert à faire traverser une valeur, pas à décorer sur place.
+
+	  --z-tone__fill  : la surface qui porte le ton
+	  --z-tone__ink   : ce qui s'écrit dessus (contraste garanti par la peau)
+	  --z-tone__line  : le filet
+
+	`main` est le défaut et n'a donc pas de règle : un composant sans `tone` doit se
+	peindre comme avant. Écrire `tone="main"` explicitement donne le même résultat.
+*/
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[tone="main"] {
+	--z-tone__fill: var(--z-accent);
+	--z-tone__ink: var(--z-accent-ink, #fff);
+	--z-tone__line: var(--z-accent);
+}
+
+/* complement — le second rôle : présent, lisible, mais il ne prend pas la lumière. */
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[tone="complement"] {
+	--z-tone__fill: var(--z-surface);
+	--z-tone__ink: var(--z-ink);
+	--z-tone__line: var(--z-line);
+}
+
+/* soft — estompé : il n'existe que quand on le cherche. Pas de surface, pas de filet ;
+   sur une peau à filets (HighTech) c'est le seul ton qui n'a AUCUN trait. */
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[tone="soft"] {
+	--z-tone__fill: transparent;
+	--z-tone__ink: var(--z-ink-soft);
+	--z-tone__line: transparent;
+}
+
+/*
+	WIDTH — la largeur, et rien d'autre
+	Styleguide 0.5.3
+
+	`auto` est le défaut (la boîte se règle sur son contenu) et n'a pas de règle.
+	`full` sert aux formulaires et au mobile, où un bouton doit tenir toute la ligne —
+	sinon chacun le rebricole en CSS dans son coin.
+
+	Nos composants sont en `inline-flex` : il faut passer en `flex` pour qu'ils prennent
+	la ligne, sinon `width: 100%` s'applique à une boîte qui reste dans le flux du texte.
+*/
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[width="full"] {
+	display: flex;
+	width: 100%;
+}
