@@ -1,5 +1,6 @@
 /*
-	z-cursor.js — effets de MOUVEMENT du pointeur (façon Neovide / smear-cursor).
+	z-cursor.js — LE SILLAGE DU POINTEUR (le ruban qui suit la souris, ou qui fuse
+	d'un clic à l'autre).
 
 	⚠ PORTÉ, PAS RÉÉCRIT. Ce moteur vient de l'ancien repo
 	(`packages/core/src/fx/cursor.js`) et il est INTOUCHABLE : on le déplace, on ne le
@@ -9,22 +10,24 @@
 
 	L'USAGE, en une ligne : poser <z-cursor></z-cursor> dans la page. Rien d'autre.
 
-	Master switch composable `mouse-fx` (hérité du plus proche ancêtre) :
-	  - "trail" : un trait plein qui, à CHAQUE clic, FUSE du clic précédent vers le
-	              nouveau (gravé, ne pas rouvrir).
-	  - "smear" : SMEAR 2.0 — un CARRÉ qui dort au dernier clic, puis au clic suivant
-	              se tourne vers le nouveau, s'étire/se déplace et reprend brusquement
-	              sa forme à l'arrivée. Piloté par tokens --z-smear-* (profil, ease,
-	              vitesse, étirement max, opacité).
-	  - "follow" : le trait DEVIENT le curseur (suit la souris en continu, ressort +
-	              étirement ; curseur natif masqué). Aussi via Zoe.cursor.smear().
-	  - "mousetrail" : un RUBAN qui suit le curseur — courbe lissée sur les N dernières
-	              positions, grosse tête → pointe, qui s'efface quand on s'arrête (canvas ;
-	              curseur natif gardé). Tokens --z-trail-*. Aussi via Zoe.cursor.mousetrail().
-	  - (le "click" = le dot au point d'impact est géré par contact.js.)
+	DEUX EFFETS, UN SEUL MOTEUR — et c'est tout ce qui reste (le mode `smear`, un carré
+	qui fusait d'un clic à l'autre, a été supprimé le 2026-07-21 : « je ne garde que le
+	follow-mouse et le click2click »).
 
-	Couleur = --z-accent (suit la skin). Réglable par tokens --z-cursor-*. Coupé
-	sous prefers-reduced-motion. <z-cursor> = élément léger, défini en bas de ce fichier.
+	  fx="move"   le RUBAN suit la souris. Courbe lissée sur les N dernières positions,
+	              grosse tête au curseur → pointe à la queue, qui s'efface quand on
+	              s'arrête. Canvas plein écran, curseur natif gardé.
+	  fx="click"  le MÊME ruban, mais nourri d'un point FANTÔME qui voyage du clic
+	              précédent vers le nouveau (fuseTrail), puis meurt tout seul.
+	  fx="none"   rien.
+
+	Un seul moteur pour les deux : c'est la décision de fond. Le clic→clic n'est pas un
+	autre effet, c'est le même sillage avec une autre main sur la barre.
+
+	Réglé par tokens --z-trail-* (grosseur, longueur, fluidité, courbe, couleur), que
+	CHAQUE PEAU pose à sa façon : la queue de Claude est une plume qui traîne, celle de
+	HighTech un tracé d'instrument. Couleur par défaut = --z-accent, donc elle suit la
+	peau. Coupé sous prefers-reduced-motion.
 */
 
 import { ZElement } from "../../core/z-element/z-element.js";
@@ -37,19 +40,11 @@ function reduced() {
 	return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 }
 
-/* mouse-fx du plus proche ancêtre (défaut "click") — commutateur AVANCÉ, réservé
-   aux expériences (smear/follow). Le commutateur PUBLIC, lui, est `trail` (ci-dessous). */
-function fxOf(node) {
-	return (node?.closest?.("[mouse-fx]")?.getAttribute("mouse-fx") ?? "click").toLowerCase();
-}
-
 /*
 	Attribut PUBLIC `trail` (hérité du plus proche ancêtre, défaut "none") — le SILLAGE,
 	un seul moteur exprimé de deux façons :
 	  - "none"  : aucun sillage (curseur natif seul) ;
-	  - "click" : le SMEAR — un carré qui, à CHAQUE clic, s'étire du clic précédent vers
-	              le nouveau puis reprend sa forme (squash&stretch, profils de matière,
-	              tokens --z-smear-*). C'est LA version validée du clic→clic.
+	  - "click" : le ruban nourri d'un point fantôme qui va du clic précédent au nouveau.
 	  - "move"  : un ruban qui SUIT le curseur en continu (canvas, tokens --z-trail-*).
 	L'impact au clic, lui, est l'autre axe : `fx` (implode/explode), jamais ici.
 	Lu sur la SOURCE déclarée (le dernier <z-contact> actif, via le watcher) — pas de
@@ -66,7 +61,7 @@ function trailOf() {
 
 /* ---------- trail="click" : le SILLAGE fuse du clic précédent au nouveau clic ----------
    MÊME moteur que le move : le ruban est nourri d'un point fantôme A→B qui meurt seul
-   (fuseTrail). Fini `flySmear` (blob séparé) et `fly` (trait droit) : un seul moteur. */
+   (fuseTrail) : un seul moteur pour le suivi ET le clic→clic. */
 let lastClick = null;
 
 function onClickTrail(event) {
@@ -77,26 +72,16 @@ function onClickTrail(event) {
 	lastClick = to;
 }
 
-/* Fait courir un trait de `from` à `to`, étiré dans la direction, qui s'amincit et
-   s'efface à l'arrivée. Tween en rAF (easeOut). */
-/* px d'un token de longueur (« 300ms », « 0.3s », « 14px », « 100% »). */
-function px(raw, fallback) {
-	const s = String(raw).trim();
-	if (s.endsWith("ms")) return parseFloat(s);
-	if (s.endsWith("s")) return parseFloat(s) * 1000;
-	const n = parseFloat(s);
-	return Number.isFinite(n) ? n : fallback;
-}
-/* ---------- Mode SMEAR 2.0 : le carré qui fuse d'un clic à l'autre ----------
-	Un carré dort (invisible) au dernier clic ; au clic suivant il se tourne vers le
-	nouveau, s'étire/se déplace, puis reprend BRUSQUEMENT sa forme au point d'arrivée
-	(et se rendort). Tout est piloté par tokens --z-smear-* (profil et ease lus comme
-	des chaînes CSS). Couleur = --z-accent (suit la skin). Coupé sous reduced-motion. */
+/*
+	LES COURBES — huit familles, qui décident comment l'épaisseur du ruban décroît de la
+	tête vers la queue (`--z-trail-ease`). Une peau choisit la sienne : `sine` fait FONDRE
+	l'épaisseur (la plume de Claude), `linear` la fait tomber droit (le tracé de HighTech).
+	Elles s'appelaient SMEAR_* du temps où un second effet les partageait ; ce mode a été
+	retiré le 2026-07-21, le nom aussi.
+*/
+const BACK_C = 1.70158;
 
-/* Familles d'ease : chacune donne une courbe `in` (0→1 accélérée). La tête prend la
-	variante OUT (miroir), la queue la variante IN → c'est ce couple qui fait « fuse+snap ». */
-const SMEAR_BACK_C = 1.70158;
-const SMEAR_EASES = {
+const EASES = {
 	linear: (t) => t,
 	quad:   (t) => t * t,
 	cubic:  (t) => t * t * t,
@@ -104,204 +89,20 @@ const SMEAR_EASES = {
 	quint:  (t) => t * t * t * t * t,
 	expo:   (t) => (t === 0 ? 0 : Math.pow(2, 10 * (t - 1))),
 	sine:   (t) => 1 - Math.cos((t * Math.PI) / 2),
-	back:   (t) => (SMEAR_BACK_C + 1) * t * t * t - SMEAR_BACK_C * t * t,
+	back:   (t) => (BACK_C + 1) * t * t * t - BACK_C * t * t,
 };
 
-/* Elastic-out : dépasse 1 puis oscille en s'amortissant (le « tremble Pixar »). */
-function smearElastic(t) {
-	if (t === 0 || t === 1) return t;
-	return Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * (2 * Math.PI / 3)) + 1;
-}
-
-/* Lit un token CSS en CHAÎNE (profil, ease) avec repli. */
+/* Lit un token CSS en CHAÎNE (le nom d'une courbe, une couleur) avec repli. */
 function tokenStr(el, name, fallback) {
 	const raw = getComputedStyle(el).getPropertyValue(name).trim();
 	return raw || fallback;
 }
 
-/* Le carré dort au dernier clic ; on garde sa position pour le prochain vol. */
-let lastSmear = null;
-
-function onClickSmear(event) {
-	if (reduced()) return;
-	if (!/\bsmear\b/.test(fxOf(event.target))) return;
-	const to = { x: event.clientX, y: event.clientY };
-	if (lastSmear) flySmear(lastSmear, to, event.target);
-	lastSmear = to;
-}
-
-/*
-	Fait fuser un carré de `from` vers `to`. Durée = distance ÷ vitesse (px/ms) : deux
-	clics proches → quasi instantané (net) ; éloignés → ample (beau). Tween en rAF.
-*/
-function flySmear(from, to, target) {
-	const dx = to.x - from.x;
-	const dy = to.y - from.y;
-	const dist = Math.hypot(dx, dy);
-	if (dist < 1) return;
-
-	const el = document.createElement("z-cursor");
-	el.setAttribute("fx", "smear2");
-	el.setAttribute("aria-hidden", "true");
-	const accent = getComputedStyle(target).getPropertyValue("--z-accent").trim();
-	if (accent) el.style.setProperty("--z-smear-color", accent);
-	/* Rendu dans l'overlay au-dessus de TOUT (topmost par ré-injection). */
-	topLayer().appendChild(el);
-
-	/* Réglages, lus sur l'élément (défauts gravés dans zoe.css §13). */
-	const S = token(el, "--z-smear-size", 12);            /* côté du carré au repos */
-	const speed = token(el, "--z-smear-speed", 3);        /* vitesse px/ms */
-	const smax = token(el, "--z-smear-stretch-max", 150) / 100;  /* aire max (facteur) */
-	const omin = token(el, "--z-smear-opacity-min", 50) / 100;   /* opacité plancher */
-	const adapt = token(el, "--z-smear-opacity-adapt", 1) !== 0; /* fondu à l'étirement */
-	const profile = tokenStr(el, "--z-smear-profile", "volume"); /* matière */
-	const easeFn = SMEAR_EASES[tokenStr(el, "--z-smear-ease", "cubic")] || SMEAR_EASES.cubic;
-	const easeIn = (t) => easeFn(t);
-	const easeOut = (t) => 1 - easeFn(1 - t);
-
-	const areaOrig = S * S;
-	const areaMax = smax * areaOrig;
-	const Lmax = areaMax;                                 /* épaisseur mini 1px → L max = aire max */
-	const angle = Math.atan2(dy, dx);
-	const cos = Math.cos(angle), sin = Math.sin(angle);
-	const duration = Math.max(1, dist / speed);
-	const start = performance.now();
-
-	function frame(now) {
-		let t = (now - start) / duration;
-		if (t > 1) t = 1;
-
-		let L, h, midD;
-		if (profile === "elastic") {
-			/* Vol (étirement) puis atterrissage élastique au nouveau clic. */
-			const fly = 0.55;
-			if (t < fly) {
-				const tt = t / fly;
-				const headD = dist * easeOut(tt), tailD = dist * easeIn(tt);
-				L = Math.min(Lmax, S + (headD - tailD));
-				h = Math.max(1, areaOrig / L);
-				midD = (headD + tailD) / 2;
-			} else {
-				const tt = (t - fly) / (1 - fly);
-				const e = smearElastic(tt);
-				L = S * (1 + (1 - e) * 0.6);
-				h = Math.max(1, areaOrig / L);
-				midD = dist;
-			}
-		} else {
-			const headD = dist * easeOut(t), tailD = dist * easeIn(t);
-			L = Math.min(Lmax, S + (headD - tailD));
-			midD = (headD + tailD) / 2;
-			if (profile === "volume" || profile === "goutte") {
-				h = Math.max(1, areaOrig / L);            /* aire constante (vrai squash&stretch) */
-			} else if (profile === "pointe") {
-				const prog = Lmax > S ? (L - S) / (Lmax - S) : 0;
-				h = Math.max(3, S * (1 - 0.55 * prog));   /* garde de la hauteur → pointe visible */
-			} else {
-				const prog = Lmax > S ? (L - S) / (Lmax - S) : 0;
-				h = Math.max(1, S - (S - 1) * prog);      /* rect : s'amincit linéairement */
-			}
-		}
-
-		/* Allongement (pour la pointe) et amincissement (pour l'opacité). */
-		const stretch01 = Lmax > S ? Math.min(1, Math.max(0, (L - S) / (Lmax - S))) : 0;
-		const spread01 = Math.min(1, Math.max(0, 1 - h / S));
-		const op = adapt ? 1 - (1 - omin) * spread01 : 1;
-
-		const cx = from.x + cos * midD;
-		const cy = from.y + sin * midD;
-
-		el.style.width = `${L}px`;
-		el.style.height = `${h}px`;
-		el.style.marginLeft = `${-L / 2}px`;
-		el.style.marginTop = `${-h / 2}px`;
-		/* Tête (bord droit = sens du vol) arrondie en cap ; queue arrondie en « goutte ». */
-		const rHead = h / 2;
-		const rTail = profile === "goutte" ? h / 2 : Math.min(4, h / 2);
-		el.style.borderRadius = `${rTail}px ${rHead}px ${rHead}px ${rTail}px`;
-		/* Profil « pointe » : vraie queue effilée via clip-path, de 0 (repos) à pointe max. */
-		if (profile === "pointe") {
-			const leftHalf = 50 * (1 - Math.pow(stretch01, 0.6));
-			el.style.borderRadius = "0";
-			el.style.clipPath = `polygon(0 ${(50 - leftHalf).toFixed(1)}%, 100% 0, 100% 100%, 0 ${(50 + leftHalf).toFixed(1)}%)`;
-		} else {
-			el.style.clipPath = "none";
-		}
-		el.style.opacity = t >= 1 ? 0 : op;
-		el.style.transform = `translate(${cx}px, ${cy}px) rotate(${angle}rad)`;
-
-		if (t < 1) requestAnimationFrame(frame);
-		else el.remove();
-	}
-	requestAnimationFrame(frame);
-}
-
-/* ---------- Mode SMEAR (continu) : le trait suit la souris ---------- */
-let smearOn = false;
-let raf = 0;
-let smearEl = null;
-const target = { x: 0, y: 0 };
-const pos = { x: 0, y: 0 };
-
+/* Valeur numérique d'un token, lue sur un élément (le moteur les relit au vol). */
 function token(el, name, fallback) {
 	const raw = getComputedStyle(el).getPropertyValue(name).trim();
 	const n = parseFloat(raw);
 	return Number.isFinite(n) ? n : fallback;
-}
-
-function onMove(event) {
-	target.x = event.clientX;
-	target.y = event.clientY;
-}
-
-function smearLoop() {
-	const stiffness = token(smearEl, "--z-cursor-stiffness", 0.16);
-	/* Le point retardé (queue) rattrape le curseur (tête) : plus stiffness est bas,
-	   plus il traîne → plus l'ÉCART (donc la comète) est grand. « Ralentir » = baisser. */
-	pos.x += (target.x - pos.x) * stiffness;
-	pos.y += (target.y - pos.y) * stiffness;
-	const dx = target.x - pos.x;
-	const dy = target.y - pos.y;
-	const len = Math.hypot(dx, dy);              /* l'écart = la longueur de la comète */
-	const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-	const size = parseFloat(getComputedStyle(smearEl).width) || 18;
-	const thin = token(smearEl, "--z-cursor-thin", 1);
-	/* stretch = combien l'écart allonge la comète (1 = brut) ; stretch-max = plafond
-	   du scaleX pour qu'un flick rapide ne fasse pas une comète infinie. */
-	const stretch = token(smearEl, "--z-cursor-stretch", 1);
-	const stretchMax = token(smearEl, "--z-cursor-stretch-max", 6);
-	/* Centrée au milieu queue↔tête → la TÊTE (+X = sens du mouvement) tombe sur le
-	   curseur réel, la QUEUE traîne au point retardé. Le dégradé fade la queue. */
-	const sx = Math.min(stretchMax, (len * stretch + size) / size);
-	const mx = (pos.x + target.x) / 2;
-	const my = (pos.y + target.y) / 2;
-	smearEl.style.transform =
-		`translate(${mx}px, ${my}px) translate(-50%, -50%) rotate(${angle}deg) scale(${sx}, ${thin})`;
-	raf = requestAnimationFrame(smearLoop);
-}
-
-function startSmear() {
-	if (smearOn || reduced()) return;
-	smearOn = true;
-	smearEl = document.createElement("z-cursor");
-	smearEl.setAttribute("fx", "smear");
-	smearEl.setAttribute("data-on", "");
-	smearEl.setAttribute("aria-hidden", "true");
-	document.body.appendChild(smearEl);
-	document.documentElement.classList.add("z-smear-on");
-	target.x = pos.x = window.innerWidth / 2;
-	target.y = pos.y = window.innerHeight / 2;
-	window.addEventListener("pointermove", onMove, { passive: true });
-	raf = requestAnimationFrame(smearLoop);
-}
-
-function stopSmear() {
-	smearOn = false;
-	cancelAnimationFrame(raf);
-	window.removeEventListener("pointermove", onMove);
-	document.documentElement.classList.remove("z-smear-on");
-	smearEl?.remove();
-	smearEl = null;
 }
 
 /* ---------- Mode MOUSETRAIL : un ruban qui suit le curseur ----------
@@ -356,7 +157,7 @@ function mtLoop() {
 	const thickness = token(root, "--z-trail-thickness", 14);   /* grosseur MAX de la tête */
 	const fade = token(root, "--z-trail-fade", 500);            /* durée de vie d'un point (ms) = longueur du trail */
 	const speedRef = token(root, "--z-trail-speed-ref", 1.2);  /* vitesse (px/ms) qui donne la tête pleine */
-	const easeW = SMEAR_EASES[tokenStr(root, "--z-trail-ease", "linear")] || SMEAR_EASES.linear;
+	const easeW = EASES[tokenStr(root, "--z-trail-ease", "linear")] || EASES.linear;
 	const smooth = Math.min(1, Math.max(0.05, token(root, "--z-trail-smooth", 0.5)));  /* fluidité (bas = plus lisse/traîne) */
 	const now = performance.now();
 
@@ -540,24 +341,19 @@ function stopMouseTrail() {
 export function startCursor() {
 	if (started) return;
 	started = true;
-	/* Trail ET smear 2.0 sont pilotés par clic (par zone via mouse-fx) → écouteurs globaux. */
+	/* UN seul écouteur, en capture, pour toute la page : c'est lui qui nourrit le point
+	   fantôme du clic→clic. Zéro câblage par composant. */
 	document.addEventListener("pointerup", onClickTrail, true);
-	/* (l'ancien moteur smear/blob au clic est retiré : trail="click" = le moteur du ruban.) */
-	/* Le smear CONTINU (curseur qui suit) est global (page) : mot-clé `follow` sur
-	   <html>/<body>. (Le mot `smear` est désormais le Smear 2.0, piloté au clic.) */
-	/* Sillage PUBLIC : trail="move" → le ruban qui suit le curseur (page). */
+	/* La forme historique `<z-contact trail="move">` reste honorée : elle allume le même
+	   ruban que `<z-cursor>`. */
 	if (trailOf() === "move") startMouseTrail();
-	/* Smear CONTINU (expérimental) : mot-clé `follow` sur <html>/<body>. */
-	const page = fxOf(document.body) + " " + (document.documentElement.getAttribute("mouse-fx") || "");
-	if (/\bfollow\b/.test(page)) startSmear();
 }
 
-/* API publique (Zoe.cursor). */
+/* API publique (Zoe.cursor) — pour piloter le sillage depuis du JS, quand la balise
+   ne suffit pas (un mode « présentation » qu'on allume et qu'on éteint, par exemple). */
 export const cursor = {
-	smear() { startSmear(); },
 	mousetrail(on = true) { on ? startMouseTrail() : stopMouseTrail(); },
-	off() { stopSmear(); stopMouseTrail(); },
-	get smearing() { return smearOn; },
+	off() { stopMouseTrail(); },
 	get trailing() { return mtOn; },
 };
 
@@ -569,7 +365,6 @@ export const cursor = {
 	    cadeau de Zoé : un tag à ajouter, rien d'autre à câbler.
 
 	        <z-cursor></z-cursor>              le ruban qui suit la souris (défaut)
-	        <z-cursor fx="smear"></z-cursor>   la comète QUI EST le curseur (natif masqué)
 	        <z-cursor fx="none"></z-cursor>    rien
 
 	  · PEINTURE — celle que le moteur crée à la volée dans l'overlay (la comète, le
@@ -591,7 +386,7 @@ export class ZCursor extends ZElement {
 			es: "La estela del puntero: una etiqueta plana, y el ratón deja una cinta detrás."
 		},
 		attributes: [
-			{ name: "fx", type: "string", description: { en: "move (ribbon following the mouse, default) · click (it fuses from one click to the next) · smear (the comet IS the cursor) · none.", fr: "move (le ruban suit la souris, défaut) · click (il fuse d'un clic au suivant) · smear (la comète EST le curseur) · none.", es: "move (la cinta sigue al ratón, por defecto) · click (fusiona de un clic al siguiente) · smear (la cometa ES el cursor) · none." } },
+			{ name: "fx", type: "string", description: { en: "move (the ribbon follows the mouse, default) · click (it fuses from one click to the next) · none.", fr: "move (le ruban suit la souris, défaut) · click (il fuse d'un clic au suivant) · none.", es: "move (la cinta sigue al ratón, por defecto) · click (fusiona de un clic al siguiente) · none." } },
 			{ name: "tone", type: "string", description: { en: "Colours the wake with the tone (main · complement · soft).", fr: "Colore le sillage avec le ton (main · complement · soft).", es: "Colorea la estela con el tono (main · complement · soft)." } },
 			{ name: "size", type: "string", description: { en: "Thickness of the wake, on the shared scale (xs → xl).", fr: "Grosseur du sillage, sur l'échelle commune (xs → xl).", es: "Grosor de la estela, en la escala común (xs → xl)." } }
 		],
@@ -616,8 +411,7 @@ export class ZCursor extends ZElement {
 
 		this.#porterLesVariants();
 
-		if (fx === "smear" || fx === "follow") startSmear();
-		else if (fx !== "click") startMouseTrail();
+		if (fx !== "click") startMouseTrail();
 
 		/* Les effets AU CLIC (le trait qui fuse d'un clic à l'autre) sont pilotés par les
 		   écouteurs globaux du moteur : on les branche une fois. En `click`, on ne

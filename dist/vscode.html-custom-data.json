@@ -58,6 +58,24 @@
       ]
     },
     {
+      "name": "z-cursor",
+      "description": "The pointer's wake: one flat tag, and the mouse leaves a ribbon behind it.",
+      "attributes": [
+        {
+          "name": "fx",
+          "description": "move (the ribbon follows the mouse, default) · click (it fuses from one click to the next) · none."
+        },
+        {
+          "name": "tone",
+          "description": "Colours the wake with the tone (main · complement · soft)."
+        },
+        {
+          "name": "size",
+          "description": "Thickness of the wake, on the shared scale (xs → xl)."
+        }
+      ]
+    },
+    {
       "name": "z-checkbox",
       "description": "A checkbox — inherits all z-element states, marker + label anatomy, painted by the skin.",
       "attributes": [

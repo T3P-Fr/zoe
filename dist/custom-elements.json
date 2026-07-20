@@ -223,6 +223,115 @@
     },
     {
       "kind": "javascript-module",
+      "path": "tools/z-cursor/z-cursor.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZCursor",
+          "tagName": "z-cursor",
+          "summary": "The pointer's wake: one flat tag, and the mouse leaves a ribbon behind it.",
+          "attributes": [
+            {
+              "name": "fx",
+              "type": {
+                "text": "string"
+              },
+              "description": "move (the ribbon follows the mouse, default) · click (it fuses from one click to the next) · none."
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "string"
+              },
+              "description": "Colours the wake with the tone (main · complement · soft)."
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "string"
+              },
+              "description": "Thickness of the wake, on the shared scale (xs → xl)."
+            }
+          ],
+          "events": [],
+          "cssProperties": [
+            {
+              "name": "--z-trail-thickness",
+              "description": "Head thickness (px)."
+            },
+            {
+              "name": "--z-trail-fade",
+              "description": "Life of a point (ms) — the wake's length."
+            },
+            {
+              "name": "--z-trail-color",
+              "description": "Colour (defaults to the skin's accent)."
+            }
+          ],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-cursor",
+          "declaration": {
+            "name": "ZCursor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "components/z-checkbox/z-checkbox.js",
       "declarations": [
         {

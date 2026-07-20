@@ -15,6 +15,11 @@ The click leaves a mark where the pointer touched. Write it once, flat: the whol
 Attributes: fx (string), disabled (boolean)
 Events: zoe:contact
 
+## <z-cursor> (tools)
+The pointer's wake: one flat tag, and the mouse leaves a ribbon behind it.
+Attributes: fx (string), tone (string), size (string)
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
 ## <z-checkbox> (components)
 A checkbox — inherits all z-element states, marker + label anatomy, painted by the skin.
 Attributes: current (boolean), disabled (boolean), error (boolean), success (boolean)

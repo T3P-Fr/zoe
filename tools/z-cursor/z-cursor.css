@@ -6,8 +6,8 @@
 
    L'USAGE tient en une balise, posée à plat dans la page :
 
-       <z-cursor></z-cursor>              le ruban qui suit la souris (défaut)
-       <z-cursor fx="smear"></z-cursor>   la comète QUI EST le curseur (natif masqué)
+       <z-cursor></z-cursor>              le ruban SUIT la souris (défaut)
+       <z-cursor fx="click"></z-cursor>   il FUSE d'un clic au suivant
        <z-cursor fx="none"></z-cursor>    rien
 
    La couleur suit la peau (--z-accent) sauf si on pose --z-cursor-color / --z-trail-color.
@@ -45,51 +45,9 @@ z-cursor {
 /* COMÈTE (smear/trail) : tête ronde pleine sur ~la moitié (droite = sens du
    mouvement), puis dégradé qui s'efface vers la queue → « gros sur la moitié
    puis fine et fade ». L'étirement scaleX déforme l'arrondi tout seul (ta transfo). */
-z-cursor[fx="smear"] {
-  background: linear-gradient(to left, var(--c) 46%, transparent 100%);
-  border-radius: 60% 50% 50% 60% / 60% 55% 55% 60%;
-}
-
-/* Défauts du SMEAR (la comète qui EST le curseur). Réglables par les sliders du Lab :
-   stiffness (bas = traîne long), stretch (force d'étirement selon l'écart), stretch-max
-   (plafond du scaleX → un flick rapide ne part pas en comète infinie), thin (épaisseur). */
-z-cursor[fx="smear"] {
-  --z-cursor-stiffness: 0.16;
-  /* rattrapage du ressort (bas = comète longue) */
-  --z-cursor-stretch: 1;
-  /* combien l'écart allonge la comète */
-  --z-cursor-stretch-max: 6;
-  /* plafond du scaleX (anti-comète-infinie) */
-  --z-cursor-thin: 1;
-  /* épaisseur (scaleY), 1 = ronde */
-}
-
-
-/* SMEAR 2.0 — le carré qui fuse d'un clic à l'autre (moteur cursor.js/flySmear).
-   Un carré dort au dernier clic ; au clic suivant il se tourne, s'étire et reprend sa
-   forme à l'arrivée. TOUT est réglable par ces tokens (lus par le moteur au vol). Les
-   numériques sont SANS unité (le moteur les interprète). Piloté par mouse-fx="smear". */
-z-cursor[fx="smear2"] {
-  --z-smear-size: 12;
-  /* côté du carré au repos (px) */
-  --z-smear-speed: 3;
-  /* vitesse px/ms → durée = distance ÷ vitesse */
-  --z-smear-stretch-max: 150;
-  /* aire max en % de l'aire d'origine (plafond d'étirement) */
-  --z-smear-opacity-min: 50;
-  /* opacité plancher (%) au max d'étirement */
-  --z-smear-opacity-adapt: 1;
-  /* 1 = fond avec l'étirement, 0 = toujours plein */
-  --z-smear-profile: volume;
-  /* volume | rect | goutte | pointe | elastic */
-  --z-smear-ease: cubic;
-  /* linear|quad|cubic|quart|quint|expo|sine|back */
-  --z-smear-color: var(--z-accent, #006eff);
-  background: var(--z-smear-color);
-  /* le reste (forme, opacité) est posé au vol par le moteur */
-  /* Le moteur pilote l'opacité frame-à-frame → pas de transition (sinon ça traîne). */
-  transition: none;
-}
+/* La COMÈTE et le carré qui fusait d'un clic à l'autre ont été retirés le 2026-07-21
+   (« je ne garde que le follow-mouse et le click2click »). Leur CSS est parti avec :
+   rayé = purgé. Ne restent que la plomberie de la peinture et les tokens du ruban. */
 
 z-cursor[data-on] {
   opacity: 1;
@@ -114,12 +72,6 @@ z-cursor[data-on] {
 /* Au clic : petit « punch » (le blob gonfle un instant). */
 z-cursor[data-punch] {
   --z-cursor-size: 26px;
-}
-
-/* Curseur natif masqué tant que le smear est actif (opt-in). */
-html.z-smear-on,
-html.z-smear-on * {
-  cursor: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
