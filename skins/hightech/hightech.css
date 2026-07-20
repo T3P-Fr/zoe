@@ -128,6 +128,18 @@
 	   qu'on ait à écrire `size` nulle part. */
 	--z-scale-base: .9;
 
+	/*
+		SON SILLAGE (z-cursor) — un TRACÉ D'INSTRUMENT, pas une plume. Fin, court, collé au
+		pointeur, épaisseur qui tombe LINÉAIREMENT : on lit une mesure, pas un geste.
+		C'est le contraire exact de la queue de Claude, et c'est le but.
+	*/
+	--z-trail-thickness: 7;      /* le filet, encore (loi 2) */
+	--z-trail-fade: 260;         /* court : HighTech ne traîne pas */
+	--z-trail-smooth: .85;       /* collé au pointeur, sans mollesse */
+	--z-trail-speed-ref: 1.6;    /* il faut aller vite pour remplir la tête */
+	--z-trail-ease: linear;      /* décroissance droite, comme une règle graduée */
+	--z-trail-color: var(--z-accent);
+
 	--z-scale-xs: .85;
 	--z-scale-s: .92;
 	--z-scale-m: 1;

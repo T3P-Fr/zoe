@@ -90,8 +90,20 @@
 &lt;z-cursor fx="none"&gt;&lt;/z-cursor&gt;    <span style="color:var(--z-ink-soft)">rien</span></code></pre>
 
 <h2>La piste</h2>
-<p class="note">Balade-toi ici. Vite, lentement, en arrêt brusque — c'est là que le ruban se lit.</p>
-<div class="piste">bouge la souris</div>
+<p class="note">
+	Balade-toi ici. Vite, lentement, en arrêt brusque — c'est là que le ruban se lit.
+	Et <b>change de peau</b> : la queue de Claude est une plume qui traîne, celle de
+	HighTech un tracé d'instrument, fin et sec. Même balise, deux écritures.
+</p>
+
+<div class="molettes">
+	<span>l'effet :</span>
+	<a href="?fx=move" id="l-move">move — il suit la souris</a>
+	<a href="?fx=click" id="l-click">click → click — il fuse d'un clic au suivant</a>
+	<a href="?fx=smear" id="l-smear">smear — la comète EST le curseur</a>
+</div>
+
+<div class="piste" id="piste">bouge la souris — ou clique en deux endroits</div>
 
 <h2>Les réglages</h2>
 <p class="note">
@@ -121,7 +133,19 @@
 	import "../z-contact/z-contact.js";
 	import "../../core/z-layer/z-layer.js";
 	import "../../components/z-button/z-button.js";
-	import "./z-cursor.js";
+
+	/*
+		L'effet se choisit dans l'URL (?fx=click) et se pose sur la balise AVANT que son
+		module ne la définisse : c'est au moment où l'élément est « upgradé » que
+		z-cursor lit son `fx`. L'écrire après ne servirait à rien.
+	*/
+	const choisi = new URLSearchParams(location.search).get("fx") || "move";
+	document.querySelector("body > z-cursor").setAttribute("fx", choisi);
+	document.getElementById(`l-${choisi}`)?.style.setProperty("color", "var(--z-accent)");
+	document.getElementById(`l-${choisi}`)?.style.setProperty("font-weight", "700");
+	if (choisi === "click") document.getElementById("piste").textContent = "clique ici, puis là — le trait fuse d'un clic à l'autre";
+
+	await import("./z-cursor.js");
 
 	/*
 		Les molettes écrivent les tokens du ruban sur la racine ; le moteur les relit à

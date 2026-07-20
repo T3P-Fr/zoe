@@ -52,6 +52,20 @@
 		(padding, gap, marqueur, icône : ils sont en `em`).
 		Claude étale un peu : elle respire, elle n'est pas dense.
 	*/
+	/*
+		SON SILLAGE (z-cursor) — une queue d'ENCRE. Claude écrit à la plume : la trace est
+		GRASSE, elle s'attarde, et elle s'amincit lentement comme une déliée. Tête épaisse,
+		longue rémanence, suivi mou (le ruban traîne derrière la souris au lieu de lui
+		coller), décroissance en sinus — l'épaisseur FOND au lieu de tomber.
+		À comparer avec HighTech, qui fait exactement l'inverse : même balise, deux écritures.
+	*/
+	--z-trail-thickness: 22;     /* la plume est large */
+	--z-trail-fade: 900;         /* elle sèche lentement : la trace reste */
+	--z-trail-smooth: .3;        /* elle traîne — jamais collée au pointeur */
+	--z-trail-speed-ref: .8;     /* la tête se remplit vite, même à vitesse modérée */
+	--z-trail-ease: sine;        /* l'épaisseur fond vers la queue, elle ne tombe pas */
+	--z-trail-color: var(--z-accent);
+
 	--z-scale-xs: .8;
 	--z-scale-s: .9;
 	--z-scale-m: 1;

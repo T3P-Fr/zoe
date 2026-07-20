@@ -47,17 +47,17 @@
 /* Le cran de repos : sans attribut `size`, un composant vaut le facteur de BASE de la
    peau. C'est le réglage d'ensemble — une peau qui se veut dense pose .9 et tout
    rapetisse d'un coup, sans qu'on touche à un seul composant. */
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group) {
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor) {
 	font-size: calc(1em * var(--z-scale-base, 1));
 }
 
 /* Les crans multiplient la base : régler l'ensemble et régler un cran restent deux
    gestes indépendants. */
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="xs"] { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-xs, .8)); }
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="s"]  { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-s, .9)); }
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="m"]  { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-m, 1)); }
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="l"]  { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-l, 1.2)); }
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[size="xl"] { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-xl, 1.6)); }
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor)[size="xs"] { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-xs, .8)); }
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor)[size="s"]  { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-s, .9)); }
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor)[size="m"]  { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-m, 1)); }
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor)[size="l"]  { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-l, 1.2)); }
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor)[size="xl"] { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-xl, 1.6)); }
 
 /*
 	TONE — l'importance, pas l'apparence
@@ -74,14 +74,14 @@
 	`main` est le défaut et n'a donc pas de règle : un composant sans `tone` doit se
 	peindre comme avant. Écrire `tone="main"` explicitement donne le même résultat.
 */
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[tone="main"] {
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor)[tone="main"] {
 	--z-tone__fill: var(--z-accent);
 	--z-tone__ink: var(--z-accent-ink, #fff);
 	--z-tone__line: var(--z-accent);
 }
 
 /* complement — le second rôle : présent, lisible, mais il ne prend pas la lumière. */
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[tone="complement"] {
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor)[tone="complement"] {
 	--z-tone__fill: var(--z-surface);
 	--z-tone__ink: var(--z-ink);
 	--z-tone__line: var(--z-line);
@@ -89,7 +89,7 @@
 
 /* soft — estompé : il n'existe que quand on le cherche. Pas de surface, pas de filet ;
    sur une peau à filets (HighTech) c'est le seul ton qui n'a AUCUN trait. */
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[tone="soft"] {
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor)[tone="soft"] {
 	--z-tone__fill: transparent;
 	--z-tone__ink: var(--z-ink-soft);
 	--z-tone__line: transparent;
@@ -106,7 +106,7 @@
 	Nos composants sont en `inline-flex` : il faut passer en `flex` pour qu'ils prennent
 	la ligne, sinon `width: 100%` s'applique à une boîte qui reste dans le flux du texte.
 */
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group)[width="full"] {
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor)[width="full"] {
 	display: flex;
 	width: 100%;
 }

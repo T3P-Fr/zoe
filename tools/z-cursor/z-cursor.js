@@ -27,6 +27,7 @@
 	sous prefers-reduced-motion. <z-cursor> = élément léger, défini en bas de ce fichier.
 */
 
+import { ZElement } from "../../core/z-element/z-element.js";
 import { topLayer } from "../z-contact/z-overlay.js";
 import { activeSource } from "../z-contact/z-contact-source.js";
 
@@ -55,6 +56,10 @@ function fxOf(node) {
 	source = pas de sillage (opt-in, comme fx).
 */
 function trailOf() {
+	/* Une balise <z-cursor fx="click"> écrite dans la page VAUT déclaration de sillage au
+	   clic, au même titre que <z-contact trail="click"> (la forme historique). C'est du
+	   routage, pas du mouvement : le moteur, lui, n'est pas touché. */
+	if (document.querySelector('body > z-cursor[fx="click"]')) return "click";
 	const src = activeSource();
 	return src ? (src.getAttribute("trail") || "none").toLowerCase() : "none";
 }
@@ -574,8 +579,33 @@ export const cursor = {
 	`z-overlay`, la source vit dans la page. Un `closest("z-overlay")` suffit — le moteur
 	de mouvement n'est pas touché, et c'est la règle (on le PORTE, on ne le refait pas).
 */
-export class ZCursor extends HTMLElement {
+export class ZCursor extends ZElement {
+	/*
+		L'API MACHINE, lue par scripts/z-manifest (autocomplétion VSCode + doc + llms.txt).
+	*/
+	static api = {
+		tag: "z-cursor",
+		summary: {
+			en: "The pointer's wake: one flat tag, and the mouse leaves a ribbon behind it.",
+			fr: "Le sillage du pointeur : une balise à plat, et la souris laisse un ruban derrière elle.",
+			es: "La estela del puntero: una etiqueta plana, y el ratón deja una cinta detrás."
+		},
+		attributes: [
+			{ name: "fx", type: "string", description: { en: "move (ribbon following the mouse, default) · click (it fuses from one click to the next) · smear (the comet IS the cursor) · none.", fr: "move (le ruban suit la souris, défaut) · click (il fuse d'un clic au suivant) · smear (la comète EST le curseur) · none.", es: "move (la cinta sigue al ratón, por defecto) · click (fusiona de un clic al siguiente) · smear (la cometa ES el cursor) · none." } },
+			{ name: "tone", type: "string", description: { en: "Colours the wake with the tone (main · complement · soft).", fr: "Colore le sillage avec le ton (main · complement · soft).", es: "Colorea la estela con el tono (main · complement · soft)." } },
+			{ name: "size", type: "string", description: { en: "Thickness of the wake, on the shared scale (xs → xl).", fr: "Grosseur du sillage, sur l'échelle commune (xs → xl).", es: "Grosor de la estela, en la escala común (xs → xl)." } }
+		],
+		states: ZElement.api.states,
+		cssVars: [
+			{ name: "--z-trail-thickness", description: { en: "Head thickness (px).", fr: "Grosseur de la tête (px).", es: "Grosor de la cabeza (px)." } },
+			{ name: "--z-trail-fade", description: { en: "Life of a point (ms) — the wake's length.", fr: "Durée de vie d'un point (ms) — la longueur du sillage.", es: "Vida de un punto (ms) — el largo de la estela." } },
+			{ name: "--z-trail-color", description: { en: "Colour (defaults to the skin's accent).", fr: "La couleur (par défaut l'accent de la peau).", es: "El color (por defecto el acento de la piel)." } }
+		]
+	};
+
 	connectedCallback() {
+		super.connectedCallback();
+
 		/* Peinture éphémère de l'overlay : rien à déclencher, elle EST déjà l'effet. */
 		if (this.closest("z-overlay")) return;
 
@@ -583,12 +613,52 @@ export class ZCursor extends HTMLElement {
 		   de la souris est ce qu'on vient chercher en écrivant la balise. */
 		const fx = (this.getAttribute("fx") || "move").toLowerCase();
 		if (fx === "none" || reduced()) return;
-		if (fx === "smear" || fx === "follow") startSmear();
-		else startMouseTrail();
 
-		/* Les effets AU CLIC (le trait qui fuse d'un clic à l'autre) restent pilotés par
-		   les écouteurs globaux du moteur : on les branche une fois. */
+		this.#porterLesVariants();
+
+		if (fx === "smear" || fx === "follow") startSmear();
+		else if (fx !== "click") startMouseTrail();
+
+		/* Les effets AU CLIC (le trait qui fuse d'un clic à l'autre) sont pilotés par les
+		   écouteurs globaux du moteur : on les branche une fois. En `click`, on ne
+		   démarre PAS le ruban ici — c'est le premier fuse qui l'allumera, sinon un ruban
+		   suivrait la souris avant même qu'on ait cliqué. */
 		startCursor();
+	}
+
+	/*
+		LE PONT ENTRE LES VARIANTS ET LE MOTEUR.
+
+		`tone` et `size` posent des tokens SUR CETTE BALISE (voir core/z-element.css), mais
+		le ruban est peint dans un canevas plein écran : il ne peut pas hériter d'un
+		élément de la page, il lit ses réglages sur la racine. On recopie donc, une fois,
+		ce que les variants ont résolu ici vers les tokens que le moteur lit là-bas.
+
+		Une valeur écrite à la main sur la racine gagne : on ne l'écrase que si l'auteur
+		a demandé un variant.
+	*/
+	#porterLesVariants() {
+		const lu = getComputedStyle(this);
+		const racine = document.documentElement.style;
+
+		if (this.hasAttribute("tone")) {
+			const couleur = lu.getPropertyValue("--z-tone__fill").trim();
+			/* `soft` vaut `transparent` : un sillage invisible n'a pas de sens, on prend
+			   alors son encre, qui est la couleur estompée de la peau. */
+			const retenue = (!couleur || couleur === "transparent")
+				? lu.getPropertyValue("--z-tone__ink").trim()
+				: couleur;
+			if (retenue) racine.setProperty("--z-trail-color", retenue);
+		}
+
+		if (this.hasAttribute("size")) {
+			/* La taille du texte de cette balise EST le facteur résolu (base × cran) :
+			   le ruban en tire sa grosseur, dans la même échelle que tout le reste. */
+			const facteur = parseFloat(lu.fontSize) / 16;
+			const grosseur = parseFloat(getComputedStyle(document.documentElement)
+				.getPropertyValue("--z-trail-thickness") || 14);
+			racine.setProperty("--z-trail-thickness", (grosseur * facteur).toFixed(1));
+		}
 	}
 }
 
