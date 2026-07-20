@@ -1,0 +1,84 @@
+/* ==========================================================================
+   effet · MORPH — le rond naît sous la souris, meurt en épousant le composant
+   --------------------------------------------------------------------------
+   UNE RECETTE DU CATALOGUE. Elle n'est chargée par PERSONNE par défaut : une peau
+   l'importe si c'est SA signature (`@import ".../effects/morph.css";`). Une peau qui
+   n'importe rien n'a aucun effet au curseur — c'est le cas de la peau Claude, qui
+   signe avec l'onde de ses composants. Le choix d'un effet est une décision de PEAU,
+   jamais de page : c'est pour ça qu'il vit ici et pas dans z-contact.css.
+
+   Le geste dit ce que le clic a fait : « ce point que tu as visé, c'est CE composant ».
+   Le moteur a recopié la boîte de la cible sur l'effet (--z-contact--target__w/h/radius
+   + l'écart dx/dy entre le point de contact et le centre du composant) : le CSS n'a plus
+   qu'à s'y rendre. Un CONTOUR, jamais un aplat — le remplissage masquerait le composant
+   au moment précis où on le regarde (et sur une peau à filets, ce serait un corps
+   étranger). Le rayon d'arrivée est celui du composant : carré sur HighTech, arrondi sur
+   une peau ronde. On ne décide pas de la forme, on la LIT.
+
+   `translate` (propriété individuelle) porte le déplacement vers le centre du composant ;
+   `transform` reste au centrage -50% des parts. Les deux se composent, aucune ne s'écrase.
+
+   Réglages (posés par la peau) : --z-contact-size · --z-contact-width ·
+   --z-contact-duration · --z-contact-color.
+   Styleguide 12.4
+   ====================================================================== */
+z-overlay z-contact z-foreground {
+	width: var(--z-contact-size, 22px);
+	height: var(--z-contact-size, 22px);
+	border: var(--z-contact-width, 2px) solid var(--c);
+	border-radius: 50%;
+
+	/* Le REMPLISSAGE, `transparent` par défaut : la recette reste un contour tant qu'une
+	   peau ne demande rien. Une peau qui en veut un le pose en --z-contact-fill, et le
+	   prend TRANSLUCIDE — un aplat opaque masquerait le composant à l'instant précis où
+	   l'œil s'y pose (et sur une peau à filets, ce serait un corps étranger). Il grandit
+	   et s'éteint avec l'anneau : c'est la même boîte, donc le même mouvement. */
+	background: var(--z-contact-fill, transparent);
+
+	opacity: 0;
+	animation: z-contact-morph var(--z-contact-duration, 0.5s) var(--z-ease, ease-out) forwards;
+}
+
+/*
+	Trois temps, et le premier compte autant que les autres :
+	  1. le ROND EXISTE sous la souris (jusqu'à ~18 %) — sans ce palier, la courbe
+	     ease-out mange le départ et l'œil ne voit qu'un trait qui file ;
+	  2. il s'ouvre vers la boîte du composant ;
+	  3. il s'éteint pile en l'épousant — il ne reste rien, le composant est à nu.
+*/
+@keyframes z-contact-morph {
+	0% {
+		width: var(--z-contact-size, 22px);
+		height: var(--z-contact-size, 22px);
+		border-radius: 50%;
+		translate: 0 0;
+		opacity: 0;
+	}
+
+	8% {
+		opacity: 1;
+	}
+
+	/* le palier : le rond est là, net, à peine gonflé — c'est LUI qu'on voit partir */
+	18% {
+		width: calc(var(--z-contact-size, 22px) * 1.15);
+		height: calc(var(--z-contact-size, 22px) * 1.15);
+		border-radius: 50%;
+		translate: 0 0;
+		opacity: 1;
+	}
+
+	/* l'anneau tient sa couleur presque jusqu'au bout : il doit ARRIVER, pas s'évaporer
+	   à mi-chemin */
+	70% {
+		opacity: .85;
+	}
+
+	to {
+		width: var(--z-contact--target__w, 64px);
+		height: var(--z-contact--target__h, 32px);
+		border-radius: var(--z-contact--target__radius, 0px);
+		translate: var(--z-contact--target__dx, 0px) var(--z-contact--target__dy, 0px);
+		opacity: 0;
+	}
+}

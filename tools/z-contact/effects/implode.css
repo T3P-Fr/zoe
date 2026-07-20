@@ -1,0 +1,69 @@
+/* ==========================================================================
+   effet · IMPLODE — l'énergie se ramasse en un point
+   --------------------------------------------------------------------------
+   UNE RECETTE DU CATALOGUE, chargée par personne par défaut : une peau l'importe si
+   c'est sa signature (`@import ".../effects/implode.css";`).
+
+   L'anneau (z-foreground) converge vers le centre PENDANT que le point (z-marker) s'y
+   condense. Le point arrive décalé dans le temps, pile quand l'anneau se referme :
+   c'est ce retard qui fait lire « ça se ramasse » plutôt que « ça clignote ».
+
+   Réglages (posés par la peau) : --z-contact-size · --z-contact-duration ·
+   --z-contact-color.
+   Styleguide 12.3
+   ====================================================================== */
+z-overlay z-contact z-foreground {
+	width: calc(var(--z-contact-size, 22px) * 3.7);
+	height: calc(var(--z-contact-size, 22px) * 3.7);
+	border: 1px solid var(--c);
+	will-change: width, height, border-width, opacity;
+	animation: z-contact-implode-ring var(--z-contact-duration, 0.5s) var(--z-ease, ease-in) forwards;
+}
+
+@keyframes z-contact-implode-ring {
+	from {
+		width: calc(var(--z-contact-size, 22px) * 3.7);
+		height: calc(var(--z-contact-size, 22px) * 3.7);
+		border-width: 1px;
+		opacity: 0;
+	}
+
+	25% {
+		opacity: 1;
+	}
+
+	to {
+		width: calc(var(--z-contact-size, 22px) * 0.6);
+		height: calc(var(--z-contact-size, 22px) * 0.6);
+		border-width: 3px;
+		opacity: 0;
+	}
+}
+
+/* Le point (z-marker), décalé dans le temps pour arriver pile quand l'anneau converge.
+   Le moteur ne crée ce z-marker que pour l'effet « implode » — les autres recettes
+   n'ont rien à peindre dessus. */
+z-overlay z-contact z-marker {
+	width: var(--z-contact-size, 22px);
+	height: var(--z-contact-size, 22px);
+	background: var(--c);
+	opacity: 0;
+	animation: z-contact-implode-dot calc(var(--z-contact-duration, 0.5s) * 0.7) var(--z-ease, ease-out) calc(var(--z-contact-duration, 0.5s) * 0.6) forwards;
+}
+
+@keyframes z-contact-implode-dot {
+	0% {
+		transform: translate(-50%, -50%) scale(0);
+		opacity: 1;
+	}
+
+	45% {
+		transform: translate(-50%, -50%) scale(1);
+		opacity: 1;
+	}
+
+	to {
+		transform: translate(-50%, -50%) scale(0.8);
+		opacity: 0;
+	}
+}

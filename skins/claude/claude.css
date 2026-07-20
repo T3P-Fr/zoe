@@ -5,6 +5,15 @@
 	Le contre-pied de HighTech, sans look SaaS générique : encre chaude sur papier
 	crème, accent argile/terre cuite, serif humaniste, mouvement qui REBONDIT.
 	Signée par Claude, invitée par Christophe. Remplace hightech.css → tout suit.
+
+	SA SIGNATURE AU CLIC — AUCUN effet au curseur, et c'est un CHOIX, pas un oubli :
+	cette peau signe avec l'onde de ses propres composants, qui part du composant et
+	non du pointeur. Elle n'importe donc rien du catalogue `tools/z-contact/effects/`
+	(HighTech, elle, y prend `morph`). Pour lui en donner un, une seule ligne suffit,
+	tout en tête de ce fichier :
+
+	    @import url("../../tools/z-contact/effects/implode.css");
+
 	Styleguide skin.claude
 	============================================================
 */

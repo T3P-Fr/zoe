@@ -1,216 +1,79 @@
 /* ==========================================================================
-   z-contact — l'effet au POINT DE CONTACT (impact)             Styleguide 12.0
+   z-contact — la PLOMBERIE de l'effet au point de contact   Styleguide 12.0
    --------------------------------------------------------------------------
-   PORTÉ tel quel depuis packages/core/styles/zoe.css §12 de l'ancien repo (le moteur
-   z-contact est INTOUCHABLE : on le déplace, on ne le refait pas). Ajout de cette
-   reprise : l'effet `morph` (§12.4) et la scène `z-overlay` (§12.5), qui vivait dans
-   une autre section du fichier d'origine.
+   CE FICHIER NE PEINT RIEN, ET C'EST LA RÈGLE. Il pose seulement la scène : où
+   l'effet apparaît, comment ses pièces sont centrées sur le point touché, et la
+   couleur héritée de la cible. Sans recette, un clic ne fait RIEN de visible.
 
-   Posé par le moteur z-contact.js à la position du pointeur (left/top inline).
-   L'attribut `fx` (porté par la SOURCE déclarée) choisit l'effet :
-     fx="implode" (DÉFAUT) — un anneau converge vers le centre PENDANT qu'un
-                        DOT s'y condense (l'énergie qui se ramasse en un point) ;
-     fx="explode"          — un anneau jaillit du centre (épais → fin, fond) ;
-     fx="morph"            — un petit rond naît sous la souris et meurt en prenant
-                             la FORME du composant touché (taille + rayon) ;
-     fx="none"             — rien.
-   Couches en PARTS NOMMÉES réelles (ciblables/skinnables) : `z-foreground` = l'onde/anneau,
-   `z-marker` = le point central (implode). z-contact NE dérive PAS de ZoeElement, mais
-   SUIT l'anatomie (parts nommées), comme tout composant Zoé. Centrées pile sur le contact.
-   Couleur = accent de l'élément touché. Sur tactile, le moteur met l'onde à l'échelle du
-   doigt (event.width). Coupé sous prefers-reduced-motion.
+   POURQUOI — tant que les effets vivaient ici, ils s'appliquaient à toutes les peaux :
+   changer l'effet pour HighTech le changeait pour Claude. Un effet de clic n'est pas
+   de la plomberie, c'est une SIGNATURE : il appartient à la peau, au même titre que
+   la couleur ou le rayon.
+
+   LE CATALOGUE — un effet = un fichier dans `effects/`, chargé par personne par
+   défaut. Une peau prend celui qu'elle veut, en CSS, sans une ligne de JS :
+
+       @import "../../tools/z-contact/effects/morph.css";     ← HighTech signe ainsi
+
+   Une peau qui n'importe rien n'a aucun effet au curseur (la peau Claude : elle signe
+   avec l'onde de ses composants, qui part du composant et non du pointeur).
+   Aujourd'hui au catalogue : `morph` · `implode` · `explode`.
+
+   LE MOTEUR (z-contact.js) est INTOUCHABLE et reste inchangé : à chaque contact il
+   réplique l'effet dans `z-overlay`, le pose à la position du pointeur, et lui recopie
+   la boîte de la cible (--z-contact--target__w/h/radius/dx/dy). Les recettes n'ont
+   qu'à s'en servir. L'attribut `fx="none"` reste le coupe-circuit d'une page.
+
+   Les couches sont des PARTS NOMMÉES réelles (ciblables, skinnables) : `z-foreground`
+   = l'onde/anneau, `z-marker` = le point central. z-contact NE dérive PAS de ZElement
+   mais SUIT l'anatomie, comme tout composant Zoé. Sur tactile, le moteur met l'onde à
+   l'échelle du doigt (event.width). Coupé sous prefers-reduced-motion.
    ====================================================================== */
+
 /* La SOURCE <z-contact> DÉCLARÉE par l'auteur (à plat, pas un wrapper) : pure config,
-   INVISIBLE et sans layout. Elle porte la recette (fx/trail) ; le moteur la lit via le
-   watcher (activeSource). display:none n'empêche pas de lire ses attributs. */
+   INVISIBLE et sans layout. Elle dit « le moteur tourne sur cette page » ; le moteur la
+   lit via le watcher (activeSource). display:none n'empêche pas de lire ses attributs. */
 z-contact {
-  display: none;
+	display: none;
 }
 
 /* L'EFFET éphémère : répliqué DANS l'overlay, positionné au point de contact. Scopé à
-   `z-overlay` pour ne JAMAIS styler le wrapper source (lui, il vit dans la page). */
+   `z-overlay` pour ne JAMAIS styler le wrapper source (lui, il vit dans la page).
+   `--c` = la couleur, lue sur la peau, sinon l'accent de l'élément touché. */
 z-overlay z-contact {
-  position: fixed;
-  display: block;
-  pointer-events: none;
-  --c: var(--z-contact-color, var(--z-accent, #006eff));
+	position: fixed;
+	display: block;
+	pointer-events: none;
+	--c: var(--z-contact-color, var(--z-accent, #006eff));
 }
 
-/* ----- parts (z-foreground = l'onde, z-marker = le point) : vrais éléments, centrés PILE
-   sur le point de contact (Styleguide 12.1) ----- */
+/* Les parts (z-foreground = l'onde, z-marker = le point) : vrais éléments, centrés PILE
+   sur le point de contact. Aucune taille, aucune couleur, aucune animation ici — c'est
+   la recette de la peau qui les donne. Styleguide 12.1 */
 z-overlay z-contact z-foreground,
 z-overlay z-contact z-marker {
-  position: absolute;
-  left: 0;
-  top: 0;
-  display: block;
-  border-radius: 50%;
-  box-sizing: border-box;
-  transform: translate(-50%, -50%);
+	position: absolute;
+	left: 0;
+	top: 0;
+	display: block;
+	border-radius: 50%;
+	box-sizing: border-box;
+	transform: translate(-50%, -50%);
 }
 
-/* ----- explode : l'onde (z-foreground) jaillit du centre — petit + épais → grand + fin, en
-   fondant (Styleguide 12.2) ----- */
-z-contact[fx="explode"] z-foreground {
-  width: var(--z-contact-size, 22px);
-  height: var(--z-contact-size, 22px);
-  border: var(--z-contact-width, 11px) solid var(--c);
-  will-change: width, height, border-width, opacity;
-  animation: z-contact-explode var(--z-contact-duration, 0.55s) var(--z-ease, ease-out) forwards;
-}
-
-@keyframes z-contact-explode {
-  from {
-    width: var(--z-contact-size, 22px);
-    height: var(--z-contact-size, 22px);
-    border-width: var(--z-contact-width, 11px);
-    opacity: 1;
-  }
-
-  to {
-    width: calc(var(--z-contact-size, 22px) * 3.6);
-    height: calc(var(--z-contact-size, 22px) * 3.6);
-    border-width: 1px;
-    opacity: 0;
-  }
-}
-
-/* ----- implode : l'onde (z-foreground) converge PENDANT que le point (z-marker) se condense
-   au centre (Styleguide 12.3) ----- */
-z-contact[fx="implode"] z-foreground {
-  width: calc(var(--z-contact-size, 22px) * 3.7);
-  height: calc(var(--z-contact-size, 22px) * 3.7);
-  border: 1px solid var(--c);
-  will-change: width, height, border-width, opacity;
-  animation: z-contact-implode-ring var(--z-contact-duration, 0.5s) var(--z-ease, ease-in) forwards;
-}
-
-@keyframes z-contact-implode-ring {
-  from {
-    width: calc(var(--z-contact-size, 22px) * 3.7);
-    height: calc(var(--z-contact-size, 22px) * 3.7);
-    border-width: 1px;
-    opacity: 0;
-  }
-
-  25% {
-    opacity: 1;
-  }
-
-  to {
-    width: calc(var(--z-contact-size, 22px) * 0.6);
-    height: calc(var(--z-contact-size, 22px) * 0.6);
-    border-width: 3px;
-    opacity: 0;
-  }
-}
-
-/* Le point (z-marker), décalé dans le temps pour arriver pile quand l'anneau converge. */
-z-contact[fx="implode"] z-marker {
-  width: var(--z-contact-size, 22px);
-  height: var(--z-contact-size, 22px);
-  background: var(--c);
-  opacity: 0;
-  animation: z-contact-implode-dot calc(var(--z-contact-duration, 0.5s) * 0.7) var(--z-ease, ease-out) calc(var(--z-contact-duration, 0.5s) * 0.6) forwards;
-}
-
-@keyframes z-contact-implode-dot {
-  0% {
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 1;
-  }
-
-  45% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-  }
-
-  to {
-    transform: translate(-50%, -50%) scale(0.8);
-    opacity: 0;
-  }
-}
-
-/* ----- morph : le petit rond naît SOUS LA SOURIS et meurt en prenant la FORME du
-   composant touché (Styleguide 12.4) -----
-
-   Le geste dit ce que le clic a fait : « ce point que tu as visé, c'est CE composant ».
-   Le moteur a recopié la boîte de la cible sur l'effet (--z-contact--target__w/h/radius
-   + l'écart dx/dy entre le point de contact et le centre du composant) : le CSS n'a plus
-   qu'à s'y rendre. Un CONTOUR, jamais un aplat — le remplissage masquerait le composant
-   au moment précis où on le regarde (et sur une peau à filets, ce serait un corps
-   étranger). Le rayon d'arrivée est celui du composant : carré sur HighTech, arrondi sur
-   une peau ronde. On ne décide pas de la forme, on la LIT.
-
-   `translate` (propriété individuelle) porte le déplacement vers le centre du composant ;
-   `transform` reste au centrage -50% des parts. Les deux se composent, aucune ne s'écrase. */
-z-contact[fx="morph"] z-foreground {
-  width: var(--z-contact-size, 22px);
-  height: var(--z-contact-size, 22px);
-  border: var(--z-contact-width, 2px) solid var(--c);
-  border-radius: 50%;
-  opacity: 0;
-  animation: z-contact-morph var(--z-contact-duration, 0.5s) var(--z-ease, ease-out) forwards;
-}
-
-/*
-	Trois temps, et le premier compte autant que les autres :
-	  1. le ROND EXISTE sous la souris (jusqu'à ~18 %) — sans ce palier, la courbe
-	     ease-out mange le départ et l'œil ne voit qu'un trait qui file ;
-	  2. il s'ouvre vers la boîte du composant ;
-	  3. il s'éteint pile en l'épousant — il ne reste rien, le composant est à nu.
-*/
-@keyframes z-contact-morph {
-  0% {
-    width: var(--z-contact-size, 22px);
-    height: var(--z-contact-size, 22px);
-    border-radius: 50%;
-    translate: 0 0;
-    opacity: 0;
-  }
-
-  8% {
-    opacity: 1;
-  }
-
-  /* le palier : le rond est là, net, à peine gonflé — c'est LUI qu'on voit partir */
-  18% {
-    width: calc(var(--z-contact-size, 22px) * 1.15);
-    height: calc(var(--z-contact-size, 22px) * 1.15);
-    border-radius: 50%;
-    translate: 0 0;
-    opacity: 1;
-  }
-
-  /* l'anneau tient sa couleur presque jusqu'au bout : il doit ARRIVER, pas s'évaporer
-     à mi-chemin */
-  70% {
-    opacity: .85;
-  }
-
-  to {
-    width: var(--z-contact--target__w, 64px);
-    height: var(--z-contact--target__h, 32px);
-    border-radius: var(--z-contact--target__radius, 0px);
-    translate: var(--z-contact--target__dx, 0px) var(--z-contact--target__dy, 0px);
-    opacity: 0;
-  }
-}
-
-/* ----- la scène : l'overlay plein écran où TOUS les effets sont répliqués, au-dessus de
-   tout ce que la page peut empiler (Styleguide 12.5) ----- */
+/* La scène : l'overlay plein écran où TOUS les effets sont répliqués, au-dessus de tout
+   ce que la page peut empiler. Styleguide 12.5 */
 z-overlay {
-  position: fixed;
-  inset: 0;
-  display: block;
-  pointer-events: none;
-  /* z-index maximal : au-dessus de tout ce que la page peut empiler. */
-  z-index: 2147483647;
+	position: fixed;
+	inset: 0;
+	display: block;
+	pointer-events: none;
+	/* z-index maximal : au-dessus de tout ce que la page peut empiler. */
+	z-index: 2147483647;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  z-contact {
-    display: none;
-  }
+	z-contact {
+		display: none;
+	}
 }
-

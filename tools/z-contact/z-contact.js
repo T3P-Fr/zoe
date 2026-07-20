@@ -1,9 +1,15 @@
 /*
 	contact.js — l'IMPACT au point de contact (l'axe `fx` de z-contact). Chaque appui
 	sur un élément interactif fait naître un effet LÀ où le pointeur a touché, RÉPLIQUÉ
-	dans l'overlay au-dessus de tout (overlay.js). L'effet est choisi par l'attribut
-	`fx` (hérité du plus proche ancêtre) — `implode` (défaut) ou `explode` ; `none` le
-	coupe. « contact » vaut pour souris, doigt et stylet (pas « click », faux sur tactile).
+	dans l'overlay au-dessus de tout (overlay.js). « contact » vaut pour souris, doigt et
+	stylet (pas « click », faux sur tactile).
+
+	QUI CHOISIT L'EFFET : la PEAU, en CSS. Le moteur ne fait que poser les pièces
+	(z-foreground, z-marker) et leur recopier la boîte de la cible ; ce qu'on VOIT vient
+	de la recette que la peau importe (tools/z-contact/effects/*.css). Sans recette
+	importée, un clic ne produit rien de visible — c'est le cas de la peau Claude.
+	L'attribut `fx` ne sert plus qu'à COUPER (`fx="none"`) : un effet écrit dans le HTML
+	s'appliquerait à toutes les peaux, ce qui était exactement le défaut d'avant.
 
 	z-contact a DEUX axes : `fx` (l'impact, ici) et `trail` (le sillage, cursor.js) —
 	même composant, deux attributs. UN seul écouteur global (capture) ; zéro câblage par
@@ -32,11 +38,11 @@ function reduced() {
 }
 
 /*
-	Effet choisi = attribut `fx` de la SOURCE déclarée (le dernier <z-contact> actif,
-	fourni par le watcher). Pas de source dans la page = pas d'effet : z-contact est
-	OPT-IN, on le DÉCLARE pour activer les effets de la page. Défaut d'une source
-	sans `fx` = « implode ».
-	@returns {string}
+	Pas de source <z-contact> dans la page = rien : le moteur est OPT-IN, on le DÉCLARE.
+	Avec une source, il tourne — et c'est la PEAU qui décide de ce qu'on voit (la recette
+	CSS qu'elle importe). L'attribut `fx="none"` coupe tout ; toute autre valeur ne fait
+	que nommer les pièces posées, elle ne choisit plus l'apparence.
+	@returns {string} le nom des pièces à poser, ou "none" si aucune source
 */
 function effectOf() {
 	const src = activeSource();
@@ -186,7 +192,7 @@ export class ZContact extends HTMLElement {
 			es: "El clic deja una marca donde el puntero tocó. Se escribe una vez, plano: toda la página responde."
 		},
 		attributes: [
-			{ name: "fx", type: "string", description: { en: "The impact effect: morph (a dot born under the cursor dies taking the component's shape) · implode · explode · none.", fr: "L'effet d'impact : morph (un rond né sous la souris meurt en prenant la forme du composant) · implode · explode · none.", es: "El efecto de impacto: morph (un punto nacido bajo el cursor muere tomando la forma del componente) · implode · explode · none." } },
+			{ name: "fx", type: "string", description: { en: "Kill switch: fx=\"none\" disables the effect on this page. WHICH effect is shown is chosen by the skin (it imports a recipe from effects/), never by the page.", fr: "Coupe-circuit : fx=\"none\" désactive l'effet sur cette page. QUEL effet s'affiche est choisi par la peau (elle importe une recette de effects/), jamais par la page.", es: "Interruptor: fx=\"none\" desactiva el efecto en esta página. QUÉ efecto se muestra lo elige la piel (importa una receta de effects/), nunca la página." } },
 			{ name: "disabled", type: "boolean", description: { en: "Set by the engine on every source but the last one — the last declared wins.", fr: "Posé par le moteur sur toutes les sources sauf la dernière — la dernière déclarée gagne.", es: "Puesto por el motor en todas las fuentes menos la última — la última declarada gana." } }
 		],
 		events: [

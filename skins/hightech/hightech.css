@@ -35,6 +35,15 @@
 */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400..700&display=swap");
 
+/*
+	SA SIGNATURE AU CLIC (loi 3 : le halo et l'onde sont les seuls effets lumineux).
+	HighTech PREND l'effet `morph` au catalogue de z-contact : un rond naît sous la
+	souris et meurt en épousant la boîte du composant touché. C'est un choix de PEAU,
+	pas de page — une peau qui n'importe rien (Claude) n'a aucun effet au curseur.
+	Les valeurs se règlent plus bas (--z-contact-*).
+*/
+@import url("../../tools/z-contact/effects/morph.css");
+
 :root {
 	/* D'OÙ ÇA VIENT — lisible par l'outillage ET par l'humain qui doute. */
 	--z-skin-name: "HighTech";
@@ -124,16 +133,36 @@
 	--z-dur-close: 220ms;
 
 	/*
-		LA SIGNATURE DU CLIC (loi 3 : le halo est la seule lumière). HighTech signe avec
-		l'effet `morph` de z-contact — un petit rond naît sous la souris et meurt en
-		prenant la FORME du composant touché. La peau n'en règle que les VALEURS ; la
-		page l'active en écrivant une fois `<z-contact fx="morph">`.
-		Un CONTOUR fin (le filet, loi 2), en cobalt (l'activation, loi 5), et court.
+		LES VALEURS DE SA SIGNATURE AU CLIC (la recette `morph` est importée en tête de
+		fichier). Le geste : un anneau naît sous le curseur et meurt en épousant la boîte
+		du composant touché. Un CONTOUR du début à la fin — jamais un aplat (loi 2), en
+		cobalt (l'activation, loi 5), et court.
+		Ces quatre valeurs sont TOUT ce qu'une peau règle : la trajectoire, elle, est dans
+		la recette (tools/z-contact/effects/morph.css).
 	*/
+
+	/* Le diamètre de l'anneau à sa naissance, sous le curseur. Il grandit ensuite jusqu'à
+	   la taille du composant : c'est un point de DÉPART, pas une taille finale. */
 	--z-contact-size: 20px;
+
+	/* L'épaisseur du contour, constante sur tout le trajet. 1,5 px = le filet de la
+	   charte : l'effet doit avoir le même trait que le reste de l'interface, sinon il
+	   se lit comme un corps étranger. */
 	--z-contact-width: 1.5px;
-	--z-contact-duration: .3s;   /* vif : HighTech répond sec, l'onde ne traîne pas */
+
+	/* Le temps que met l'anneau à rejoindre le composant. Vif : HighTech répond sec,
+	   l'onde ne traîne pas. */
+	--z-contact-duration: .3s;
+
+	/* Le cobalt, comme partout où quelque chose s'ACTIVE (loi 5). En var(--z-accent) et
+	   non en dur : si l'accent de la peau change, la signature suit. */
 	--z-contact-color: var(--z-accent);
+
+	/* Le remplissage de l'anneau, du rond de départ jusqu'au rectangle d'arrivée.
+	   TRANSLUCIDE (18 %) : le composant reste lisible pendant que la couleur passe
+	   dessus. Monter au-delà de ~25 % le masque à l'instant où on le regarde ; mettre 0
+	   (ou retirer la ligne) revient au contour nu. */
+	--z-contact-fill: color-mix(in srgb, var(--z-accent) 18%, transparent);
 
 	color-scheme: light;
 }

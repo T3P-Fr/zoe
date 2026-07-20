@@ -5,23 +5,40 @@ câblage par composant** : tu écris la recette **une fois**, à plat, et toute 
 répond.
 
 ```html
-<z-contact fx="morph"></z-contact>
+<z-contact></z-contact>
 <script type="module" src="tools/z-contact/z-contact.js"></script>
 <link rel="stylesheet" href="tools/z-contact/z-contact.css">
 ```
+
+La page dit seulement **« le moteur tourne ici »**. Ce qu'on voit, c'est la **peau** qui
+le décide.
 
 > **Porté, pas réécrit.** Ce moteur vient de l'ancien repo (`packages/core/src/fx/`) —
 > il est *intouchable* : on le déplace, on ne le refait pas. Seul l'effet `morph` et la
 > reprise de la scène `z-overlay` sont neufs.
 
-## Les effets (`fx`)
+## Le catalogue d'effets — une peau en prend un
 
-| `fx` | Le geste |
+Un effet = **un fichier CSS**, chargé par personne par défaut. La peau importe celui
+qui est sa signature :
+
+```css
+/* skins/hightech/hightech.css — en tête de fichier */
+@import url("../../tools/z-contact/effects/morph.css");
+```
+
+| Recette | Le geste |
 |---|---|
-| `morph` | un **petit rond naît sous la souris** et meurt en prenant la **forme du composant** touché (taille **et** rayon) |
-| `implode` *(défaut d'origine)* | un anneau converge vers le centre pendant qu'un point s'y condense |
-| `explode` | un anneau jaillit du centre, épais → fin |
-| `none` | rien |
+| `effects/morph.css` | un **rond naît sous la souris** et meurt en prenant la **forme du composant** touché (taille **et** rayon) — la signature de HighTech |
+| `effects/implode.css` | un anneau converge vers le centre pendant qu'un point s'y condense |
+| `effects/explode.css` | un anneau jaillit du centre, épais → fin |
+| *(rien d'importé)* | aucun effet au curseur — le cas de la peau **Claude**, qui signe avec l'onde de ses composants |
+
+**Pourquoi la peau et pas la page.** Tant que l'effet était écrit dans le HTML
+(`<z-contact fx="morph">`), il s'appliquait à **toutes** les peaux : le régler pour
+HighTech le changeait pour Claude. Un effet de clic n'est pas de la plomberie, c'est
+une signature — il appartient à la peau, comme la couleur ou le rayon. `fx` ne reste
+qu'un **coupe-circuit** : `fx="none"` éteint tout sur une page.
 
 **`morph` en trois temps** : le rond **existe** sous la souris (~18 % du temps — sans ce
 palier, la courbe mange le départ et l'œil ne voit qu'un trait qui file) · il s'ouvre
