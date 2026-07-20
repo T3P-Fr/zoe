@@ -1,0 +1,130 @@
+═══════════════════════════════════════════════════════════════════════════════
+  z-contact — ANATOMIE DE L'EFFET AU POINT DE CONTACT
+  (portée telle quelle de l'ancien repo — aucune balise inventée)
+═══════════════════════════════════════════════════════════════════════════════
+
+
+1. LES DEUX VISAGES DE z-contact
+────────────────────────────────────────────────────────────────────────────────
+
+  Le même nom de balise sert à deux choses. Ce n'est PAS une erreur : l'une est
+  la recette, l'autre est le plat.
+
+
+  LA SOURCE (la recette)                    L'EFFET (le rendu)
+  écrite par toi, une fois, à plat          créé par le moteur, à chaque contact
+  vit dans la page, invisible               vit dans l'overlay, éphémère
+  display: none                             display: block, position: fixed
+
+     <z-contact fx="morph">                    <z-contact fx="morph">
+              │                                          │
+              └──────── le moteur la lit ────────────────┘
+                        (activeSource)
+
+  Plusieurs sources dans la page ? LA DERNIÈRE GAGNE, les autres passent en
+  [disabled] — comme la dernière règle CSS à spécificité égale.
+  Aucune source ? Il ne se passe RIEN (opt-in).
+
+
+2. L'ARBRE, AU MOMENT D'UN CLIC
+────────────────────────────────────────────────────────────────────────────────
+
+  <body>
+   │
+   ├─ <z-contact fx="morph">          LA SOURCE — la recette, invisible
+   │
+   ├─ …toute ta page…
+   │     └─ <z-button>Envoyer</z-button>        ← la CIBLE touchée
+   │
+   └─ <z-overlay>                     LA SCÈNE — plein écran, pointer-events:none
+        │                             z-index max + RÉ-INJECTÉE EN DERNIER dans
+        │                             <body> à chaque impact : elle passe au-dessus
+        │                             de tout, même d'une modale ouverte APRÈS.
+        │                             Garantie par construction, pas par un z-index
+        │                             qu'on espère assez haut.
+        │
+        └─ <z-contact fx="morph">     L'EFFET — posé aux coordonnées du pointeur
+             │                        (left/top inline), détruit à la fin
+             │
+             ├─ <z-foreground>        L'ONDE / L'ANNEAU  ← le morph n'utilise QUE ça
+             │
+             └─ <z-marker>            LE POINT CENTRAL   ← implode seulement
+
+
+  PAS de couche « z-fx ». Un effet transitoire vit DANS z-foreground — ce n'est
+  pas une part de plus (ADR-0016). Les parts sont de VRAIS éléments, donc
+  skinnables :  z-contact z-foreground { … }
+
+
+3. CE QUE LE MOTEUR RECOPIE SUR L'EFFET
+────────────────────────────────────────────────────────────────────────────────
+
+  L'effet naît dans l'overlay : il n'est descendant de rien, il n'hérite de RIEN.
+  Ni de la couleur, ni de la forme. Le moteur lui recopie donc ce qu'il faut,
+  résolu à l'endroit du contact — il ne l'invente pas, il le LIT.
+
+    la CIBLE  ──────────►  l'EFFET
+    <z-button>             <z-contact>
+
+    --z-accent          →  --z-contact-color            la couleur
+    getBoundingClientRect  --z-contact--target__w       sa largeur
+                        →  --z-contact--target__h       sa hauteur
+    border-radius       →  --z-contact--target__radius  sa forme
+    centre − pointeur   →  --z-contact--target__dx/dy   le chemin à parcourir
+
+  Conséquence : rayon 0 sur HighTech, arrondi sur une peau ronde. Sans une ligne
+  de plus. On ne décide pas de la forme, on la lit.
+
+
+4. LE GESTE « morph », DANS LE TEMPS
+────────────────────────────────────────────────────────────────────────────────
+
+   t = 0 %              t = 18 %             t = 60 %          t = 100 %
+   ─────────            ────────             ────────          ─────────
+
+      ·                    ○                  ┌────┐           ┌──────┐
+   (le clic)           le rond EXISTE       il s'ouvre        il s'éteint
+                       sous la souris       vers la boîte     en l'épousant
+   opacity 0           opacity 1            opacity .85       opacity 0
+
+   ┌──────────┐        ┌──────────┐         ┌──────────┐      ┌──────────┐
+   │ Envoyer  │        │ ○Envoyer │         │┌────┐yer │      │ Envoyer  │
+   └──────────┘        └──────────┘         │└────┘    │      └──────────┘
+                                            └──────────┘
+        ↑ la cible          ↑ le palier         ↑ il file        ↑ rien ne reste,
+                            SANS lui, la          vers le          le composant
+                            courbe mange le       centre           est à nu
+                            départ et l'œil
+                            ne voit qu'un trait
+
+   Un CONTOUR, jamais un aplat : un remplissage masquerait le composant à
+   l'instant précis où on le regarde.
+
+   Durée réglée par la PEAU (HighTech : 0,3 s — elle répond sec).
+
+
+5. LES FICHIERS
+────────────────────────────────────────────────────────────────────────────────
+
+  tools/z-contact/
+   ├─ z-contact.js            le moteur d'impact + la balise   ┐
+   ├─ z-contact-source.js     la gouvernance des sources       ├ PORTÉS TELS QUELS
+   ├─ z-overlay.js            la scène                         ┘ (intouchables)
+   ├─ z-contact.css           les fx : implode · explode · morph (+ la scène)
+   ├─ z-contact.doc.md        la doc narrative
+   ├─ z-contact.check.html    la preuve : l'effet FIGÉ à 3 instants
+   └─ z-contact.anatomie.txt  ce schéma
+
+
+6. ⚠ COLLISION DE NOMS — À TRANCHER
+────────────────────────────────────────────────────────────────────────────────
+
+  « z-contact » désigne aujourd'hui DEUX choses sans rapport :
+
+    (a) CE TOOL          l'effet au point de contact (fx / trail)
+    (b) l'ANATOMIE v4    la couche qui REÇOIT :  z-contact · z-skin · z-content
+
+  Même mot, deux rôles → coût de mémorisation et risque d'erreur, contre la règle
+  « une seule forme, jamais deux ». Rien n'est renommé sans décision de Christophe.
+
+═══════════════════════════════════════════════════════════════════════════════
