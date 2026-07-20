@@ -132,7 +132,7 @@
 	*/
 	--z-contact-size: 20px;
 	--z-contact-width: 1.5px;
-	--z-contact-duration: .5s;
+	--z-contact-duration: .3s;   /* vif : HighTech répond sec, l'onde ne traîne pas */
 	--z-contact-color: var(--z-accent);
 
 	color-scheme: light;

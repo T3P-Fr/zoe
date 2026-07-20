@@ -58,7 +58,7 @@ assez haut.
 | `--z-contact-duration` | la durée |
 | `--z-contact-color` | la couleur (défaut : l'accent **de l'élément touché**) |
 
-HighTech les pose déjà : rond de 20 px, filet 1.5 px, 0.5 s, cobalt.
+HighTech les pose déjà : rond de 20 px, filet 1,5 px, **0,3 s** (elle répond sec), cobalt.
 
 ## Vérifier
 
