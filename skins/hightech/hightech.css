@@ -1,60 +1,119 @@
 /*
 	============================================================
-	skin · HIGHTECH — le thème par défaut (un jeu de tokens)
+	skin · HIGHTECH — LA PLANCHE D'INGÉNIEUR
 	------------------------------------------------------------
-	Une peau Zoé = des VALEURS (pas des formes). Toute la mécanique (composants,
-	tools) lit ces tokens via var(--z-*). Changer de peau = remplacer ce fichier.
+	⚠ CETTE PEAU NE S'INVENTE PAS. Elle est PORTÉE depuis une source qui est dans ce
+	dossier : `source/FullConcept--HighTech.html` (le référentiel « Atomes de composants
+	web »), + `source/reference-concept.png` (capture) + `source/ZoeTheme--HighTech.css`
+	(le 1er portage). Avant de toucher UNE valeur ici : ouvrir la source et comparer.
+	Si la source manque, on s'arrête et on demande — on ne redessine pas de mémoire.
 
-	Identité : un plan d'ingénieur — IBM Plex Mono sur papier greige, angles vifs
-	(radius 0), zéro ombre portée, le bleu #006eff en filet seulement.
+	LA CHARTE — cinq lois, écrites en INTERDITS (le reste en découle) :
+	  1. ANGLE 0. Rien n'est arrondi. Le rayon n'est pas un réglage, c'est l'ADN.
+	     (Seul le rond d'une radio l'est : c'est une FORME de sens, pas une décoration.)
+	  2. LE FILET, JAMAIS L'APLAT. Tout se délimite par un trait de 1px. Une surface
+	     colorée est un événement, pas un fond.
+	  3. UNE SEULE OMBRE : le halo. Zéro ombre portée, zéro élévation. Le halo de focus
+	     et l'onde au clic sont les seuls effets « lumineux » — ils sont la signature.
+	  4. MONO PARTOUT. IBM Plex Mono porte toute l'interface (Newsreader ne parle que
+	     pour l'éditorial). Une interface qui n'est pas en mono n'est pas HighTech.
+	  5. LE COBALT EST RARE. #006EFF signale l'ACTIVATION (choisi, actif, en cours) —
+	     jamais la décoration. S'il y en a partout, il ne dit plus rien.
+
+	La fondation de la source, telle quelle : une ÉCHELLE D'ENCRE à 5 crans interpolée
+	de ink-00 (le papier) à ink-100 (l'encre), plus UN accent. Tout le reste en dérive —
+	c'est déjà le principe « graine → dérivation ».
+
 	Styleguide skin.hightech
 	============================================================
 */
 
+/*
+	Les fontes de la source. La planche d'origine les importe : on reste fidèle. Un
+	projet qui veut zéro réseau les auto-héberge et retire cette ligne — la peau, elle,
+	ne connaît que les familles.
+*/
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400..700&display=swap");
+
 :root {
-	/* couleurs — papier greige, encre, bleu filet */
-	--z-page: #f4f2ec;
-	--z-surface: #e0ddd5;
-	--z-surface-raised: #efece7;
-	--z-surface-sunken: #d7d3ca;
-	--z-ink: #1a1a1a;
-	--z-ink-soft: #6b675f;
-	--z-line: #6b675f;
-	--z-line-soft: #b7b3ab;
+	/* D'OÙ ÇA VIENT — lisible par l'outillage ET par l'humain qui doute. */
+	--z-skin-name: "HighTech";
+	--z-skin-source: "skins/hightech/source/FullConcept--HighTech.html";
+
+	/*
+		L'ÉCHELLE D'ENCRE — la fondation de la planche (valeurs de la source, ink 00→100).
+		00 = le papier · 100 = l'encre · les 3 crans du milieu sont interpolés.
+		On ne pioche PAS une couleur ailleurs : tout gris de l'interface sort d'ici.
+	*/
+	--z-ink-00: #efece7;
+	--z-ink-25: #babbb4;
+	--z-ink-50: #858381;
+	--z-ink-75: #4f4f4d;
+	--z-ink-100: #1a1a1a;
+
+	/* Rôles — dérivés de l'échelle, jamais des valeurs neuves. Les panneaux sont
+	   BLANCS sur le papier greige : c'est ce contraste qui fait « planche ». */
+	--z-page: var(--z-ink-00);
+	--z-surface: #ffffff;
+	--z-surface-raised: #ffffff;
+	--z-surface-sunken: #f7f5f2;
+	--z-ink: var(--z-ink-100);
+	--z-ink-soft: var(--z-ink-50);
+	--z-line: #e0ddd5;                /* le filet ordinaire — celui de la source */
+	--z-line-strong: var(--z-ink-75); /* le filet qui encadre un bloc de tête */
+	--z-line-soft: var(--z-ink-25);
+	--z-disabled: var(--z-ink-25);
+
+	/* L'ACTIVATION — rare (loi 5). */
 	--z-accent: #006eff;
 	--z-accent-ink: #ffffff;
-	--z-accent-soft: #e6ecf5;
-	--z-focus-halo: #e6e3dc;
-	--z-disabled: #b7b3ab;
-	/* statut métier */
+	--z-accent-soft: color-mix(in oklab, var(--z-accent) 12%, var(--z-surface));
+	--z-accent-line: color-mix(in oklab, var(--z-accent) 42%, var(--z-line));
+
+	/* Le halo — l'UNIQUE effet lumineux (loi 3) : focus et onde au clic. */
+	--z-focus-halo: color-mix(in oklab, var(--z-accent) 28%, transparent);
+	--z-halo: var(--z-focus-halo);
+
+	/* Statut métier — la source ne les nomme pas : on reste sobre, filet coloré. */
 	--z-danger: #c8371f;
 	--z-success: #1f8a4c;
 
-	/* typographie — IBM Plex Mono */
+	/*
+		TYPOGRAPHIE — mono partout (loi 4), l'éditorial en Newsreader seulement.
+		L'échelle de tailles est celle de la planche (2xs 9 → 2xl 26).
+	*/
 	--z-font: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-	--z-font-title: "IBM Plex Mono", ui-monospace, monospace;
+	--z-font-title: var(--z-font);
+	--z-font-edito: "Newsreader", Georgia, serif;
+	--z-font-size-2xs: 9px;
+	--z-font-size-xs: 11px;
+	--z-font-size-sm: 12px;
 	--z-font-size: 13px;
-	--z-font-size-sm: 11px;
-	--z-font-weight: 500;
+	--z-font-size-lg: 16px;
+	--z-font-size-xl: 20px;
+	--z-font-size-2xl: 26px;
+	--z-font-weight: 400;
 	--z-font-weight-strong: 600;
 	--z-letter: 0.3px;
+	--z-letter-eyebrow: 2px;          /* les sur-titres de la planche : espacés, sourdine */
 
-	/* forme — angles vifs (l'ADN hightech) */
+	/* FORME — angle 0 (loi 1). Le filet fait 1px, toujours (loi 2). */
 	--z-radius: 0px;
-	--z-radius-pill: 999px;
+	--z-radius-pill: 0px;             /* même les « pills » sont carrées ici */
 	--z-border-width: 1px;
 
-	/* espacement par facteurs */
+	/* Espacement par facteurs — dense, comme un tableau de bord. */
 	--z-unit: 4px;
 	--z-pad-x: calc(var(--z-unit) * 3.5);
 	--z-pad-y: calc(var(--z-unit) * 1.75);
 	--z-gap: calc(var(--z-unit) * 2);
 	--z-control-height: calc(var(--z-unit) * 8);
 
-	/* mouvement — sec (.2s ease), ressort réservé aux pièces qui « attrapent » */
-	--z-ease: ease;
+	/* MOUVEMENT — court et précis, jamais élastique. Le ressort est réservé aux pièces
+	   qui « attrapent » (la coche, le point d'une radio). */
+	--z-ease: cubic-bezier(.18, .8, .2, 1);
 	--z-ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
-	--z-dur: 0.2s;
+	--z-dur: .16s;
 	--z-dur-enter: 260ms;
 	--z-dur-exit: 200ms;
 	--z-dur-release: 320ms;

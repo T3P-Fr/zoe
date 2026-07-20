@@ -20,6 +20,7 @@
 z-radio {
 	display: inline-flex;
 	align-items: center;
+	position: relative;                           /* ancre du halo (::after), voir 2.3 */
 	gap: var(--z-radio__gap, var(--z-gap, .55em));
 	color: var(--z-ink);
 	font: inherit;
@@ -66,11 +67,35 @@ z-radio::before {
 
 /*
 	z-radio — interaction (héritée de z-element)
+	Le HALO au clic : l'onde (preset ripple de z-motion) part du marker, pas de la ligne
+	entière — le geste appartient au rond, c'est lui qu'on vise. Même signature que
+	z-button, pour que tout Zoé réponde pareil au doigt. Lâché dehors (releaseOut) :
+	l'onde est plus courte, elle dit « annulé ».
 	Styleguide 2.3
 */
 z-radio:state(over)::before  { border-color: var(--z-accent); }
 z-radio:state(press)::before { transform: scale(.9); }
-z-radio:state(focus)::before { box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 35%, transparent); }
+z-radio:state(focus)::before { box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-accent) 35%, transparent)); }
+
+z-radio::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 50%;
+	width: var(--z-radio--marker__size, 1.15em);
+	height: var(--z-radio--marker__size, 1.15em);
+	box-sizing: border-box;
+	border: 2px solid var(--z-radio--halo__color, var(--z-accent));
+	border-radius: var(--z-radio--marker__radius, 50%);
+	/* centré sur le marker par une MARGE, pas par un translate : l'anim `ripple` pilote
+	   `transform` — un translate ici serait écrasé et le halo tomberait sous la ligne. */
+	margin-top: calc(var(--z-radio--marker__size, 1.15em) / -2);
+	transform-origin: center;
+	opacity: 0;
+	pointer-events: none;
+}
+z-radio:state(release)::after    { animation: ripple var(--z-dur-release) var(--z-ease); }
+z-radio:state(releaseOut)::after { animation: ripple var(--z-dur-releaseOut) var(--z-ease); }
 
 /*
 	z-radio — choisie (current)

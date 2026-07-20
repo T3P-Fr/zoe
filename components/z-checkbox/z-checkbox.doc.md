@@ -39,6 +39,7 @@ Chaque part se peint par un token à **double séparateur** — c'est ce que z-b
 | `--z-checkbox--marker__background` | le fond au repos |
 | `--z-checkbox--marker__background-checked` | le fond une fois cochée |
 | `--z-checkbox--check__color` | le carré qui zoome (blanc par défaut) |
+| `--z-checkbox--halo__color` | l'onde au clic (accent par défaut) |
 | `--z-checkbox--label__weight` | le poids du label cochée |
 
 Défauts qui **consomment la peau** (`--z-accent`, `--z-line`, `--z-radius`…) : marche
@@ -46,6 +47,8 @@ sur HighTech comme sur Claude sans une ligne de plus.
 
 ## Le geste
 
-Au coché, la case se remplit d'accent et un **carré blanc zoome du fond** (un seul
+Au clic, un **halo** part de la case (l'onde `ripple`, la signature de Zoé — la même que
+`z-button` et `z-radio`) ; lâché **dehors**, il est plus court : il dit « annulé ».
+Puis, au coché, la case se remplit d'accent et un **carré blanc zoome du fond** (un seul
 `::before`, `background-size` 0 → 60 % en ressort). Le label s'épaissit **sans saut de
 pixel** (faux-bold). Démo : `z-checkbox.demo.html` (+ sélecteur de peau).

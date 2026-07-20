@@ -14,7 +14,7 @@
 
 const SKINS = [
 	{ id: "claude", label: "Claude — encre chaude" },
-	{ id: "hightech", label: "HighTech — plan sobre" }
+	{ id: "hightech", label: "HighTech — la planche" }
 ];
 const KEY = "zoe-skin";
 /* profondeur : depuis examples/ ou un dossier de composant, on remonte à la racine puis skins/. */

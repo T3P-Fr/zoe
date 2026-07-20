@@ -47,11 +47,14 @@ Accessibilité : `role="radio"` + `aria-checked` suivent `current` tout seuls. L
 | `--z-radio--marker__background` | le fond au repos |
 | `--z-radio--marker__background-checked` | le fond une fois choisie |
 | `--z-radio--dot__color` | le point qui zoome (blanc par défaut) |
+| `--z-radio--halo__color` | l'onde au clic (accent par défaut) |
 | `--z-radio--label__weight` | le poids du label choisie |
 
 ## Le geste
 
-Au choix, le rond se remplit d'accent et le **point zoome du fond** (`background-size`
+Au clic, un **halo** part du rond (l'onde `ripple`, la signature de Zoé — la même que
+`z-button` et `z-checkbox`) ; lâché **dehors**, il est plus court : il dit « annulé ».
+Puis le rond se remplit d'accent et le **point zoome du fond** (`background-size`
 0 → 50 % en ressort) — exactement le mouvement de la case, car c'est le même sens :
 « ça vient d'être choisi ». Seule la **forme** dit « un seul ». Le label s'épaissit sans
 saut de pixel (faux-bold). Démo : `z-radio.demo.html` (+ sélecteur de peau).

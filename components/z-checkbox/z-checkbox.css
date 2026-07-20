@@ -20,6 +20,7 @@
 z-checkbox {
 	display: inline-flex;
 	align-items: center;
+	position: relative;                           /* ancre du halo (::after), voir 1.3 */
 	gap: var(--z-checkbox__gap, var(--z-gap, .55em));
 	color: var(--z-ink);
 	font: inherit;
@@ -63,11 +64,35 @@ z-checkbox::before {
 
 /*
 	z-checkbox — interaction (héritée de z-element)
+	Le HALO au clic : l'onde (preset ripple de z-motion) part de la CASE, pas de la ligne
+	entière — le geste appartient au marker, c'est lui qu'on vise. Même signature que
+	z-button et z-radio : tout Zoé répond pareil au doigt. Lâché dehors (releaseOut) :
+	l'onde est plus courte, elle dit « annulé ».
 	Styleguide 1.3
 */
 z-checkbox:state(over)::before  { border-color: var(--z-accent); }
 z-checkbox:state(press)::before { transform: scale(.9); }
-z-checkbox:state(focus)::before { box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 35%, transparent); }
+z-checkbox:state(focus)::before { box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-accent) 35%, transparent)); }
+
+z-checkbox::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 50%;
+	width: var(--z-checkbox--marker__size, 1.15em);
+	height: var(--z-checkbox--marker__size, 1.15em);
+	box-sizing: border-box;
+	border: 2px solid var(--z-checkbox--halo__color, var(--z-accent));
+	border-radius: var(--z-checkbox--marker__radius, var(--z-radius));
+	/* centré sur le marker par une MARGE, pas par un translate : l'anim `ripple` pilote
+	   `transform` — un translate ici serait écrasé et le halo tomberait sous la ligne. */
+	margin-top: calc(var(--z-checkbox--marker__size, 1.15em) / -2);
+	transform-origin: center;
+	opacity: 0;
+	pointer-events: none;
+}
+z-checkbox:state(release)::after    { animation: ripple var(--z-dur-release) var(--z-ease); }
+z-checkbox:state(releaseOut)::after { animation: ripple var(--z-dur-releaseOut) var(--z-ease); }
 
 /*
 	z-checkbox — coché (current)

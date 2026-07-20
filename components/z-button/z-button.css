@@ -55,6 +55,16 @@ z-button::after {
 z-button:state(release)::after    { animation: ripple var(--z-dur-release) var(--z-ease); }
 z-button:state(releaseOut)::after { animation: ripple var(--z-dur-releaseOut) var(--z-ease); }
 
+/* ── sélection ──
+   current = ce bouton est LA commande active (outil choisi, vue affichée). Il prend
+   l'accent en plein : sur une peau où l'accent est rare, c'est LUI qui le dépense. */
+z-button:state(current) {
+	background: var(--z-button__background-current, var(--z-accent));
+	border-color: var(--z-button__border-current, var(--z-accent));
+	color: var(--z-button__color-current, var(--z-accent-ink, #fff));
+}
+z-button:state(select) { animation: pop var(--z-dur-select) var(--z-ease-spring); }
+
 /* ── cycle de vie ── */
 z-button:state(enter) { animation: pop var(--z-dur-enter) var(--z-ease-spring); }
 

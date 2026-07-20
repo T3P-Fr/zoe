@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>HighTech — la planche de contrôle</title>
+<link rel="stylesheet" href="./hightech.css">
+<link rel="stylesheet" href="../../tools/z-motion/z-motion.css">
+<link rel="stylesheet" href="../../components/z-button/z-button.css">
+<link rel="stylesheet" href="../../components/z-checkbox/z-checkbox.css">
+<link rel="stylesheet" href="../../components/z-radio/z-radio.css">
+<link rel="stylesheet" href="../../components/z-radio-group/z-radio-group.css">
+<style>
+/*
+	============================================================
+	La PLANCHE DE CONTRÔLE de la peau HighTech — la preuve à côté de la source.
+	------------------------------------------------------------
+	À gauche : les composants Zoé sous la peau. À droite : la capture du concept
+	d'origine (source/reference-concept.png). Un écart se VOIT — il ne se discute pas.
+	Cette page n'invente aucun style : elle n'utilise que les tokens de la peau, comme
+	le ferait n'importe quelle page d'auteur. Si elle est laide, c'est la peau qui l'est.
+	Styleguide skin.hightech.planche
+	============================================================
+*/
+body {
+	margin: 0;
+	background: var(--z-page);
+	color: var(--z-ink);
+	font-family: var(--z-font);
+	font-size: var(--z-font-size);
+	letter-spacing: var(--z-letter);
+}
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 0; min-height: 100vh; }
+.side { padding: 24px; }
+.side + .side { border-left: var(--z-border-width) solid var(--z-line-strong); }
+
+/* le bloc encadré de la planche d'origine : filet 1px, jamais d'aplat (loi 2) */
+.panel { border: var(--z-border-width) solid var(--z-line); background: var(--z-surface); margin-bottom: 16px; }
+.panel > h2 {
+	display: flex; align-items: center; gap: 10px;
+	margin: 0; padding: 9px 12px;
+	border-bottom: var(--z-border-width) solid var(--z-line);
+	font-size: var(--z-font-size); font-weight: var(--z-font-weight-strong);
+}
+/* le badge à code, signature de la planche : encre pleine, texte papier, carré */
+.code { background: var(--z-ink); color: var(--z-page); padding: 3px 6px; font-size: var(--z-font-size-xs); }
+.panel > .body { padding: 14px 12px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.eyebrow { color: var(--z-ink-soft); font-size: var(--z-font-size-2xs); letter-spacing: var(--z-letter-eyebrow); text-transform: uppercase; margin: 0 0 8px; }
+.edito { font-family: var(--z-font-edito); font-size: var(--z-font-size-2xl); margin: 0 0 4px; }
+.scale { display: flex; }
+.scale div { flex: 1; height: 42px; border: var(--z-border-width) solid var(--z-line); border-left: 0; font-size: var(--z-font-size-2xs); padding: 3px; }
+.scale div:first-child { border-left: var(--z-border-width) solid var(--z-line); }
+.ref { width: 100%; border: var(--z-border-width) solid var(--z-line); display: block; }
+.laws { margin: 0; padding-left: 1.1em; line-height: 1.7; }
+.laws b { font-weight: var(--z-font-weight-strong); }
+</style>
+
+<div class="split">
+  <div class="side">
+    <p class="eyebrow">Peau // contrôle</p>
+    <p class="edito">HighTech</p>
+    <p style="color:var(--z-ink-soft);margin:0 0 18px">Les composants Zoé sous la peau — à comparer, à droite, avec la source dont elle est tirée.</p>
+
+    <section class="panel">
+      <h2><span class="code">LO</span> Les cinq lois</h2>
+      <div class="body" style="display:block">
+        <ol class="laws">
+          <li><b>Angle 0.</b> Rien n'est arrondi (sauf le rond d'une radio : une forme de sens).</li>
+          <li><b>Le filet, jamais l'aplat.</b> Un trait de 1px délimite tout.</li>
+          <li><b>Une seule ombre : le halo.</b> Zéro élévation. Le focus et l'onde au clic, rien d'autre.</li>
+          <li><b>Mono partout.</b> IBM Plex Mono porte l'interface ; Newsreader ne parle qu'en éditorial.</li>
+          <li><b>Le cobalt est rare.</b> #006EFF = activation, jamais décoration.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2><span class="code">TK</span> Échelle d'encre — la fondation</h2>
+      <div class="body" style="display:block">
+        <div class="scale">
+          <div style="background:var(--z-ink-00)">ink 00<br>#efece7</div>
+          <div style="background:var(--z-ink-25)">ink 25<br>#babbb4</div>
+          <div style="background:var(--z-ink-50);color:#fff">ink 50<br>#858381</div>
+          <div style="background:var(--z-ink-75);color:#fff">ink 75<br>#4f4f4d</div>
+          <div style="background:var(--z-ink-100);color:#fff">ink 100<br>#1a1a1a</div>
+          <div style="background:var(--z-accent);color:#fff">accent<br>#006eff</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2><span class="code">BT</span> Boutons — le halo au clic</h2>
+      <div class="body">
+        <z-button>Commande</z-button>
+        <z-button current>Active</z-button>
+        <z-button loading>En cours</z-button>
+        <z-button disabled>Verrouillé</z-button>
+        <z-button error>Erreur</z-button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2><span class="code">FC</span> Contrôles — case &amp; radio</h2>
+      <div class="body" style="display:block">
+        <z-checkbox current>Case cochée</z-checkbox><br><br>
+        <z-checkbox>Case libre</z-checkbox>
+        <hr style="border:0;border-top:var(--z-border-width) solid var(--z-line);margin:14px 0">
+        <z-radio-group value="b" style="--z-radio-group__direction:row;--z-radio-group__gap:1.4em">
+          <z-radio value="a">Canal A</z-radio>
+          <z-radio value="b">Canal B</z-radio>
+          <z-radio value="c">Canal C</z-radio>
+        </z-radio-group>
+      </div>
+    </section>
+
+    <p class="eyebrow">Clique partout : l'onde doit partir de la pièce visée, carrée sur la case, ronde sur la radio.</p>
+  </div>
+
+  <div class="side">
+    <p class="eyebrow">Source // référentiel d'origine</p>
+    <p class="edito">Atomes de composants web</p>
+    <p style="color:var(--z-ink-soft);margin:0 0 18px">
+      <code>source/FullConcept--HighTech.html</code> — la planche dont TOUT est tiré.
+      <a href="./source/FullConcept--HighTech.html" style="color:var(--z-accent)">l'ouvrir en vrai</a>
+    </p>
+    <img class="ref" src="./source/reference-concept.png" alt="Capture du référentiel HighTech d'origine">
+  </div>
+</div>
+
+<script type="module">
+  import "../../components/z-button/z-button.js";
+  import "../../components/z-checkbox/z-checkbox.js";
+  import "../../components/z-radio-group/z-radio-group.js";
+</script>
+</html>

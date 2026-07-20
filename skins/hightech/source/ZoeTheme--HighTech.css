@@ -1,0 +1,215 @@
+/* ZoeTheme--HighTech.css
+
+   Role:
+   This file is a Zoe theme overlay. It must be loaded AFTER zoe.css.
+
+   Usage:
+   <html data-z-theme="hightech">
+   <link rel="stylesheet" href="../packages/core/styles/zoe.css">
+   <link rel="stylesheet" href="../packages/core/styles/themes/ZoeTheme--HighTech.css">
+
+   Intent:
+   HighTech translates the concept file into a reusable theme layer: warm
+   technical paper, mono precision, editorial contrast, hard frames, and a
+   sharp cobalt activation color. Zoe components keep their JS behavior; this
+   stylesheet changes the visual language through tokens and scoped CSS only.
+*/
+
+/* Font source: the HighTech concept depends on IBM Plex Mono for interface
+   precision and Newsreader for editorial contrast. Projects can later self-host
+   these fonts; this first theme draft imports them for an immediate rendering. */
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap");
+
+:root[data-z-theme="hightech"],
+[data-z-theme="hightech"] {
+  /* Theme identity tokens: useful for tooling, docs, and future theme pickers. */
+  --z-theme-name: "HighTech";
+  --z-theme-source: "concept/FullConcept--HighTech.html";
+
+  /* Concept primitives: values extracted from the HighTech concept before they
+     are assigned to semantic roles. The warm neutrals keep the interface human;
+     cobalt is reserved for activation, selection, and live system signal. */
+  --zt-hightech-ink: #1a1a1a;
+  --zt-hightech-ink-soft: #3a3833;
+  --zt-hightech-muted: #8a8780;
+  --zt-hightech-faint: #b7b3ab;
+  --zt-hightech-paper: #eceae6;
+  --zt-hightech-paper-soft: #f7f5f2;
+  --zt-hightech-surface: #fbfaf8;
+  --zt-hightech-surface-raised: #ffffff;
+  --zt-hightech-line: #cbc8c1;
+  --zt-hightech-line-strong: #6b675f;
+  --zt-hightech-grid: #e0ddd5;
+  --zt-hightech-accent: #006eff;
+  --zt-hightech-accent-soft: color-mix(in oklab, var(--zt-hightech-accent) 16%, var(--zt-hightech-surface));
+  --zt-hightech-accent-line: color-mix(in oklab, var(--zt-hightech-accent) 42%, var(--zt-hightech-line));
+
+  /* Typography tokens: the concept pairs editorial Newsreader with IBM Plex Mono.
+     The mono family carries UI precision; the editorial family gives hero text
+     and large statements a voice that is not generic SaaS. */
+  --z-font-family-edito: "Newsreader", Georgia, serif;
+  --z-font-family-title: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --z-font-family-text: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --z-font-family-ui: var(--z-font-family-text);
+
+  /* Semantic Zoe remap: this is the actual bridge from concept to library.
+     Components should read these roles or their own component tokens, never the
+     concept primitives directly. */
+  --z-color-ink: var(--zt-hightech-ink);
+  --z-color-ink-soft: var(--zt-hightech-ink);
+  --z-color-paper: var(--zt-hightech-surface-raised);
+  --z-surface: var(--zt-hightech-surface-raised);
+  --z-text: var(--zt-hightech-ink);
+  --z-accent: var(--zt-hightech-accent);
+  --z-border: color-mix(in oklab, var(--zt-hightech-line-strong) 48%, transparent);
+  --z-color-primary: var(--z-accent);
+  --z-color-surface: var(--z-surface);
+  --z-color-border: var(--z-border);
+
+  /* Geometry tokens: HighTech is mostly rectangular. A small radius is kept so
+     controls still feel physically clickable without becoming soft or bubbly. */
+  --z-radius-md: 2px;
+  --z-radius: var(--z-radius-md);
+  --z-radius-scale: 1;
+  --z-radius-tl: 1;
+  --z-radius-tr: 1;
+  --z-radius-bl: 1;
+  --z-radius-br: 1;
+
+  /* Spacing and motion tokens: the theme is dense and fast, like an instrument
+     panel. Motion is short and precise, not elastic. */
+  --z-space-2: .5rem;
+  --z-space-3: .72rem;
+  --z-space-4: 1rem;
+  --z-space-6: 1.5rem;
+  --z-dur-base: 160ms;
+  --z-ease-standard: cubic-bezier(.18, .8, .2, 1);
+  --z-motion-duration: var(--z-dur-base);
+  --z-motion-ease: var(--z-ease-standard);
+  --z-duration: var(--z-motion-duration);
+  --z-ease: var(--z-motion-ease);
+  --z-shadow: 0 24px 80px color-mix(in oklab, var(--zt-hightech-ink) 14%, transparent);
+
+  /* Button tokens: primary becomes the active command surface. The cobalt fill
+     is intentionally rare and loud; secondary/glass controls stay structural. */
+  --z-button-bg: var(--zt-hightech-ink);
+  --z-button-text: #ffffff;
+  --z-button-radius: var(--z-radius);
+  --z-button-gap: .55rem;
+  --z-button-min-height: 2.55rem;
+  --z-button-primary-bg: var(--zt-hightech-accent);
+  --z-button-primary-text: #ffffff;
+  --z-button-primary-border-color: var(--zt-hightech-accent);
+  --z-button-primary-border-width: 1px;
+  --z-button-primary-font-size: 11px;
+  --z-button-primary-radius: var(--z-radius);
+  --z-button-primary-pad-y: 9px;
+  --z-button-primary-pad-x: 16px;
+  --z-button-primary-min-height: 2.55rem;
+
+  /* Slider tokens: the track stays architectural, while the filled segment is
+     a live signal. This lets one small control reveal the whole theme logic. */
+  --z-slider-track-color: var(--zt-hightech-grid);
+  --z-slider-fill-color: var(--zt-hightech-accent);
+  --z-slider-thumb-bg: var(--zt-hightech-surface-raised);
+  --z-slider-thumb-border-color: var(--zt-hightech-accent);
+  --z-slider-thumb-border-width: 2px;
+  --z-slider-track-height: 3px;
+  --z-slider-thumb-size: 14px;
+  --z-slider-simple-track-color: var(--z-slider-track-color);
+  --z-slider-simple-fill-color: var(--z-slider-fill-color);
+  --z-slider-simple-thumb-bg: var(--z-slider-thumb-bg);
+  --z-slider-simple-thumb-border-color: var(--z-slider-thumb-border-color);
+}
+
+/* Page substrate: a warm technical sheet with a quiet measurement grid. This is
+   scoped to the theme so Zoe's base CSS stays neutral for other projects. */
+:root[data-z-theme="hightech"] body,
+body[data-z-theme="hightech"] {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    linear-gradient(90deg, color-mix(in oklab, var(--zt-hightech-grid) 45%, transparent) 1px, transparent 1px),
+    linear-gradient(0deg, color-mix(in oklab, var(--zt-hightech-grid) 45%, transparent) 1px, transparent 1px),
+    var(--zt-hightech-paper);
+  background-size: 44px 44px;
+  color: var(--zt-hightech-ink);
+  font-family: var(--z-font-family-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Selection and scrollbars: these small browser surfaces carry the active
+   cobalt signal, making the theme feel installed rather than painted on top. */
+:root[data-z-theme="hightech"] ::selection,
+[data-z-theme="hightech"] ::selection {
+  background: var(--zt-hightech-ink);
+  color: #ffffff;
+}
+
+:root[data-z-theme="hightech"] *,
+[data-z-theme="hightech"] * {
+  scrollbar-color: var(--zt-hightech-accent) transparent;
+  scrollbar-width: thin;
+}
+
+/* Buttons: the component owns accessibility and keyboard behavior; the theme
+   owns density, uppercase command language, borders, and activation glow. */
+[data-z-theme="hightech"] z-button {
+  border: 1px solid var(--zt-hightech-line-strong);
+  font-family: var(--z-font-family-text);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+[data-z-theme="hightech"] z-button[variant="primary"] {
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--zt-hightech-accent) 30%, transparent),
+    0 12px 30px color-mix(in oklab, var(--zt-hightech-accent) 22%, transparent);
+}
+
+[data-z-theme="hightech"] z-button[skin="glass"] {
+  background: color-mix(in oklab, var(--zt-hightech-surface-raised) 72%, transparent);
+  border-color: var(--zt-hightech-accent-line);
+  color: var(--zt-hightech-ink);
+}
+
+/* Cards: a HighTech card is a framed instrument panel. The pseudo-element is a
+   tiny active rail that hints at live data without adding markup. */
+[data-z-theme="hightech"] z-card {
+  position: relative;
+  overflow: hidden;
+  border-color: var(--zt-hightech-line);
+  background:
+    linear-gradient(180deg, color-mix(in oklab, #ffffff 82%, transparent), color-mix(in oklab, var(--zt-hightech-surface) 94%, transparent));
+  box-shadow: 0 1px 0 color-mix(in oklab, #ffffff 80%, transparent) inset;
+}
+
+[data-z-theme="hightech"] z-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--zt-hightech-accent), transparent 68%);
+}
+
+[data-z-theme="hightech"] z-card[skin="glass"] {
+  background: color-mix(in oklab, var(--zt-hightech-surface-raised) 68%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+/* Sliders: the native input remains accessible; the theme only sharpens the
+   track and makes the thumb look like a precise instrument handle. */
+[data-z-theme="hightech"] z-slider input[type="range"] {
+  filter: drop-shadow(0 8px 18px color-mix(in oklab, var(--zt-hightech-accent) 10%, transparent));
+}
+
+/* Reveals: the base component sets [revealed]; the theme changes the entrance
+   from soft fade to measured interface boot. */
+[data-z-theme="hightech"] z-reveal {
+  transform: translateY(10px);
+}
