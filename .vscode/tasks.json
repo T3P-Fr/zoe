@@ -1,0 +1,30 @@
+{
+	// ============================================================
+	// Tâches VSCode — le serveur de l'atelier Zoé
+	// ------------------------------------------------------------
+	// Ctrl+Shift+B lance le serveur. Il tourne en tâche de fond ;
+	// on le retrouve dans le panneau TERMINAL.
+	//
+	// POURQUOI : en file:// le navigateur bloque les modules ES —
+	// les composants ne se définissent pas et la page paraît morte.
+	// Tout passe par http://localhost:5173/.
+	// ============================================================
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Zoé — serveur (localhost:5173)",
+			"type": "shell",
+			"command": "node scripts/serve.mjs 5173",
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			}
+		}
+	]
+}
