@@ -58,3 +58,16 @@ th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid var(--
 th { font: 600 .72rem/1 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .05em; color: var(--z-ink-soft); }
 td code, .chips code { font-family: ui-monospace, monospace; background: var(--z-surface-sunken); padding: .1em .4em; border-radius: 4px; font-size: .92em; }
 .chips { display: flex; gap: .4rem; flex-wrap: wrap; }
+
+/*
+	La LÉGENDE d'une section — la phrase qui dit ce qu'on regarde. Sans elle, « Attributs »
+	et « Variables CSS » se lisaient comme deux façons de faire la même chose.
+	Styleguide doc.hint
+*/
+p.hint {
+	margin: -.3rem 0 .7rem;
+	max-width: 62ch;
+	color: var(--z-ink-soft);
+	font-size: .82rem;
+	line-height: 1.45;
+}

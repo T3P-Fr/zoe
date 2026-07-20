@@ -22,9 +22,9 @@ const UTILITY = ["current", "loading", "disabled", "error", "success"];        /
 /* Langue courante + dictionnaire de l'UI de la doc (l'API vit dans les static api). */
 let LANG = new URLSearchParams(location.search).get("lang") || localStorage.getItem("zoe-lang") || "en";
 const I18N = {
-	en: { core: "core", tools: "tools", components: "components", attributes: "Attributes", type: "Type", role: "Role", events: "Events", event: "Event", states: "States :state()", cssVars: "CSS variables", variable: "Variable", tryme: "Try me", hint: "Hover, press, DRAG it (drop inside / outside) — the « mouse » dots follow.", mouse: "Mouse — on gesture", utility: "Utility — on click", seealso: "Same states as z-element — try them above.", clickState: "click to set this state", promisePre: "States · interaction · animation: ", promiseBold: "zero JS to manage.", promisePost: " You write this HTML — and your CSS for :state().", default: "default" },
-	fr: { core: "noyau", tools: "tools", components: "composants", attributes: "Attributs", type: "Type", role: "Rôle", events: "Événements", event: "Événement", states: "États :state()", cssVars: "Variables CSS", variable: "Variable", tryme: "Testez-moi", hint: "Survole, presse, GLISSE-le (lâche dedans / dehors) — les points « souris » suivent.", mouse: "Souris — au geste", utility: "Utilitaires — au clic", seealso: "Mêmes états que z-element — teste-les là-haut.", clickState: "clique pour poser cet état", promisePre: "États · interaction · animation : ", promiseBold: "zéro JS à gérer.", promisePost: " Tu écris ce HTML — et ton CSS pour :state().", default: "défaut" },
-	es: { core: "núcleo", tools: "herramientas", components: "componentes", attributes: "Atributos", type: "Tipo", role: "Función", events: "Eventos", event: "Evento", states: "Estados :state()", cssVars: "Variables CSS", variable: "Variable", tryme: "Pruébame", hint: "Pasa el ratón, presiona, ARRÁSTRALO (suelta dentro / fuera) — los puntos « ratón » siguen.", mouse: "Ratón — al gesto", utility: "Utilitarios — al clic", seealso: "Mismos estados que z-element — pruébalos arriba.", clickState: "clic para poner este estado", promisePre: "Estados · interacción · animación: ", promiseBold: "cero JS que gestionar.", promisePost: " Escribes este HTML — y tu CSS para :state().", default: "predeterminado" }
+	en: { attributesHint: "Written on THIS element, in your HTML. A named shortcut: one word, and the component knows what to do.", eventsHint: "What the component tells you. Listen with addEventListener.", statesHint: "They HAPPEN — on gesture, or set by your code. You don't set them here, you paint them: z-button:state(over) { … }", cssVarsHint: "Written in your CSS, and they flow DOWN to everything inside. The fine-grained setting: an attribute is a shortcut that sets several of them at once.", core: "core", tools: "tools", components: "components", attributes: "Attributes", type: "Type", role: "Role", events: "Events", event: "Event", states: "States :state()", cssVars: "CSS variables", variable: "Variable", tryme: "Try me", hint: "Hover, press, DRAG it (drop inside / outside) — the « mouse » dots follow.", mouse: "Mouse — on gesture", utility: "Utility — on click", seealso: "Same states as z-element — try them above.", clickState: "click to set this state", promisePre: "States · interaction · animation: ", promiseBold: "zero JS to manage.", promisePost: " You write this HTML — and your CSS for :state().", default: "default" },
+	fr: { attributesHint: "S'écrit sur CET élément, dans ton HTML. Un raccourci nommé : un mot, et le composant sait quoi faire.", eventsHint: "Ce que le composant te dit. Écoute-le avec addEventListener.", statesHint: "Ils ARRIVENT — au geste, ou posés par ton code. On ne les règle pas ici, on les peint : z-button:state(over) { … }", cssVarsHint: "S'écrit dans ton CSS, et ça DESCEND sur tout ce qu'il y a dedans. Le réglage fin : un attribut n'est qu'un raccourci qui en pose plusieurs d'un coup.", core: "noyau", tools: "tools", components: "composants", attributes: "Attributs", type: "Type", role: "Rôle", events: "Événements", event: "Événement", states: "États :state()", cssVars: "Variables CSS", variable: "Variable", tryme: "Testez-moi", hint: "Survole, presse, GLISSE-le (lâche dedans / dehors) — les points « souris » suivent.", mouse: "Souris — au geste", utility: "Utilitaires — au clic", seealso: "Mêmes états que z-element — teste-les là-haut.", clickState: "clique pour poser cet état", promisePre: "États · interaction · animation : ", promiseBold: "zéro JS à gérer.", promisePost: " Tu écris ce HTML — et ton CSS pour :state().", default: "défaut" },
+	es: { attributesHint: "Se escribe en ESTE elemento, en tu HTML. Un atajo con nombre: una palabra, y el componente sabe qué hacer.", eventsHint: "Lo que el componente te dice. Escúchalo con addEventListener.", statesHint: "OCURREN — con el gesto, o puestos por tu código. No se ajustan aquí, se pintan: z-button:state(over) { … }", cssVarsHint: "Se escribe en tu CSS, y BAJA a todo lo que hay dentro. El ajuste fino: un atributo solo es un atajo que pone varios de una vez.", core: "núcleo", tools: "herramientas", components: "componentes", attributes: "Atributos", type: "Tipo", role: "Función", events: "Eventos", event: "Evento", states: "Estados :state()", cssVars: "Variables CSS", variable: "Variable", tryme: "Pruébame", hint: "Pasa el ratón, presiona, ARRÁSTRALO (suelta dentro / fuera) — los puntos « ratón » siguen.", mouse: "Ratón — al gesto", utility: "Utilitarios — al clic", seealso: "Mismos estados que z-element — pruébalos arriba.", clickState: "clic para poner este estado", promisePre: "Estados · interacción · animación: ", promiseBold: "cero JS que gestionar.", promisePost: " Escribes este HTML — y tu CSS para :state().", default: "predeterminado" }
 };
 const t = (k) => I18N[LANG]?.[k] ?? I18N.en[k] ?? k;
 /* résout une description : string (anglais) OU { en, fr, es } → la langue courante. */
@@ -133,12 +133,12 @@ function entrySection(d, group) {
 	else if (group === "components") sec.append(preview(d));
 	else sec.append(el("p", { class: "seealso", text: t("seealso") }));
 
-	if (d.attributes?.length) sec.append(heading(t("attributes")), table([t("attributes"), t("type"), t("role")],
+	if (d.attributes?.length) sec.append(heading(t("attributes"), t("attributesHint")), table([t("attributes"), t("type"), t("role")],
 		d.attributes.map((a) => [code(a.name), a.type?.text || "", desc(a.description)])));
-	if (d.events?.length) sec.append(heading(t("events")), table([t("event"), t("role")],
+	if (d.events?.length) sec.append(heading(t("events"), t("eventsHint")), table([t("event"), t("role")],
 		d.events.map((ev) => [code(ev.name), desc(ev.description)])));
-	if (d.cssStates?.length) { sec.append(heading(t("states"))); sec.append(chips(d.cssStates.map((s) => s.name))); }
-	if (d.cssProperties?.length) sec.append(heading(t("cssVars")), table([t("variable"), t("role")],
+	if (d.cssStates?.length) { sec.append(heading(t("states"), t("statesHint"))); sec.append(chips(d.cssStates.map((s) => s.name))); }
+	if (d.cssProperties?.length) sec.append(heading(t("cssVars"), t("cssVarsHint")), table([t("variable"), t("role")],
 		d.cssProperties.map((v) => [code(v.name), desc(v.description)])));
 	return sec;
 }
@@ -273,7 +273,22 @@ function el(tag, { class: cls, id, href, text } = {}) {
 	if (text != null) n.textContent = text;
 	return n;
 }
-function heading(text) { return el("h3", { text }); }
+/*
+	Un titre de section, avec sa LÉGENDE. Sans elle, « Attributs » et « Variables CSS »
+	se lisent comme deux façons de faire la même chose — c'est la question qui revient.
+	La légende dit en une ligne ce qui les sépare : l'attribut se pose sur CET élément et
+	c'est un raccourci nommé ; le token se pose en CSS, il descend sur tout ce qui suit,
+	et c'est le réglage fin.
+	@param {string} text   le titre
+	@param {string} [hint] la légende (une phrase, ou rien)
+*/
+function heading(text, hint) {
+	const titre = el("h3", { text });
+	if (!hint) return titre;
+	const bloc = document.createDocumentFragment();
+	bloc.append(titre, el("p", { class: "hint", text: hint }));
+	return bloc;
+}
 function code(text) { return el("code", { text }); }
 function table(head, rows) {
 	const tbl = document.createElement("table");
