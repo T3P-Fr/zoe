@@ -20,8 +20,33 @@ et **animés**, pour le « gradev » (mi-graphiste / mi-dev). *Less code, more c
 - **`core/z-layer`** — le **calque** : une pièce d'un composant, portant **un rôle**
   (`<z-layer part="marker">`). z-element porte les états (le vivant), z-layer porte les
   pièces (le visible). Une balise, un ensemble de rôles **ouvert** — la traduction en
-  HTML du `--{part}` du pacte. Les rôles se partagent entre composants. *(C'est ce que
-  l'ADR-0016 appelait `z-part`.)*
+  HTML du `--{part}` du pacte. Les rôles se partagent entre composants. **Un calque peut
+  en contenir d'autres.** *(C'est ce que l'ADR-0016 appelait `z-part`.)*
+
+**LA LOI DES CALQUES — tranchée le 2026-07-20**
+
+Ce qui est **commun** à tous les composants n'est **pas** un arbre unique : on n'impose
+pas à un bouton la structure d'une case. C'est la **grammaire** et le **lexique**.
+L'**anatomie**, elle, appartient à chaque composant.
+
+```
+GRAMMAIRE (commune)  une balise z-layer · un attribut part · imbricable
+LEXIQUE   (commun)   le même mot pour le même rôle, partout
+ANATOMIE  (propre)   quels rôles CE composant a — déclarés dans son static api.layers
+
+  z-button    background · infos(icon, label) · contact
+  z-checkbox  background · marker(ring, dot) · infos(icon, label) · contact
+  z-radio     les MÊMES mots que la case (forme ronde) → la même skin les peint
+  z-field     son anatomie à lui (input, etc.) — quand on l'écrira
+```
+
+**Interdit d'inventer un synonyme** : si le rôle existe déjà (`label`, `icon`,
+`background`, `contact`…), on reprend le mot. C'est le **lexique partagé** qui permet à
+une skin de peindre un composant qu'elle ne connaît pas — pas l'uniformité des arbres.
+
+Le placement des rôles **universels** (background, infos, contact) vit dans
+`core/z-layer` ; un composant ne décide que de **ses tailles et de ses couleurs**.
+Schéma : `core/z-layer/z-layer.anatomie.txt`.
 
 **Les états** (le cœur de z-element)
 - cycle : `default ⇄ over → press → release / releaseOut` · `drag` · `focus`

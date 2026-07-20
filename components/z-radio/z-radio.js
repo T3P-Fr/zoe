@@ -42,7 +42,32 @@ export class ZRadio extends ZElement {
 			{ name: "change", description: { en: "Emitted when this radio becomes selected. Read `.checked` / `.value`.", fr: "Émis quand cette radio devient sélectionnée. Lire `.checked` / `.value`.", es: "Emitido cuando esta radio queda seleccionada. Leer `.checked` / `.value`." } },
 			{ name: "z-state", description: { en: "Emitted on every state change. detail: { states, changed, on }.", fr: "Émis à chaque changement d'état. detail : { states, changed, on }.", es: "Emitido en cada cambio de estado. detail: { states, changed, on }." } }
 		],
-		states: ZElement.api.states
+		states: ZElement.api.states,
+		/*
+			LES CALQUES — la structure canonique de Zoé, aux mêmes rôles que z-checkbox.
+			Le `dot` d'ici et celui d'une case, c'est le même mot : une skin les peint
+			d'un coup. Seule la FORME diffère (rond), et elle porte le sens.
+		*/
+		layers: [
+			{ part: "background", description: { en: "The backdrop of the whole line — usually transparent, it carries effects.", fr: "Le fond de toute la ligne — souvent transparent, il porte les effets.", es: "El fondo de toda la línea — normalmente transparente, lleva los efectos." } },
+			{
+				part: "marker",
+				description: { en: "The round itself (its surface).", fr: "Le rond lui-même (sa surface).", es: "El círculo en sí (su superficie)." },
+				children: [
+					{ part: "ring", description: { en: "Its outline — animatable on its own.", fr: "Son cerclage — animable seul.", es: "Su cerco — animable por sí solo." } },
+					{ part: "dot", description: { en: "The mark that appears once chosen.", fr: "La marque qui apparaît une fois choisie.", es: "La marca que aparece al elegir." } }
+				]
+			},
+			{
+				part: "infos",
+				description: { en: "What informs — moved, hidden or animated as one block.", fr: "Ce qui informe — déplacé, caché ou animé d'un bloc.", es: "Lo que informa — movido, ocultado o animado en bloque." },
+				children: [
+					{ part: "icon", optional: true, description: { en: "Optional, before the label.", fr: "Optionnel, avant le label.", es: "Opcional, antes de la etiqueta." } },
+					{ part: "label", description: { en: "Your text.", fr: "Ton texte.", es: "Tu texto." } }
+				]
+			},
+			{ part: "contact", description: { en: "What receives the gesture — covers (and may overflow) the component, invisible.", fr: "Ce qui reçoit le geste — couvre (et peut déborder) le composant, invisible.", es: "Lo que recibe el gesto — cubre (y puede desbordar) el componente, invisible." } }
+		]
 	};
 
 	connectedCallback() {

@@ -10,6 +10,26 @@ Structure figée → **skinnable** (Chemin A).
 <z-button disabled>Indisponible</z-button>
 ```
 
+## En calques
+
+La [structure canonique](../../core/z-layer/z-layer.doc.md) **moins le marker** : un
+bouton n'a pas de pièce d'état à montrer. On n'écrit que les rôles qu'on a.
+
+```html
+<z-button>
+  <z-layer part="background"></z-layer>
+  <z-layer part="infos">
+    <z-layer part="icon">★</z-layer>
+    <z-layer part="label">Envoyer</z-layer>
+  </z-layer>
+  <z-layer part="contact"></z-layer>
+</z-button>
+```
+
+Ce que ça débloque : le **fond** est une pièce à part, il peut bouger sans emmener le
+texte (il gonfle, il glisse, il clignote). Sur la forme courte, fond et texte sont le
+même élément — donc le même mouvement. Les deux formes lisent les mêmes tokens.
+
 ## États (hérités de z-element)
 
 Interaction : `over` · `press` · `release` / `releaseOut` · `focus`.

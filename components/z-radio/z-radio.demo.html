@@ -4,6 +4,7 @@
 <title>z-radio — démo</title>
 <link rel="stylesheet" href="../../tools/z-motion/z-motion.css">
 <link rel="stylesheet" href="../../tools/z-contact/z-contact.css">
+<link rel="stylesheet" href="../../core/z-layer/z-layer.css">
 <link rel="stylesheet" href="./z-radio.css">
 <style>
   body { background:var(--z-page); color:var(--z-ink); font-family:var(--z-font); padding:2.5rem; max-width:760px; margin:auto; }
@@ -27,11 +28,52 @@
   <z-radio value="pt" current disabled>Português (choisie, verrouillée)</z-radio>
 </div>
 
+<h2 style="font-size:.95rem;margin:2rem 0 .5rem">La même chose, <b>en calques</b> — structure canonique</h2>
+<div class="stack">
+  <z-radio>
+    <z-layer part="background"></z-layer>
+    <z-layer part="marker">
+      <z-layer part="ring"></z-layer>
+      <z-layer part="dot"></z-layer>
+    </z-layer>
+    <z-layer part="infos">
+      <z-layer part="label">Français</z-layer>
+    </z-layer>
+    <z-layer part="contact"></z-layer>
+  </z-radio>
+
+  <z-radio current>
+    <z-layer part="background"></z-layer>
+    <z-layer part="marker">
+      <z-layer part="ring"></z-layer>
+      <z-layer part="dot"></z-layer>
+    </z-layer>
+    <z-layer part="infos">
+      <z-layer part="label">English</z-layer>
+    </z-layer>
+    <z-layer part="contact"></z-layer>
+  </z-radio>
+
+  <z-radio disabled>
+    <z-layer part="background"></z-layer>
+    <z-layer part="marker">
+      <z-layer part="ring"></z-layer>
+      <z-layer part="dot"></z-layer>
+    </z-layer>
+    <z-layer part="infos">
+      <z-layer part="label">Deutsch (indisponible)</z-layer>
+    </z-layer>
+    <z-layer part="contact"></z-layer>
+  </z-radio>
+</div>
+<p class="note">Même rendu, mêmes tokens : la structure change, la peau ne bouge pas.</p>
+
 <p class="note">Seules, ces radios s'ignorent : chacune s'allume dans son coin. L'exclusivité et les flèches arrivent avec <code>&lt;z-radio-group&gt;</code>.</p>
 
 <script type="module">
   import "../../examples/skin-switch.js";
   import "../../tools/z-contact/z-contact.js";
+  import "../../core/z-layer/z-layer.js";
   import "./z-radio.js";
 </script>
 </html>

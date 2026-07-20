@@ -1,26 +1,43 @@
 /*
 	============================================================
-	z-radio.css — le rendu de z-radio (anatomie marker + label)
+	z-radio.css — le rendu de z-radio, EN CALQUES
 	------------------------------------------------------------
-	Même grammaire que z-checkbox — `--z-radio--{part}__{prop}` — et le MÊME geste
-	(le point zoome du fond), mais rond : c'est la forme, pas le mouvement, qui dit
-	« un seul choix ». Défauts qui CONSOMMENT la peau (var(--z-accent), --z-line…)
-	→ marche sur HighTech ET Claude sans refonte. Aucune balise injectée : le marker
-	est un `::before`.
-	Requiert : une peau (tokens) + tools/z-motion (@keyframes pop).
+	Même grammaire que z-checkbox et les MÊMES RÔLES — c'est tout
+	l'intérêt : le `dot` d'une radio et celui d'une case, c'est le même mot, donc une
+	skin les peint d'un coup. Seule la FORME change (rond), et elle porte le sens :
+	« un seul choix ». Le mouvement, lui, est identique — le point zoome du fond.
+
+	  · FORME COURTE — <z-radio>Français</z-radio> : le CSS peint l'hôte (un ::before).
+	  · FORME EN CALQUES — son anatomie, dans la grammaire commune (tranché le 2026-07-20) :
+
+	        <z-radio>
+	          <z-layer part="background"></z-layer>
+	          <z-layer part="marker">
+	            <z-layer part="ring"></z-layer>
+	            <z-layer part="dot"></z-layer>
+	          </z-layer>
+	          <z-layer part="infos">
+	            <z-layer part="label">Français</z-layer>
+	          </z-layer>
+	          <z-layer part="contact"></z-layer>
+	        </z-radio>
+
+	CE FICHIER NE PLACE RIEN : le placement des rôles est universel (core/z-layer).
+	Ici, les tailles et les couleurs du rond, point.
+
+	Requiert : une peau (tokens) + core/z-layer + tools/z-motion (@keyframes pop, ripple).
 	Styleguide 2.0
 	============================================================
 */
 
 /*
-	z-radio — le sujet
-	Une ligne cliquable : le marker (::before) à gauche, TON label (light DOM) à droite.
+	z-radio — le sujet (commun aux deux formes)
 	Styleguide 2.1
 */
 z-radio {
 	display: inline-flex;
 	align-items: center;
-	position: relative;                           /* ancre du halo (::after), voir 2.3 */
+	position: relative;                           /* ancre des calques ET du halo */
 	gap: var(--z-radio__gap, var(--z-gap, .55em));
 	color: var(--z-ink);
 	font: inherit;
@@ -35,24 +52,23 @@ z-radio {
 }
 
 /*
-	z-radio — le marker (le rond)
-	UN seul ::before, comme la case : la bordure = le contour, et un point central
-	(background-image) dont la taille passe de 0 à 50 % au choix → « il zoome du fond ».
-	Le rayon est le SEUL écart avec z-checkbox : 50 % = rond, et l'œil sait aussitôt
-	qu'un seul choix est possible.
+	═══ FORME COURTE — le CSS peint l'hôte ═══
 	Styleguide 2.2
+
+	UN seul ::before, comme la case : la bordure fait le contour, un point central
+	(background-image) passe de 0 à 50 %. Le rayon est le SEUL écart avec z-checkbox.
+	closest-side : sans lui, le cercle du dégradé vise le COIN de la boîte et déborde
+	→ le « point » se rendrait carré.
 */
-z-radio::before {
+z-radio:not(:has(z-layer))::before {
 	content: "";
 	flex: 0 0 auto;
 	box-sizing: border-box;
 	width: var(--z-radio--marker__size, 1.15em);
 	height: var(--z-radio--marker__size, 1.15em);
-	border: var(--z-border-width, 1.5px) solid var(--z-radio--marker__border, var(--z-line));
+	border: var(--z-border-width, 1.5px) solid var(--z-radio--ring__color, var(--z-line));
 	border-radius: var(--z-radio--marker__radius, 50%);
 	background-color: var(--z-radio--marker__background, var(--z-surface));
-	/* closest-side : sans lui, le cercle du dégradé vise le COIN de la boîte et déborde
-	   → le « point » se rendrait carré. Le rayon doit s'arrêter au bord le plus proche. */
 	background-image: radial-gradient(circle closest-side, var(--z-radio--dot__color, #fff) 100%, transparent 100%);
 	background-repeat: no-repeat;
 	background-position: center;
@@ -64,19 +80,109 @@ z-radio::before {
 		transform var(--z-dur) var(--z-ease-spring),
 		background-size var(--z-dur-select, .26s) var(--z-ease-spring);
 }
+z-radio:not(:has(z-layer)):state(over)::before  { border-color: var(--z-accent); }
+z-radio:not(:has(z-layer)):state(press)::before { transform: scale(.9); }
+z-radio:not(:has(z-layer)):state(focus)::before { box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-accent) 35%, transparent)); }
+z-radio:not(:has(z-layer)):state(current)::before {
+	border-color: var(--z-radio--ring__color-checked, var(--z-accent));
+	background-color: var(--z-radio--marker__background-checked, var(--z-accent));
+	background-size: 50% 50%;
+}
+z-radio:not(:has(z-layer)):state(select)::before { animation: pop var(--z-dur-select, .26s) var(--z-ease-spring); }
+z-radio:not(:has(z-layer)):state(disabled)::before {
+	border-color: var(--z-disabled);
+	background-color: var(--z-surface-sunken);
+}
+z-radio:not(:has(z-layer)):state(current):state(disabled)::before {
+	border-color: var(--z-disabled);
+	background-color: color-mix(in srgb, var(--z-accent) 32%, var(--z-surface-sunken));
+}
+z-radio:not(:has(z-layer)):state(error)::before   { border-color: var(--z-danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-danger) 22%, transparent); }
+z-radio:not(:has(z-layer)):state(success)::before { border-color: var(--z-success); }
 
 /*
-	z-radio — interaction (héritée de z-element)
-	Le HALO au clic : l'onde (preset ripple de z-motion) part du marker, pas de la ligne
-	entière — le geste appartient au rond, c'est lui qu'on vise. Même signature que
-	z-button, pour que tout Zoé réponde pareil au doigt. Lâché dehors (releaseOut) :
-	l'onde est plus courte, elle dit « annulé ».
+	═══ FORME EN CALQUES — les tailles et les couleurs du ROND ═══
 	Styleguide 2.3
 */
-z-radio:state(over)::before  { border-color: var(--z-accent); }
-z-radio:state(press)::before { transform: scale(.9); }
-z-radio:state(focus)::before { box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-accent) 35%, transparent)); }
+z-radio > z-layer[part="background"] {
+	--z-layer--background__bleed: var(--z-radio--background__bleed, .3em);
+	border-radius: var(--z-radio--background__radius, var(--z-radius));
+	background: var(--z-radio--background__color, transparent);
+	transition: background var(--z-dur) var(--z-ease), scale var(--z-dur) var(--z-ease-spring);
+}
 
+z-radio > z-layer[part="marker"] {
+	width: var(--z-radio--marker__size, 1.15em);
+	height: var(--z-radio--marker__size, 1.15em);
+	border-radius: var(--z-radio--marker__radius, 50%);
+	background: var(--z-radio--marker__background, var(--z-surface));
+	transition: background var(--z-dur) var(--z-ease), scale var(--z-dur) var(--z-ease-spring);
+}
+
+z-radio > z-layer[part="marker"] > z-layer[part="ring"] {
+	border: var(--z-border-width, 1.5px) solid var(--z-radio--ring__color, var(--z-line));
+	border-radius: inherit;
+	transition:
+		border-color var(--z-dur) var(--z-ease),
+		box-shadow var(--z-dur) var(--z-ease),
+		rotate var(--z-dur-select, .26s) var(--z-ease-spring),
+		scale var(--z-dur) var(--z-ease-spring);
+}
+
+z-radio > z-layer[part="marker"] > z-layer[part="dot"] {
+	width: var(--z-radio--dot__size, 50%);
+	height: var(--z-radio--dot__size, 50%);
+	border-radius: var(--z-radio--dot__radius, 50%);
+	background: var(--z-radio--dot__color, #fff);
+	scale: 0;
+	transition: scale var(--z-dur-select, .26s) var(--z-ease-spring), background var(--z-dur) var(--z-ease);
+}
+
+z-radio > z-layer[part="infos"] > z-layer[part="icon"] {
+	color: var(--z-radio--icon__color, currentColor);
+}
+
+z-radio > z-layer[part="contact"] {
+	--z-layer--contact__bleed: var(--z-radio--contact__bleed, .25em);
+}
+
+/* ── les états, pièce par pièce ── */
+z-radio:has(z-layer):state(over)  > z-layer[part="marker"] > z-layer[part="ring"] { border-color: var(--z-accent); }
+z-radio:has(z-layer):state(press) > z-layer[part="marker"] { scale: .9; }
+z-radio:has(z-layer):state(focus) > z-layer[part="marker"] > z-layer[part="ring"] { box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-accent) 35%, transparent)); }
+
+z-radio:has(z-layer):state(current) > z-layer[part="marker"] { background: var(--z-radio--marker__background-checked, var(--z-accent)); }
+z-radio:has(z-layer):state(current) > z-layer[part="marker"] > z-layer[part="ring"] { border-color: var(--z-radio--ring__color-checked, var(--z-accent)); }
+z-radio:has(z-layer):state(current) > z-layer[part="marker"] > z-layer[part="dot"]  { scale: 1; }
+
+z-radio:has(z-layer):state(select) > z-layer[part="marker"] { animation: pop var(--z-dur-select, .26s) var(--z-ease-spring); }
+
+z-radio:has(z-layer):state(disabled) > z-layer[part="marker"] { background: var(--z-surface-sunken); }
+z-radio:has(z-layer):state(disabled) > z-layer[part="marker"] > z-layer[part="ring"] { border-color: var(--z-disabled); }
+z-radio:has(z-layer):state(current):state(disabled) > z-layer[part="marker"] {
+	background: color-mix(in srgb, var(--z-accent) 32%, var(--z-surface-sunken));
+}
+z-radio:has(z-layer):state(error)   > z-layer[part="marker"] > z-layer[part="ring"] { border-color: var(--z-danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-danger) 22%, transparent); }
+z-radio:has(z-layer):state(success) > z-layer[part="marker"] > z-layer[part="ring"] { border-color: var(--z-success); }
+
+/*
+	═══ COMMUN AUX DEUX FORMES ═══
+	Styleguide 2.4
+*/
+z-radio:state(current) {
+	font-weight: var(--z-radio--label__weight, inherit);
+	text-shadow: var(--z-radio--label__emphasis, .012em 0 0 currentColor, -.012em 0 0 currentColor);
+}
+z-radio:state(disabled) {
+	color: var(--z-disabled);
+	cursor: not-allowed;
+}
+
+/*
+	Le HALO au clic : l'onde part du marker, pas de la ligne entière — le geste
+	appartient au rond, c'est lui qu'on vise. Même signature que z-button et z-checkbox.
+	Styleguide 2.5
+*/
 z-radio::after {
 	content: "";
 	position: absolute;
@@ -93,46 +199,7 @@ z-radio::after {
 	transform-origin: center;
 	opacity: 0;
 	pointer-events: none;
+	z-index: 11;
 }
 z-radio:state(release)::after    { animation: ripple var(--z-dur-release) var(--z-ease); }
 z-radio:state(releaseOut)::after { animation: ripple var(--z-dur-releaseOut) var(--z-ease); }
-
-/*
-	z-radio — choisie (current)
-	Le rond se remplit d'accent, le point ZOOME du fond (background-size 0→50 %, ressort).
-	Le label s'épaissit sans saut de pixel (faux-bold text-shadow) ; une peau peut
-	préférer un vrai poids via --z-radio--label__weight.
-	Styleguide 2.4
-*/
-z-radio:state(current)::before {
-	border-color: var(--z-radio--marker__border-checked, var(--z-accent));
-	background-color: var(--z-radio--marker__background-checked, var(--z-accent));
-	background-size: 50% 50%;
-}
-z-radio:state(current) {
-	font-weight: var(--z-radio--label__weight, inherit);
-	text-shadow: var(--z-radio--label__emphasis, .012em 0 0 currentColor, -.012em 0 0 currentColor);
-}
-/* select : le geste posé par le socle quand current s'allume → un pop du rond. */
-z-radio:state(select)::before { animation: pop var(--z-dur-select, .26s) var(--z-ease-spring); }
-
-/*
-	z-radio — statut métier
-	Styleguide 2.5
-*/
-z-radio:state(disabled) {
-	color: var(--z-disabled);
-	cursor: not-allowed;
-}
-z-radio:state(disabled)::before {
-	border-color: var(--z-disabled);
-	background-color: var(--z-surface-sunken);
-}
-/* choisie ET verrouillée : le choix RESTE lisible — accent ATTÉNUÉ (mix accent + fond)
-   plutôt que le gris de disabled, sinon current+disabled laverait la sélection. */
-z-radio:state(current):state(disabled)::before {
-	border-color: var(--z-disabled);
-	background-color: color-mix(in srgb, var(--z-accent) 32%, var(--z-surface-sunken));
-}
-z-radio:state(error)::before   { border-color: var(--z-danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-danger) 22%, transparent); }
-z-radio:state(success)::before { border-color: var(--z-success); }

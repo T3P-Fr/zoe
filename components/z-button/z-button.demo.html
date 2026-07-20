@@ -4,6 +4,7 @@
 <title>z-button — démo</title>
 <link rel="stylesheet" href="../../tools/z-motion/z-motion.css">
 <link rel="stylesheet" href="../../tools/z-contact/z-contact.css">
+<link rel="stylesheet" href="../../core/z-layer/z-layer.css">
 <link rel="stylesheet" href="./z-button.css">
 <style>
   body { background:var(--z-page); color:var(--z-ink); font-family:var(--z-font); padding:2.5rem; max-width:760px; margin:auto; }
@@ -26,9 +27,47 @@
   <z-button disabled>Indisponible</z-button>
 </div>
 
+<h2 style="font-size:.95rem;margin:2rem 0 .5rem">La même chose, <b>en calques</b> — structure canonique</h2>
+<div class="row">
+  <z-button>
+    <z-layer part="background"></z-layer>
+    <z-layer part="infos">
+      <z-layer part="label">Envoyer</z-layer>
+    </z-layer>
+    <z-layer part="contact"></z-layer>
+  </z-button>
+
+  <z-button>
+    <z-layer part="background"></z-layer>
+    <z-layer part="infos">
+      <z-layer part="icon">★</z-layer>
+      <z-layer part="label">Favori</z-layer>
+    </z-layer>
+    <z-layer part="contact"></z-layer>
+  </z-button>
+
+  <z-button current>
+    <z-layer part="background"></z-layer>
+    <z-layer part="infos">
+      <z-layer part="label">Active</z-layer>
+    </z-layer>
+    <z-layer part="contact"></z-layer>
+  </z-button>
+
+  <z-button disabled>
+    <z-layer part="background"></z-layer>
+    <z-layer part="infos">
+      <z-layer part="label">Indisponible</z-layer>
+    </z-layer>
+    <z-layer part="contact"></z-layer>
+  </z-button>
+</div>
+<p style="color:var(--z-ink-soft);font-size:.82rem">Le <b>fond</b> est une pièce à part : il peut bouger sans emmener le texte — impossible quand fond et texte sont le même élément.</p>
+
 <script type="module">
   import "../../examples/skin-switch.js";
   import "../../tools/z-contact/z-contact.js";
+  import "../../core/z-layer/z-layer.js";
   import "./z-button.js";
 </script>
 </html>

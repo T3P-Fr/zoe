@@ -1,20 +1,36 @@
 /*
 	============================================================
-	z-layer.css — le calque nu
+	z-layer.css — le calque, et le placement des RÔLES PARTAGÉS
 	------------------------------------------------------------
-	Le strict minimum pour qu'un calque EXISTE, et rien de plus. Aucune position, aucune
-	couleur, aucune taille : c'est le CSS du composant qui place chaque rôle, et la peau
-	qui le peint. Si ce fichier grossit un jour, c'est qu'une décision a fui du composant
-	vers le noyau — il faut la renvoyer chez elle.
+	Deux choses ici, et pas une de plus :
+
+	  1. le calque NU (il existe, il a une boîte prévisible) ;
+	  2. le placement des RÔLES UNIVERSELS — ceux qui veulent dire la même chose partout
+	     (background, infos, icon, label, contact). Ils se placent donc pareil partout.
+	     L'ANATOMIE, elle, n'est jamais imposée : chaque composant déclare SES rôles.
+
+	        z-button     background · infos(icon, label) · contact
+	        z-checkbox   background · marker(ring, dot) · infos(icon, label) · contact
+	        z-field      … son anatomie à lui (input, etc.) — quand on l'écrira
+
+	Un calque peut CONTENIR d'autres calques : `infos` groupe icon + label, `marker`
+	groupe ring + dot. On déplace un groupe entier sans toucher à ses pièces — et les
+	règles d'ancrage ci-dessous sont des règles de RELATION (« un ring vit dans SON
+	marker »), pas une anatomie imposée à qui n'en a pas.
+
+	CE QUI RESTE AU COMPOSANT : les TAILLES et les COULEURS de SES pièces. Rien d'autre.
+	Si une décision de mise en page remonte ici, c'est qu'elle vaut pour TOUS ; si elle
+	ne vaut que pour un composant, elle redescend chez lui.
+
+	Aucune couleur dans ce fichier : le noyau ne peint pas.
 	Styleguide 0.2
 	============================================================
 */
 
 /*
-	z-layer — le calque
-	Bloc, et boîte prévisible. `transform-box` cale les transformations sur la boîte du
-	calque : une skin qui fait tourner ou pivoter une pièce tourne autour d'ELLE, pas
-	d'un centre hérité au hasard.
+	z-layer — le calque nu
+	Boîte prévisible, transformations calées sur elle-même : une skin qui fait tourner
+	une pièce la fait tourner autour d'ELLE, pas d'un centre hérité au hasard.
 	Styleguide 0.2.1
 */
 z-layer {
@@ -24,13 +40,97 @@ z-layer {
 }
 
 /*
-	z-layer — les calques DÉCORATIFS ne prennent pas le clic
-	Un calque qui ne porte pas de contenu (le fond, le marker, l'anneau, le point) est
-	là pour être VU, pas touché : il laisserait sinon passer un pointerdown avec une
-	cible différente du composant, et volerait le geste à ses voisins. Les calques qui
-	contiennent (label, icon) gardent le leur — on sélectionne un texte.
+	background — le fond, DERRIÈRE tout
+	Il déborde légèrement (bleed) : un fond au ras du composant se lit comme une erreur
+	d'alignement. Le composant règle ce débord s'il veut.
 	Styleguide 0.2.2
 */
-z-layer:empty {
+z-layer[part="background"] {
+	position: absolute;
+	inset: calc(var(--z-layer--background__bleed, 0px) * -1);
+	z-index: 0;
+}
+
+/*
+	marker — la pièce d'état (la case, le rond, la pastille…)
+	Elle TIENT LA PLACE dans le flux : c'est elle qui pousse les infos à côté. Le
+	composant lui donne sa taille ; le noyau ne fait qu'ancrer ses enfants.
+	Styleguide 0.2.3
+*/
+z-layer[part="marker"] {
+	position: relative;
+	z-index: 1;
+	flex: 0 0 auto;
+}
+
+/*
+	ring & dot — les pièces DU marker, ancrées sur lui
+	ring épouse ses bords ; dot se pose en son centre. Aucune ne connaît la ligne
+	entière — d'où l'imbrication : elles ne peuvent plus se décaler par accident.
+	`translate` (propriété individuelle) porte le centrage du dot, `transform` reste
+	LIBRE pour les animations de la peau.
+	Styleguide 0.2.4
+*/
+z-layer[part="marker"] > z-layer[part="ring"] {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+}
+z-layer[part="marker"] > z-layer[part="dot"] {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	z-index: 3;
+	translate: -50% -50%;
+}
+
+/*
+	infos — ce qui informe (icône + texte), en ligne
+	Un groupe : on le déplace, on le cache, on l'anime d'un bloc, sans toucher à ses
+	pièces. C'est tout l'intérêt d'un calque qui en contient d'autres.
+	Styleguide 0.2.5
+*/
+z-layer[part="infos"] {
+	position: relative;
+	z-index: 1;
+	display: inline-flex;
+	align-items: center;
+	gap: var(--z-layer--infos__gap, .4em);
+	min-width: 0;                                 /* pour que le texte puisse rétrécir */
+}
+z-layer[part="icon"] {
+	display: inline-flex;
+	align-items: center;
+	flex: 0 0 auto;
+}
+z-layer[part="label"] {
+	min-width: 0;
+}
+
+/*
+	contact — ce qui REÇOIT le geste, au-dessus de tout
+	La surface que le doigt vise. Elle couvre le composant (et peut le DÉBORDER, pour
+	offrir une cible confortable sans grossir le dessin — la zone tactile n'est pas le
+	visuel). Elle ne se voit pas ; elle ne fait qu'accueillir.
+	Styleguide 0.2.6
+*/
+z-layer[part="contact"] {
+	position: absolute;
+	inset: calc(var(--z-layer--contact__bleed, 0px) * -1);
+	z-index: 10;
+}
+
+/*
+	Qui prend le pointeur, qui le laisse passer
+	Les calques DÉCORATIFS sont là pour être vus, pas touchés : s'ils prenaient le
+	pointeur, l'événement viendrait d'eux et le composant devrait deviner qui a été
+	touché. Ceux qui CONTIENNENT (infos, label, icon) gardent le leur — on sélectionne
+	un texte. Et `contact`, lui, est fait pour ça.
+	Styleguide 0.2.7
+*/
+z-layer[part="background"],
+z-layer[part="marker"],
+z-layer[part="ring"],
+z-layer[part="dot"] {
 	pointer-events: none;
 }

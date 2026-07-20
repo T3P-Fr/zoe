@@ -11,6 +11,28 @@ le label reste ton light DOM.
 <z-radio value="es" disabled>Español</z-radio>
 ```
 
+## En calques
+
+La [structure canonique](../../core/z-layer/z-layer.doc.md), aux **mêmes rôles** que la
+case — seule la forme change (rond), et c'est elle qui porte le sens :
+
+```html
+<z-radio>
+  <z-layer part="background"></z-layer>
+  <z-layer part="marker">
+    <z-layer part="ring"></z-layer>
+    <z-layer part="dot"></z-layer>
+  </z-layer>
+  <z-layer part="infos">
+    <z-layer part="label">Français</z-layer>
+  </z-layer>
+  <z-layer part="contact"></z-layer>
+</z-radio>
+```
+
+Le `dot` d'ici et celui d'une case, c'est **le même mot** : une skin les peint d'un coup.
+La forme courte (`<z-radio>Français</z-radio>`) reste valable et rend pareil.
+
 ## La loi de la radio : elle ne s'éteint pas toute seule
 
 C'est **la** différence avec la case à cocher, et elle tient en une phrase :

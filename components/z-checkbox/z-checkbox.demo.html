@@ -25,11 +25,11 @@
     --z-checkbox--dot__radius: 50%;
   }
   /* l'anneau tourne d'un quart de tour en se cochant… */
-  .fou:state(current) > z-layer[part="ring"] { rotate: 90deg; scale: 1.15; }
+  .fou:state(current) > z-layer[part="marker"] > z-layer[part="ring"] { rotate: 90deg; scale: 1.15; }
   /* …le fond respire… */
   .fou:state(current) > z-layer[part="background"] { scale: 1.06; }
   /* …et le point arrive en retard, en rebondissant (son propre délai). */
-  .fou > z-layer[part="dot"] { transition-delay: .08s; }
+  .fou > z-layer[part="marker"] > z-layer[part="dot"] { transition-delay: .08s; }
 </style>
 
 <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
@@ -53,26 +53,38 @@
 <div class="stack">
   <z-checkbox>
     <z-layer part="background"></z-layer>
-    <z-layer part="marker"></z-layer>
-    <z-layer part="ring"></z-layer>
-    <z-layer part="dot"></z-layer>
-    <z-layer part="label">J'accepte les conditions</z-layer>
+    <z-layer part="marker">
+      <z-layer part="ring"></z-layer>
+      <z-layer part="dot"></z-layer>
+    </z-layer>
+    <z-layer part="infos">
+      <z-layer part="label">J'accepte les conditions</z-layer>
+    </z-layer>
+    <z-layer part="contact"></z-layer>
   </z-checkbox>
 
   <z-checkbox current>
     <z-layer part="background"></z-layer>
-    <z-layer part="marker"></z-layer>
-    <z-layer part="ring"></z-layer>
-    <z-layer part="dot"></z-layer>
-    <z-layer part="label">Recevoir la newsletter</z-layer>
+    <z-layer part="marker">
+      <z-layer part="ring"></z-layer>
+      <z-layer part="dot"></z-layer>
+    </z-layer>
+    <z-layer part="infos">
+      <z-layer part="label">Recevoir la newsletter</z-layer>
+    </z-layer>
+    <z-layer part="contact"></z-layer>
   </z-checkbox>
 
   <z-checkbox disabled>
     <z-layer part="background"></z-layer>
-    <z-layer part="marker"></z-layer>
-    <z-layer part="ring"></z-layer>
-    <z-layer part="dot"></z-layer>
-    <z-layer part="label">Indisponible</z-layer>
+    <z-layer part="marker">
+      <z-layer part="ring"></z-layer>
+      <z-layer part="dot"></z-layer>
+    </z-layer>
+    <z-layer part="infos">
+      <z-layer part="label">Indisponible</z-layer>
+    </z-layer>
+    <z-layer part="contact"></z-layer>
   </z-checkbox>
 </div>
 <p class="note">Exactement le même rendu que la forme courte — c'est le but : la structure change, la peau ne bouge pas.</p>
@@ -81,10 +93,14 @@
 <div class="stack">
   <z-checkbox class="fou">
     <z-layer part="background"></z-layer>
-    <z-layer part="marker"></z-layer>
-    <z-layer part="ring"></z-layer>
-    <z-layer part="dot"></z-layer>
-    <z-layer part="label">Coche-moi : l'anneau tourne, le fond respire, le point arrive après</z-layer>
+    <z-layer part="marker">
+      <z-layer part="ring"></z-layer>
+      <z-layer part="dot"></z-layer>
+    </z-layer>
+    <z-layer part="infos">
+      <z-layer part="label">Coche-moi : l'anneau tourne, le fond respire, le point arrive après</z-layer>
+    </z-layer>
+    <z-layer part="contact"></z-layer>
   </z-checkbox>
 </div>
 <p class="note">Trois pièces, trois mouvements, trois horloges — <b>une</b> case. Aucune ligne de JS : que des rôles et des tokens.</p>

@@ -9,21 +9,29 @@
 	    Aucun calque écrit : le CSS peint l'HÔTE (un `::before` fait la case). Une ligne
 	    à taper, rien à apprendre. C'est la porte d'entrée.
 
-	  · FORME EN CALQUES — <z-checkbox><z-layer part="marker">…
-	    Chaque pièce est un élément à elle : on peut la peindre, la bouger, l'animer
-	    SÉPARÉMENT. C'est ce que produit l'éditeur Zoé, et ce qui permet les animations
-	    « de ouf » — l'anneau tourne pendant que le point rebondit et que le fond respire.
+	  · FORME EN CALQUES — son anatomie à lui, dans la grammaire commune (tranché le 2026-07-20) :
+
+	        <z-checkbox>
+	          <z-layer part="background"></z-layer>
+	          <z-layer part="marker">
+	            <z-layer part="ring"></z-layer>
+	            <z-layer part="dot"></z-layer>
+	          </z-layer>
+	          <z-layer part="infos">
+	            <z-layer part="icon">…</z-layer>
+	            <z-layer part="label">J'accepte</z-layer>
+	          </z-layer>
+	          <z-layer part="contact"></z-layer>
+	        </z-checkbox>
+
+	    Chaque pièce est un élément : on la peint, on la bouge, on l'anime SÉPARÉMENT.
+	    C'est ce que produit l'éditeur Zoé, et ce qui permet les animations « de ouf ».
 
 	Le CSS choisit tout seul, par `:has(z-layer)`. Les deux formes lisent EXACTEMENT les
 	mêmes tokens : une skin écrite pour l'une marche sur l'autre.
 
-	LES RÔLES (partagés avec les autres composants — même mot, même chose) :
-	    background · le fond de toute la ligne (souvent transparent, il sert aux effets)
-	    marker     · la case (sa surface)
-	    ring       · le cerclage de la case — animable seul (il peut tourner, pointiller)
-	    dot        · la marque qui apparaît une fois cochée
-	    label      · TON texte
-	    icon       · optionnel, avant le label
+	CE FICHIER NE PLACE PLUS RIEN. Le placement des rôles est universel, il vit dans
+	core/z-layer/z-layer.css. Ici : les TAILLES et les COULEURS de la case, point.
 
 	Requiert : une peau (tokens) + core/z-layer + tools/z-motion (@keyframes pop, ripple).
 	Styleguide 1.0
@@ -101,31 +109,21 @@ z-checkbox:not(:has(z-layer)):state(error)::before   { border-color: var(--z-dan
 z-checkbox:not(:has(z-layer)):state(success)::before { border-color: var(--z-success); }
 
 /*
-	═══ FORME EN CALQUES — chaque pièce est un élément à elle ═══
+	═══ FORME EN CALQUES — les tailles et les couleurs de LA CASE ═══
 	Styleguide 1.3
 
-	Le composant PLACE les rôles, la peau les PEINT. Trois calques (marker · ring · dot)
-	occupent la même zone à gauche : le marker tient la place dans le flux, les deux
-	autres se superposent à lui. Le label suit dans le flux, le background couvre tout
-	par-derrière.
-
-	Chaque pièce a son transform à elle → on peut faire tourner l'anneau PENDANT que le
-	point rebondit, sans qu'aucune n'écrase l'autre. C'est tout l'intérêt des calques.
+	Les chemins sont ÉCRITS EN ENTIER (`z-checkbox > … > …`) : la structure est figée,
+	donc le chemin est connu, et un composant imbriqué ne peut pas se faire peindre par
+	le CSS de son parent.
 */
 z-checkbox > z-layer[part="background"] {
-	position: absolute;
-	inset: calc(var(--z-checkbox--background__bleed, .3em) * -1) calc(var(--z-checkbox--background__bleed, .3em) * -1);
-	z-index: 0;
+	--z-layer--background__bleed: var(--z-checkbox--background__bleed, .3em);
 	border-radius: var(--z-checkbox--background__radius, var(--z-radius));
 	background: var(--z-checkbox--background__color, transparent);
 	transition: background var(--z-dur) var(--z-ease), scale var(--z-dur) var(--z-ease-spring);
 }
 
-/* le marker TIENT LA PLACE dans le flux : c'est lui qui pousse le label à droite */
 z-checkbox > z-layer[part="marker"] {
-	position: relative;
-	z-index: 1;
-	flex: 0 0 auto;
 	width: var(--z-checkbox--marker__size, 1.15em);
 	height: var(--z-checkbox--marker__size, 1.15em);
 	border-radius: var(--z-checkbox--marker__radius, var(--z-radius));
@@ -133,23 +131,9 @@ z-checkbox > z-layer[part="marker"] {
 	transition: background var(--z-dur) var(--z-ease), scale var(--z-dur) var(--z-ease-spring);
 }
 
-/* ring et dot se superposent au marker — centrés sur SA zone, pas sur la ligne */
-z-checkbox > z-layer[part="ring"],
-z-checkbox > z-layer[part="dot"] {
-	position: absolute;
-	left: 0;
-	top: 50%;
-	z-index: 2;
-	/* centrage par la MARGE, pas par un translate : `translate` reste libre pour les
-	   animations de la peau (une pièce qui glisse, qui rebondit…). */
-	margin-top: calc(var(--z-checkbox--marker__size, 1.15em) / -2);
-	width: var(--z-checkbox--marker__size, 1.15em);
-	height: var(--z-checkbox--marker__size, 1.15em);
-}
-
-z-checkbox > z-layer[part="ring"] {
+z-checkbox > z-layer[part="marker"] > z-layer[part="ring"] {
 	border: var(--z-border-width, 1.5px) solid var(--z-checkbox--ring__color, var(--z-line));
-	border-radius: var(--z-checkbox--marker__radius, var(--z-radius));
+	border-radius: inherit;
 	transition:
 		border-color var(--z-dur) var(--z-ease),
 		box-shadow var(--z-dur) var(--z-ease),
@@ -157,55 +141,45 @@ z-checkbox > z-layer[part="ring"] {
 		scale var(--z-dur) var(--z-ease-spring);
 }
 
-/* le point : une pièce à part entière, posée au centre de la case, absente au repos */
-z-checkbox > z-layer[part="dot"] {
-	left: calc(var(--z-checkbox--marker__size, 1.15em) / 2);
-	top: 50%;
-	margin-top: 0;
-	/* En LONGUEUR, dérivée de la case — surtout pas en % : un pourcentage se mesure sur
-	   le composant ENTIER (la ligne, label compris), et le point traverserait l'écran. */
-	width: var(--z-checkbox--dot__size, calc(var(--z-checkbox--marker__size, 1.15em) * .6));
-	height: var(--z-checkbox--dot__size, calc(var(--z-checkbox--marker__size, 1.15em) * .6));
-	z-index: 3;
-	translate: -50% -50%;
-	scale: 0;
+/* le point : absent au repos (scale 0), il ZOOME du fond une fois coché */
+z-checkbox > z-layer[part="marker"] > z-layer[part="dot"] {
+	width: var(--z-checkbox--dot__size, 60%);
+	height: var(--z-checkbox--dot__size, 60%);
 	border-radius: var(--z-checkbox--dot__radius, 0);
 	background: var(--z-checkbox--dot__color, #fff);
+	scale: 0;
 	transition: scale var(--z-dur-select, .26s) var(--z-ease-spring), background var(--z-dur) var(--z-ease);
 }
 
-z-checkbox > z-layer[part="label"],
-z-checkbox > z-layer[part="icon"] {
-	position: relative;
-	z-index: 1;
-}
-z-checkbox > z-layer[part="icon"] {
-	display: inline-flex;
-	align-items: center;
+z-checkbox > z-layer[part="infos"] > z-layer[part="icon"] {
 	color: var(--z-checkbox--icon__color, currentColor);
 }
 
-/* ── les états, sur les calques ── */
-z-checkbox:has(z-layer):state(over)  > z-layer[part="ring"] { border-color: var(--z-accent); }
-z-checkbox:has(z-layer):state(press) > z-layer[part="marker"],
-z-checkbox:has(z-layer):state(press) > z-layer[part="ring"] { scale: .9; }
-z-checkbox:has(z-layer):state(focus) > z-layer[part="ring"] { box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-accent) 35%, transparent)); }
+/* la zone touchable déborde un peu : viser une case de 1.15em au doigt, c'est dur */
+z-checkbox > z-layer[part="contact"] {
+	--z-layer--contact__bleed: var(--z-checkbox--contact__bleed, .25em);
+}
+
+/* ── les états, pièce par pièce ── */
+z-checkbox:has(z-layer):state(over)  > z-layer[part="marker"] > z-layer[part="ring"] { border-color: var(--z-accent); }
+z-checkbox:has(z-layer):state(press) > z-layer[part="marker"] { scale: .9; }
+z-checkbox:has(z-layer):state(focus) > z-layer[part="marker"] > z-layer[part="ring"] { box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-accent) 35%, transparent)); }
 
 z-checkbox:has(z-layer):state(current) > z-layer[part="marker"] { background: var(--z-checkbox--marker__background-checked, var(--z-accent)); }
-z-checkbox:has(z-layer):state(current) > z-layer[part="ring"]   { border-color: var(--z-checkbox--ring__color-checked, var(--z-accent)); }
-z-checkbox:has(z-layer):state(current) > z-layer[part="dot"]    { scale: 1; }
+z-checkbox:has(z-layer):state(current) > z-layer[part="marker"] > z-layer[part="ring"] { border-color: var(--z-checkbox--ring__color-checked, var(--z-accent)); }
+z-checkbox:has(z-layer):state(current) > z-layer[part="marker"] > z-layer[part="dot"]  { scale: 1; }
 
 /* select : le geste posé par le socle quand current s'allume. Chaque pièce y répond à
    SA façon — c'est ça, une anatomie en calques. */
 z-checkbox:has(z-layer):state(select) > z-layer[part="marker"] { animation: pop var(--z-dur-select, .26s) var(--z-ease-spring); }
 
 z-checkbox:has(z-layer):state(disabled) > z-layer[part="marker"] { background: var(--z-surface-sunken); }
-z-checkbox:has(z-layer):state(disabled) > z-layer[part="ring"]   { border-color: var(--z-disabled); }
+z-checkbox:has(z-layer):state(disabled) > z-layer[part="marker"] > z-layer[part="ring"] { border-color: var(--z-disabled); }
 z-checkbox:has(z-layer):state(current):state(disabled) > z-layer[part="marker"] {
 	background: color-mix(in srgb, var(--z-accent) 32%, var(--z-surface-sunken));
 }
-z-checkbox:has(z-layer):state(error)   > z-layer[part="ring"] { border-color: var(--z-danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-danger) 22%, transparent); }
-z-checkbox:has(z-layer):state(success) > z-layer[part="ring"] { border-color: var(--z-success); }
+z-checkbox:has(z-layer):state(error)   > z-layer[part="marker"] > z-layer[part="ring"] { border-color: var(--z-danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-danger) 22%, transparent); }
+z-checkbox:has(z-layer):state(success) > z-layer[part="marker"] > z-layer[part="ring"] { border-color: var(--z-success); }
 
 /*
 	═══ COMMUN AUX DEUX FORMES ═══
@@ -244,7 +218,7 @@ z-checkbox::after {
 	transform-origin: center;
 	opacity: 0;
 	pointer-events: none;
-	z-index: 4;
+	z-index: 11;
 }
 z-checkbox:state(release)::after    { animation: ripple var(--z-dur-release) var(--z-ease); }
 z-checkbox:state(releaseOut)::after { animation: ripple var(--z-dur-releaseOut) var(--z-ease); }

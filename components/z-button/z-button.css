@@ -1,15 +1,38 @@
 /*
 	============================================================
-	z-button.css — le rendu de z-button (états de z-element + presets z-motion)
+	z-button.css — le rendu de z-button, EN CALQUES
 	------------------------------------------------------------
-	Peint z-button sur lui-même, en lisant les tokens de la peau et en consommant les
-	presets de z-motion (pop, shake, shimmer, ripple…). Aucun @keyframes ici : la
-	structure est figée (Chemin A), le look est skinnable.
-	Requiert : une peau (tokens) + tools/z-motion (les @keyframes).
-	Styleguide 1.0
+	Le bouton n'a pas de pièce d'état à montrer (pas de case, pas de rond) : son
+	anatomie, c'est la même grammaire MOINS le marker. On n'écrit que les rôles
+	qu'on a : l'anatomie appartient au composant, elle ne lui est jamais imposée.
+
+	  · FORME COURTE — <z-button>Envoyer</z-button> : le CSS peint l'hôte.
+	  · FORME EN CALQUES — son anatomie, dans la grammaire commune (tranché le 2026-07-20) :
+
+	        <z-button>
+	          <z-layer part="background"></z-layer>
+	          <z-layer part="infos">
+	            <z-layer part="icon">★</z-layer>
+	            <z-layer part="label">Envoyer</z-layer>
+	          </z-layer>
+	          <z-layer part="contact"></z-layer>
+	        </z-button>
+
+	    Ce que ça débloque : le FOND peut bouger sans emmener le texte (il gonfle, il
+	    glisse, il clignote) — sur la forme courte, fond et texte sont le même élément,
+	    donc le même mouvement.
+
+	CE FICHIER NE PLACE RIEN : le placement des rôles est universel (core/z-layer).
+	Requiert : une peau (tokens) + core/z-layer + tools/z-motion (les @keyframes).
+	Styleguide 3.0
 	============================================================
 */
 
+/*
+	z-button — le sujet (commun aux deux formes)
+	La boîte, l'espacement et la typo vivent ici ; ce qui est PEINT dépend de la forme.
+	Styleguide 3.1
+*/
 z-button {
 	display: inline-flex;
 	align-items: center;
@@ -18,9 +41,7 @@ z-button {
 	overflow: hidden;
 	gap: .5em;
 	padding: var(--z-pad-y, .7em) var(--z-pad-x, 1.3em);
-	border: var(--z-border-width) solid var(--z-line);
 	border-radius: var(--z-radius);
-	background: var(--z-surface);
 	color: var(--z-ink);
 	font: inherit;
 	font-family: var(--z-font);
@@ -31,45 +52,97 @@ z-button {
 	vertical-align: middle;
 	outline: none;
 	transition:
+		color var(--z-dur) var(--z-ease),
+		transform var(--z-dur) var(--z-ease-spring);
+}
+
+/*
+	═══ FORME COURTE — le CSS peint l'hôte ═══
+	Styleguide 3.2
+*/
+z-button:not(:has(z-layer)) {
+	border: var(--z-border-width) solid var(--z-line);
+	background: var(--z-surface);
+	transition:
 		background-color var(--z-dur) var(--z-ease),
 		border-color var(--z-dur) var(--z-ease),
 		color var(--z-dur) var(--z-ease),
 		transform var(--z-dur) var(--z-ease-spring),
 		box-shadow var(--z-dur) var(--z-ease);
 }
+z-button:not(:has(z-layer)):state(over)  { border-color: var(--z-accent); background: var(--z-surface-raised); }
+z-button:not(:has(z-layer)):state(focus) { box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 40%, transparent); }
+z-button:not(:has(z-layer)):state(current) {
+	background: var(--z-button--background__color-current, var(--z-accent));
+	border-color: var(--z-button--background__border-current, var(--z-accent));
+	color: var(--z-button--label__color-current, var(--z-accent-ink, #fff));
+}
+z-button:not(:has(z-layer)):state(disabled) {
+	background: var(--z-surface-sunken);
+	border-color: var(--z-disabled);
+	box-shadow: none;
+}
+z-button:not(:has(z-layer)):state(error)   { border-color: var(--z-danger); }
+z-button:not(:has(z-layer)):state(success) {
+	border-color: var(--z-success);
+	background: color-mix(in srgb, var(--z-success) 12%, var(--z-surface));
+}
 
-/* ── interaction ── */
-z-button:state(over)  { border-color: var(--z-accent); background: var(--z-surface-raised); }
-z-button:state(focus) { box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 40%, transparent); }
-z-button:state(press) { transform: scale(.97); }
-
-/* release / releaseOut : l'onde (preset ripple), du centre. */
-z-button::after {
-	content: "";
-	position: absolute; inset: 0;
+/*
+	═══ FORME EN CALQUES — le fond est une PIÈCE, il bouge tout seul ═══
+	Styleguide 3.3
+*/
+z-button > z-layer[part="background"] {
+	border: var(--z-border-width) solid var(--z-button--background__border, var(--z-line));
 	border-radius: inherit;
-	border: 2px solid var(--z-accent);
-	opacity: 0; pointer-events: none;
-	transform-origin: center;
+	background: var(--z-button--background__color, var(--z-surface));
+	transition:
+		background var(--z-dur) var(--z-ease),
+		border-color var(--z-dur) var(--z-ease),
+		box-shadow var(--z-dur) var(--z-ease),
+		scale var(--z-dur) var(--z-ease-spring);
 }
-z-button:state(release)::after    { animation: ripple var(--z-dur-release) var(--z-ease); }
-z-button:state(releaseOut)::after { animation: ripple var(--z-dur-releaseOut) var(--z-ease); }
-
-/* ── sélection ──
-   current = ce bouton est LA commande active (outil choisi, vue affichée). Il prend
-   l'accent en plein : sur une peau où l'accent est rare, c'est LUI qui le dépense. */
-z-button:state(current) {
-	background: var(--z-button__background-current, var(--z-accent));
-	border-color: var(--z-button__border-current, var(--z-accent));
-	color: var(--z-button__color-current, var(--z-accent-ink, #fff));
+z-button > z-layer[part="infos"] > z-layer[part="icon"] {
+	color: var(--z-button--icon__color, currentColor);
 }
-z-button:state(select) { animation: pop var(--z-dur-select) var(--z-ease-spring); }
+z-button > z-layer[part="contact"] {
+	--z-layer--contact__bleed: var(--z-button--contact__bleed, 0px);
+}
 
-/* ── cycle de vie ── */
-z-button:state(enter) { animation: pop var(--z-dur-enter) var(--z-ease-spring); }
+/* ── les états, pièce par pièce ── */
+z-button:has(z-layer):state(over)  > z-layer[part="background"] { border-color: var(--z-accent); background: var(--z-surface-raised); }
+z-button:has(z-layer):state(focus) > z-layer[part="background"] { box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 40%, transparent); }
+z-button:has(z-layer):state(current) > z-layer[part="background"] {
+	background: var(--z-button--background__color-current, var(--z-accent));
+	border-color: var(--z-button--background__border-current, var(--z-accent));
+}
+z-button:has(z-layer):state(disabled) > z-layer[part="background"] {
+	background: var(--z-surface-sunken);
+	border-color: var(--z-disabled);
+	box-shadow: none;
+}
+z-button:has(z-layer):state(error)   > z-layer[part="background"] { border-color: var(--z-danger); }
+z-button:has(z-layer):state(success) > z-layer[part="background"] {
+	border-color: var(--z-success);
+	background: color-mix(in srgb, var(--z-success) 12%, var(--z-surface));
+}
 
-/* ── statut métier ── */
+/*
+	═══ COMMUN AUX DEUX FORMES ═══
+	Styleguide 3.4
+	Le texte suit l'état où qu'il vive (dans l'hôte ou dans son calque `label`).
+*/
+z-button:state(press)   { transform: scale(.97); }
+z-button:state(current) { color: var(--z-button--label__color-current, var(--z-accent-ink, #fff)); }
+z-button:state(select)  { animation: pop var(--z-dur-select) var(--z-ease-spring); }
+z-button:state(enter)   { animation: pop var(--z-dur-enter) var(--z-ease-spring); }
 z-button:state(loading) { color: color-mix(in srgb, var(--z-ink) 35%, transparent); cursor: progress; pointer-events: none; }
+z-button:state(busy)    { cursor: wait; animation: pulse 1s ease-in-out infinite; }
+z-button:state(disabled) { color: var(--z-disabled); cursor: not-allowed; }
+z-button:state(error)   { color: var(--z-danger); animation: shake .35s var(--z-ease); }
+z-button:state(success) { color: var(--z-success); }
+
+/* loading : le balayage passe SUR le fond, sous le texte */
 z-button:state(loading)::before {
 	content: "";
 	position: absolute; inset: 0; border-radius: inherit;
@@ -77,22 +150,18 @@ z-button:state(loading)::before {
 	background-size: 250% 100%;
 	animation: shimmer 1.15s linear infinite;
 	pointer-events: none;
+	z-index: 2;
 }
-z-button:state(busy) { cursor: wait; animation: pulse 1s ease-in-out infinite; }
-z-button:state(disabled) {
-	background: var(--z-surface-sunken);
-	border-color: var(--z-disabled);
-	color: var(--z-disabled);
-	cursor: not-allowed;
-	box-shadow: none;
+
+/* release / releaseOut : l'onde (preset ripple), du centre — la signature de Zoé */
+z-button::after {
+	content: "";
+	position: absolute; inset: 0;
+	border-radius: inherit;
+	border: 2px solid var(--z-button--halo__color, var(--z-accent));
+	opacity: 0; pointer-events: none;
+	transform-origin: center;
+	z-index: 11;
 }
-z-button:state(error) {
-	border-color: var(--z-danger);
-	color: var(--z-danger);
-	animation: shake .35s var(--z-ease);
-}
-z-button:state(success) {
-	border-color: var(--z-success);
-	color: var(--z-success);
-	background: color-mix(in srgb, var(--z-success) 12%, var(--z-surface));
-}
+z-button:state(release)::after    { animation: ripple var(--z-dur-release) var(--z-ease); }
+z-button:state(releaseOut)::after { animation: ripple var(--z-dur-releaseOut) var(--z-ease); }

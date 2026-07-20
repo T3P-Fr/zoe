@@ -12,34 +12,59 @@
         porte les ÉTATS                    porte les PIÈCES
         (le vivant)                        (le visible)
 
-        over · press · release             background · marker · ring
-        current · disabled · error         dot · label · icon
+        over · press · release             background · marker · ring · dot
+        current · disabled · error         infos · icon · label · contact
         :state(x)                          [part="x"]
 
         « QUAND ça change »                « CE QU'ON PEINT »
 
 
-2. UN COMPOSANT = UNE PILE DE RÔLES
+2. GRAMMAIRE COMMUNE, ANATOMIE PROPRE — tranché le 2026-07-20
 ────────────────────────────────────────────────────────────────────────────────
 
-  <z-checkbox>                         ← l'hôte : il porte les états
-    <z-layer part="background">        ← le fond de toute la ligne
-    <z-layer part="marker">            ← la case (sa surface)
-    <z-layer part="ring">              ← son cerclage
-    <z-layer part="dot">               ← la marque, une fois cochée
-    <z-layer part="label">J'accepte    ← TON texte
-    <z-layer part="icon">              ← optionnel
-  </z-checkbox>
+  Ce qui est COMMUN n'est pas un arbre unique — on n'impose pas à un bouton la
+  structure d'une case. Ce qui est commun :
 
-  Vu de face :                    Vu en tranches (l'ordre d'empilement) :
+     la GRAMMAIRE   une balise z-layer · un attribut part · imbricable
+     le LEXIQUE     le même mot pour le même rôle, partout
 
-   ┌───────────────────────┐        icon/label  ─────────────  z-index 1
-   │ ▣  J'accepte          │        dot         ───────────    z-index 3
-   └───────────────────────┘        ring        ─────────      z-index 2
-     ↑    ↑                         marker      ───────        z-index 1
-     │    └── label                 background  ───────────────────  0
-     └─────── marker + ring + dot
-              (superposés, même zone)
+  Ce qui est PROPRE à chacun : son ANATOMIE — quels rôles il a, déclarés dans
+  son `static api.layers`. C'est ça que l'éditeur Zoé lit.
+
+     z-button    background · infos(icon, label) · contact
+     z-checkbox  background · marker(ring, dot) · infos(icon, label) · contact
+     z-radio     les MÊMES mots que la case (forme ronde)
+     z-field     son anatomie à lui (input, etc.) — quand on l'écrira
+
+  Exemple, l'anatomie d'une CASE (un calque peut en contenir d'autres :
+  `marker` groupe ses pièces, `infos` groupe ce qui informe) :
+
+  z-checkbox                           ← l'hôte : il porte les ÉTATS
+  ├─ z-layer part="background"         ← le fond
+  ├─ z-layer part="marker"             ← la pièce d'état (case, rond…)
+  │   ├─ z-layer part="ring"           ←   son cerclage
+  │   └─ z-layer part="dot"            ←   sa marque
+  ├─ z-layer part="infos"              ← ce qui informe
+  │   ├─ z-layer part="icon"           ←   (optionnel)
+  │   └─ z-layer part="label"          ←   TON texte
+  └─ z-layer part="contact"            ← ce qui REÇOIT le geste
+
+  INTERDIT d'inventer un synonyme : si le rôle existe (label, icon, background,
+  contact…), on reprend le mot. C'est le LEXIQUE PARTAGÉ qui permet à une skin
+  de peindre un composant qu'elle ne connaît pas — pas l'uniformité des arbres.
+
+  Vu de face :                    Vu en tranches (l'empilement) :
+
+   ┌───────────────────────┐        contact     ══════════════════  z-index 10
+   │ ▣  J'accepte          │        infos       ─────────────       z-index 1
+   └───────────────────────┘         └ dot      ───────────         z-index 3
+     ↑    ↑                          └ ring     ─────────           z-index 2
+     │    └── infos > label          marker     ───────             z-index 1
+     └─────── marker (ring+dot)      background ──────────────────────────  0
+
+  contact est AU-DESSUS et peut DÉBORDER : la zone qu'on vise au doigt n'est
+  pas le dessin. Les calques décoratifs, eux, ne prennent pas le pointeur —
+  sinon le composant devrait deviner qui a été touché.
 
 
 3. LE MOT UNIQUE — TROIS ÉCRITURES
@@ -83,14 +108,15 @@
    FORME COURTE                        FORME EN CALQUES
    ────────────                        ────────────────
    <z-checkbox>J'accepte</z-checkbox>  <z-checkbox>
-                                         <z-layer part="marker">
-   Le CSS peint l'HÔTE                   <z-layer part="ring">
-   (un ::before fait la case)            <z-layer part="dot">
-                                         <z-layer part="label">J'accepte
-   1 ligne · rien à apprendre          </z-checkbox>
-   1 seul mouvement à la fois
-                                       Chaque pièce animable SEULE
-                                       ce que l'éditeur Zoé produit
+                                         <z-layer part="background">
+   Le CSS peint l'HÔTE                   <z-layer part="marker">
+   (un ::before fait la case)              <z-layer part="ring">
+                                           <z-layer part="dot">
+   1 ligne · rien à apprendre            <z-layer part="infos">
+   1 seul mouvement à la fois              <z-layer part="label">J'accepte
+                                         <z-layer part="contact">
+   Chaque pièce animable SEULE         </z-checkbox>
+   ce que l'éditeur Zoé produit
 
    Le CSS choisit tout seul :  :has(z-layer)  /  :not(:has(z-layer))
    Les deux lisent les MÊMES tokens → une skin marche sur les deux.
@@ -116,13 +142,29 @@
        part="ring"   ✔ la pièce
        part="border" ✘ la propriété           (loi « nom = RÔLE » du socle)
 
-  · Le calque ne décide de RIEN : le composant place, la peau peint.
-    Si z-layer.css grossit, une décision a fui du composant vers le noyau.
+  · Un calque ne décide de rien TOUT SEUL : le PLACEMENT d'un rôle est universel
+    (core/z-layer.css) puisque la structure est canonique ; le composant donne
+    les tailles, la peau donne les couleurs. Aucune couleur dans le noyau.
 
   · Les calques ne sont JAMAIS obligatoires. Zoé n'injecte rien : ce que tu
     écris est ce que tu debug.
 
   · Ce qui s'appelait `z-part` (ADR-0016) s'appelle désormais `z-layer` —
     le calque, mot de Photoshop et de Flash. Une seule forme, jamais deux.
+
+  · Un calque peut en CONTENIR d'autres. Un groupe (`infos`, `marker`) se
+    déplace, se cache et s'anime d'un bloc, sans toucher à ses pièces.
+
+  · L'ANATOMIE n'est JAMAIS imposée : elle appartient au composant (son
+    `static api.layers`). Un bouton n'a pas de marker, un champ aura son input.
+    Ce qui est commun, c'est la grammaire et le lexique.
+
+  · `part="contact"` = la couche qui REÇOIT (l'anatomie v4 : reçoit · montre ·
+    contient). Le TOOL `z-contact` (l'effet au point de clic) garde son nom :
+    l'un est un rôle de calque, l'autre est un moteur — plus de collision.
+
+  · Le PLACEMENT des rôles est universel → il vit dans core/z-layer.css. Un
+    composant ne décide que de SES tailles et de SES couleurs. Si une règle de
+    mise en page apparaît dans un composant, se demander si elle est universelle.
 
 ═══════════════════════════════════════════════════════════════════════════════

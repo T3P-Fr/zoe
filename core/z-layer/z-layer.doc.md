@@ -7,12 +7,48 @@ Un composant Zoé, c'est une pile de calques qui jouent chacun **un rôle**.
 ```html
 <z-checkbox>
   <z-layer part="background"></z-layer>
-  <z-layer part="marker"></z-layer>
-  <z-layer part="ring"></z-layer>
-  <z-layer part="dot"></z-layer>
-  <z-layer part="label">J'accepte</z-layer>
+  <z-layer part="marker">
+    <z-layer part="ring"></z-layer>
+    <z-layer part="dot"></z-layer>
+  </z-layer>
+  <z-layer part="infos">
+    <z-layer part="label">J'accepte</z-layer>
+  </z-layer>
+  <z-layer part="contact"></z-layer>
 </z-checkbox>
 ```
+
+## Grammaire commune, anatomie propre (tranché le 2026-07-20)
+
+Ce qui est commun à tous les composants n'est **pas** un arbre unique — on n'imposera
+jamais à un bouton la structure d'une case. C'est :
+
+- **la grammaire** — une balise `z-layer`, un attribut `part`, et un calque peut en
+  **contenir** d'autres ;
+- **le lexique** — le même mot pour le même rôle, partout. **Interdit d'inventer un
+  synonyme** de `label` ou de `background`.
+
+L'**anatomie** appartient au composant : il déclare ses rôles dans son `static
+api.layers`, et c'est ça que l'éditeur Zoé lit.
+
+```
+z-button    background · infos(icon, label) · contact
+z-checkbox  background · marker(ring, dot) · infos(icon, label) · contact
+z-radio     les MÊMES mots que la case (forme ronde) → la même skin les peint
+z-field     son anatomie à lui (input, etc.) — quand on l'écrira
+```
+
+C'est le **lexique partagé** qui permet à une skin de peindre un composant qu'elle ne
+connaît pas. Pas l'uniformité des arbres.
+
+**Un groupe se déplace d'un bloc.** `infos` (icône + texte) et `marker` (cerclage +
+marque) s'animent, se cachent, se décalent **entiers**, sans qu'on touche à leurs pièces.
+
+**`contact` est la couche qui reçoit** — l'anatomie v4 (*reçoit · montre · contient*).
+Elle couvre le composant et peut le **déborder** : la zone qu'on vise au doigt n'est pas
+le dessin. Les calques décoratifs, eux, ne prennent pas le pointeur — sinon le composant
+devrait deviner qui a été touché. *(Le tool `z-contact`, l'effet au point de clic, garde
+son nom : l'un est un rôle de calque, l'autre est un moteur. Plus de collision.)*
 
 ## Une balise + un rôle, pas une balise par rôle
 
@@ -44,19 +80,21 @@ peindre d'un coup :
 z-layer[part="dot"] { background: var(--ma-couleur); }
 ```
 
-Vocabulaire de départ : `background` · `marker` · `ring` · `dot` · `label` · `icon`.
-Un composant en ajoute quand son anatomie l'exige (`track`, `thumb`, `fill`…).
+Vocabulaire de départ : `background` · `marker` · `ring` · `dot` · `infos` · `icon` ·
+`label` · `contact`. Un composant en ajoute quand son anatomie l'exige (`track`,
+`thumb`, `fill`…) — l'ensemble est ouvert, c'est le principe.
 
 **Un rôle est une intention, jamais une propriété CSS.** `part="ring"` (la pièce) est
 juste ; `part="border"` (la propriété) est **interdit** — c'est la loi *nom = RÔLE* du
 socle.
 
-## Ce calque ne décide de rien
+## Qui décide de quoi
 
-Il ne se positionne pas, ne se peint pas, ne s'anime pas : le **composant** place chaque
-rôle, la **peau** le peint. Une brique bête ne peut pas se tromper. Si `z-layer.css`
-grossit un jour, c'est qu'une décision a fui du composant vers le noyau — il faut la
-renvoyer chez elle.
+Comme la structure est canonique, le **placement** d'un rôle est le même partout : il
+vit donc dans `core/z-layer/z-layer.css`. Le **composant** ne donne que ses **tailles**,
+la **peau** que ses **couleurs**. Aucune couleur dans le noyau. Si une règle de mise en
+page apparaît dans un composant, se demander si elle n'est pas universelle — et
+inversement, si une valeur arrive dans le noyau, elle est probablement de trop.
 
 ## Écrire les calques n'est jamais obligatoire
 

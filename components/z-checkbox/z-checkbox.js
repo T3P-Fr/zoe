@@ -61,12 +61,24 @@ export class ZCheckbox extends ZElement {
 			sur une radio, donc une skin peut les peindre d'un coup.
 		*/
 		layers: [
-			{ part: "background", required: false, description: { en: "The backdrop of the whole line — usually transparent, it carries effects.", fr: "Le fond de toute la ligne — souvent transparent, il porte les effets.", es: "El fondo de toda la línea — normalmente transparente, lleva los efectos." } },
-			{ part: "marker", required: true, description: { en: "The box itself (its surface).", fr: "La case elle-même (sa surface).", es: "La casilla en sí (su superficie)." } },
-			{ part: "ring", required: true, description: { en: "The box outline — animatable on its own (it can spin, dash…).", fr: "Le cerclage de la case — animable seul (il peut tourner, pointiller…).", es: "El cerco de la casilla — animable por sí solo (puede girar, punteado…)." } },
-			{ part: "dot", required: true, description: { en: "The mark that appears once checked.", fr: "La marque qui apparaît une fois cochée.", es: "La marca que aparece al marcar." } },
-			{ part: "label", required: true, description: { en: "Your text.", fr: "Ton texte.", es: "Tu texto." } },
-			{ part: "icon", required: false, description: { en: "Optional, before the label.", fr: "Optionnel, avant le label.", es: "Opcional, antes de la etiqueta." } }
+			{ part: "background", description: { en: "The backdrop of the whole line — usually transparent, it carries effects.", fr: "Le fond de toute la ligne — souvent transparent, il porte les effets.", es: "El fondo de toda la línea — normalmente transparente, lleva los efectos." } },
+			{
+				part: "marker",
+				description: { en: "The box itself (its surface).", fr: "La case elle-même (sa surface).", es: "La casilla en sí (su superficie)." },
+				children: [
+					{ part: "ring", description: { en: "The box outline — animatable on its own (it can spin, dash…).", fr: "Le cerclage de la case — animable seul (il peut tourner, pointiller…).", es: "El cerco de la casilla — animable por sí solo (puede girar, punteado…)." } },
+					{ part: "dot", description: { en: "The mark that appears once checked.", fr: "La marque qui apparaît une fois cochée.", es: "La marca que aparece al marcar." } }
+				]
+			},
+			{
+				part: "infos",
+				description: { en: "What informs — moved, hidden or animated as one block.", fr: "Ce qui informe — déplacé, caché ou animé d'un bloc.", es: "Lo que informa — movido, ocultado o animado en bloque." },
+				children: [
+					{ part: "icon", optional: true, description: { en: "Optional, before the label.", fr: "Optionnel, avant le label.", es: "Opcional, antes de la etiqueta." } },
+					{ part: "label", description: { en: "Your text.", fr: "Ton texte.", es: "Tu texto." } }
+				]
+			},
+			{ part: "contact", description: { en: "What receives the gesture — covers (and may overflow) the component, invisible.", fr: "Ce qui reçoit le geste — couvre (et peut déborder) le composant, invisible.", es: "Lo que recibe el gesto — cubre (y puede desbordar) el componente, invisible." } }
 		]
 	};
 
