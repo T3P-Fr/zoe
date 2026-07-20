@@ -123,5 +123,17 @@
 	--z-dur-open: 280ms;
 	--z-dur-close: 220ms;
 
+	/*
+		LA SIGNATURE DU CLIC (loi 3 : le halo est la seule lumière). HighTech signe avec
+		l'effet `morph` de z-contact — un petit rond naît sous la souris et meurt en
+		prenant la FORME du composant touché. La peau n'en règle que les VALEURS ; la
+		page l'active en écrivant une fois `<z-contact fx="morph">`.
+		Un CONTOUR fin (le filet, loi 2), en cobalt (l'activation, loi 5), et court.
+	*/
+	--z-contact-size: 20px;
+	--z-contact-width: 1.5px;
+	--z-contact-duration: .5s;
+	--z-contact-color: var(--z-accent);
+
 	color-scheme: light;
 }

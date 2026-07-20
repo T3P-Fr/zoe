@@ -4,6 +4,7 @@
 <title>HighTech — la planche de contrôle</title>
 <link rel="stylesheet" href="./hightech.css">
 <link rel="stylesheet" href="../../tools/z-motion/z-motion.css">
+<link rel="stylesheet" href="../../tools/z-contact/z-contact.css">
 <link rel="stylesheet" href="../../components/z-button/z-button.css">
 <link rel="stylesheet" href="../../components/z-checkbox/z-checkbox.css">
 <link rel="stylesheet" href="../../components/z-radio/z-radio.css">
@@ -52,6 +53,11 @@ body {
 .laws { margin: 0; padding-left: 1.1em; line-height: 1.7; }
 .laws b { font-weight: var(--z-font-weight-strong); }
 </style>
+
+<!-- La SOURCE z-contact, à plat : elle porte la recette pour toute la page. HighTech
+     signe ses clics avec `morph` — le rond né sous la souris meurt en prenant la forme
+     du composant. Une ligne, aucun câblage par composant. -->
+<z-contact fx="morph"></z-contact>
 
 <div class="split">
   <div class="side">
@@ -129,5 +135,6 @@ body {
   import "../../components/z-button/z-button.js";
   import "../../components/z-checkbox/z-checkbox.js";
   import "../../components/z-radio-group/z-radio-group.js";
+  import "../../tools/z-contact/z-contact.js";
 </script>
 </html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-contact — vérification du morph (figé)</title>
+<link rel="stylesheet" href="../../skins/hightech/hightech.css">
+<link rel="stylesheet" href="../z-motion/z-motion.css">
+<link rel="stylesheet" href="./z-contact.css">
+<link rel="stylesheet" href="../../components/z-button/z-button.css">
+<link rel="stylesheet" href="../../components/z-checkbox/z-checkbox.css">
+<style>
+/*
+	============================================================
+	Vérification du fx `morph` — on FIGE l'effet pour le voir.
+	------------------------------------------------------------
+	Un effet transitoire ne se prouve pas sur une capture : on déclenche un contact
+	synthétique sur chaque cible, on CLONE l'effet né dans l'overlay, et on met son
+	animation en pause à un instant donné (delay négatif). Trois instants = la
+	trajectoire complète : le rond sous la souris → la forme du composant.
+	Le mouvement réel, lui, se juge à l'œil sur la vraie page.
+	Styleguide tool.contact.check
+	============================================================
+*/
+body { background: var(--z-page); color: var(--z-ink); font-family: var(--z-font); padding: 28px; }
+h1 { font-size: 15px; }
+p.lead { color: var(--z-ink-soft); font-size: 12px; }
+.frames { display: flex; gap: 40px; margin-top: 30px; }
+.frame { border: 1px solid var(--z-line); background: var(--z-surface); padding: 34px 28px; position: relative; }
+.frame h2 { font-size: 11px; margin: 0 0 18px; color: var(--z-ink-soft); letter-spacing: 2px; text-transform: uppercase; }
+/* la scène figée : même règles que l'overlay réel, mais elle ne bouge plus */
+z-overlay[frozen] z-contact z-foreground { animation-play-state: paused !important; }
+.dot { position: fixed; width: 5px; height: 5px; background: var(--z-danger); border-radius: 50%; transform: translate(-50%, -50%); z-index: 2147483646; }
+</style>
+
+<z-contact fx="morph"></z-contact>
+
+<h1>fx = morph — l'effet figé à trois instants</h1>
+<p class="lead">Le point rouge = là où la souris a touché. L'anneau part de ce point, grandit, et finit exactement sur la boîte du composant (rayon compris : 0 en HighTech).</p>
+
+<div class="frames">
+  <div class="frame"><h2>t = 14 %</h2><z-button id="c1">Envoyer</z-button></div>
+  <div class="frame"><h2>t = 45 %</h2><z-button id="c2">Envoyer</z-button></div>
+  <div class="frame"><h2>t = 80 %</h2><z-checkbox id="c3">Une case</z-checkbox></div>
+</div>
+
+<z-overlay frozen id="freeze"></z-overlay>
+
+<script type="module">
+  import "../../components/z-button/z-button.js";
+  import "../../components/z-checkbox/z-checkbox.js";
+  import "./z-contact.js";
+
+  const DUREE = 0.5;                       /* --z-contact-duration par défaut, en s */
+  const freeze = document.getElementById("freeze");
+
+  /* Touche la cible près de son coin haut-gauche (l'écart au centre se voit mieux),
+     puis fige l'effet né dans l'overlay à l'instant `part` (0 → 1). */
+  function toucher(id, part) {
+    const cible = document.getElementById(id);
+    const box = cible.getBoundingClientRect();
+    const x = box.left + 12, y = box.top + 6;
+
+    cible.dispatchEvent(new PointerEvent("pointerdown", { clientX: x, clientY: y, bubbles: true, composed: true }));
+
+    /* Le moteur vient de créer l'effet dans SON overlay : on en prend une copie, que
+       le nettoyage du moteur n'emportera pas. */
+    const vivant = document.querySelector("z-overlay:not([frozen]) z-contact:last-of-type");
+    if (!vivant) { document.title += " — ÉCHEC : aucun effet créé"; return; }
+    const gele = vivant.cloneNode(true);
+    gele.querySelector("z-foreground").style.animationDelay = `-${(DUREE * part).toFixed(3)}s`;
+    freeze.appendChild(gele);
+
+    const point = document.createElement("div");
+    point.className = "dot";
+    point.style.left = `${x}px`;
+    point.style.top = `${y}px`;
+    document.body.appendChild(point);
+  }
+
+  toucher("c1", 0.14);
+  toucher("c2", 0.45);
+  toucher("c3", 0.80);
+</script>
+</html>

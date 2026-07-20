@@ -3,6 +3,7 @@
 <meta charset="utf-8">
 <title>z-radio — démo</title>
 <link rel="stylesheet" href="../../tools/z-motion/z-motion.css">
+<link rel="stylesheet" href="../../tools/z-contact/z-contact.css">
 <link rel="stylesheet" href="./z-radio.css">
 <style>
   body { background:var(--z-page); color:var(--z-ink); font-family:var(--z-font); padding:2.5rem; max-width:760px; margin:auto; }
@@ -10,6 +11,9 @@
   .stack { display:flex; flex-direction:column; gap:1rem; align-items:flex-start; margin-bottom:1.6rem; }
   .note { color:var(--z-ink-soft); font-size:.82rem; margin-top:.4rem; }
 </style>
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact fx="morph"></z-contact>
 
 <h1><code>z-radio</code></h1>
 <p class="lead">Anatomie <b>marker + label</b>, comme la case — mais <b>ronde</b>, et elle ne s'éteint <b>jamais</b> toute seule : re-clique la même, il ne se passe rien. Change la peau en haut à droite — tout suit.</p>
@@ -27,6 +31,7 @@
 
 <script type="module">
   import "../../examples/skin-switch.js";
+  import "../../tools/z-contact/z-contact.js";
   import "./z-radio.js";
 </script>
 </html>

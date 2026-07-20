@@ -3,12 +3,16 @@
 <meta charset="utf-8">
 <title>z-button — démo</title>
 <link rel="stylesheet" href="../../tools/z-motion/z-motion.css">
+<link rel="stylesheet" href="../../tools/z-contact/z-contact.css">
 <link rel="stylesheet" href="./z-button.css">
 <style>
   body { background:var(--z-page); color:var(--z-ink); font-family:var(--z-font); padding:2.5rem; max-width:760px; margin:auto; }
   h1 { font-size:1.2rem; } .lead { color:var(--z-ink-soft); font-size:.9rem; margin:.2rem 0 1.6rem; }
   .row { display:flex; gap:1rem; flex-wrap:wrap; align-items:center; margin-bottom:1.2rem; }
 </style>
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact fx="morph"></z-contact>
 
 <h1><code>z-button</code></h1>
 <p class="lead">Un bouton bâti sur <code>z-element</code> : il hérite tous les états. Survole, presse, lâche dehors (releaseOut). Change la peau en haut à droite — tout suit.</p>
@@ -24,6 +28,7 @@
 
 <script type="module">
   import "../../examples/skin-switch.js";
+  import "../../tools/z-contact/z-contact.js";
   import "./z-button.js";
 </script>
 </html>

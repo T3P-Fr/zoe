@@ -3,6 +3,7 @@
 <meta charset="utf-8">
 <title>z-radio-group — démo</title>
 <link rel="stylesheet" href="../../tools/z-motion/z-motion.css">
+<link rel="stylesheet" href="../../tools/z-contact/z-contact.css">
 <link rel="stylesheet" href="../z-radio/z-radio.css">
 <link rel="stylesheet" href="./z-radio-group.css">
 <style>
@@ -17,6 +18,9 @@
   /* Le groupe imbriqué se voit d'un coup d'œil : un retrait, comme une liste. */
   #dedans { margin-left:1.5em; }
 </style>
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact fx="morph"></z-contact>
 
 <h1><code>z-radio-group</code></h1>
 <p class="lead">Le niveau <b>groupe</b> : exclusivité, flèches ← ↑ → ↓ (naviguer <i>c'est</i> choisir), <b>une seule</b> tabulation pour tout le groupe, une valeur. Change la peau en haut à droite.</p>
@@ -67,6 +71,7 @@
 
 <script type="module">
   import "../../examples/skin-switch.js";
+  import "../../tools/z-contact/z-contact.js";
   import "./z-radio-group.js";
 
   /* Le retour s'écrit sous le groupe qui l'a produit (la VUE d'abord : action → écho
