@@ -45,8 +45,43 @@ Un dossier `components/z-x/` = `z-x.js` · `z-x.css` · `z-x.doc.md` · `z-x.dem
 ## Style de code — ODE2JS
 
 JS pur (jamais TypeScript) · JSDoc sur l'exporté · 2 espaces (tabs dans l'existant :
-suivre le fichier) · fonctions courtes · commentaires qui disent le **pourquoi** · CSS
-en **KSS** (`/* … Styleguide x.y */` au-dessus de chaque bloc).
+suivre le fichier) · fonctions courtes · commentaires qui disent le **pourquoi**.
+
+## LOI DU CSS — un commentaire n'existe que s'il APPREND quelque chose
+
+Deux obligations, une interdiction. C'est tout.
+
+**Obligatoire — l'en-tête du fichier** (`Styleguide x.0`) : ce que ce CSS peint, ce
+qu'il exige (peau, tokens, autres fichiers), et ce qu'il ne fait **pas**.
+
+**Obligatoire — un bloc KSS par section** (`Styleguide x.y`) : le rôle de la section et
+son parti pris. Format KSS : bloc `/* … */` multi-lignes, jamais sur une seule ligne.
+
+**Interdit — commenter ce que le code dit déjà.** Un commentaire ne se pose sur une
+règle QUE s'il porte une information absente du code :
+
+| Ça s'écrit | Ça ne s'écrit pas |
+|---|---|
+| un **piège** (défaut de navigateur, ordre de cascade, unité qui trompe) | la paraphrase de la déclaration |
+| une **décision** et son prix (« deux formes = chaque état écrit deux fois ») | le nom d'un token, qui se lit déjà |
+| un **pourquoi** non déductible (« box-shadow et pas outline : l'outline n'épouse pas le rayon partout ») | une valeur évidente |
+
+```css
+/* ❌ bruit — le nom du token le dit */
+/* Le rayon vient de la peau : 0 sur HighTech, 9px sur Claude. */
+border-radius: var(--z-radius);
+
+/* ✅ ça sauve deux heures à quelqu'un */
+/* box-shadow et pas outline : l'outline n'épouse pas le border-radius partout. */
+box-shadow: 0 0 0 3px …;
+```
+
+**L'absence de commentaire est un signal** : « rien de piégeux ici ». Elle n'a de valeur
+que si on ne commente pas à vide — un fichier commenté partout ne signale plus rien.
+
+**La grammaire s'apprend dans la DOC, pas dans le CSS.** Comment lire `:has()`, `&`,
+`> [part=…]` : c'est une section de la doc, écrite **une fois**. Un fichier de composant
+qui ré-enseigne la grammaire l'écrit deux fois — et ce qui est écrit deux fois divergera.
 
 **Cohérence intégrale :** toucher à un composant = réviser **tout** son dossier (JS,
 CSS, doc.md, JSDoc, démos). Une JSDoc fausse = une recherche inutile programmée pour

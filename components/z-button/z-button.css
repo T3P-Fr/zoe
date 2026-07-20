@@ -22,146 +22,289 @@
 	    glisse, il clignote) — sur la forme courte, fond et texte sont le même élément,
 	    donc le même mouvement.
 
+	SON PRIX, À CONNAÎTRE AVANT DE TOUCHER : chaque état est écrit DEUX FOIS, une par
+	forme (3.2 et 3.3), avec les MÊMES valeurs — c'est ce qui rend les deux écritures
+	interchangeables, et c'est le seul endroit du fichier où on se répète. Retoucher un
+	état d'un côté sans l'autre les fait diverger.
+
+	COMMENT LE CSS CHOISIT SA FORME — `:has(z-layer)` / `:not(:has(z-layer))`. Le
+	composant n'annonce rien, le CSS REGARDE ce que l'auteur a écrit. C'est ce qui permet
+	les deux écritures sans attribut de mode et sans que Zoé injecte une balise (ADR-0018).
+
+	COMMENT ON ÉCRIT LES PIÈCES — `> [part=background]`, enfant DIRECT. Le `>` empêche un
+	z-button imbriqué dans un autre composant de se faire repeindre par le CSS de son
+	parent. (`::part()` serait plus lisible mais n'existe QUE pour le Shadow DOM : nos
+	composants sont en light DOM, elle ne sélectionnerait rien — silencieusement.)
+	Lire un sélecteur Zoé : voir la doc, section « Lire un sélecteur ».
+
 	CE FICHIER NE PLACE RIEN : le placement des rôles est universel (core/z-layer).
 	Requiert : une peau (tokens) + core/z-layer + tools/z-motion (les @keyframes).
 	Styleguide 3.0
 	============================================================
 */
 
-/*
-	z-button — le sujet (commun aux deux formes)
-	La boîte, l'espacement et la typo vivent ici ; ce qui est PEINT dépend de la forme.
-	Styleguide 3.1
-*/
 z-button {
+
+	/*
+		LE SUJET — commun aux deux formes
+		La boîte, l'espacement et la typo vivent ici ; ce qui est PEINT dépend de la
+		forme. Un bouton est un bouton avant d'être court ou en calques.
+		Styleguide 3.1
+	*/
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+
+	/* L'ancre des calques (z-layer est en absolute) ET de l'onde ::after. Sans elle, ils
+	   se caleraient sur un ancêtre plus haut et partiraient ailleurs dans la page. */
 	position: relative;
+
+	/* L'onde et le balayage `loading` sont taillés à la boîte : rien ne doit déborder. */
 	overflow: hidden;
+
 	gap: .5em;
 	padding: var(--z-pad-y, .7em) var(--z-pad-x, 1.3em);
 	border-radius: var(--z-radius);
 	color: var(--z-ink);
+
+	/* `font: inherit` D'ABORD : un custom element n'hérite pas de la typo comme <button>.
+	   Les deux lignes suivantes affinent ce qu'on vient d'hériter — l'ordre compte. */
 	font: inherit;
 	font-family: var(--z-font);
 	font-weight: var(--z-font-weight, 500);
+
 	cursor: pointer;
+
+	/* Un bouton n'est pas du texte : le double-clic ne doit pas sélectionner son libellé. */
 	user-select: none;
+
+	/* Coupe le délai de 300 ms du tactile — l'appui doit répondre tout de suite. */
 	touch-action: manipulation;
+
 	vertical-align: middle;
+
+	/* Le focus est peint par nos soins (un halo), jamais par le contour du navigateur. */
 	outline: none;
+
 	transition:
 		color var(--z-dur) var(--z-ease),
 		transform var(--z-dur) var(--z-ease-spring);
-}
 
-/*
-	═══ FORME COURTE — le CSS peint l'hôte ═══
-	Styleguide 3.2
-*/
-z-button:not(:has(z-layer)) {
-	border: var(--z-border-width) solid var(--z-line);
-	background: var(--z-surface);
-	transition:
-		background-color var(--z-dur) var(--z-ease),
-		border-color var(--z-dur) var(--z-ease),
-		color var(--z-dur) var(--z-ease),
-		transform var(--z-dur) var(--z-ease-spring),
-		box-shadow var(--z-dur) var(--z-ease);
-}
-z-button:not(:has(z-layer)):state(over)  { border-color: var(--z-accent); background: var(--z-surface-raised); }
-z-button:not(:has(z-layer)):state(focus) { box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 40%, transparent); }
-z-button:not(:has(z-layer)):state(current) {
-	background: var(--z-button--background__color-current, var(--z-accent));
-	border-color: var(--z-button--background__border-current, var(--z-accent));
-	color: var(--z-button--label__color-current, var(--z-accent-ink, #fff));
-}
-z-button:not(:has(z-layer)):state(disabled) {
-	background: var(--z-surface-sunken);
-	border-color: var(--z-disabled);
-	box-shadow: none;
-}
-z-button:not(:has(z-layer)):state(error)   { border-color: var(--z-danger); }
-z-button:not(:has(z-layer)):state(success) {
-	border-color: var(--z-success);
-	background: color-mix(in srgb, var(--z-success) 12%, var(--z-surface));
-}
+	/*
+		═══ FORME COURTE — le CSS peint l'hôte ═══
+		L'auteur n'a écrit AUCUN calque : il n'y a qu'un élément, donc fond, contour et
+		texte sont le même objet — et bougent donc ensemble. C'est le prix de la ligne
+		unique, et il est assumé : qui veut dissocier passe à la forme en calques.
+		Styleguide 3.2
+	*/
 
-/*
-	═══ FORME EN CALQUES — le fond est une PIÈCE, il bouge tout seul ═══
-	Styleguide 3.3
-*/
-z-button > z-layer[part="background"] {
-	border: var(--z-border-width) solid var(--z-button--background__border, var(--z-line));
-	border-radius: inherit;
-	background: var(--z-button--background__color, var(--z-surface));
-	transition:
-		background var(--z-dur) var(--z-ease),
-		border-color var(--z-dur) var(--z-ease),
-		box-shadow var(--z-dur) var(--z-ease),
-		scale var(--z-dur) var(--z-ease-spring);
-}
-z-button > z-layer[part="infos"] > z-layer[part="icon"] {
-	color: var(--z-button--icon__color, currentColor);
-}
-z-button > z-layer[part="contact"] {
-	--z-layer--contact__bleed: var(--z-button--contact__bleed, 0px);
-}
+	/* La transition liste ici les propriétés que SEULE cette forme anime — la forme en
+	   calques les anime sur sa pièce `background`, pas sur l'hôte. */
+	&:not(:has(z-layer)) {
+		border: var(--z-border-width) solid var(--z-line);
+		background: var(--z-surface);
+		transition:
+			background-color var(--z-dur) var(--z-ease),
+			border-color var(--z-dur) var(--z-ease),
+			color var(--z-dur) var(--z-ease),
+			transform var(--z-dur) var(--z-ease-spring),
+			box-shadow var(--z-dur) var(--z-ease);
+	}
 
-/* ── les états, pièce par pièce ── */
-z-button:has(z-layer):state(over)  > z-layer[part="background"] { border-color: var(--z-accent); background: var(--z-surface-raised); }
-z-button:has(z-layer):state(focus) > z-layer[part="background"] { box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 40%, transparent); }
-z-button:has(z-layer):state(current) > z-layer[part="background"] {
-	background: var(--z-button--background__color-current, var(--z-accent));
-	border-color: var(--z-button--background__border-current, var(--z-accent));
-}
-z-button:has(z-layer):state(disabled) > z-layer[part="background"] {
-	background: var(--z-surface-sunken);
-	border-color: var(--z-disabled);
-	box-shadow: none;
-}
-z-button:has(z-layer):state(error)   > z-layer[part="background"] { border-color: var(--z-danger); }
-z-button:has(z-layer):state(success) > z-layer[part="background"] {
-	border-color: var(--z-success);
-	background: color-mix(in srgb, var(--z-success) 12%, var(--z-surface));
-}
+	/* Deux signes faibles (filet + surface) valent mieux qu'un fort : ça reste lisible
+	   sur une peau à filets comme sur une peau à aplats. */
+	&:not(:has(z-layer)):state(over) {
+		border-color: var(--z-accent);
+		background: var(--z-surface-raised);
+	}
 
-/*
-	═══ COMMUN AUX DEUX FORMES ═══
-	Styleguide 3.4
-	Le texte suit l'état où qu'il vive (dans l'hôte ou dans son calque `label`).
-*/
-z-button:state(press)   { transform: scale(.97); }
-z-button:state(current) { color: var(--z-button--label__color-current, var(--z-accent-ink, #fff)); }
-z-button:state(select)  { animation: pop var(--z-dur-select) var(--z-ease-spring); }
-z-button:state(enter)   { animation: pop var(--z-dur-enter) var(--z-ease-spring); }
-z-button:state(loading) { color: color-mix(in srgb, var(--z-ink) 35%, transparent); cursor: progress; pointer-events: none; }
-z-button:state(busy)    { cursor: wait; animation: pulse 1s ease-in-out infinite; }
-z-button:state(disabled) { color: var(--z-disabled); cursor: not-allowed; }
-z-button:state(error)   { color: var(--z-danger); animation: shake .35s var(--z-ease); }
-z-button:state(success) { color: var(--z-success); }
+	/* box-shadow et pas outline : l'outline n'épouse pas le border-radius partout. Il
+	   remplace le focus natif coupé plus haut — le clavier doit voir où il est. */
+	&:not(:has(z-layer)):state(focus) {
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 40%, transparent);
+	}
 
-/* loading : le balayage passe SUR le fond, sous le texte */
-z-button:state(loading)::before {
-	content: "";
-	position: absolute; inset: 0; border-radius: inherit;
-	background: linear-gradient(100deg, transparent 35%, color-mix(in srgb, var(--z-accent) 22%, transparent) 50%, transparent 65%);
-	background-size: 250% 100%;
-	animation: shimmer 1.15s linear infinite;
-	pointer-events: none;
-	z-index: 2;
-}
+	&:not(:has(z-layer)):state(current) {
+		background: var(--z-button--background__color-current, var(--z-accent));
+		border-color: var(--z-button--background__border-current, var(--z-accent));
+		color: var(--z-button--label__color-current, var(--z-accent-ink, #fff));
+	}
 
-/* release / releaseOut : l'onde (preset ripple), du centre — la signature de Zoé */
-z-button::after {
-	content: "";
-	position: absolute; inset: 0;
-	border-radius: inherit;
-	border: 2px solid var(--z-button--halo__color, var(--z-accent));
-	opacity: 0; pointer-events: none;
-	transform-origin: center;
-	z-index: 11;
+	/* Un bouton mort ne brille pas : la surface s'enfonce ET le halo est coupé. */
+	&:not(:has(z-layer)):state(disabled) {
+		background: var(--z-surface-sunken);
+		border-color: var(--z-disabled);
+		box-shadow: none;
+	}
+
+	/* Le filet seul : remplir de rouge couvrirait le texte qu'on demande de relire. */
+	&:not(:has(z-layer)):state(error) {
+		border-color: var(--z-danger);
+	}
+
+	/* 12 % : assez pour se voir, assez peu pour que le texte garde son contraste. */
+	&:not(:has(z-layer)):state(success) {
+		border-color: var(--z-success);
+		background: color-mix(in srgb, var(--z-success) 12%, var(--z-surface));
+	}
+
+	/*
+		═══ FORME EN CALQUES — le fond est une PIÈCE, il bouge tout seul ═══
+		Mêmes valeurs qu'en 3.2, appliquées au calque `background` au lieu de l'hôte :
+		une peau écrite pour une forme marche sur l'autre.
+		Styleguide 3.3
+	*/
+
+	/* `border-radius: inherit` : la peau ne règle le rayon qu'à un seul endroit (l'hôte).
+	   `scale` est dans la transition parce que ce fond a le droit de respirer sans
+	   emmener le texte — c'est toute la raison d'être de cette forme. */
+	> [part=background] {
+		border: var(--z-border-width) solid var(--z-button--background__border, var(--z-line));
+		border-radius: inherit;
+		background: var(--z-button--background__color, var(--z-surface));
+		transition:
+			background var(--z-dur) var(--z-ease),
+			border-color var(--z-dur) var(--z-ease),
+			box-shadow var(--z-dur) var(--z-ease),
+			scale var(--z-dur) var(--z-ease-spring);
+	}
+
+	/* `currentColor` : l'icône change d'état avec le texte, gratuitement. */
+	> [part=infos] > [part=icon] {
+		color: var(--z-button--icon__color, currentColor);
+	}
+
+	/* On RELAIE seulement le réglage du bouton vers le token universel que z-layer
+	   consomme : le placement de la zone touchable ne s'écrit pas ici. */
+	> [part=contact] {
+		--z-layer--contact__bleed: var(--z-button--contact__bleed, 0px);
+	}
+
+	&:has(z-layer):state(over) > [part=background] {
+		border-color: var(--z-accent);
+		background: var(--z-surface-raised);
+	}
+
+	/* Le halo se pose sur le FOND, pas sur l'hôte : il suit la pièce, même si une
+	   animation de peau l'a déplacée ou mise à l'échelle. */
+	&:has(z-layer):state(focus) > [part=background] {
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 40%, transparent);
+	}
+
+	/* Seul le fond s'inverse ici : la couleur du TEXTE est traitée en 3.4, parce qu'elle
+	   doit s'appliquer que le texte vive dans l'hôte ou dans son calque `label`. */
+	&:has(z-layer):state(current) > [part=background] {
+		background: var(--z-button--background__color-current, var(--z-accent));
+		border-color: var(--z-button--background__border-current, var(--z-accent));
+	}
+
+	&:has(z-layer):state(disabled) > [part=background] {
+		background: var(--z-surface-sunken);
+		border-color: var(--z-disabled);
+		box-shadow: none;
+	}
+
+	&:has(z-layer):state(error) > [part=background] {
+		border-color: var(--z-danger);
+	}
+
+	&:has(z-layer):state(success) > [part=background] {
+		border-color: var(--z-success);
+		background: color-mix(in srgb, var(--z-success) 12%, var(--z-surface));
+	}
+
+	/*
+		═══ COMMUN AUX DEUX FORMES ═══
+		Le TEXTE et le MOUVEMENT D'ENSEMBLE s'écrivent sans filtre de forme : le texte
+		suit son état où qu'il vive (dans l'hôte ou dans son calque `label`), et un bouton
+		qui recule sous le doigt recule en entier, calques compris.
+		Styleguide 3.4
+	*/
+
+	/* Le geste répond AVANT le traitement : c'est ce qui fait « senti », pas « cliqué ». */
+	&:state(press) {
+		transform: scale(.97);
+	}
+
+	&:state(current) {
+		color: var(--z-button--label__color-current, var(--z-accent-ink, #fff));
+	}
+
+	/* `select` est joué tout seul par le socle quand `current` s'allume : le rebond marque
+	   le PASSAGE, là où la couleur seule ne dit pas quand ça a basculé. */
+	&:state(select) {
+		animation: pop var(--z-dur-select) var(--z-ease-spring);
+	}
+
+	/* Rien n'apparaît sec (loi Zoé). Même rebond que la sélection : un seul geste dans
+	   tout le composant, l'œil n'a pas deux vocabulaires à apprendre. */
+	&:state(enter) {
+		animation: pop var(--z-dur-enter) var(--z-ease-spring);
+	}
+
+	/* `pointer-events: none` n'est PAS un `disabled` : le bouton n'est pas désactivé, il
+	   est OCCUPÉ — la nuance se lit à la couleur, pas au blocage. */
+	&:state(loading) {
+		color: color-mix(in srgb, var(--z-ink) 35%, transparent);
+		cursor: progress;
+		pointer-events: none;
+	}
+
+	/* Le blocage réel des événements est fait par le socle (z-element), pas par ce CSS. */
+	&:state(disabled) {
+		color: var(--z-disabled);
+		cursor: not-allowed;
+	}
+
+	/* Secousse COURTE : une alerte qui insiste devient du bruit. */
+	&:state(error) {
+		color: var(--z-danger);
+		animation: shake .35s var(--z-ease);
+	}
+
+	/* Pas d'animation : on ne fête pas ce qui a marché, on le signale et on s'efface. */
+	&:state(success) {
+		color: var(--z-success);
+	}
+
+	/* Le balayage passe SUR le fond (z-index 2) mais SOUS le texte, sinon il laverait le
+	   libellé à chaque passe. C'est `background-size: 250%` qu'on anime — la course du
+	   dégradé —, pas la position de l'élément. */
+	&:state(loading)::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background: linear-gradient(100deg, transparent 35%, color-mix(in srgb, var(--z-accent) 22%, transparent) 50%, transparent 65%);
+		background-size: 250% 100%;
+		animation: shimmer 1.15s linear infinite;
+		pointer-events: none;
+		z-index: 2;
+	}
+
+	/* L'ONDE — la signature de Zoé au relâchement.
+	   Elle est posée en PERMANENCE (opacity 0), pas créée au moment du clic : un
+	   pseudo-élément qui naît à l'instant du geste ne peut pas animer sa première image.
+	   `z-index: 11` la met au-dessus des calques ET du balayage. */
+	&::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		border: 2px solid var(--z-button--halo__color, var(--z-accent));
+		opacity: 0;
+		pointer-events: none;
+		transform-origin: center;
+		z-index: 11;
+	}
+
+	&:state(release)::after {
+		animation: ripple var(--z-dur-release) var(--z-ease);
+	}
+
+	/* Même onde, mais la peau lui donne sa propre durée (plus courte chez HighTech) : le
+	   même mouvement dit « validé » ou « annulé » rien que par le temps qu'il prend. */
+	&:state(releaseOut)::after {
+		animation: ripple var(--z-dur-releaseOut) var(--z-ease);
+	}
 }
-z-button:state(release)::after    { animation: ripple var(--z-dur-release) var(--z-ease); }
-z-button:state(releaseOut)::after { animation: ripple var(--z-dur-releaseOut) var(--z-ease); }
