@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-button — essai : une variable qui appartient au composant</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis passe par <code>http://localhost:5173/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../tools/z-motion/z-motion.css">
+<link rel="stylesheet" href="../../tools/z-contact/z-contact.css">
+<link rel="stylesheet" href="../../core/z-element/z-element.css">
+<link rel="stylesheet" href="../../core/z-layer/z-layer.css">
+<link rel="stylesheet" href="./z-button.css">
+
+<style>
+	/*
+		============================================================
+		ESSAI — une variable peut-elle APPARTENIR à un composant,
+		sans Shadow DOM ?
+		------------------------------------------------------------
+		LA QUESTION (Christophe, 2026-07-20) : « faut-il un Shadow pour y stocker
+		des --x-mouse par composant, des --this-width appartenant au composant ? »
+
+		CE QUE CETTE PAGE MONTRE, dans l'ordre :
+		  1. une variable posée sur un élément est DÉJÀ à lui — trois boutons, trois
+		     valeurs, aucune capsule ;
+		  2. le SEUL vrai risque est l'héritage vers le dedans — et il se coupe avec
+		     `@property { inherits: false }`, une ligne, pas un Shadow ;
+		  3. `--this-width` n'a pas besoin d'être stockée : un composant sait se
+		     mesurer lui-même (container queries, unité `cqw`).
+
+		Rien ici n'est une décision : c'est un essai, à voir bouger avant de trancher.
+		Styleguide essai.variables
+		============================================================
+	*/
+
+	/*
+		LES DEUX VARIABLES DE L'ESSAI — même usage, un seul écart : la déclaration.
+		Styleguide essai.variables.1
+	*/
+
+	/* NON déclarée : variable CSS ordinaire, donc elle DESCEND dans tous les enfants.
+	   (Rien à écrire — une variable non déclarée existe dès qu'on la pose.) */
+
+	/* DÉCLARÉE avec `inherits: false` : elle s'arrête à l'élément qui la porte. Un enfant
+	   qui ne la pose pas lui-même retombe sur `initial-value`, jamais sur la valeur du
+	   parent. C'est ÇA qui rend une variable « privée » — pas le Shadow DOM, qui la
+	   laisse traverser sa capsule comme si de rien n'était. */
+	@property --x-propre {
+		syntax: "<percentage>";
+		inherits: false;
+		initial-value: 50%;
+	}
+
+	@property --y-propre {
+		syntax: "<percentage>";
+		inherits: false;
+		initial-value: 50%;
+	}
+
+	/*
+		═══ LES MOLETTES — c'est ICI qu'on règle la lumière, et nulle part ailleurs ═══
+		Styleguide essai.variables.0
+
+		Trois nombres, et le dessin du dégradé suit. La page a aussi des curseurs qui
+		écrivent ces trois valeurs en direct : le fichier donne le POINT DE DÉPART, les
+		curseurs servent à chercher. Quand tu as trouvé, tu recopies les chiffres ici.
+	*/
+	:root {
+		/* Le rayon de la tache. Petit = un point qui suit le doigt ; grand = le bouton
+		   entier s'éclaire. */
+		--halo__taille: 42px;
+
+		/* La force de la couleur au centre, en % de l'accent de la peau. Au-delà de ~60 %
+		   le texte du bouton commence à se noyer. */
+		--halo__force: 45%;
+
+		/* Où la tache s'éteint (en % de son rayon). 100 % = un dégradé doux jusqu'au bord ;
+		   baisser à 40 % donne un disque net, avec un bord franc. */
+		--halo__bord: 100%;
+
+		/* La couleur. Par défaut celle de la peau — mets une couleur en dur pour t'en
+		   détacher (le swap de peau ne la suivra plus). */
+		--halo__couleur: var(--z-accent);
+	}
+
+	/*
+		LE RÉVÉLATEUR — une tache de lumière posée sur le calque `background`, centrée sur
+		les coordonnées de la souris. C'est le même dessin dans les deux cas : seule la
+		variable lue change, donc tout écart visible vient de l'héritage, pas du style.
+		Styleguide essai.variables.2
+	*/
+	z-button > [part=background] {
+		background-image: radial-gradient(circle var(--halo__taille) at var(--px, 50%) var(--py, 50%),
+			color-mix(in srgb, var(--halo__couleur) var(--halo__force), transparent),
+			transparent var(--halo__bord));
+	}
+
+	/* Le bouton LIBRE lit la variable non déclarée : il hérite de son parent s'il n'a
+	   rien à lui. C'est la fuite qu'on veut voir. */
+	.libre z-button > [part=background] {
+		--px: var(--x-libre, 50%);
+		--py: var(--y-libre, 50%);
+	}
+
+	/* Le bouton PROPRE lit la variable déclarée `inherits: false` : la valeur du parent
+	   ne l'atteint pas. */
+	.propre z-button > [part=background] {
+		--px: var(--x-propre);
+		--py: var(--y-propre);
+	}
+
+	/*
+		LA CARTE QUI FUIT — un conteneur qui pose SES propres coordonnées. Elle joue le
+		rôle d'un composant parent (une carte, une barre d'outils) qui utiliserait le même
+		nom de variable que ses enfants.
+		Styleguide essai.variables.3
+	*/
+	.carte {
+		padding: 1.4rem;
+		border: 1px dashed var(--z-line);
+		border-radius: var(--z-radius);
+		background: var(--z-surface-sunken);
+	}
+
+	/*
+		SE MESURER SOI-MÊME — pas de --this-width à tenir à jour : une pièce se déclare
+		conteneur, et ce qu'elle contient raisonne en `cqw` (pour-cent de SA largeur).
+		Styleguide essai.variables.4
+
+		⚠ LE PIÈGE, trouvé en écrivant cette page : `container-type: inline-size` posé sur
+		le BOUTON le casse. Cette propriété coupe le lien entre la largeur d'un élément et
+		son contenu — le bouton ne peut donc plus s'élargir pour son texte, et s'écrase en
+		barre verticale. On la pose sur le calque `background`, dont la taille est donnée
+		par le bouton (inset: 0) et non par du texte : rien à casser, même mesure.
+	*/
+	.mesure z-button > [part=background] {
+		container-type: inline-size;
+	}
+
+	/* Une barre qui fait toujours la moitié de SON bouton, quelle que soit sa taille. */
+	.mesure z-button > [part=background]::after {
+		content: "";
+		position: absolute;
+		left: 25cqw;
+		bottom: 4px;
+		width: 50cqw;
+		height: 3px;
+		border-radius: 2px;
+		background: var(--z-accent);
+	}
+
+	/*
+		LES CURSEURS — collés aux boutons qu'ils règlent (le retour naît près de l'action,
+		l'œil ne traverse pas la page). Ils écrivent les mêmes trois variables que le bloc
+		du haut : il n'y a qu'un seul jeu de réglages, pas deux.
+		Styleguide essai.variables.5
+	*/
+	.molettes {
+		display: flex;
+		gap: 1.4rem;
+		flex-wrap: wrap;
+		align-items: center;
+		padding: .7rem .9rem;
+		border: 1px solid var(--z-line);
+		border-radius: var(--z-radius);
+		background: var(--z-surface);
+		font-size: .78rem;
+	}
+
+	.molettes label {
+		display: flex;
+		gap: .5rem;
+		align-items: center;
+		color: var(--z-ink-soft);
+	}
+
+	.molettes input {
+		width: 110px;
+		accent-color: var(--z-accent);
+	}
+
+	/* La valeur lue reste à largeur fixe : sinon les curseurs sautent à chaque cran. */
+	.molettes output {
+		display: inline-block;
+		min-width: 3.2em;
+		color: var(--z-ink);
+		font-family: ui-monospace, monospace;
+	}
+
+	/* ── l'habillage de la page, sans intérêt pour l'essai ── */
+	body { background: var(--z-page); color: var(--z-ink); font-family: var(--z-font); padding: 2.5rem; max-width: 820px; margin: auto; }
+	h1 { font-size: 1.2rem; }
+	h2 { font-size: .95rem; margin: 2.4rem 0 .4rem; }
+	p.lead, p.note { color: var(--z-ink-soft); font-size: .85rem; }
+	.row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; margin: .8rem 0; }
+	.verdict { border-left: 3px solid var(--z-accent); padding: .2rem 0 .2rem .8rem; margin: .6rem 0 0; font-size: .85rem; }
+</style>
+
+<z-contact></z-contact>
+
+<h1><code>z-button</code> — une variable peut-elle appartenir au composant ?</h1>
+<p class="lead">
+	Sans Shadow DOM. <b>Survole les boutons</b> : la tache de lumière suit ta souris, et
+	c'est une variable CSS posée sur le bouton qui la déplace. Change la peau en haut à
+	droite — tout suit.
+</p>
+
+<h2>1 · Trois boutons, trois valeurs — aucune capsule</h2>
+
+<div class="molettes">
+	<label>taille <input type="range" id="taille" min="8" max="160" step="2" value="42"><output for="taille">42px</output></label>
+	<label>force <input type="range" id="force" min="0" max="100" step="5" value="45"><output for="force">45%</output></label>
+	<label>bord <input type="range" id="bord" min="20" max="100" step="5" value="100"><output for="bord">100%</output></label>
+</div>
+
+<div class="row propre">
+	<z-button>
+		<z-layer part="background"></z-layer>
+		<z-layer part="infos">
+			<z-layer part="icon">★</z-layer>
+			<z-layer part="label">Envoyer</z-layer>
+		</z-layer>
+		<z-layer part="contact"></z-layer>
+	</z-button>
+
+	<z-button>
+		<z-layer part="background"></z-layer>
+		<z-layer part="infos">
+			<z-layer part="icon">◆</z-layer>
+			<z-layer part="label">Favori</z-layer>
+		</z-layer>
+		<z-layer part="contact"></z-layer>
+	</z-button>
+
+	<z-button>
+		<z-layer part="background"></z-layer>
+		<z-layer part="infos">
+			<z-layer part="icon">●</z-layer>
+			<z-layer part="label">Partager</z-layer>
+		</z-layer>
+		<z-layer part="contact"></z-layer>
+	</z-button>
+</div>
+<p class="verdict">
+	Chacun a sa lumière, au bon endroit. Une variable CSS est posée <b>sur un élément</b> :
+	elle est à lui, point. Il n'a jamais fallu de Shadow pour ça.
+</p>
+
+<h2>1 bis · Les variants — <code>size</code>, <code>tone</code>, <code>width</code></h2>
+<p class="note">Aucun JS : ce sont des attributs lus par des sélecteurs CSS. Change la peau — HighTech resserre l'échelle, Claude l'étale.</p>
+
+<div class="row" style="align-items:baseline">
+	<z-button size="xs">xs</z-button>
+	<z-button size="s">s</z-button>
+	<z-button>m (défaut)</z-button>
+	<z-button size="l">l</z-button>
+	<z-button size="xl">xl</z-button>
+</div>
+
+<div class="row">
+	<z-button tone="main">main</z-button>
+	<z-button tone="complement">complement</z-button>
+	<z-button tone="soft">soft</z-button>
+	<z-button>sans tone</z-button>
+</div>
+
+<div class="row" style="display:block;max-width:420px">
+	<z-button width="full" tone="main">width = full</z-button>
+</div>
+
+<p class="note">Les facteurs se <b>composent</b> : un composant <code>s</code> posé dans un composant <code>l</code> vaut 0,9 × 1,2.</p>
+<div class="row" style="align-items:center">
+	<z-button size="l">
+		<z-layer part="background"></z-layer>
+		<z-layer part="infos">
+			<z-layer part="label">un bouton <code>l</code> qui contient…</z-layer>
+			<z-layer part="icon"><z-button size="s" tone="soft">…un <code>s</code></z-button></z-layer>
+		</z-layer>
+		<z-layer part="contact"></z-layer>
+	</z-button>
+</div>
+
+<h2>2 · La fuite — et la ligne qui l'arrête</h2>
+<p class="note">
+	Les deux cartes posent <b>leurs propres coordonnées</b> (comme le ferait un composant
+	parent). Survole la <b>carte</b>, pas le bouton, puis regarde le bouton.
+</p>
+
+<div class="row" style="align-items:stretch">
+	<div class="carte libre" style="flex:1">
+		<b style="font-size:.8rem">Variable ordinaire</b>
+		<div class="row">
+			<z-button>
+				<z-layer part="background"></z-layer>
+				<z-layer part="infos">
+					<z-layer part="icon">★</z-layer>
+					<z-layer part="label">Il hérite</z-layer>
+				</z-layer>
+				<z-layer part="contact"></z-layer>
+			</z-button>
+		</div>
+		<p class="note" style="margin:0">Sa lumière suit la souris <b>même hors du bouton</b> : la valeur de la carte est descendue jusqu'à lui.</p>
+	</div>
+
+	<div class="carte propre" style="flex:1">
+		<b style="font-size:.8rem"><code>@property { inherits: false }</code></b>
+		<div class="row">
+			<z-button>
+				<z-layer part="background"></z-layer>
+				<z-layer part="infos">
+					<z-layer part="icon">★</z-layer>
+					<z-layer part="label">Il ignore</z-layer>
+				</z-layer>
+				<z-layer part="contact"></z-layer>
+			</z-button>
+		</div>
+		<p class="note" style="margin:0">Sa lumière reste au centre tant qu'on ne le survole pas <b>lui</b>. La valeur de la carte ne l'atteint pas.</p>
+	</div>
+</div>
+<p class="verdict">
+	Le seul vrai risque, c'est l'héritage vers le dedans. Il se coupe en une ligne —
+	<code>inherits: false</code> —, pas avec une capsule. Le Shadow DOM, lui, laisse les
+	variables CSS <b>traverser</b> sa frontière : il n'aurait rien réglé ici.
+</p>
+
+<h2>3 · Se mesurer soi-même — pas de <code>--this-width</code> à tenir</h2>
+<p class="note">Deux boutons de largeurs différentes ; la barre fait toujours la moitié de <b>son</b> bouton.</p>
+<div class="row mesure propre">
+	<z-button>
+		<z-layer part="background"></z-layer>
+		<z-layer part="infos">
+			<z-layer part="label">Court</z-layer>
+		</z-layer>
+		<z-layer part="contact"></z-layer>
+	</z-button>
+
+	<z-button>
+		<z-layer part="background"></z-layer>
+		<z-layer part="infos">
+			<z-layer part="icon">★</z-layer>
+			<z-layer part="label">Un bouton nettement plus large que l'autre</z-layer>
+		</z-layer>
+		<z-layer part="contact"></z-layer>
+	</z-button>
+</div>
+<p class="verdict">
+	<code>container-type: inline-size</code> + l'unité <code>cqw</code> : le composant se
+	mesure tout seul, en CSS. Aucune variable à écrire, aucun JS à synchroniser.
+</p>
+
+<script type="module">
+	import "../../examples/skin-switch.js";
+	import "../../tools/z-contact/z-contact.js";
+	import "../../core/z-layer/z-layer.js";
+	import "./z-button.js";
+
+	/*
+		UN SEUL écouteur pour toute la page (comme z-contact) : à chaque mouvement, on
+		écrit les coordonnées EN POURCENTAGE sur l'élément survolé — le bouton s'il y en a
+		un, sinon la carte. C'est tout ce que fait le JS ici : poser deux nombres. Le reste
+		est du CSS.
+
+		On pose les DEUX jeux de noms au même endroit pour que la seule différence entre
+		la colonne « libre » et la colonne « propre » soit la déclaration @property, jamais
+		le code qui écrit.
+	*/
+	const poser = (element, event) => {
+		const box = element.getBoundingClientRect();
+		const x = `${((event.clientX - box.left) / box.width * 100).toFixed(1)}%`;
+		const y = `${((event.clientY - box.top) / box.height * 100).toFixed(1)}%`;
+		element.style.setProperty("--x-libre", x);
+		element.style.setProperty("--y-libre", y);
+		element.style.setProperty("--x-propre", x);
+		element.style.setProperty("--y-propre", y);
+	};
+
+	addEventListener("pointermove", (event) => {
+		const cible = event.target.closest?.("z-button, .carte");
+		if (cible) poser(cible, event);
+	}, true);
+
+	/*
+		LES MOLETTES — chaque curseur écrit SA variable sur la racine, et tout ce qui la lit
+		suit dans la seconde. Aucun redessin à programmer : c'est le moteur du navigateur
+		qui recalcule le dégradé.
+
+		Les trois réglages sont décrits par une seule table (nom → unité) plutôt que par
+		trois écouteurs copiés : ajouter une molette = ajouter une ligne ici et un <input>.
+	*/
+	const MOLETTES = { taille: "px", force: "%", bord: "%" };
+
+	for (const [nom, unite] of Object.entries(MOLETTES)) {
+		const curseur = document.getElementById(nom);
+		const lecture = document.querySelector(`output[for="${nom}"]`);
+		curseur.addEventListener("input", () => {
+			const valeur = curseur.value + unite;
+			document.documentElement.style.setProperty(`--halo__${nom}`, valeur);
+			lecture.textContent = valeur;
+		});
+	}
+</script>
+</html>
