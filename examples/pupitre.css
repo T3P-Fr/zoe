@@ -1,0 +1,98 @@
+/*
+	============================================================
+	pupitre.css — l'habillage du pupitre (examples/pupitre.js)
+	------------------------------------------------------------
+	Écrit UNE fois, porté par toutes les pages de composant : chacune avait sinon ses
+	molettes à elle, qui divergeaient. Tout est en tokens de peau — le pupitre change
+	d'allure avec la peau, comme le reste.
+	Styleguide outil.pupitre
+	============================================================
+*/
+
+.pupitre {
+	display: grid;
+	gap: .35rem;
+	padding: .9rem 1rem;
+	border: var(--z-border-width, 1px) solid var(--z-line);
+	border-radius: var(--z-radius);
+	margin-bottom: .9rem;
+	background: var(--z-surface);
+	font-family: var(--z-font);
+	font-size: .8rem;
+}
+
+.pupitre-titre {
+	margin: 0 0 .2rem;
+	color: var(--z-ink-soft);
+	font-size: .7rem;
+	letter-spacing: .1em;
+	text-transform: uppercase;
+}
+
+/*
+	Une commande par ligne, en trois colonnes alignées : le NOM (ce qu'on écrit dans le
+	HTML), la commande, puis le rôle. L'œil descend une colonne au lieu de zigzaguer.
+*/
+.pupitre-ligne {
+	display: grid;
+	grid-template-columns: 7rem auto 1fr;
+	gap: .7rem;
+	align-items: center;
+	cursor: pointer;
+}
+
+.pupitre-ligne code {
+	color: var(--z-accent);
+	font-family: ui-monospace, monospace;
+}
+
+.pupitre-ligne input[type="checkbox"] {
+	accent-color: var(--z-accent);
+}
+
+.pupitre-ligne select,
+.pupitre-ligne input[type="text"] {
+	padding: .15em .4em;
+	border: 1px solid var(--z-line);
+	border-radius: calc(var(--z-radius) / 2);
+	background: var(--z-page);
+	color: var(--z-ink);
+	font: inherit;
+}
+
+.pupitre-role {
+	color: var(--z-ink-soft);
+}
+
+/* Les états sont en LECTURE : séparés des commandes par un filet, pour qu'on ne cherche
+   pas à les cliquer. */
+.pupitre-etats {
+	border-top: 1px solid var(--z-line-soft, var(--z-line));
+	padding-top: .6rem;
+	margin-top: .4rem;
+}
+
+.pupitre-mots {
+	display: flex;
+	flex-wrap: wrap;
+	gap: .3rem;
+}
+
+/* Un mot éteint est lisible mais en retrait ; allumé, il prend l'accent. La transition
+   est courte : un état transitoire (release, enter) ne dure que quelques images, et un
+   fondu long le ferait rater. */
+.pupitre-mot {
+	padding: .1em .45em;
+	border: 1px solid var(--z-line);
+	border-radius: calc(var(--z-radius) / 2);
+	color: var(--z-ink-soft);
+	font-family: ui-monospace, monospace;
+	font-size: .72rem;
+	transition: color .1s, background .1s, border-color .1s;
+}
+
+.pupitre-mot.on {
+	border-color: var(--z-accent);
+	background: var(--z-accent);
+	color: var(--z-accent-ink, #fff);
+}

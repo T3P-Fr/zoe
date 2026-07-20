@@ -21,6 +21,8 @@
 <link rel="stylesheet" href="../../tools/z-motion/z-motion.css">
 <link rel="stylesheet" href="../../tools/z-contact/z-contact.css">
 <link rel="stylesheet" href="../../core/z-layer/z-layer.css">
+<link rel="stylesheet" href="../../core/z-element/z-element.css">
+<link rel="stylesheet" href="../../examples/pupitre.css">
 <link rel="stylesheet" href="./z-button.css">
 <style>
   body { background:var(--z-page); color:var(--z-ink); font-family:var(--z-font); padding:2.5rem; max-width:760px; margin:auto; }
@@ -34,6 +36,16 @@
 <h1><code>z-button</code></h1>
 <p class="lead">Un bouton bâti sur <code>z-element</code> : il hérite tous les états. Survole, presse, lâche dehors (releaseOut). Change la peau en haut à droite — tout suit.</p>
 
+<h2 style="font-size:.95rem;margin:1.8rem 0 .5rem">Le pupitre — <b>tous</b> ses paramètres, en direct</h2>
+<z-button id="demo">Touche les réglages, je réagis</z-button>
+<p style="color:var(--z-ink-soft);font-size:.82rem;margin:.7rem 0 2.2rem">
+  Ce pupitre n'est pas écrit à la main : il est <b>généré depuis l'API du composant</b> —
+  la même source que la doc et l'autocomplétion. Un attribut ajouté au code apparaît ici
+  tout seul, et il ne peut jamais en manquer un. Les <b>états</b>, en bas, ne se règlent
+  pas : ils s'allument quand ils arrivent (survole, presse, lâche dehors).
+</p>
+
+<h2 style="font-size:.95rem;margin:2rem 0 .5rem">Les états, posés à la main</h2>
 <div class="row">
   <z-button>Envoyer</z-button>
   <z-button loading>Chargement…</z-button>
@@ -84,5 +96,9 @@
   import "../../tools/z-contact/z-contact.js";
   import "../../core/z-layer/z-layer.js";
   import "./z-button.js";
+  import { pupitre } from "../../examples/pupitre.js";
+
+  /* Le pupitre se monte APRÈS la définition du composant : il lit son `static api`. */
+  pupitre("#demo");
 </script>
 </html>
