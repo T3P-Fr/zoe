@@ -18,46 +18,9 @@
     );
   </script>
 
-  <link rel="stylesheet" href="../../tools/z-motion/z-motion.css">
-  <link rel="stylesheet" href="../../tools/z-contact/z-contact.css">
-  <link rel="stylesheet" href="../../core/z-layer/z-layer.css">
-  <link rel="stylesheet" href="./z-slider.css">
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
   <style>
-    body {
-      background: var(--z-page);
-      color: var(--z-ink);
-      font-family: var(--z-font);
-      /* la peau décide de la taille du texte : sans ça la page reste au 16px du
-         navigateur et TOUT grossit — tout le reste est en em */
-      font-size: var(--z-font-size);
-      letter-spacing: var(--z-letter);
-      padding: 2.5rem;
-      max-width: 820px;
-      margin: auto;
-    }
-
-    h1 { font-size: 1.2rem; }
-
-    .lead {
-      color: var(--z-ink-soft);
-      font-size: .9rem;
-      margin: .2rem 0 1.6rem;
-    }
-
-    h2 {
-      font-size: .95rem;
-      margin: 2.4rem 0 .6rem;
-    }
-
-    .stack {
-      display: flex;
-      flex-direction: column;
-      /* Large : une étiquette `under` déborde sous la piste et viendrait sinon se
-         poser sur le curseur suivant. */
-      gap: 2.4rem;
-      align-items: flex-start;
-      margin: 1.4rem 0;                         /* une étiquette `over` remonte au-dessus de la piste */
-    }
 
     .row {
       display: flex;
@@ -65,14 +28,6 @@
       align-items: flex-end;
       flex-wrap: wrap;
     }
-
-    .note {
-      color: var(--z-ink-soft);
-      font-size: .82rem;
-      margin-top: .4rem;
-    }
-
-    code.tag { color: var(--z-accent); }
 
     /*
     LA PREUVE VIVANTE — un curseur qui pilote une propriété de la page.

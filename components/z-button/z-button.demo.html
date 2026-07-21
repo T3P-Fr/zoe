@@ -18,36 +18,9 @@
 	);
 </script>
 
-<link rel="stylesheet" href="../../tools/z-motion/z-motion.css">
-<link rel="stylesheet" href="../../tools/z-contact/z-contact.css">
-<link rel="stylesheet" href="../../core/z-layer/z-layer.css">
-<link rel="stylesheet" href="../../core/z-element/z-element.css">
-<link rel="stylesheet" href="./z-button.css">
-<!-- la case sert d'exemple de champ dans la section formulaire -->
-<link rel="stylesheet" href="../z-checkbox/z-checkbox.css">
-<style>
-	/* large : chaque exemple montre son rendu ET le code qui le produit, côte à côte */
-	body { background:var(--z-page); color:var(--z-ink); font-family:var(--z-font); font-size:var(--z-font-size); letter-spacing:var(--z-letter); padding:2.5rem; max-width:1080px; margin:auto; }
-	h1 { font-size:1.2rem; }
-	h2 { font-size:.95rem; margin:2.2rem 0 .6rem; }
-	.lead { color:var(--z-ink-soft); font-size:.9rem; margin:.2rem 0 1.6rem; }
-	.note { color:var(--z-ink-soft); font-size:.82rem; margin:.5rem 0 0; }
-	code.tag { color:var(--z-accent); }
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
 
-	/* une pile : un exemple par ligne, pour que son code lui fasse face */
-	.stack { display:flex; flex-direction:column; gap:1rem; align-items:flex-start; }
-	.rangee { display:flex; gap:1rem; flex-wrap:wrap; align-items:center; }
-
-	/* le code d'un exemple qui n'est pas du HTML (ici du JS) : même allure que celui
-	   qu'examples/code.js pose tout seul, pour que l'œil ne change pas de registre */
-	.z-code-manuel {
-		margin:.6rem 0 0; padding:.7rem .9rem; overflow-x:auto;
-		background:color-mix(in srgb, currentColor 5%, transparent);
-		border-left:2px solid color-mix(in srgb, currentColor 18%, transparent);
-		border-radius:4px; font:12px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace;
-		opacity:.85;
-	}
-</style>
 
 <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
 <z-contact></z-contact>

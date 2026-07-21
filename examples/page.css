@@ -1,0 +1,93 @@
+/*
+	============================================================
+	page.css — LE DÉCOR de nos pages (démos, labs, planches). Pas la bibliothèque.
+	------------------------------------------------------------
+	POURQUOI (2026-07-21) : chaque page réécrivait son propre `<style>` — sa largeur,
+	sa taille de texte, ses titres, ses piles. D'où des pages qui ne se ressemblaient
+	jamais, et l'impression — fondée — que la peau changeait d'une page à l'autre.
+
+	Une page de démo écrit donc DEUX liens et rien de plus :
+
+	    <link rel="stylesheet" href="/zoe.css">        la bibliothèque
+	    <link rel="stylesheet" href="/examples/page.css">   le décor
+
+	Un `<style>` local reste permis pour ce qui est PROPRE à la page (une skin d'essai,
+	une animation qu'on démontre). Jamais pour le décor : s'il manque quelque chose ici,
+	on l'ajoute ici — une fois, pour toutes les pages.
+
+	Ce fichier ne peint AUCUN composant : il ne connaît que le décor autour. Il lit les
+	tokens de la peau, comme le ferait la page d'un auteur — si elle est laide, c'est la
+	peau qui l'est.
+	Styleguide page.0
+	============================================================
+*/
+
+/*
+	La page — elle adopte la peau, TAILLE COMPRISE
+	Styleguide page.1
+
+	Le piège qui a coûté cher : poser `font-family` sans `font-size`. Tout Zoé est en
+	`em`, donc la page restait au 16 px du navigateur pendant que la peau vit à 13 —
+	et tous les composants paraissaient 25 % trop gros.
+*/
+body {
+	margin: 0 auto;
+	padding: 2.5rem;
+	max-width: var(--page__largeur, 1080px);
+	background: var(--z-page);
+	color: var(--z-ink);
+	font-family: var(--z-font);
+	font-size: var(--z-font-size);
+	letter-spacing: var(--z-letter);
+}
+
+/*
+	Les titres et les textes de service
+	Styleguide page.2
+*/
+h1 { font-size: 1.4em; margin: 0 0 .2rem; }
+h2 { font-size: 1.05em; margin: 2.4rem 0 .6rem; }
+
+.lead { color: var(--z-ink-soft); margin: .2rem 0 1.6rem; }
+.note { color: var(--z-ink-soft); font-size: .92em; margin: .5rem 0 0; }
+
+/* le nom d'une balise ou d'un attribut, cité dans une phrase */
+code.tag { color: var(--z-accent); }
+
+/*
+	Les deux dispositions dont toute démo a besoin
+	Styleguide page.3
+
+	`.stack` — un exemple par ligne, pour que son code puisse lui faire face
+	(examples/code.js transforme la pile en grille à deux colonnes).
+	`.rangee` — plusieurs exemples côte à côte quand c'est LEUR SÉRIE qu'on montre.
+*/
+.stack {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 1rem;
+}
+
+.rangee {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1rem;
+}
+
+/*
+	Un bout de code écrit à la main (du JS, un extrait) — même allure que celui
+	qu'examples/code.js pose tout seul, pour que l'œil ne change pas de registre.
+	Styleguide page.4
+*/
+.z-code-manuel {
+	margin: .6rem 0 0;
+	padding: .7rem .9rem;
+	overflow-x: auto;
+	border-left: 2px solid color-mix(in srgb, currentColor 18%, transparent);
+	border-radius: 4px;
+	background: color-mix(in srgb, currentColor 5%, transparent);
+	font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace;
+	opacity: .85;
+}

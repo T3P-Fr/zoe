@@ -1,0 +1,47 @@
+/*
+	============================================================
+	zoe.css — LE POINT D'ENTRÉE UNIQUE. Une page charge ÇA, et rien d'autre.
+	------------------------------------------------------------
+	POURQUOI CE FICHIER EXISTE (2026-07-21, après un ras-le-bol de Christophe, et il
+	avait raison) : chaque page choisissait sa liste de CSS et son ordre. Résultat
+	mesuré, le même bouton HighTech : 33,6 px sur la planche de la peau, 48 px sur la
+	démo du composant. La démo de la case ne chargeait même pas le socle — donc pas de
+	`box-sizing`, pas de variants. Douze pages, douze empilements, douze rendus.
+
+	La règle est donc : UNE page = UN lien vers ce fichier (+ sa peau). Pas de liste à
+	recopier, pas d'ordre à retenir, aucune page ne peut plus être « à part ».
+
+	    <link rel="stylesheet" href="/zoe.css">
+	    <link rel="stylesheet" href="/skins/hightech/hightech.css">
+
+	L'ORDRE CI-DESSOUS EST LE CONTRAT. Il va du plus général au plus précis, pour qu'une
+	règle précise gagne sans avoir à monter en spécificité :
+
+	  1. le socle      — box-sizing, variants, couleur d'état (défauts en :where())
+	  2. les calques   — le placement des rôles, commun à tous les composants
+	  3. les effets    — les @keyframes et la recette du clic
+	  4. les composants— ce qui peint chaque pièce
+
+	Ce qui n'est PAS ici, et exprès : la PEAU (l'auteur la choisit, elle passe après) et
+	le style des pages de démo (examples/page.css — c'est notre décor, pas la
+	bibliothèque).
+
+	Ajouter un composant = une ligne ici, et TOUTES les pages l'ont. C'est le but.
+	Styleguide 0.0
+	============================================================
+*/
+
+/* 1 · LE SOCLE — ce dont tout hérite */
+@import url("./core/z-element/z-element.css");
+@import url("./core/z-layer/z-layer.css");
+
+/* 2 · LES EFFETS — mouvements réutilisables et recette du clic */
+@import url("./tools/z-motion/z-motion.css");
+@import url("./tools/z-contact/z-contact.css");
+
+/* 3 · LES COMPOSANTS — par ordre alphabétique : aucun ne dépend d'un autre */
+@import url("./components/z-button/z-button.css");
+@import url("./components/z-checkbox/z-checkbox.css");
+@import url("./components/z-radio/z-radio.css");
+@import url("./components/z-radio-group/z-radio-group.css");
+@import url("./components/z-slider/z-slider.css");
