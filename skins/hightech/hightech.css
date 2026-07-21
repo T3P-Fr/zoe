@@ -133,10 +133,10 @@
 		pointeur, épaisseur qui tombe LINÉAIREMENT : on lit une mesure, pas un geste.
 		C'est le contraire exact de la queue de Claude, et c'est le but.
 	*/
-	--z-trail-thickness: 7;      /* le filet, encore (loi 2) */
-	--z-trail-fade: 260;         /* court : HighTech ne traîne pas */
-	--z-trail-smooth: .85;       /* collé au pointeur, sans mollesse */
-	--z-trail-speed-ref: 1.6;    /* il faut aller vite pour remplir la tête */
+	--z-trail-thickness: 4;      /* le filet, poussé au trait de pointe (loi 2) */
+	--z-trail-fade: 150;         /* très court : HighTech ne traîne pas, il inscrit */
+	--z-trail-smooth: 1;         /* collé au pointeur, zéro mollesse — un stylet */
+	--z-trail-speed-ref: 2.2;    /* il faut lancer la main pour remplir la tête */
 	--z-trail-ease: linear;      /* décroissance droite, comme une règle graduée */
 	--z-trail-color: var(--z-accent);
 
@@ -206,3 +206,215 @@
 
 	color-scheme: light;
 }
+
+/* ==========================================================================
+   CE QU'ELLE PEINT — le bouton                    Styleguide hightech.button
+   --------------------------------------------------------------------------
+   ⚠ PORTÉ DEPUIS LA SOURCE, pas redessiné de mémoire (loi des peaux). Les valeurs
+   viennent de `source/ZoeTheme--HighTech.css`, lignes 155-171 :
+
+       [data-z-theme="hightech"] z-button {
+         border: 1px solid var(--zt-hightech-line-strong);
+         font-size: 11px; font-weight: 600; letter-spacing: .04em;
+         line-height: 1; text-transform: uppercase;
+       }
+
+   Le préfixe `[data-z-theme=…]` tombe : chez Zoé, une peau EST un fichier, et c'est
+   son chargement qui la sélectionne. Le reste est identique, au chiffre près.
+
+   POURQUOI CES RÈGLES SONT ICI ET PAS DANS LE COMPOSANT : le composant n'a pas de
+   réglage pour « majuscules » ni « interlettrage ». Ce n'est pas un manque — c'est le
+   LANGAGE de HighTech (une commande d'instrument s'écrit en capitales), et le langage
+   appartient à la peau. Une autre peau écrira en bas de casse sans rien avoir à défaire.
+   ====================================================================== */
+z-button {
+	border: var(--z-border-width) solid var(--z-line-strong);
+
+	/* 11px : la taille de commande de la planche. Les variants `size` la battent (leur
+	   sélecteur est plus fort), donc l'échelle commune continue de marcher par-dessus. */
+	font-size: var(--z-font-size-xs);
+	font-weight: var(--z-font-weight-strong);
+	letter-spacing: .04em;
+
+	/* Ligne à 1 et capitales : une étiquette de commande, pas une phrase. */
+	line-height: 1;
+	text-transform: uppercase;
+
+	min-height: var(--z-control-height);
+}
+
+/* Le bouton d'ACTION — le cobalt est rare et fort (loi 5). Le halo n'est pas une ombre
+   décorative : c'est la marque de ce qui est sous tension, et c'est la seule pièce de la
+   planche qui s'autorise une diffusion large. */
+z-button[tone="main"] {
+	box-shadow:
+		0 0 0 1px color-mix(in oklab, var(--z-accent) 30%, transparent),
+		0 12px 30px color-mix(in oklab, var(--z-accent) 22%, transparent);
+}
+
+/* ==========================================================================
+   SON GESTE SUR LES PIÈCES                        Styleguide hightech.calques
+   --------------------------------------------------------------------------
+   Quand un composant est écrit en calques, chaque pièce peut bouger seule. Ce que
+   HighTech en fait — et c'est SA signature, pas celle de la page :
+
+     un instrument RÉPOND, il ne joue pas. Court (.16s), droit (pas de rebond),
+     de petits déplacements. Rien ne grossit : ce qui compte s'ALLUME (loi 5, le
+     cobalt), ça ne se gonfle pas.
+
+   Claude fait l'inverse exactement, dans son propre fichier — c'est la preuve que le
+   geste appartient à la peau. Une page qui animerait elle-même écraserait les deux.
+   ====================================================================== */
+
+/* Une pièce touchée : elle s'allume, elle ne bouge presque pas. */
+z-layer:state(over) {
+	transition: color var(--z-dur) var(--z-ease), border-color var(--z-dur) var(--z-ease);
+	color: var(--z-accent);
+}
+
+z-layer[part="marker"]:state(over) > z-layer[part="ring"] {
+	border-color: var(--z-accent);
+}
+
+/*
+	LES TROIS HORLOGES d'une case cochée — version HighTech.
+	L'anneau pivote d'un quart de tour NET (un quart, pas un tour : un instrument
+	s'indexe), le fond ne respire pas (il n'y a rien de vivant dans une planche), et le
+	point arrive avec un retard COURT — juste assez pour qu'on lise deux temps.
+*/
+z-checkbox z-layer[part="ring"] {
+	transition: rotate var(--z-dur-select) var(--z-ease), border-color var(--z-dur) var(--z-ease);
+}
+
+z-checkbox z-layer[part="dot"] {
+	transition: scale var(--z-dur-select) var(--z-ease) .06s;
+}
+
+z-checkbox:state(current) z-layer[part="ring"] {
+	rotate: 90deg;
+}
+
+/*
+	LE CURSEUR — PORTÉ DE LA SOURCE, PAS INVENTÉ
+	Source : FullConcept--HighTech.html, composant `Slider` (+ `zSqHandle`, `VSlider`,
+	les crans de SL-04/SL-08) et ZoeTheme--HighTech.css l.110-122.
+
+	Ce que dit la source, littéralement, et qu'on ne discute pas :
+	  · rail 3px, remplissage 3px, RAYON 0 — un rail arrondi n'existe pas ici (loi 1) ;
+	  · la poignée N'EST PAS UN ROND : c'est un TRAIT vertical de 2 × 18px, rayon 1px.
+	    C'est l'aiguille d'un instrument, pas la pastille d'un jouet ;
+	  · au drag, ce trait devient un CARRÉ CREUX 16 × 16, bordure 2px, rayon 2px, sur un
+	    ressort franc (cubic-bezier(.34, 1.7, .5, 1)). Le trait s'ouvre — c'est LA
+	    signature du curseur HighTech, et elle vaut tout le reste ;
+	  · les crans : 1px × 5px, SOUS le rail (top 7px), en ink-50 — ils ne traversent pas
+	    la piste, ils la commentent ;
+	  · en vertical : rail de 3px de large, poignée couchée (2 × 18 devient 18 × 2).
+
+	Le composant, lui, ne sait rien de tout ça : il pose un nombre, la peau dessine.
+*/
+z-slider {
+	--z-slider--background__thickness: 3px;
+	--z-slider--background__radius: 0;
+	--z-slider--background__color: var(--z-line);
+	--z-slider--marker__color: var(--z-ink-75);        /* le remplissage est un SIGNAL, pas encore l'accent */
+	--z-slider--ticks__color: var(--z-ink-50);
+	--z-slider--ticks__width: 1px;
+	--z-slider--ticks__length: 5px;
+	--z-slider--dot__size: 18px;
+	--z-slider--dot__radius: 1px;
+	--z-slider--label__size: 9px;
+	--z-slider--label__gap: 6px;
+	--z-slider--label__color: var(--z-ink-100);
+}
+
+/* Survolé, le remplissage passe au cobalt : quelque chose s'ACTIVE (loi 5). */
+z-slider:state(over),
+z-slider:state(drag) {
+	--z-slider--marker__color: var(--z-accent);
+}
+
+/*
+	LA POIGNÉE-AIGUILLE. Elle n'a ni fond ni bordure au repos : elle EST le trait.
+	`inline-size` et non `width` : en vertical, la même règle couche l'aiguille sans
+	qu'on réécrive un bloc.
+*/
+z-slider > z-layer[part="marker"] > z-layer[part="dot"] {
+	inline-size: 2px;
+	block-size: 18px;
+	border: none;
+	background: var(--z-ink-100);
+	/* Le ressort de la source, tel quel — il dépasse volontairement (1.7) : c'est ce
+	   dépassement qui fait « clac » quand le trait s'ouvre. */
+	transition:
+		inline-size .3s cubic-bezier(.34, 1.7, .5, 1),
+		block-size .3s cubic-bezier(.34, 1.7, .5, 1),
+		background var(--z-dur) var(--z-ease),
+		border-color var(--z-dur) var(--z-ease);
+}
+z-slider[orientation="vertical"] > z-layer[part="marker"] > z-layer[part="dot"] {
+	inline-size: 18px;
+	block-size: 2px;
+}
+
+/* LE GESTE : le trait s'ouvre en carré creux. Rien ne grossit — ça se TRANSFORME. */
+z-slider:state(drag) > z-layer[part="marker"] > z-layer[part="dot"],
+z-slider[orientation="vertical"]:state(drag) > z-layer[part="marker"] > z-layer[part="dot"] {
+	inline-size: 16px;
+	block-size: 16px;
+	background: transparent;
+	border: 2px solid var(--z-accent);
+	border-radius: 2px;
+	scale: 1;                                          /* le socle propose un scale : ici on ne grossit pas, on ouvre */
+}
+
+/* Les crans commentent la piste par en dessous, ils ne la traversent pas. */
+z-slider > z-layer[part="background"] > z-layer[part="ticks"] {
+	inset: auto 0 -7px;
+	block-size: 5px;
+	background-size: calc(100% / max(var(--z-slider__markers), 1)) 5px;
+}
+z-slider[orientation="vertical"] > z-layer[part="background"] > z-layer[part="ticks"] {
+	inset: 0 auto 0 -7px;
+	inline-size: 5px;
+	block-size: auto;
+	background-size: 5px calc(100% / max(var(--z-slider__markers), 1));
+}
+
+/* Le halo de focus reste la SEULE ombre (loi 3), et il est carré comme tout le reste. */
+z-slider:state(focus) > z-layer[part="marker"] > z-layer[part="dot"] {
+	box-shadow: 0 0 0 3px var(--z-focus-halo);
+	border-radius: 0;
+}
+
+/*
+	LA MÊME AIGUILLE EN FORME COURTE. Là-bas la poignée est une IMAGE de fond, pas un
+	élément : on ne peut pas lui donner de bordure. On donne donc à la peau un trait
+	plein qui s'ouvre en CARRÉ CREUX par un dégradé à quatre arêtes — deux tokens
+	suffisent, et les deux formes racontent enfin la même chose.
+*/
+z-slider {
+	--z-slider--dot__image: linear-gradient(var(--z-ink-100) 0 0);
+	--z-slider--dot__width: 2px;
+	--z-slider--dot__height: 18px;
+	--z-slider--dot__ease: cubic-bezier(.34, 1.7, .5, 1);
+	--z-slider--dot__width-drag: 16px;
+	--z-slider--dot__height-drag: 16px;
+}
+z-slider[orientation="vertical"] {
+	--z-slider--dot__width: 18px;
+	--z-slider--dot__height: 2px;
+}
+/* Le carré CREUX : quatre filets de 2px, dessinés d'un seul dégradé conique. Un
+   `border` n'existe pas sur une image de fond — c'est le prix de la forme courte. */
+z-slider:not(:has(z-layer)):state(drag) {
+	--z-slider--dot__image:
+		conic-gradient(from 0deg, var(--z-accent) 0 100%) padding-box,
+		conic-gradient(from 0deg, var(--z-accent) 0 100%);
+	--z-slider--dot__image: linear-gradient(var(--z-accent) 0 0) 0 0 / 100% 2px no-repeat,
+		linear-gradient(var(--z-accent) 0 0) 0 100% / 100% 2px no-repeat,
+		linear-gradient(var(--z-accent) 0 0) 0 0 / 2px 100% no-repeat,
+		linear-gradient(var(--z-accent) 0 0) 100% 0 / 2px 100% no-repeat;
+}
+
+/* Les crans passent SOUS la piste (source : `top:'7px'` sur un rail de 3px). */
+z-slider { --z-slider--ticks__anchor: left bottom; }

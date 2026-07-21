@@ -83,7 +83,7 @@ z-slider:not(:has(z-layer))::before {
 	content: "";
 	position: absolute;
 	inset: 0;
-	border-radius: var(--z-slider--dot__radius, 50%);
+	border-radius: var(--z-slider--dot__radius, var(--z-radius, 50%));
 	/*
 		ORDRE DES COUCHES — poignée · remplissage · graduations · rail, de la plus haute
 		à la plus basse. Les graduations passent SOUS le remplissage, exactement comme
@@ -96,21 +96,23 @@ z-slider:not(:has(z-layer))::before {
 	*/
 	background-repeat: no-repeat, no-repeat, repeat-x, no-repeat;
 	background-image:
-		radial-gradient(circle closest-side, var(--z-slider--dot__color, var(--z-surface)) 98%, transparent),
+		var(--z-slider--dot__image, radial-gradient(circle closest-side, var(--z-slider--dot__color, var(--z-surface)) 98%, transparent)),
 		linear-gradient(var(--z-slider--marker__color, var(--z-accent)) 0 0),
 		repeating-linear-gradient(90deg,
 			var(--z-slider--ticks__color, var(--z-line)) 0 var(--z-slider--ticks__width, 1px),
 			transparent var(--z-slider--ticks__width, 1px) 100%),
 		linear-gradient(var(--z-slider--background__color, var(--z-surface-sunken)) 0 0);
 	background-size:
-		var(--z-slider--dot__size, 1.05em) var(--z-slider--dot__size, 1.05em),
+		var(--z-slider--dot__width, var(--z-slider--dot__size, 1.05em)) var(--z-slider--dot__height, var(--z-slider--dot__size, 1.05em)),
 		calc(var(--z-slider__progress) * 100%) var(--z-slider--background__thickness, .35em),
 		calc(100% / max(var(--z-slider__markers), 1)) var(--z-slider--ticks__length, .5em),
 		100% var(--z-slider--background__thickness, .35em);
 	background-position:
 		calc(var(--z-slider__progress) * 100%) center,
 		left center,
-		left center,
+		/* Les crans ne sont pas forcément DANS la piste : une peau d'instrument les
+		   pose dessous, où ils commentent sans couper le remplissage. */
+		var(--z-slider--ticks__anchor, left center),
 		left center;
 	transition: background-size var(--z-dur) var(--z-ease), filter var(--z-dur) var(--z-ease);
 }
@@ -121,7 +123,7 @@ z-slider:not(:has(z-layer))::before {
    rester le même, d'où le `none` explicite en 2e position et non un raccourci. */
 z-slider:not([markers]):not(:has(z-layer))::before {
 	background-image:
-		radial-gradient(circle closest-side, var(--z-slider--dot__color, var(--z-surface)) 98%, transparent),
+		var(--z-slider--dot__image, radial-gradient(circle closest-side, var(--z-slider--dot__color, var(--z-surface)) 98%, transparent)),
 		linear-gradient(var(--z-slider--marker__color, var(--z-accent)) 0 0),
 		none,
 		linear-gradient(var(--z-slider--background__color, var(--z-surface-sunken)) 0 0);
@@ -131,14 +133,14 @@ z-slider:not([markers]):not(:has(z-layer))::before {
 z-slider[orientation="vertical"]:not(:has(z-layer))::before {
 	background-repeat: no-repeat, no-repeat, repeat-y, no-repeat;
 	background-image:
-		radial-gradient(circle closest-side, var(--z-slider--dot__color, var(--z-surface)) 98%, transparent),
+		var(--z-slider--dot__image, radial-gradient(circle closest-side, var(--z-slider--dot__color, var(--z-surface)) 98%, transparent)),
 		linear-gradient(var(--z-slider--marker__color, var(--z-accent)) 0 0),
 		repeating-linear-gradient(0deg,
 			var(--z-slider--ticks__color, var(--z-line)) 0 var(--z-slider--ticks__width, 1px),
 			transparent var(--z-slider--ticks__width, 1px) 100%),
 		linear-gradient(var(--z-slider--background__color, var(--z-surface-sunken)) 0 0);
 	background-size:
-		var(--z-slider--dot__size, 1.05em) var(--z-slider--dot__size, 1.05em),
+		var(--z-slider--dot__width, var(--z-slider--dot__size, 1.05em)) var(--z-slider--dot__height, var(--z-slider--dot__size, 1.05em)),
 		var(--z-slider--background__thickness, .35em) calc(var(--z-slider__progress) * 100%),
 		var(--z-slider--ticks__length, .5em) calc(100% / max(var(--z-slider__markers), 1)),
 		var(--z-slider--background__thickness, .35em) 100%;
@@ -150,7 +152,7 @@ z-slider[orientation="vertical"]:not(:has(z-layer))::before {
 }
 z-slider[orientation="vertical"]:not([markers]):not(:has(z-layer))::before {
 	background-image:
-		radial-gradient(circle closest-side, var(--z-slider--dot__color, var(--z-surface)) 98%, transparent),
+		var(--z-slider--dot__image, radial-gradient(circle closest-side, var(--z-slider--dot__color, var(--z-surface)) 98%, transparent)),
 		linear-gradient(var(--z-slider--marker__color, var(--z-accent)) 0 0),
 		none,
 		linear-gradient(var(--z-slider--background__color, var(--z-surface-sunken)) 0 0);
@@ -210,7 +212,7 @@ z-slider > z-layer[part="background"] {
 	top: 50%;
 	translate: 0 -50%;
 	block-size: var(--z-slider--background__thickness, .35em);
-	border-radius: var(--z-slider--background__radius, 999px);
+	border-radius: var(--z-slider--background__radius, var(--z-radius, 999px));
 	background: var(--z-slider--background__color, var(--z-surface-sunken));
 	overflow: hidden;                              /* le remplissage s'arrête au rail, pas au composant */
 }
@@ -274,7 +276,7 @@ z-slider > z-layer[part="marker"] {
 	translate: 0 -50%;
 	inline-size: calc(var(--z-slider__progress) * 100%);
 	block-size: var(--z-slider--background__thickness, .35em);
-	border-radius: var(--z-slider--background__radius, 999px);
+	border-radius: var(--z-slider--background__radius, var(--z-radius, 999px));
 	background: var(--z-slider--marker__color, var(--z-accent));
 	transition: background var(--z-dur) var(--z-ease);
 }
@@ -299,7 +301,7 @@ z-slider > z-layer[part="marker"] > z-layer[part="dot"] {
 	inline-size: var(--z-slider--dot__size, 1.05em);
 	block-size: var(--z-slider--dot__size, 1.05em);
 	border: var(--z-border-width, 1.5px) solid var(--z-slider--dot__border, var(--z-accent));
-	border-radius: var(--z-slider--dot__radius, 50%);
+	border-radius: var(--z-slider--dot__radius, var(--z-radius, 50%));
 	background: var(--z-slider--dot__color, var(--z-surface));
 	transition:
 		scale var(--z-dur) var(--z-ease-spring),
@@ -371,16 +373,22 @@ z-slider:state(disabled) > z-layer[part="marker"] > z-layer[part="dot"] {
 z-slider:state(error)   > z-layer[part="marker"] > z-layer[part="dot"] { border-color: var(--z-danger); }
 z-slider:state(success) > z-layer[part="marker"] > z-layer[part="dot"] { border-color: var(--z-success); }
 
-/* Forme courte : les mêmes états, sur l'unique pseudo. Le dessin étant une image, on
-   ne peut pas grossir la seule poignée — on grossit sa couche, ce qui revient au même
-   à l'œil et coûte une ligne au lieu d'un élément. */
-z-slider:not(:has(z-layer)):state(over)::before,
+/*
+	Forme courte : au glissé la poignée ne GROSSIT pas, elle CHANGE de dimensions —
+	deux tokens dédiés, que la peau pilote (HighTech y ouvre son trait en carré creux).
+
+	Le premier jet la grossissait d'un facteur d'échelle, et c'était faux : ça n'a de
+	sens que pour un disque, et sur un survol ça donnait l'impression que la barre
+	elle-même se déformait. Une poignée se transforme ; la piste, jamais. Le survol,
+	lui, ne change plus rien : on n'a pas encore attrapé.
+*/
 z-slider:not(:has(z-layer)):state(drag)::before {
 	background-size:
-		calc(var(--z-slider--dot__size, 1.05em) * var(--z-slider--dot__scale-drag, 1.25))
-		calc(var(--z-slider--dot__size, 1.05em) * var(--z-slider--dot__scale-drag, 1.25)),
-		calc(100% / max(var(--z-slider__markers), 1)) var(--z-slider--ticks__length, .5em),
+		var(--z-slider--dot__width-drag, var(--z-slider--dot__width, var(--z-slider--dot__size, 1.05em)))
+		var(--z-slider--dot__height-drag, var(--z-slider--dot__height, var(--z-slider--dot__size, 1.05em))),
 		calc(var(--z-slider__progress) * 100%) var(--z-slider--background__thickness, .35em),
+		calc(100% / max(var(--z-slider__markers), 1)) var(--z-slider--ticks__length, .5em),
 		100% var(--z-slider--background__thickness, .35em);
+	transition: background-size .3s var(--z-slider--dot__ease, var(--z-ease-spring));
 }
 z-slider:not(:has(z-layer)):state(disabled)::before { filter: grayscale(1) opacity(.55); }
