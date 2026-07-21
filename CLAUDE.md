@@ -30,11 +30,39 @@ Un screenshot prouve le **rendu**, jamais le **mouvement**. Toute animation se v
 l'écran de Christophe. On sert **toujours en local** (`node scripts/serve.mjs 5177`),
 jamais en `file://`.
 
+## ⛔ LE LABO — où vit ce qui n'est pas encore tranché
+
+**Gardé par Christophe le 2026-07-21.** L'état d'avancement, les propositions, la dette
+et les pièges d'un sujet vivent **à côté de leur code**, dans un `*.lab.md` :
+`components/z-slider/z-slider.lab.md`, `skins/couleur.lab.md`.
+
+[`LABO.md`](./LABO.md) (racine) en est l'**index** : une ligne par carnet, son état, son
+dernier pas. On le lit en début de session ; on n'ouvre que le carnet du sujet qu'on
+touche.
+
+*Pourquoi : une mémoire globale qui grossit est une taxe fixe — relue en entier même
+pour toucher un seul composant, et le bruit y noie le signal. Mais **sans l'index, on
+remplace un gros fichier par cent cinquante-cinq** : c'est la condition, pas un détail.*
+
+**Ne jamais recopier un carnet dans l'index.** Ce qui est écrit deux fois divergera.
+
 ## Le contrat d'un composant
 
 Un dossier `components/z-x/` = `z-x.js` · `z-x.css` · `z-x.doc.md` · `z-x.demo.html`
-(+ `z-x.check.html` si la logique est non triviale). `static api` dans le JS →
-`z-manifest` le publie partout (VSCode, doc, `llms.txt`) : rien à inscrire à la main.
+(+ `z-x.lab.html` pour les essais). `static api` dans le JS → `z-manifest` le publie
+partout (VSCode, doc, `llms.txt`) : rien à inscrire à la main.
+
+**DEUX PAGES PAR COMPOSANT, ET PAS UNE DE PLUS** — loi du 2026-07-21, née d'un
+énervement : 12 pages dans zoé, 69 dans l'ancien repo, et Christophe incapable de
+retrouver son bouton.
+
+    z-x.demo.html   la démo — c'est elle que la DOC affiche
+    z-x.lab.html    les essais de CE composant
+
+Ces deux pages **grandissent**. On y ajoute une section ; on ne crée jamais un fichier
+de plus. Les noms `.check` · `.essai-*` · `.verify` sont **morts** : ils ne disaient rien
+et multipliaient les portes. Une page qui ne rentre ni dans la démo ni dans le lab n'a
+pas lieu d'être.
 
 - **Structure figée** (Chemin A) = skin portable. Zéro balise injectée : le light DOM
   appartient à l'auteur.
