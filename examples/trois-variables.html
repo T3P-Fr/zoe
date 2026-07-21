@@ -17,8 +17,8 @@
     );
   </script>
 
-  <link rel="stylesheet" href="../core/z-layer/z-layer.css">
-  <link rel="stylesheet" href="../components/z-slider/z-slider.css">
+<link rel="stylesheet" href="../zoe.css">
+<link rel="stylesheet" href="../examples/page.css">
 
   <style>
 /*
@@ -182,13 +182,6 @@ button:disabled, [data-eteint] {
 
 /* ── L'atelier ── */
 * { box-sizing: border-box; }
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: var(--z-canvas);
-  color: color-mix(in oklab, var(--z-ink) calc(var(--d-fort) * 100%), var(--z-canvas));
-  transition: background .25s linear;
-}
 
 /*
 	LA CONSOLE — collée en haut, parce que le réglage et son effet ne doivent jamais
@@ -258,7 +251,6 @@ nav a[aria-current] {
 }
 
 main { padding: 2rem 2.2rem; display: grid; gap: 1.6rem; align-content: start; }
-h1 { margin: 0; font-size: 1.5rem; letter-spacing: -.01em; }
 .sous { margin: -1.1rem 0 0; font-size: .9rem;
   color: color-mix(in oklab, var(--z-ink) calc(var(--d-doux) * 100%), var(--z-canvas)); max-width: 60ch; }
 

@@ -18,27 +18,9 @@
 	);
 </script>
 
-<link rel="stylesheet" href="../../skins/hightech/hightech.css">
-<link rel="stylesheet" href="../z-motion/z-motion.css">
-<link rel="stylesheet" href="./z-contact.css">
-<link rel="stylesheet" href="../../components/z-button/z-button.css">
-<link rel="stylesheet" href="../../components/z-checkbox/z-checkbox.css">
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
 <style>
-/*
-	============================================================
-	Vérification du fx `morph` — on FIGE l'effet pour le voir.
-	------------------------------------------------------------
-	Un effet transitoire ne se prouve pas sur une capture : on déclenche un contact
-	synthétique sur chaque cible, on CLONE l'effet né dans l'overlay, et on met son
-	animation en pause à un instant donné (delay négatif). Trois instants = la
-	trajectoire complète : le rond sous la souris → la forme du composant.
-	Le mouvement réel, lui, se juge à l'œil sur la vraie page.
-	Styleguide tool.contact.check
-	============================================================
-*/
-body { background: var(--z-page); color: var(--z-ink); font-family: var(--z-font); padding: 28px; }
-h1 { font-size: 15px; }
-p.lead { color: var(--z-ink-soft); font-size: 12px; }
 .frames { display: flex; gap: 40px; margin-top: 30px; }
 .frame { border: 1px solid var(--z-line); background: var(--z-surface); padding: 34px 28px; position: relative; }
 .frame h2 { font-size: 11px; margin: 0 0 18px; color: var(--z-ink-soft); letter-spacing: 2px; text-transform: uppercase; }
@@ -61,6 +43,7 @@ z-overlay[frozen] z-contact z-foreground { animation-play-state: paused !importa
 <z-overlay frozen id="freeze"></z-overlay>
 
 <script type="module">
+	import "../../examples/skin-switch.js";
   import "../../components/z-button/z-button.js";
   import "../../components/z-checkbox/z-checkbox.js";
   import "./z-contact.js";

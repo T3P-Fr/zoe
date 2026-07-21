@@ -18,9 +18,9 @@
 	);
 </script>
 
-<link rel="stylesheet" href="../z-radio/z-radio.css">
-<link rel="stylesheet" href="./z-radio-group.css">
-<style> body{font:14px monospace;padding:2rem} .ok{color:#0a0} .ko{color:#c00;font-weight:bold} </style>
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style> .ok{color:#0a0} .ko{color:#c00;font-weight:bold} </style>
 <z-radio-group id="g" value="b">
   <z-radio value="a">A</z-radio>
   <z-radio value="b">B</z-radio>
@@ -33,6 +33,7 @@
 </z-radio-group>
 <ul id="out"></ul>
 <script type="module">
+	import "../../examples/skin-switch.js";
   import "./z-radio-group.js";
   const out = document.getElementById("out");
   const t = (name, got, want) => {
