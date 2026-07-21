@@ -11,6 +11,17 @@
 	    <z-button loading>Chargement…</z-button>
 	    <z-button disabled>Indisponible</z-button>
 
+	IL FAIT CE QU'UN BOUTON FAIT — sinon ce n'est pas un bouton, c'est un div qui y
+	ressemble :
+	  · le CLAVIER l'active (Entrée et Espace, comme le natif) ;
+	  · dans un <form>, `type` décide : submit (défaut) · reset · button (rien) ;
+	  · `disabled` coupe tout, pointeur comme clavier.
+
+	    <form>
+	      <z-button type="submit">Envoyer</z-button>
+	      <z-button type="reset">Réinitialiser</z-button>
+	    </form>
+
 	Doc narrative : z-button.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 1.0
 	============================================================
@@ -27,6 +38,7 @@ export class ZButton extends ZElement {
 			es: "Un botón — hereda todos los estados de z-element, con temas intercambiables."
 		},
 		attributes: [
+			{ name: "type", type: "\"submit\" | \"reset\" | \"button\"", description: { en: "What it does inside a form: submit (default), reset, or nothing.", fr: "Ce qu'il fait dans un formulaire : soumettre (défaut), réinitialiser, ou rien.", es: "Lo que hace en un formulario: enviar (predeterminado), restablecer o nada." } },
 			{ name: "disabled", type: "boolean", description: { en: "Disabled: blocks interaction.", fr: "Désactivé : coupe l'interaction.", es: "Deshabilitado: bloquea la interacción." } },
 			{ name: "loading", type: "boolean", description: { en: "Loading (skeleton sweep, not clickable).", fr: "En chargement (balayage skeleton, non cliquable).", es: "Cargando (barrido skeleton, no clicable)." } },
 			{ name: "error", type: "boolean", description: { en: "Error (danger border + shake).", fr: "En erreur (liseré danger + secousse).", es: "Error (borde de peligro + sacudida)." } },
@@ -56,7 +68,68 @@ export class ZButton extends ZElement {
 	connectedCallback() {
 		if (!this.hasAttribute("role")) this.setAttribute("role", "button");
 		if (!this.hasAttribute("tabindex")) this.tabIndex = this.disabled ? -1 : 0;
+		this.addEventListener("keydown", this.#onKey);
+		this.addEventListener("keyup", this.#onKeyUp);
+		this.addEventListener("click", this.#onClick);
 		super.connectedCallback();   /* z-element câble toute la grammaire d'états */
+	}
+
+	attributeChangedCallback(name, previous, value) {
+		super.attributeChangedCallback(name, previous, value);
+		if (name === "disabled") this.tabIndex = value !== null ? -1 : 0;
+	}
+
+	/* Ce qu'il fait dans un formulaire. @returns {"submit"|"reset"|"button"} */
+	get type() {
+		const written = this.getAttribute("type");
+		return written === "reset" || written === "button" ? written : "submit";
+	}
+
+	/* @param {string} value */
+	set type(value) {
+		this.setAttribute("type", value);
+	}
+
+	/*
+		LE CLAVIER, celui du bouton natif : Entrée agit tout de suite, Espace au RELÂCHÉ
+		(et ne fait pas défiler la page entre-temps). Sans ça, `role="button"` est un
+		mensonge — l'élément a l'air d'un bouton pour un lecteur d'écran, mais rien ne
+		l'active sans souris.
+	*/
+	#onKey = (event) => {
+		if (this.disabled) return;
+		if (event.key === "Enter") { event.preventDefault(); this.click(); }
+		else if (this.#isSpace(event)) event.preventDefault();   /* pas de défilement */
+	};
+
+	#onKeyUp = (event) => {
+		if (this.disabled) return;
+		if (this.#isSpace(event)) { event.preventDefault(); this.click(); }
+	};
+
+	/* @param {KeyboardEvent} event @returns {boolean} */
+	#isSpace(event) {
+		return event.key === " " || event.key === "Spacebar";
+	}
+
+	/*
+		Le clic — le vrai comme celui du clavier (this.click() passe par ici). Un bouton
+		désactivé ne laisse RIEN passer : on stoppe la propagation, sinon un <form> ou un
+		parent qui écoute agirait quand même.
+	*/
+	#onClick = (event) => {
+		if (this.disabled) { event.stopImmediatePropagation(); event.preventDefault(); return; }
+		this.#actOnForm();
+	};
+
+	/* submit / reset : on délègue au formulaire, jamais on ne réimplémente. */
+	#actOnForm() {
+		const formulaire = this.form;
+		if (!formulaire || this.type === "button") return;
+		/* requestSubmit et pas submit() : lui seul déclenche la VALIDATION et l'événement
+		   `submit` — submit() les saute tous les deux, silencieusement. */
+		if (this.type === "submit") formulaire.requestSubmit();
+		else formulaire.reset();
 	}
 }
 

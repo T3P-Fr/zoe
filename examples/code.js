@@ -27,8 +27,13 @@
 const AUTO = ["role", "tabindex", "aria-checked", "aria-disabled", "aria-busy", "aria-invalid", "aria-valuenow", "aria-valuemin", "aria-valuemax", "aria-orientation", "aria-label"];
 
 const CSS = `
-	.z-exemple { display: grid; grid-template-columns: minmax(12rem, 1fr) minmax(0, 1.1fr); gap: .8rem 1.2rem; align-items: center; }
-	.z-exemple > * { align-self: center; }
+	/*
+		justify-items: start — sans lui la grille ÉTIRE chaque exemple sur toute la
+		colonne : un bouton devient pleine largeur et ne ressemble plus à ce qu'il est.
+		Le <pre>, lui, doit s'étirer : il se remet en stretch juste après.
+	*/
+	.z-exemple { display: grid; grid-template-columns: minmax(12rem, 1fr) minmax(0, 1.1fr); gap: .8rem 1.2rem; align-items: center; justify-items: start; }
+	.z-exemple > .z-code { justify-self: stretch; }
 	.z-exemple > .z-code {
 		margin: 0; padding: .7rem .9rem; overflow-x: auto;
 		background: color-mix(in srgb, currentColor 5%, transparent);

@@ -21,6 +21,7 @@
 <link rel="stylesheet" href="../../tools/z-motion/z-motion.css">
 <link rel="stylesheet" href="../../tools/z-contact/z-contact.css">
 <link rel="stylesheet" href="../../core/z-element/z-element.css">
+<link rel="stylesheet" href="../../examples/pupitre.css">
 <link rel="stylesheet" href="../../core/z-layer/z-layer.css">
 <link rel="stylesheet" href="./z-button.css">
 
@@ -284,6 +285,17 @@
 	droite — tout suit.
 </p>
 
+<h2>0 · Le pupitre — <b>tous</b> ses paramètres, en direct</h2>
+<z-button id="pupitre-sujet">Touche les réglages, je réagis</z-button>
+<p class="note">
+	Il n'est pas écrit à la main : il est <b>généré depuis la fiche du composant</b> — la
+	même source que la doc et l'autocomplétion. Un paramètre ajouté au code apparaît ici
+	tout seul, et il ne peut jamais en manquer un. Les <b>attributs</b> sont des raccourcis
+	(un mot pose plusieurs réglages) ; les <b>variables CSS</b> sont le réglage fin, écrit
+	sur la balise. Les <b>états</b>, en bas, ne se règlent pas : ils s'allument quand ils
+	arrivent (survole, presse, lâche dehors).
+</p>
+
 <h2>1 · Trois boutons, trois valeurs — aucune capsule</h2>
 
 <div class="molettes">
@@ -516,6 +528,11 @@
 	import "../../tools/z-contact/z-contact.js";
 	import "../../core/z-layer/z-layer.js";
 	import "./z-button.js";
+	import "../z-checkbox/z-checkbox.js";   /* le contrôle a besoin d'un champ à envoyer */
+	import { pupitre } from "../../examples/pupitre.js";
+
+	/* Le pupitre se monte APRÈS la définition du composant : il lit sa fiche `static api`. */
+	pupitre("#pupitre-sujet");
 
 	/*
 		UN SEUL écouteur pour toute la page (comme z-contact) : à chaque mouvement, on
@@ -588,5 +605,63 @@
 			lecture.textContent = valeur;
 		});
 	}
+
+	/*
+		LE CONTRÔLE. Ce qu'une capture ne prouve jamais : le clavier, le formulaire, et
+		le refus d'un bouton désactivé. Se lit à l'œil, se relit au --dump-dom.
+	*/
+	document.body.insertAdjacentHTML("beforeend", `
+		<h2>Le contrôle — ce qui ne se voit pas sur une capture</h2>
+		<form id="ctrl-form" hidden>
+			<z-checkbox name="cgu" current>case</z-checkbox>
+			<z-button id="ctrl-submit" type="submit">envoyer</z-button>
+			<z-button id="ctrl-reset" type="reset">reset</z-button>
+			<z-button id="ctrl-rien" type="button">rien</z-button>
+			<z-button id="ctrl-off" type="submit" disabled>coupé</z-button>
+		</form>
+		<ol id="ctrl"></ol>`);
+
+	await customElements.whenDefined("z-button");
+	const attentes = [];
+	const attend = (titre, obtenu, voulu) =>
+		attentes.push({ titre, obtenu, voulu, ok: JSON.stringify(obtenu) === JSON.stringify(voulu) });
+
+	const form = document.querySelector("#ctrl-form");
+	let envois = 0, resets = 0;
+	form.addEventListener("submit", (e) => { e.preventDefault(); envois++; });
+	form.addEventListener("reset", () => resets++);
+	const touche = (cible, key, type = "keydown") =>
+		cible.dispatchEvent(new KeyboardEvent(type, { key, bubbles: true, cancelable: true }));
+
+	attend("type par défaut = submit", document.querySelector("#ctrl-rien").form === form && new (customElements.get("z-button"))().type, "submit");
+
+	document.querySelector("#ctrl-submit").click();
+	attend("type=submit soumet", envois, 1);
+
+	document.querySelector("#ctrl-reset").click();
+	attend("type=reset réinitialise", resets, 1);
+
+	document.querySelector("#ctrl-rien").click();
+	attend("type=button ne fait rien", [envois, resets], [1, 1]);
+
+	document.querySelector("#ctrl-off").click();
+	attend("disabled ne soumet pas", envois, 1);
+
+	touche(document.querySelector("#ctrl-submit"), "Enter");
+	attend("Entrée soumet", envois, 2);
+
+	touche(document.querySelector("#ctrl-submit"), " ", "keyup");
+	attend("Espace (au relâché) soumet", envois, 3);
+
+	touche(document.querySelector("#ctrl-off"), "Enter");
+	attend("disabled ignore le clavier", envois, 3);
+
+	const liste = document.querySelector("#ctrl");
+	liste.innerHTML = attentes.map(({ titre, ok, obtenu, voulu }) =>
+		`<li style="color:${ok ? "var(--z-success, green)" : "var(--z-danger, crimson)"}">${ok ? "✔" : "✘"} ${titre}`
+		+ (ok ? "" : ` — obtenu ${JSON.stringify(obtenu)}, voulu ${JSON.stringify(voulu)}`) + "</li>").join("");
+	const rates = attentes.filter((a) => !a.ok).length;
+	liste.insertAdjacentHTML("beforebegin",
+		`<p id="ctrl-bilan"><b>CONTRÔLE : ${attentes.length - rates}/${attentes.length}</b>${rates ? " — il en manque" : " — tout passe"}</p>`);
 </script>
 </html>
