@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-checkbox — le lab</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis passe par <code>http://localhost:5173/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../tools/z-motion/z-motion.css">
+<link rel="stylesheet" href="../../tools/z-contact/z-contact.css">
+<link rel="stylesheet" href="../../core/z-element/z-element.css">
+<link rel="stylesheet" href="../../core/z-layer/z-layer.css">
+<link rel="stylesheet" href="../../examples/pupitre.css">
+<link rel="stylesheet" href="./z-checkbox.css">
+
+<style>
+	/*
+		============================================================
+		LE LAB de z-checkbox — on cherche, on ne montre pas
+		------------------------------------------------------------
+		Un lab n'est pas une démo. La démo montre le composant FINI, en HighTech ;
+		ici l'écart visuel est permis, c'est un établi. On y règle en direct, on
+		compare, et quand une valeur est bonne elle part dans la peau.
+		Styleguide lab.checkbox
+		============================================================
+	*/
+	body {
+		background: var(--z-page);
+		color: var(--z-ink);
+		font-family: var(--z-font);
+		padding: 2.5rem;
+		max-width: 820px;
+		margin: auto;
+	}
+
+	h1 { font-size: 1.2rem; }
+	h2 { font-size: .95rem; margin: 2.2rem 0 .5rem; }
+	p.lead, p.note { color: var(--z-ink-soft); font-size: .85rem; }
+
+	.stack {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		align-items: flex-start;
+		margin: .8rem 0;
+	}
+
+	code { font-family: ui-monospace, monospace; }
+
+	/*
+		CE QUE CETTE PAGE FAIT, ET RIEN DE PLUS : rendre deux pièces TOUCHABLES.
+		Styleguide lab.checkbox.vivant
+
+		Aucun mouvement n'est écrit ici, et c'est la loi : un effet est une SIGNATURE, il
+		appartient à la peau. Une page qui anime elle-même impose son geste aux deux peaux
+		— HighTech se mettrait à bouger comme Claude. Ce que la peau fait d'une pièce
+		survolée, ou d'une case qu'on coche, se lit dans `skins/*/`.
+	*/
+	.vivant z-layer[part="marker"],
+	.vivant z-layer[part="label"] {
+		pointer-events: auto;
+	}
+</style>
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact></z-contact>
+
+<h1><code>z-checkbox</code> — le lab</h1>
+<p class="lead">
+	L'établi de la case à cocher. Change la peau en haut à droite : une case qui casse au
+	changement se voit à l'instant.
+</p>
+
+<h2>0 · Le pupitre — <b>tous</b> ses paramètres, en direct</h2>
+<z-checkbox id="pupitre-sujet">Touche les réglages, je réagis</z-checkbox>
+<p class="note">
+	Généré depuis la fiche du composant, jamais écrit à la main. Les <b>attributs</b> sont
+	des raccourcis, les <b>variables CSS</b> le réglage fin — et tout s'écrit sur la balise,
+	exactement comme tu le ferais dans ton CSS.
+</p>
+
+<h2>1 · Les deux écritures, côte à côte</h2>
+<p class="note">
+	À gauche la forme courte, à droite la forme en calques. Elles lisent les mêmes réglages
+	et doivent se ressembler trait pour trait — tout écart ici est un bug.
+</p>
+<div class="stack">
+	<z-checkbox>Forme courte — le CSS peint l'hôte</z-checkbox>
+
+	<z-checkbox>
+		<z-layer part="background"></z-layer>
+		<z-layer part="marker">
+			<z-layer part="ring"></z-layer>
+			<z-layer part="dot"></z-layer>
+		</z-layer>
+		<z-layer part="infos">
+			<z-layer part="label">Forme en calques — chaque pièce animable seule</z-layer>
+		</z-layer>
+		<z-layer part="contact"></z-layer>
+	</z-checkbox>
+</div>
+
+<h2>2 · Pourquoi <code>z-layer</code> et pas un <code>div</code></h2>
+<p class="note">
+	<b>Survole le carré, puis le texte</b> — séparément. Chaque pièce répond pour elle :
+	le marqueur grossit sans que le texte bouge, le texte se décale sans que le marqueur
+	bouge. Un calque porte les <b>mêmes états</b> que son hôte, et il ne s'éveille que si
+	le CSS le rend touchable — une ligne, aucun JS.
+</p>
+<div class="stack vivant">
+	<z-checkbox>
+		<z-layer part="background"></z-layer>
+		<z-layer part="marker">
+			<z-layer part="ring"></z-layer>
+			<z-layer part="dot"></z-layer>
+		</z-layer>
+		<z-layer part="infos">
+			<z-layer part="label">Survole le carré, puis le texte</z-layer>
+		</z-layer>
+		<z-layer part="contact"></z-layer>
+	</z-checkbox>
+</div>
+
+<h2>3 · Trois horloges dans une case</h2>
+<p class="note">
+	<b>Coche-la, puis change de peau et recommence.</b> Trois pièces partent ensemble et
+	arrivent séparément — et <b>chaque peau a son geste</b> : sec et net chez HighTech,
+	ample et rebondi chez Claude. Impossible en forme courte : là-bas tout tient dans un
+	seul <code>::before</code>, donc un seul mouvement possible.
+	<b>C'est ça que les calques débloquent</b> — et le geste appartient à la peau, jamais
+	à cette page.
+</p>
+<div class="stack">
+	<z-checkbox>
+		<z-layer part="background"></z-layer>
+		<z-layer part="marker">
+			<z-layer part="ring"></z-layer>
+			<z-layer part="dot"></z-layer>
+		</z-layer>
+		<z-layer part="infos">
+			<z-layer part="label">Coche-moi et regarde le point arriver</z-layer>
+		</z-layer>
+		<z-layer part="contact"></z-layer>
+	</z-checkbox>
+</div>
+
+<h2>4 · Les états posés à la main</h2>
+<div class="stack">
+	<z-checkbox current>cochée</z-checkbox>
+	<z-checkbox disabled>désactivée</z-checkbox>
+	<z-checkbox current disabled>cochée et désactivée</z-checkbox>
+	<z-checkbox error>en erreur</z-checkbox>
+	<z-checkbox success>validée</z-checkbox>
+</div>
+
+<h2>5 · Le contrôle — ce qui ne se voit pas sur une capture</h2>
+<p class="note">Le comportement (bascule, indétermination, formulaire) se vérifie tout seul à
+	l'ouverture. Le <b>mouvement</b>, lui, ne se vérifie qu'à l'œil, plus haut.</p>
+<form id="controle-form" hidden>
+	<z-checkbox id="controle-case" name="cgu" required>case du contrôle</z-checkbox>
+</form>
+<ol id="controle" class="stack"></ol>
+
+<script type="module">
+	import "../../examples/skin-switch.js";
+	import "../../tools/z-contact/z-contact.js";
+	import "../../core/z-layer/z-layer.js";
+	import "./z-checkbox.js";
+	import { pupitre } from "../../examples/pupitre.js";
+
+	/* Le pupitre se monte APRÈS la définition du composant : il lit sa fiche `static api`. */
+	pupitre("#pupitre-sujet");
+
+	/*
+		LE CONTRÔLE. Pas un framework de test : une liste d'attentes qui se lit à l'œil
+		et se relit au --dump-dom. Elle couvre ce qu'une capture ne prouve pas.
+	*/
+	const formulaire = document.querySelector("#controle-form");
+	const laCase = document.querySelector("#controle-case");
+	const attentes = [];
+	const attend = (titre, obtenu, voulu) =>
+		attentes.push({ titre, obtenu, voulu, ok: JSON.stringify(obtenu) === JSON.stringify(voulu) });
+	const envoi = () => [...new FormData(formulaire)].map(([c, v]) => `${c}=${v}`).join("&");
+
+	attend("décochée : rien ne part", envoi(), "");
+	attend("décochée + required : le formulaire refuse", formulaire.checkValidity(), false);
+	attend("aria-checked = false", laCase.getAttribute("aria-checked"), "false");
+
+	laCase.checked = true;
+	attend("cochée : la valeur part (défaut « on »)", envoi(), "cgu=on");
+	attend("cochée + required : le formulaire accepte", formulaire.checkValidity(), true);
+
+	laCase.value = "oui";
+	attend("value change → ce qui part change", envoi(), "cgu=oui");
+
+	laCase.indeterminate = true;
+	attend("indéterminée : aria-checked = mixed", laCase.getAttribute("aria-checked"), "mixed");
+	attend("indéterminée : rien ne part, même cochée", envoi(), "");
+	attend("checked ne lève PAS l'indétermination (comme le natif)", (laCase.checked = false, laCase.indeterminate), true);
+
+	laCase.click();
+	attend("un clic tranche : indéterminée → cochée", [laCase.indeterminate, laCase.checked], [false, true]);
+
+	formulaire.reset();
+	attend("reset : retour au HTML d'origine", [laCase.checked, laCase.indeterminate], [false, false]);
+
+	const liste = document.querySelector("#controle");
+	liste.innerHTML = attentes.map(({ titre, ok, obtenu, voulu }) =>
+		`<li style="color:${ok ? "var(--z-success, green)" : "var(--z-danger, crimson)"}">${ok ? "✔" : "✘"} ${titre}`
+		+ (ok ? "" : ` — obtenu ${JSON.stringify(obtenu)}, voulu ${JSON.stringify(voulu)}`) + "</li>").join("");
+	const rates = attentes.filter((a) => !a.ok).length;
+	liste.insertAdjacentHTML("beforebegin",
+		`<p class="note" id="controle-bilan"><b>CONTRÔLE : ${attentes.length - rates}/${attentes.length}</b>${rates ? " — il en manque" : " — tout passe"}</p>`);
+</script>
+</html>

@@ -182,6 +182,44 @@ Un `setState("nimporteQuoi")` fonctionne aussi : le mot est posé directement en
 `select` / `unselect` sont des gestes transitoires joués **automatiquement** quand
 `current` change — de quoi animer une sélection sans rien câbler.
 
+Un composant **ajoute ses propres durables** — sans toucher au socle :
+
+```js
+class ZCheckbox extends ZElement {
+  static durableStates = [...ZElement.durableStates, "indeterminate"];
+}
+```
+
+Il devient aussitôt pilotable par attribut (`<z-checkbox indeterminate>`), par
+`setState("indeterminate")`, et stylable `:state(indeterminate)`. C'est la porte du
+**composant** ; celle de l'**auteur**, c'est la découverte-en-CSS (`@property
+--z-state__…`). Deux portes, deux publics : un état qui fait partie du contrat d'un
+composant doit exister même si sa feuille de style n'est pas chargée.
+
+## Dans un formulaire
+
+Tout élément Zoé est **associable à un `<form>`** : c'est de la plomberie standard, pas
+de la logique métier. Le socle porte le branchement ; le composant décide de ce qu'il
+**envoie** — et un composant qui n'appelle jamais `setFormValue()` n'envoie rien
+(`z-button` reste un bouton).
+
+```js
+this.setFormValue(coche ? this.value : null);   // null = ce champ n'apparaît pas
+this.setValidity(manque ? "Please check this box." : "");
+```
+
+| Le socle fournit | |
+|---|---|
+| `form` · `name` · `required` | le branchement au formulaire |
+| `validity` · `validationMessage` · `willValidate` | l'état de validité |
+| `checkValidity()` · `reportValidity()` | l'interrogation standard |
+| `setFormValue(v)` · `setValidity(msg)` | ce que le **composant** appelle |
+| `formResetCallback()` | à surcharger : revenir à son origine |
+| `formDisabledCallback()` | déjà câblé : un `<fieldset disabled>` pose `disabled`, donc tous les visuels suivent |
+
+La bulle du navigateur s'accroche au calque `marker` s'il existe — le message naît **sur
+la case**, pas au coin de la ligne (loi de la vue).
+
 ## `exit` — le seul état que le socle ne peut pas jouer
 
 Quand un élément est retiré du DOM, il est **déjà parti** : plus rien ne peut s'animer.

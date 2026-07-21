@@ -182,8 +182,37 @@ z-checkbox:has(z-layer):state(error)   > z-layer[part="marker"] > z-layer[part="
 z-checkbox:has(z-layer):state(success) > z-layer[part="marker"] > z-layer[part="ring"] { border-color: var(--z-success); }
 
 /*
-	═══ COMMUN AUX DEUX FORMES ═══
+	═══ L'INDÉTERMINÉE — la troisième valeur ═══
 	Styleguide 1.4
+
+	Ni cochée ni décochée : la case d'un « tout cocher » dont les enfants ne sont pas
+	d'accord. La marque est la MÊME pièce que la coche, simplement ÉCRASÉE — donc le
+	passage indéterminée → cochée est une seule transition continue, pas un remplacement.
+
+	Prix des deux écritures : chaque état s'écrit deux fois (décision assumée, ADR-0018).
+*/
+z-checkbox:not(:has(z-layer)):state(indeterminate)::before {
+	border-color: var(--z-checkbox--ring__color-checked, var(--z-accent));
+	background-color: var(--z-checkbox--marker__background-checked, var(--z-accent));
+	/* la barre : même largeur que le carré coché, écrasée en hauteur */
+	background-size: 60% var(--z-checkbox--dot__bar-height, .18em);
+}
+
+z-checkbox:has(z-layer):state(indeterminate) > z-layer[part="marker"] {
+	background: var(--z-checkbox--marker__background-checked, var(--z-accent));
+}
+z-checkbox:has(z-layer):state(indeterminate) > z-layer[part="marker"] > z-layer[part="ring"] {
+	border-color: var(--z-checkbox--ring__color-checked, var(--z-accent));
+}
+z-checkbox:has(z-layer):state(indeterminate) > z-layer[part="marker"] > z-layer[part="dot"] {
+	/* scale et pas height : la hauteur relancerait le layout, l'échelle reste sur le
+	   compositeur — et elle part du même 0 que la coche, donc ça enchaîne. */
+	scale: 1 var(--z-checkbox--dot__bar-scale, .28);
+}
+
+/*
+	═══ COMMUN AUX DEUX FORMES ═══
+	Styleguide 1.5
 */
 
 /* le label s'épaissit sans saut de pixel (faux-bold) ; une peau peut préférer un vrai
@@ -202,7 +231,7 @@ z-checkbox:state(disabled) {
 	entière — le geste appartient au marker, c'est lui qu'on vise. Même signature que
 	z-button et z-radio. Lâché dehors (releaseOut) : l'onde est plus courte, elle dit
 	« annulé ». Posé sur l'hôte → vaut pour les deux formes.
-	Styleguide 1.5
+	Styleguide 1.6
 */
 z-checkbox::after {
 	content: "";

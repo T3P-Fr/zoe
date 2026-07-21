@@ -168,11 +168,67 @@
 
   <p class="note">Clic ou <kbd>Espace</kbd> : coche/décoche. Chaque bascule émet <code>change</code> — lis <code>.checked</code>.</p>
 
+  <h2>4 · Trois valeurs — l'indéterminée <code class="tag">indeterminate</code></h2>
+  <div class="stack">
+    <z-checkbox id="tout" indeterminate>Tout cocher</z-checkbox>
+    <div class="stack" style="padding-left:1.6rem;gap:.7rem">
+      <z-checkbox class="enfant" current>Sel</z-checkbox>
+      <z-checkbox class="enfant">Poivre</z-checkbox>
+      <z-checkbox class="enfant">Piment</z-checkbox>
+    </div>
+  </div>
+  <p class="note">La case du haut n'est <b>ni cochée ni décochée</b> tant que les trois ne sont pas d'accord : la marque s'écrase en barre (<code>aria-checked="mixed"</code>). Un clic dessus tranche toujours dans le sens « oui » — comme la case native.</p>
+
+  <h2>5 · Elle part dans le formulaire</h2>
+  <form id="formulaire" class="stack">
+    <z-checkbox name="cgu" required>J'accepte les conditions <b>(requise)</b></z-checkbox>
+    <z-checkbox name="lettre" value="hebdo" current>Recevoir la lettre</z-checkbox>
+    <fieldset disabled style="border:1px solid var(--z-line);border-radius:var(--z-radius);padding:.7rem 1rem">
+      <legend style="font-size:.8rem;color:var(--z-ink-soft)">fieldset désactivé</legend>
+      <z-checkbox name="option">Cette case est coupée par son fieldset</z-checkbox>
+    </fieldset>
+    <div style="display:flex;gap:.6rem">
+      <button type="submit">Envoyer</button>
+      <button type="reset">Réinitialiser</button>
+    </div>
+  </form>
+  <p class="note" id="envoi">Rien envoyé pour l'instant.</p>
+
   <script type="module">
     import "../../examples/skin-switch.js";
     import "../../tools/z-contact/z-contact.js";
     import "../../core/z-layer/z-layer.js";
     import "./z-checkbox.js";
+
+    /*
+      La case « tout cocher » : trois lignes, et c'est du CODE D'AUTEUR — le composant
+      ne connaît pas ses enfants (zéro logique métier). C'est exactement ce que ça doit
+      coûter à celui qui l'utilise.
+    */
+    const tout = document.querySelector("#tout");
+    const enfants = [...document.querySelectorAll(".enfant")];
+
+    const refleteLesEnfants = () => {
+      const coches = enfants.filter((e) => e.checked).length;
+      tout.indeterminate = coches > 0 && coches < enfants.length;
+      tout.checked = coches === enfants.length;
+    };
+
+    tout.addEventListener("change", () => {
+      enfants.forEach((e) => { e.checked = tout.checked; });
+    });
+    enfants.forEach((e) => e.addEventListener("change", refleteLesEnfants));
+    refleteLesEnfants();
+
+    /* Le formulaire : on montre ce qui PART vraiment, à côté du bouton (loi de la vue). */
+    const formulaire = document.querySelector("#formulaire");
+    const envoi = document.querySelector("#envoi");
+    formulaire.addEventListener("submit", (evenement) => {
+      evenement.preventDefault();
+      const donnees = [...new FormData(formulaire)].map(([cle, valeur]) => `${cle}=${valeur}`);
+      envoi.textContent = donnees.length ? `Envoyé : ${donnees.join(" · ")}` : "Envoyé : rien du tout.";
+    });
+    formulaire.addEventListener("reset", () => { envoi.textContent = "Remis à zéro."; });
   </script>
 
 </html>

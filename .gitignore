@@ -3,3 +3,6 @@ node_modules/
 
 # Cache local de reprise, réécrit à chaque tour — pas de l'historique
 .claude/ETAT.md
+
+# Dépôts tiers rapatriés pour comparaison (Carbon, etc.) — jamais de notre historique
+.concurrency/

@@ -9,5 +9,6 @@ remplace un gros fichier par cent cinquante-cinq.)*
 
 | Carnet | État | Dernier pas |
 |---|---|---|
+| [components/z-checkbox](components/z-checkbox/z-checkbox.lab.md) | **finalisée** · rien en attente | 2026-07-21 — trois valeurs (l'indéterminée) + elle part dans le formulaire. Le socle y gagne `durableStates` et l'association au `<form>`. Contrôle 11/11. |
 | [components/z-slider](components/z-slider/z-slider.lab.md) | vivant · **une proposition à trancher** | 2026-07-21 — le curseur comme *capacité* : knob, jauge et scrubber sortent d'une peau seule (6 des 8 curseurs HighTech). Restent le geste rotatif et le range. |
 | [skins/couleur](skins/couleur.lab.md) | vivant · **grammaire tranchée, plans non tranchés** | 2026-07-21 — une échelle `ink000→ink100`, deux portes (métiers · états). La formule vit dans le calque, l'état ne pose qu'un nombre. Le vocabulaire des plans reste à choisir (4 familles étudiées). |

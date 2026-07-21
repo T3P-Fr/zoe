@@ -26,7 +26,13 @@
 	Deux mécaniques :
 	  – TRANSITOIRE : posé par les événements ou play(word), retiré tout seul ;
 	  – DURABLE : porté par un ATTRIBUT (<z-element loading>, el.setState("loading")) et
-	    reflété en :state(). L'attribut est la source de vérité.
+	    reflété en :state(). L'attribut est la source de vérité. Un composant AJOUTE les
+	    siens via `static durableStates` (z-checkbox y ajoute `indeterminate`).
+
+	Il est aussi ASSOCIABLE À UN FORMULAIRE (`static formAssociated`) : le socle porte la
+	plomberie (form, name, validité, reset, <fieldset disabled>), le composant décide de
+	ce qu'il envoie via `setFormValue()`. Un composant qui n'appelle jamais setFormValue
+	n'envoie rien — z-button reste un bouton.
 
 	La doc narrative est dans z-element.doc.md ; l'API machine dans `static api`
 	ci-dessous (lue par scripts/z-manifest → autocomplétion VSCode + doc + llms.txt).
@@ -38,7 +44,8 @@
 /* Au-delà de ce seuil (px) un appui devient un glissé (sinon un clic tremblé passe). */
 const DRAG_THRESHOLD = 4;
 
-/* Les états DURABLES : pilotables par attribut, reflétés en :state(). */
+/* Les états DURABLES du socle : pilotables par attribut, reflétés en :state().
+   Un composant en AJOUTE via `static durableStates` (voir plus bas). */
 const DURABLE = ["current", "loading", "disabled", "error", "success"];
 
 /* Les STATUTS métier exclusifs du repos : tant qu'aucun n'est posé, l'élément est
@@ -77,7 +84,9 @@ export class ZElement extends HTMLElement {
 			{ name: "loading", type: "boolean", description: { en: "Status: loading / processing.", fr: "Statut : en chargement / traitement.", es: "Estado: cargando / procesando." } },
 			{ name: "disabled", type: "boolean", description: { en: "Disabled: blocks interaction.", fr: "Désactivé : coupe l'interaction.", es: "Deshabilitado: bloquea la interacción." } },
 			{ name: "error", type: "boolean", description: { en: "Status: error.", fr: "Statut : en erreur.", es: "Estado: error." } },
-			{ name: "success", type: "boolean", description: { en: "Status: valid / done.", fr: "Statut : validé.", es: "Estado: válido / hecho." } }
+			{ name: "success", type: "boolean", description: { en: "Status: valid / done.", fr: "Statut : validé.", es: "Estado: válido / hecho." } },
+			{ name: "name", type: "string", description: { en: "Form field name — used only by components that submit a value.", fr: "Nom du champ dans le formulaire — utilisé par les composants qui envoient une valeur.", es: "Nombre del campo en el formulario — usado por los componentes que envían un valor." } },
+			{ name: "required", type: "boolean", description: { en: "The form is invalid until this control has a value.", fr: "Le formulaire est invalide tant que ce contrôle n'a pas de valeur.", es: "El formulario es inválido mientras este control no tenga valor." } }
 		],
 		events: [
 			{ name: "z-state", description: { en: "Emitted on every state change. detail: { states, changed, on }.", fr: "Émis à chaque changement d'état. detail : { states, changed, on }.", es: "Emitido en cada cambio de estado. detail: { states, changed, on }." } }
@@ -114,11 +123,29 @@ export class ZElement extends HTMLElement {
 		return (discoveredCache = found);
 	}
 
-	/* Attributs observés = les durables + les états déclarés-en-CSS découverts à la
-	   définition (mettre le CSS avant le script du composant). */
+	/*
+		LES DURABLES DE CETTE CLASSE. Un composant y ajoute les siens sans toucher au
+		socle : `static durableStates = [...ZElement.durableStates, "indeterminate"]`.
+		Pourquoi une liste de classe et pas la découverte-en-CSS : un état qui fait
+		partie du CONTRAT du composant doit exister même si sa feuille n'est pas
+		chargée. La découverte-en-CSS reste la porte de l'AUTEUR, pas celle du composant.
+	*/
+	static durableStates = DURABLE;
+
+	/* Attributs observés = les durables de la classe + les états déclarés-en-CSS
+	   découverts à la définition (mettre le CSS avant le script du composant). */
 	static get observedAttributes() {
-		return [...DURABLE, ...this.discoveredStates()];
+		return [...this.durableStates, ...this.discoveredStates()];
 	}
+
+	/*
+		FORMULAIRE. Tout élément Zoé est associable à un `<form>` : c'est de la plomberie
+		standard, pas de la logique métier. Le socle porte le branchement (form, name,
+		validité, reset, désactivation par <fieldset>) ; c'est le COMPOSANT qui décide de
+		ce qu'il ENVOIE, en appelant `setFormValue()` — une case envoie sa valeur si elle
+		est cochée, un slider envoie son nombre, un bouton n'envoie rien du tout.
+	*/
+	static formAssociated = true;
 
 	#internals = this.attachInternals();
 	#wired = false;
@@ -195,7 +222,7 @@ export class ZElement extends HTMLElement {
 		@param {boolean} [on]
 	*/
 	setState(name, on = true) {
-		if (DURABLE.includes(name) || ZElement.discoveredStates().includes(name)) {
+		if (this.constructor.durableStates.includes(name) || ZElement.discoveredStates().includes(name)) {
 			this.toggleAttribute(name, on);
 		} else {
 			this.#set(name, on);
@@ -227,6 +254,65 @@ export class ZElement extends HTMLElement {
 	/* Les états actifs à l'instant (pour qu'un écouteur tardif se synchronise). @returns {string[]} */
 	get states() {
 		return [...this.#internals.states];
+	}
+
+	/* ── FORMULAIRE (plomberie standard, le composant décide de la valeur) ── */
+
+	/* Le <form> qui m'englobe, s'il y en a un. @returns {HTMLFormElement|null} */
+	get form() { return this.#internals.form; }
+
+	/* Le nom sous lequel je pars dans le formulaire. @returns {string} */
+	get name() { return this.getAttribute("name") ?? ""; }
+
+	/* Champ requis ? @returns {boolean} */
+	get required() { return this.hasAttribute("required"); }
+
+	/* @returns {ValidityState} */
+	get validity() { return this.#internals.validity; }
+	/* @returns {string} */
+	get validationMessage() { return this.#internals.validationMessage; }
+	/* @returns {boolean} */
+	get willValidate() { return this.#internals.willValidate; }
+	/* @returns {boolean} */
+	checkValidity() { return this.#internals.checkValidity(); }
+	/* @returns {boolean} */
+	reportValidity() { return this.#internals.reportValidity(); }
+
+	/*
+		Ce que j'envoie au formulaire. `null` = je n'envoie RIEN (une case décochée
+		n'apparaît pas dans les données — c'est la sémantique native, pas un oubli).
+		@param {string|File|FormData|null} value
+	*/
+	setFormValue(value) {
+		this.#internals.setFormValue(value);
+	}
+
+	/*
+		Déclare ma validité. Sans message, je suis valide.
+		@param {string} [message] le motif du refus, montré par le navigateur
+		@param {{valueMissing?: boolean, customError?: boolean}} [flags]
+	*/
+	setValidity(message, flags = { valueMissing: true }) {
+		if (!message) this.#internals.setValidity({});
+		else this.#internals.setValidity(flags, message, this.#validationAnchor());
+	}
+
+	/* Où le navigateur accroche sa bulle « Veuillez cocher… » : le calque qui reçoit le
+	   geste s'il existe (LOI DE LA VUE : le message naît sur la case, pas sur la ligne). */
+	#validationAnchor() {
+		return this.querySelector(':scope > z-layer[part="marker"]') ?? this;
+	}
+
+	/* Le formulaire a été remis à zéro → le composant reprend son état d'origine. */
+	formResetCallback() {
+		/* Rien par défaut : seul un composant qui a une valeur sait ce qu'est « son
+		   origine ». Il surcharge. */
+	}
+
+	/* Un <fieldset disabled> (ou form.disabled) m'atteint → je le porte comme mon
+	   propre `disabled`, donc tous mes visuels d'état suivent sans une ligne de plus. */
+	formDisabledCallback(isDisabled) {
+		this.toggleAttribute("disabled", isDisabled);
 	}
 
 	/* ── MÉCANIQUE INTERNE ── */
