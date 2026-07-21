@@ -82,7 +82,7 @@ z-radio:not(:has(z-layer))::before {
 }
 z-radio:not(:has(z-layer)):state(over)::before  { border-color: var(--z-accent); }
 z-radio:not(:has(z-layer)):state(press)::before { transform: scale(.9); }
-z-radio:not(:has(z-layer)):state(focus)::before { box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-accent) 35%, transparent)); }
+z-radio:not(:has(z-layer)):state(focus)::before { box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-state__color) 35%, transparent)); }
 z-radio:not(:has(z-layer)):state(current)::before {
 	border-color: var(--z-radio--ring__color-checked, var(--z-accent));
 	background-color: var(--z-radio--marker__background-checked, var(--z-accent));
@@ -149,7 +149,7 @@ z-radio > z-layer[part="contact"] {
 /* ── les états, pièce par pièce ── */
 z-radio:has(z-layer):state(over)  > z-layer[part="marker"] > z-layer[part="ring"] { border-color: var(--z-accent); }
 z-radio:has(z-layer):state(press) > z-layer[part="marker"] { scale: .9; }
-z-radio:has(z-layer):state(focus) > z-layer[part="marker"] > z-layer[part="ring"] { box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-accent) 35%, transparent)); }
+z-radio:has(z-layer):state(focus) > z-layer[part="marker"] > z-layer[part="ring"] { box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-state__color) 35%, transparent)); }
 
 z-radio:has(z-layer):state(current) > z-layer[part="marker"] { background: var(--z-radio--marker__background-checked, var(--z-accent)); }
 z-radio:has(z-layer):state(current) > z-layer[part="marker"] > z-layer[part="ring"] { border-color: var(--z-radio--ring__color-checked, var(--z-accent)); }
@@ -191,7 +191,7 @@ z-radio::after {
 	width: var(--z-radio--marker__size, 1.15em);
 	height: var(--z-radio--marker__size, 1.15em);
 	box-sizing: border-box;
-	border: 2px solid var(--z-radio--halo__color, var(--z-accent));
+	border: 2px solid var(--z-radio--halo__color, var(--z-state__color));
 	border-radius: var(--z-radio--marker__radius, 50%);
 	/* centré sur le marker par une MARGE, pas par un translate : l'anim `ripple` pilote
 	   `transform` — un translate ici serait écrasé et le halo tomberait sous la ligne. */

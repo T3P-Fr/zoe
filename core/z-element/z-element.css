@@ -110,3 +110,33 @@
 	display: flex;
 	width: 100%;
 }
+
+/*
+	L'HUMEUR — la couleur de l'état courant, et tout ce qui la boit suit
+	Styleguide 0.5.4
+
+	Un état ne PEINT pas : il redéfinit une swatch. `--z-state__color` est la couleur de
+	ce que le composant vit à l'instant — accent au repos, danger en erreur, succès une
+	fois validé. Tout ce qui doit s'accorder (le halo de focus, l'onde du clic, un filet
+	d'accent) lit CETTE variable au lieu de `--z-accent`, et devient juste sans une ligne
+	de plus.
+
+	Pourquoi ici et pas dans chaque composant : sinon chacun réécrit `var(--z-danger)`
+	dans son coin — c'est ce qui se passait, et le halo restait bleu sur un bouton rouge.
+
+	L'override est LOCAL : il descend dans le composant et son dedans, il ne remonte pas,
+	il ne fuit pas aux voisins.
+*/
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor) {
+	--z-state__color: var(--z-accent);
+}
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor):state(error) {
+	--z-state__color: var(--z-danger);
+}
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor):state(success) {
+	--z-state__color: var(--z-success);
+}
+/* désactivé : plus d'humeur du tout — un élément mort ne clignote pas en rouge. */
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor):state(disabled) {
+	--z-state__color: var(--z-disabled);
+}

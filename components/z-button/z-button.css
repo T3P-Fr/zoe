@@ -298,7 +298,7 @@ z-button {
 		position: absolute;
 		inset: 0;
 		border-radius: inherit;
-		border: 2px solid var(--z-button--halo__color, var(--z-accent));
+		border: 2px solid var(--z-button--halo__color, var(--z-state__color));
 		opacity: 0;
 		pointer-events: none;
 		transform-origin: center;

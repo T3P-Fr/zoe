@@ -354,7 +354,7 @@ z-slider:state(press) > z-layer[part="marker"] > z-layer[part="dot"] { scale: va
 z-slider:state(drag)  > z-layer[part="marker"] > z-layer[part="dot"] { scale: var(--z-slider--dot__scale-drag, 1.25); }
 z-slider:state(focus) > z-layer[part="marker"] > z-layer[part="dot"] {
 	/* box-shadow et pas outline : l'outline n'épouse pas le border-radius partout. */
-	box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-accent) 35%, transparent));
+	box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-state__color) 35%, transparent));
 }
 
 /* Pendant le glissé, les graduations s'effacent : elles ont servi à viser, elles

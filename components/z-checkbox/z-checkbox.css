@@ -90,7 +90,7 @@ z-checkbox:not(:has(z-layer))::before {
 }
 z-checkbox:not(:has(z-layer)):state(over)::before  { border-color: var(--z-accent); }
 z-checkbox:not(:has(z-layer)):state(press)::before { transform: scale(.9); }
-z-checkbox:not(:has(z-layer)):state(focus)::before { box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-accent) 35%, transparent)); }
+z-checkbox:not(:has(z-layer)):state(focus)::before { box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-state__color) 35%, transparent)); }
 z-checkbox:not(:has(z-layer)):state(current)::before {
 	border-color: var(--z-checkbox--ring__color-checked, var(--z-accent));
 	background-color: var(--z-checkbox--marker__background-checked, var(--z-accent));
@@ -163,7 +163,7 @@ z-checkbox > z-layer[part="contact"] {
 /* ── les états, pièce par pièce ── */
 z-checkbox:has(z-layer):state(over)  > z-layer[part="marker"] > z-layer[part="ring"] { border-color: var(--z-accent); }
 z-checkbox:has(z-layer):state(press) > z-layer[part="marker"] { scale: .9; }
-z-checkbox:has(z-layer):state(focus) > z-layer[part="marker"] > z-layer[part="ring"] { box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-accent) 35%, transparent)); }
+z-checkbox:has(z-layer):state(focus) > z-layer[part="marker"] > z-layer[part="ring"] { box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-state__color) 35%, transparent)); }
 
 z-checkbox:has(z-layer):state(current) > z-layer[part="marker"] { background: var(--z-checkbox--marker__background-checked, var(--z-accent)); }
 z-checkbox:has(z-layer):state(current) > z-layer[part="marker"] > z-layer[part="ring"] { border-color: var(--z-checkbox--ring__color-checked, var(--z-accent)); }
@@ -241,7 +241,7 @@ z-checkbox::after {
 	width: var(--z-checkbox--marker__size, 1.15em);
 	height: var(--z-checkbox--marker__size, 1.15em);
 	box-sizing: border-box;
-	border: 2px solid var(--z-checkbox--halo__color, var(--z-accent));
+	border: 2px solid var(--z-checkbox--halo__color, var(--z-state__color));
 	border-radius: var(--z-checkbox--marker__radius, var(--z-radius));
 	margin-top: calc(var(--z-checkbox--marker__size, 1.15em) / -2);
 	transform-origin: center;
