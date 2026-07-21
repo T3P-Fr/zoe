@@ -2,7 +2,7 @@
 <html lang="fr">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Zoé — toute cette interface, trois variables</title>
+  <title>Zoé — toute cette interface, cinq nombres</title>
 
   <!--
 	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
@@ -23,10 +23,10 @@
   <style>
 /*
 	============================================================
-	LA DÉMONSTRATION — TROIS VARIABLES, UNE APPLICATION ENTIÈRE
+	LA DÉMONSTRATION — CINQ NOMBRES, UNE APPLICATION ENTIÈRE
 	------------------------------------------------------------
 	Cette page ne contient AUCUNE palette. Pas de --bleu-500, pas de --gris-200, pas
-	de thème sombre. Trois graines, une formule, et toute l'interface en découle :
+	de thème sombre. Cinq nombres, une formule, et toute l'interface en découle :
 
 	    --z-canvas   sur QUOI je suis  (le fond, ici, à cet endroit)
 	    --z-tint     QUOI je peins     (l'encre, l'accent, l'alerte…)
@@ -37,7 +37,7 @@
 	C'est le même geste que z-slider : on pose un NOMBRE, et le reste en découle. Là
 	c'était la géométrie ; ici c'est la couleur.
 
-	Styleguide demo.trois-variables
+	Styleguide demo.harmonie
 	============================================================
 */
 
@@ -66,50 +66,67 @@
 @property --z-color--accent__l { syntax: "<number>"; inherits: true; initial-value: 0.58; }
 @property --z-color--accent__c { syntax: "<number>"; inherits: true; initial-value: 0.19; }
 @property --z-color--accent__h { syntax: "<number>"; inherits: true; initial-value: 28; }
-@property --z-light { syntax: "<number>"; inherits: true; initial-value: 0.97; }
-@property --z-dose  { syntax: "<number>"; inherits: true; initial-value: 0.62; }
+@property --z-fond__c { syntax: "<number>"; inherits: true; initial-value: 0.022; }
+@property --z-dose    { syntax: "<number>"; inherits: true; initial-value: 0.62; }
 
 :root {
   /*
-    LE FOND. Une seule ligne, et la page va du papier au charbon sans qu'aucune
-    règle ne soit dupliquée nulle part. Il emprunte sa teinte à l'accent : un papier
-    parfaitement neutre n'existe pas, il a toujours la couleur de ce qu'on imprime.
+    ⏸ JOUR/NUIT EN PAUSE — décision de Christophe, 2026-07-21.
+    Il se heurtait à l'harmonie : deux systèmes se disputaient la clarté des fonds, et
+    un fond teinté par l'harmonie ne peut pas en même temps être piloté par une bascule
+    clair/sombre. On règle une chose à la fois. La mécanique n'est pas supprimée — elle
+    est figée à 0 (jour), et le jour où on la rallume, l'harmonie devra lui céder L.
   */
-  --z-canvas: oklch(var(--z-light) 0.008 var(--z-color--accent__h));
+  --z-nuit: 0;
 
-  /*
-    L'ENCRE, DÉDUITE DU FOND — et c'est ici que le « mode sombre » disparaît en tant
-    que concept. `* 1000` puis `clamp` fabrique un booléen en CSS pur : 0 tant que le
-    fond est clair, 1 dès qu'il passe sous la moitié. L'encre bascule alors d'un bloc.
-    Aucune media query, aucun thème, aucune classe : une soustraction.
-    Noter qu'il ne touche QUE L. C'est tout l'intérêt d'avoir séparé les trois.
-  */
-  --z-nuit: clamp(0, (0.5 - var(--z-light)) * 1000, 1);
-  --z-ink: oklch(calc(0.10 + var(--z-nuit) * 0.86) 0.02 var(--z-color--accent__h));
-
-  /* L'ACCENT — l'assemblage de ses trois nombres, rien de plus. En nuit il s'éclaircit
-     un peu : la même couleur paraît plus sombre sur du charbon que sur du papier. */
-  --z-color--accent: oklch(calc(var(--z-color--accent__l) + var(--z-nuit) * 0.10)
+  /* ── LA MAIN. Trois nombres, rien de plus. C'est LA couleur du produit. ── */
+  --z-color--accent: oklch(var(--z-color--accent__l)
                            var(--z-color--accent__c)
                            var(--z-color--accent__h));
 
   /*
-    LA SECONDE COULEUR — et son ANGLE est le vrai paramètre. Réglable, il ne donne pas
-    « la complémentaire » : il donne TOUTES les harmonies avec un seul mécanisme.
-        180 complémentaire · 150 split · 120 triade · 30 analogue
-    « complémentaire » n'est qu'une valeur de ce curseur, pas un concept à part.
+    ── L'HARMONIE. L'angle est le seul paramètre, et il fait tout le travail. ──
+        180 complémentaire · 150 split · 120 triade · 30 analogue · 45 le tien
+    « Complémentaire » n'est pas un concept à part : c'est une valeur de ce curseur.
   */
   --z-color--mate__angle: 180;
   --z-color--mate__h: calc(var(--z-color--accent__h) + var(--z-color--mate__angle));
-  --z-color--mate: oklch(calc(var(--z-color--accent__l) + var(--z-nuit) * 0.10)
+  --z-color--mate: oklch(var(--z-color--accent__l)
                          var(--z-color--accent__c)
                          var(--z-color--mate__h));
+
+  /*
+    ── LES FONDS DESCENDENT DE L'HARMONIE, PAS D'UN GRIS ──
+
+    C'est le geste demandé, et c'est celui qui change le plus l'allure : du fond de
+    page à la carte jusqu'au premier plan, TOUT emprunte la teinte du complémentaire.
+    Aucun gris neutre n'est écrit nulle part.
+
+    Pourquoi le complémentaire et non la main : un fond teinté de sa propre couleur
+    éteint l'accent — la marque disparaît dans son propre décor. Teinté de l'opposé, il
+    le fait vibrer. C'est vieux comme la peinture ; ici c'est une soustraction d'angle.
+
+    Un seul curseur, `--z-fond__c`, dose combien : 0 = papier neutre, 0.06 = ambiance
+    franche. La VARIÉTÉ, elle, vient de l'angle — change-le et toute la pièce change
+    de lumière sans qu'on touche aux fonds.
+  */
+  --z-fond__h: var(--z-color--mate__h);
+
+  --z-plan-0: oklch(0.972 var(--z-fond__c) var(--z-fond__h));                 /* la page      */
+  --z-plan-1: oklch(0.995 calc(var(--z-fond__c) * 0.55) var(--z-fond__h));    /* la carte     */
+  --z-plan-2: oklch(1.000 calc(var(--z-fond__c) * 0.30) var(--z-fond__h));    /* le 1er plan  */
+  --z-plan--creux: oklch(0.940 calc(var(--z-fond__c) * 1.35) var(--z-fond__h)); /* ce qui s'enfonce */
+
+  --z-canvas: var(--z-plan-0);
+
+  /* L'encre aussi porte la teinte des fonds : un noir pur sur un fond teinté se voit,
+     et il se voit comme une erreur. Elle en garde très peu — juste de quoi appartenir. */
+  --z-ink: oklch(0.20 calc(var(--z-fond__c) * 1.6) var(--z-fond__h));
 
   /* Les deux noms courts que le reste du fichier emploie. */
   --z-tint: var(--z-color--accent);
   --z-alerte: var(--z-color--mate);
 
-  color-scheme: light dark;
   font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -159,8 +176,9 @@ button:disabled, [data-eteint] {
 	Styleguide demo.3
 */
 [data-plan] { background: var(--z-canvas); }
-[data-plan="haut"]  { --z-canvas: oklch(calc(var(--z-light) + 0.025 - var(--z-nuit) * 0.05) 0.008 var(--z-color--accent__h)); }
-[data-plan="creux"] { --z-canvas: oklch(calc(var(--z-light) - 0.025 + var(--z-nuit) * 0.05) 0.008 var(--z-color--accent__h)); }
+[data-plan="haut"]  { --z-canvas: var(--z-plan-1); }
+[data-plan="avant"] { --z-canvas: var(--z-plan-2); }
+[data-plan="creux"] { --z-canvas: var(--z-plan--creux); }
 
 /* ── L'atelier ── */
 * { box-sizing: border-box; }
@@ -329,10 +347,6 @@ button:hover { filter: brightness(1.08); }
   <div class="console">
     <span class="marque">ZOÉ</span>
 
-    <label>Jour → Nuit
-      <z-slider id="s-light" min="8" max="99" value="97"></z-slider>
-    </label>
-
     <label>Teinte · H
       <z-slider id="s-hue" min="0" max="360" value="28"></z-slider>
     </label>
@@ -345,12 +359,16 @@ button:hover { filter: brightness(1.08); }
       <z-slider id="s-angle" min="0" max="360" step="15" value="180" markers="24"></z-slider>
     </label>
 
+    <label>Teinte des fonds
+      <z-slider id="s-fond" min="0" max="70" value="22"></z-slider>
+    </label>
+
     <label>Dose
       <z-slider id="s-dose" min="0" max="100" value="62"></z-slider>
     </label>
 
     <div class="compte">
-      <b>6</b>
+      <b>5</b>
       nombres pilotent cette page.<br>
       Palettes écrites : <b style="display:inline;font-size:1rem">0</b>
     </div>
@@ -369,9 +387,10 @@ button:hover { filter: brightness(1.08); }
     <main>
       <h1>Tableau de bord</h1>
       <p class="sous">
-        Bouge le premier curseur. La page passe du papier au charbon —
-        <b>sans mode sombre</b>, sans media query, sans une seule couleur de rechange.
-        L'encre n'est pas choisie : elle est <em>déduite</em> du fond.
+        Bouge <b>Harmonie</b>. Le fond de page, les cartes, le premier plan : rien de
+        tout ça n'est un gris. Tout descend de la couleur <b>complémentaire à la
+        main</b>, et l'angle seul donne la variété. Change-le, et toute la pièce change
+        de lumière sans qu'on ait touché à un seul fond.
       </p>
 
       <div class="kpis">
@@ -416,14 +435,20 @@ button:hover { filter: brightness(1.08); }
       <div class="pitch" data-plan="creux">
         <b>Ce que tu viens de voir.</b> Cette page n'a <b>aucune palette</b>. Pas de
         <code>--bleu-500</code>, pas de <code>--gris-200</code>, pas de thème sombre.
-        Trois variables — <code>canvas</code>, <code>tint</code>, <code>dose</code> — et
+        Cinq nombres — <code>L</code>, <code>C</code>, <code>H</code>, l'<code>angle</code> de l'harmonie et la <code>dose</code> — et
         une formule écrite <b>une seule fois</b>.
+        <br><br>
+        <b>Aucun gris n'est écrit nulle part.</b> Le fond de page, les cartes, le premier
+        plan et jusqu'aux filets descendent tous de la couleur <b>complémentaire à la
+        main</b> — un fond teinté de sa propre couleur éteindrait la marque ; teinté de
+        l'opposé, il la fait vibrer. C'est vieux comme la peinture ; ici c'est une
+        soustraction d'angle.
         <br><br>
         La carte « Ruptures » et le badge « En attente » ne changent pas de couleur : ils
         changent de <b>teinte</b>. Leur chiffre, leur filet, leur fond suivent — et rien
         d'autre sur la page ne bouge. <b>C'est ça, Zoé.</b>
         <br><br>
-        Les trois curseurs en haut sont des <code>&lt;z-slider&gt;</code>. La démo est
+        Les cinq curseurs en haut sont des <code>&lt;z-slider&gt;</code>. La démo est
         faite <b>avec</b> Zoé, et elle pilote Zoé.
       </div>
 
@@ -496,7 +521,7 @@ button:hover { filter: brightness(1.08); }
         </div>
 
         <div class="pitch" data-plan="creux" style="margin-top:1.2rem">
-          <b>Ce qu'il faut retenir.</b> Trois variables décident de tout :
+          <b>Ce qu'il faut retenir.</b> Cinq nombres décident de tout :
           <code>canvas</code> dit <b>sur quoi</b> je suis, <code>tint</code> dit
           <b>quoi</b> je peins, <code>dose</code> dit <b>à quelle force</b>.
           <br><br>
@@ -516,7 +541,7 @@ button:hover { filter: brightness(1.08); }
     import "../components/z-slider/z-slider.js";
 
     /*
-      Tout le JS de cette page. Trois curseurs, trois variables. Il n'y a rien d'autre
+      Tout le JS de cette page. Un curseur, un nombre. Il n'y a rien d'autre
       à câbler : le CSS fait le reste, y compris le passage jour/nuit.
     */
     const racine = document.documentElement;
@@ -527,16 +552,16 @@ button:hover { filter: brightness(1.08); }
       poser();
     };
 
-    cable("s-light", "--z-light", 0.01);
     cable("s-hue", "--z-color--accent__h");
     cable("s-chroma", "--z-color--accent__c", 0.01);
     cable("s-angle", "--z-color--mate__angle");
+    cable("s-fond", "--z-fond__c", 0.001);
     cable("s-dose", "--z-dose", 0.01);
 
     /* Un état de départ partageable : ?light=15&hue=250 ouvre la page déjà réglée.
        C'est ce qui permet d'envoyer une capture « de nuit » sans demander à personne
        de bouger un curseur. */
-    for (const [cle, id] of [["light", "s-light"], ["hue", "s-hue"], ["chroma", "s-chroma"], ["angle", "s-angle"], ["dose", "s-dose"]]) {
+    for (const [cle, id] of [["hue", "s-hue"], ["chroma", "s-chroma"], ["angle", "s-angle"], ["fond", "s-fond"], ["dose", "s-dose"]]) {
       const valeur = new URLSearchParams(location.search).get(cle);
       if (valeur === null) continue;
       const slider = document.getElementById(id);
