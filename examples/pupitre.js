@@ -58,6 +58,16 @@ export function pupitre(cible) {
 		boite.append(commande(sujet, { ...variant, type: "enum", description: variant.role }));
 	}
 
+	/* Puis les VARIABLES CSS — l'autre moitié du pupitre. Un attribut est un raccourci
+	   qui pose plusieurs variables d'un coup ; les variables sont le réglage fin. Les deux
+	   se combinent, et le pupitre doit montrer les deux, sinon il ment sur ce qu'on peut
+	   faire du composant. */
+	const variables = api?.cssVars || [];
+	if (variables.length) {
+		boite.append(titre("ses variables CSS — le réglage fin, sur CETTE balise"));
+		for (const variable of variables) boite.append(molette(sujet, variable));
+	}
+
 	/* Et la lecture des états, qui ne se règlent pas : ils ARRIVENT. */
 	boite.append(lecteurEtats(sujet));
 
@@ -109,6 +119,86 @@ function commande(sujet, attribut) {
 
 	ligne.append(nom, champ, role);
 	return ligne;
+}
+
+/*
+	UNE MOLETTE = une variable CSS, posée SUR LA BALISE (jamais sur la page).
+
+	Écrire sur la balise est ce qui rend le pupitre honnête : c'est exactement le geste que
+	l'auteur fera dans son CSS, avec le même résultat. Poser la valeur sur la racine
+	donnerait l'illusion que ça marche, puis l'auteur s'apercevrait que non.
+
+	La forme de la commande se déduit de ce que la variable EST, sans rien inventer :
+	  · l'api donne min/max  → un curseur (on sent la valeur en la traînant) ;
+	  · la valeur au repos est une couleur → un nuancier ;
+	  · sinon → un champ, pré-rempli avec la valeur en cours.
+	@param {Element} sujet  la balise à régler
+	@param {{name: string, min?: number, max?: number, step?: number, description?: any}} variable
+*/
+function molette(sujet, variable) {
+	const ligne = document.createElement("label");
+	ligne.className = "pupitre-ligne";
+
+	const nom = document.createElement("code");
+	nom.textContent = variable.name;
+
+	/* La valeur en cours : celle que la peau a posée, ou celle annoncée par @property. */
+	const courante = getComputedStyle(sujet).getPropertyValue(variable.name).trim();
+
+	let champ;
+	let lecture = null;
+
+	if (variable.min !== undefined && variable.max !== undefined) {
+		champ = document.createElement("input");
+		champ.type = "range";
+		champ.min = variable.min;
+		champ.max = variable.max;
+		champ.step = variable.step ?? 1;
+		champ.value = parseFloat(courante) || variable.min;
+
+		lecture = document.createElement("output");
+		lecture.textContent = champ.value;
+		champ.addEventListener("input", () => {
+			sujet.style.setProperty(variable.name, champ.value);
+			lecture.textContent = champ.value;
+		});
+	} else if (/^(#|rgb|hsl|oklch|color\()/i.test(courante)) {
+		champ = document.createElement("input");
+		champ.type = "color";
+		champ.value = hexDe(courante);
+		champ.addEventListener("input", () => sujet.style.setProperty(variable.name, champ.value));
+	} else {
+		champ = document.createElement("input");
+		champ.type = "text";
+		champ.value = courante;
+		champ.placeholder = "—";
+		champ.addEventListener("input", () => {
+			if (champ.value) sujet.style.setProperty(variable.name, champ.value);
+			else sujet.style.removeProperty(variable.name);
+		});
+	}
+
+	const role = document.createElement("span");
+	role.className = "pupitre-role";
+	role.textContent = texte(variable.description);
+
+	ligne.append(nom, champ);
+	if (lecture) ligne.append(lecture);
+	ligne.append(role);
+	return ligne;
+}
+
+/*
+	Le nuancier natif n'accepte que du `#rrggbb`. On passe donc la couleur par un canevas,
+	qui sait lire toutes les écritures (rgb, oklch, color-mix…) et rend des octets.
+	@returns {string} la couleur en #rrggbb, noir si elle est illisible
+*/
+function hexDe(couleur) {
+	const pinceau = document.createElement("canvas").getContext("2d");
+	pinceau.fillStyle = "#000";
+	pinceau.fillStyle = couleur;
+	const rendu = pinceau.fillStyle;
+	return /^#[0-9a-f]{6}$/i.test(rendu) ? rendu : "#000000";
 }
 
 /*

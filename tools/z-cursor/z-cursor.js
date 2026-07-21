@@ -4,9 +4,10 @@
 
 	⚠ PORTÉ, PAS RÉÉCRIT. Ce moteur vient de l'ancien repo
 	(`packages/core/src/fx/cursor.js`) et il est INTOUCHABLE : on le déplace, on ne le
-	refait pas. Seuls les deux `import` ont changé de chemin, et `<z-cursor>` sait
-	désormais s'allumer toute seule (voir tout en bas). Pas une ligne de mouvement n'a
-	bougé — le mouvement se juge à l'œil, pas au diff.
+	refait pas. Ce qui a bougé depuis, et rien d'autre : les deux `import` ont changé de
+	chemin ; `<z-cursor>` sait s'allumer toute seule (voir tout en bas) ; et le moteur va
+	lire ses réglages sur la BALISE au lieu de la racine (voir `trailHost`). Pas une ligne
+	de mouvement n'a bougé — le mouvement se juge à l'œil, pas au diff.
 
 	L'USAGE, en une ligne : poser <z-cursor></z-cursor> dans la page. Rien d'autre.
 
@@ -92,6 +93,28 @@ const EASES = {
 	back:   (t) => (BACK_C + 1) * t * t * t - BACK_C * t * t,
 };
 
+/*
+	OÙ LE MOTEUR VA LIRE SES RÉGLAGES — sur la BALISE, pas sur la racine.
+
+	Le ruban est peint dans un canevas plein écran : il n'a pas d'élément à lui, il doit
+	donc aller chercher ses réglages quelque part. Longtemps c'était `<html>`, et ça
+	dressait un mur : `z-cursor { --z-trail-thickness: 30 }` était ignoré, et un pont JS
+	recopiait les variants sur la racine — donc pour toute la page, et sans jamais
+	nettoyer (une valeur posée survivait au changement de peau).
+
+	Rien n'est perdu au passage : une peau pose ses réglages sur `:root` et ils DESCENDENT
+	jusqu'à la balise. Ce qui est écrit sur la balise gagne, ce qui vient de la peau
+	s'applique sinon. L'ordre naturel, sans une ligne de JS pour l'arbitrer.
+*/
+let sourceEl = null;
+
+/* La balise qui règle le sillage : celle que l'auteur a écrite, sinon le `<z-contact>`
+   de la forme historique, sinon la racine (il faut bien lire quelque part). */
+function trailHost() {
+	if (sourceEl?.isConnected) return sourceEl;
+	return document.querySelector("body > z-cursor") || activeSource() || document.documentElement;
+}
+
 /* Lit un token CSS en CHAÎNE (le nom d'une courbe, une couleur) avec repli. */
 function tokenStr(el, name, fallback) {
 	const raw = getComputedStyle(el).getPropertyValue(name).trim();
@@ -146,19 +169,22 @@ function onMoveMT(event) {
 
 /* Couleur concrète du ruban : --z-trail-color si posé en dur, sinon l'accent. */
 function mtColor() {
-	const root = document.documentElement;
-	const c = tokenStr(root, "--z-trail-color", "");
+	const host = trailHost();
+	const c = tokenStr(host, "--z-trail-color", "");
 	if (c && !c.includes("var")) return c;
-	return tokenStr(root, "--z-accent", "#006eff");
+	return tokenStr(host, "--z-accent", "#006eff");
 }
 
 function mtLoop() {
-	const root = document.documentElement;
-	const thickness = token(root, "--z-trail-thickness", 14);   /* grosseur MAX de la tête */
-	const fade = token(root, "--z-trail-fade", 500);            /* durée de vie d'un point (ms) = longueur du trail */
-	const speedRef = token(root, "--z-trail-speed-ref", 1.2);  /* vitesse (px/ms) qui donne la tête pleine */
-	const easeW = EASES[tokenStr(root, "--z-trail-ease", "linear")] || EASES.linear;
-	const smooth = Math.min(1, Math.max(0.05, token(root, "--z-trail-smooth", 0.5)));  /* fluidité (bas = plus lisse/traîne) */
+	const host = trailHost();
+	/* La grosseur se lit en DEUX temps : le réglage (que pose la peau, ou l'auteur) et le
+	   facteur d'échelle (que pose l'attribut `size`). Les multiplier ici, c'est ce qui
+	   permet aux deux écritures de coexister sans que l'une écrase l'autre. */
+	const thickness = token(host, "--z-trail-thickness", 14) * token(host, "--z-trail-scale", 1);
+	const fade = token(host, "--z-trail-fade", 500);            /* durée de vie d'un point (ms) = longueur du trail */
+	const speedRef = token(host, "--z-trail-speed-ref", 1.2);  /* vitesse (px/ms) qui donne la tête pleine */
+	const easeW = EASES[tokenStr(host, "--z-trail-ease", "linear")] || EASES.linear;
+	const smooth = Math.min(1, Math.max(0.05, token(host, "--z-trail-smooth", 0.5)));  /* fluidité (bas = plus lisse/traîne) */
 	const now = performance.now();
 
 	/* ÉCHANTILLONNAGE en rAF : une tête lissée suit la cible à CHAQUE frame (comble les
@@ -281,7 +307,7 @@ function fuseTrail(from, to) {
 	if (dist < 1) return;
 	/* Démarre le ruban en mode PILOTÉ (pas d'écouteur pointermove : c'est le fantôme, pas la souris). */
 	if (!mtOn) startMouseTrail(true);
-	const speed = token(document.documentElement, "--z-trail-speed-fuse", 3); /* px/ms */
+	const speed = token(trailHost(), "--z-trail-speed-fuse", 3); /* px/ms */
 	const duration = Math.max(1, dist / speed);
 	const start = performance.now();
 	/* Pose la tête sur A, puis fais voyager le point visé vers B. */
@@ -391,9 +417,20 @@ export class ZCursor extends ZElement {
 			{ name: "size", type: "string", description: { en: "Thickness of the wake, on the shared scale (xs → xl).", fr: "Grosseur du sillage, sur l'échelle commune (xs → xl).", es: "Grosor de la estela, en la escala común (xs → xl)." } }
 		],
 		states: ZElement.api.states,
+		/*
+			LES VARIABLES, AVEC LEURS BORNES. Les `min`/`max` ne sont pas de la décoration :
+			c'est ce qui permet au pupitre de monter un CURSEUR plutôt qu'un champ à taper —
+			et un réglage de mouvement ne se juge qu'en le traînant. Les bornes disent aussi
+			le domaine utile : au-delà, ça n'a plus de sens, et l'auteur le voit sans lire.
+		*/
 		cssVars: [
-			{ name: "--z-trail-thickness", description: { en: "Head thickness (px).", fr: "Grosseur de la tête (px).", es: "Grosor de la cabeza (px)." } },
-			{ name: "--z-trail-fade", description: { en: "Life of a point (ms) — the wake's length.", fr: "Durée de vie d'un point (ms) — la longueur du sillage.", es: "Vida de un punto (ms) — el largo de la estela." } },
+			{ name: "--z-trail-thickness", min: 1, max: 60, step: 1, description: { en: "Head thickness (px).", fr: "Grosseur de la tête (px).", es: "Grosor de la cabeza (px)." } },
+			{ name: "--z-trail-scale", min: 0.2, max: 4, step: 0.1, description: { en: "Multiplies the thickness — what the `size` attribute sets.", fr: "Multiplie la grosseur — ce que pose l'attribut `size`.", es: "Multiplica el grosor — lo que pone el atributo `size`." } },
+			{ name: "--z-trail-fade", min: 60, max: 2500, step: 20, description: { en: "Life of a point (ms) — the wake's length.", fr: "Durée de vie d'un point (ms) — la longueur du sillage.", es: "Vida de un punto (ms) — el largo de la estela." } },
+			{ name: "--z-trail-smooth", min: 0.05, max: 1, step: 0.01, description: { en: "Follow smoothness: low = it trails, 1 = glued to the pointer.", fr: "Fluidité du suivi : bas = il traîne, 1 = collé au pointeur.", es: "Fluidez del seguimiento: bajo = se arrastra, 1 = pegado al puntero." } },
+			{ name: "--z-trail-speed-ref", min: 0.2, max: 4, step: 0.1, description: { en: "Mouse speed (px/ms) that fills the head.", fr: "Vitesse de souris (px/ms) qui remplit la tête.", es: "Velocidad del ratón (px/ms) que llena la cabeza." } },
+			{ name: "--z-trail-speed-fuse", min: 0.5, max: 12, step: 0.5, description: { en: "Speed (px/ms) of the trip from one click to the next.", fr: "Vitesse (px/ms) du voyage d'un clic au suivant.", es: "Velocidad (px/ms) del viaje de un clic al siguiente." } },
+			{ name: "--z-trail-ease", description: { en: "Head→tail falloff: linear quad cubic quart quint expo sine back.", fr: "Décroissance tête→queue : linear quad cubic quart quint expo sine back.", es: "Decrecimiento cabeza→cola: linear quad cubic quart quint expo sine back." } },
 			{ name: "--z-trail-color", description: { en: "Colour (defaults to the skin's accent).", fr: "La couleur (par défaut l'accent de la peau).", es: "El color (por defecto el acento de la piel)." } }
 		]
 	};
@@ -409,7 +446,9 @@ export class ZCursor extends ZElement {
 		const fx = (this.getAttribute("fx") || "move").toLowerCase();
 		if (fx === "none" || reduced()) return;
 
-		this.#porterLesVariants();
+		/* C'est CETTE balise que le moteur lira. Plus rien à recopier ailleurs : ses
+		   réglages sont là où l'auteur les a écrits. */
+		sourceEl = this;
 
 		if (fx !== "click") startMouseTrail();
 
@@ -420,40 +459,11 @@ export class ZCursor extends ZElement {
 		startCursor();
 	}
 
-	/*
-		LE PONT ENTRE LES VARIANTS ET LE MOTEUR.
-
-		`tone` et `size` posent des tokens SUR CETTE BALISE (voir core/z-element.css), mais
-		le ruban est peint dans un canevas plein écran : il ne peut pas hériter d'un
-		élément de la page, il lit ses réglages sur la racine. On recopie donc, une fois,
-		ce que les variants ont résolu ici vers les tokens que le moteur lit là-bas.
-
-		Une valeur écrite à la main sur la racine gagne : on ne l'écrase que si l'auteur
-		a demandé un variant.
-	*/
-	#porterLesVariants() {
-		const lu = getComputedStyle(this);
-		const racine = document.documentElement.style;
-
-		if (this.hasAttribute("tone")) {
-			const couleur = lu.getPropertyValue("--z-tone__fill").trim();
-			/* `soft` vaut `transparent` : un sillage invisible n'a pas de sens, on prend
-			   alors son encre, qui est la couleur estompée de la peau. */
-			const retenue = (!couleur || couleur === "transparent")
-				? lu.getPropertyValue("--z-tone__ink").trim()
-				: couleur;
-			if (retenue) racine.setProperty("--z-trail-color", retenue);
-		}
-
-		if (this.hasAttribute("size")) {
-			/* La taille du texte de cette balise EST le facteur résolu (base × cran) :
-			   le ruban en tire sa grosseur, dans la même échelle que tout le reste. */
-			const facteur = parseFloat(lu.fontSize) / 16;
-			const grosseur = parseFloat(getComputedStyle(document.documentElement)
-				.getPropertyValue("--z-trail-thickness") || 14);
-			racine.setProperty("--z-trail-thickness", (grosseur * facteur).toFixed(1));
-		}
-	}
+	/* Le PONT entre les variants et le moteur a été supprimé le 2026-07-21. Il recopiait
+	   `tone` et `size` sur la racine — donc sur toute la page, et sans jamais nettoyer :
+	   une valeur posée survivait au changement de peau, et deux <z-cursor> se marchaient
+	   dessus. `tone` et `size` posent maintenant leurs réglages en CSS (z-cursor.css), et
+	   le moteur les lit sur la balise. Aucun JS n'arbitre plus rien. */
 }
 
 /* Enregistre <z-cursor>. Garde-fou contre la double définition. */

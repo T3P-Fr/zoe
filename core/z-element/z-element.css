@@ -46,9 +46,22 @@
 */
 /* Le cran de repos : sans attribut `size`, un composant vaut le facteur de BASE de la
    peau. C'est le réglage d'ensemble — une peau qui se veut dense pose .9 et tout
-   rapetisse d'un coup, sans qu'on touche à un seul composant. */
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor) {
+   rapetisse d'un coup, sans qu'on touche à un seul composant.
+
+   `:where()` et pas `:is()` — spécificité ZÉRO. Sinon cette règle égale celle d'une
+   peau (`z-button { font-size: … }`) et c'est l'ORDRE DE CHARGEMENT qui tranche : la
+   même page rend deux tailles différentes selon qu'elle importe la peau avant ou après.
+   Un défaut doit toujours perdre contre ce que quelqu'un a écrit exprès. */
+:where(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor) {
 	font-size: calc(1em * var(--z-scale-base, 1));
+
+	/*
+		border-box, sinon une peau ment sans le savoir : `min-height: 32px` + 7px de
+		padding + 1px de filet donne un contrôle de 48 px — 50 % de trop. Le bug a vécu
+		dans z-button (les autres composants le posaient chacun de leur côté) ; il est
+		ici pour que le prochain composant ne puisse plus l'oublier.
+	*/
+	box-sizing: border-box;
 }
 
 /* Les crans multiplient la base : régler l'ensemble et régler un cran restent deux

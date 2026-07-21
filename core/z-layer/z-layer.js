@@ -42,12 +42,29 @@
 	pas : c'est le CSS du composant qui place chaque rôle, et la skin qui le peint. Une
 	brique bête — donc elle ne peut pas se tromper.
 
+	CHAQUE PIÈCE EST VIVANTE (2026-07-21) — et c'est ce qui répond à « pourquoi pas un
+	div ». Le calque hérite de `z-element`, donc il porte les MÊMES états que son hôte :
+
+	    z-layer[part="icon"]:state(over) { … }   ← survoler l'icône SEULE l'allume
+
+	Ça ne change rien à l'existant, et il faut comprendre pourquoi : tout calque est en
+	`pointer-events: none` (z-layer.css) — il ne reçoit donc aucun geste, et aucun état ne
+	s'allume. Une pièce ne s'éveille que si le CSS la rend touchable, exprès :
+
+	    z-checkbox z-layer[part="marker"] { pointer-events: auto; }
+
+	C'est le CSS qui décide QUI est vivant, pas une liste dans le JS. Un `div` ne peut pas
+	faire ça : il faudrait lui câbler des écouteurs à la main, un par un, et l'auteur
+	devrait écrire du JS pour que sa pièce réagisse.
+
 	Doc narrative : z-layer.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 0.2
 	============================================================
 */
 
-export class ZLayer extends HTMLElement {
+import { ZElement } from "../z-element/z-element.js";
+
+export class ZLayer extends ZElement {
 	static api = {
 		tag: "z-layer",
 		summary: {
@@ -67,7 +84,10 @@ export class ZLayer extends HTMLElement {
 			}
 		],
 		events: [],
-		states: []
+
+		/* Les MÊMES états que l'hôte : un calque n'est pas une sous-catégorie d'élément,
+		   c'est un élément. Ils ne s'allument que sur une pièce rendue touchable. */
+		states: ZElement.api.states
 	};
 
 	/*

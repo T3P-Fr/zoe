@@ -79,7 +79,7 @@ HighTech les pose déjà : rond de 20 px, filet 1,5 px, **0,3 s** (elle répond 
 
 ## Vérifier
 
-`z-contact.check.html` **fige** l'effet à trois instants (un effet transitoire ne se
+`z-contact.lab.html` **fige** l'effet à trois instants (un effet transitoire ne se
 prouve pas sur une capture). Le mouvement réel, lui, se juge à l'œil sur la page servie.
 
 Coupé sous `prefers-reduced-motion`. Émet `zoe:contact` sur la cible (fx, position,

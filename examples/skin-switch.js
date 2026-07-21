@@ -12,9 +12,12 @@
 	============================================================
 */
 
+/* HighTech EN TÊTE, donc par défaut (2026-07-21) : c'est la peau de référence, celle qui
+   doit finir identique à la planche d'origine. Une démo s'ouvre sur elle ; Claude est la
+   contre-épreuve qu'on va chercher. */
 const SKINS = [
-	{ id: "claude", label: "Claude — encre chaude" },
-	{ id: "hightech", label: "HighTech — la planche" }
+	{ id: "hightech", label: "HighTech — la planche" },
+	{ id: "claude", label: "Claude — encre chaude" }
 ];
 const KEY = "zoe-skin";
 /* profondeur : depuis examples/ ou un dossier de composant, on remonte à la racine puis skins/. */

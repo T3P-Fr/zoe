@@ -59,10 +59,10 @@
 		coller), décroissance en sinus — l'épaisseur FOND au lieu de tomber.
 		À comparer avec HighTech, qui fait exactement l'inverse : même balise, deux écritures.
 	*/
-	--z-trail-thickness: 22;     /* la plume est large */
-	--z-trail-fade: 900;         /* elle sèche lentement : la trace reste */
-	--z-trail-smooth: .3;        /* elle traîne — jamais collée au pointeur */
-	--z-trail-speed-ref: .8;     /* la tête se remplit vite, même à vitesse modérée */
+	--z-trail-thickness: 36;     /* la plume est large — un pinceau, pas une pointe */
+	--z-trail-fade: 1500;        /* elle sèche lentement : la trace reste longtemps */
+	--z-trail-smooth: .16;       /* elle traîne loin derrière la main, jamais collée */
+	--z-trail-speed-ref: .5;     /* la tête se gorge d'encre au moindre geste */
 	--z-trail-ease: sine;        /* l'épaisseur fond vers la queue, elle ne tombe pas */
 	--z-trail-color: var(--z-accent);
 
@@ -98,4 +98,60 @@
 	--z-dur-close: 240ms;
 
 	color-scheme: light;
+}
+
+/* ==========================================================================
+   SON GESTE SUR LES PIÈCES                          Styleguide claude.calques
+   --------------------------------------------------------------------------
+   Quand un composant est écrit en calques, chaque pièce peut bouger seule. Ce que
+   Claude en fait — le contre-pied EXACT de HighTech, et c'est le but :
+
+     de l'encre, pas un instrument. Ample, lent (.34s), avec un ressort qui DÉPASSE
+     avant de se caler. Les choses grossissent, respirent, arrivent en retard.
+
+   Les deux peaux visent les mêmes pièces avec les mêmes mots (`marker`, `ring`, `dot`)
+   et ne se ressemblent en rien. C'est la démonstration : le geste appartient à la peau.
+   Aucune page n'en écrit — sinon les deux bougeraient pareil.
+   ====================================================================== */
+
+/* Une pièce touchée : elle avance vers la main, franchement. */
+z-layer:state(over) {
+	transition: scale var(--z-dur) var(--z-ease-spring), translate var(--z-dur) var(--z-ease-spring), color var(--z-dur) var(--z-ease);
+}
+
+z-layer[part="marker"]:state(over) {
+	scale: 1.22;
+	z-index: 5;
+}
+
+z-layer[part="label"]:state(over) {
+	translate: .3em 0;
+	color: var(--z-accent);
+}
+
+/*
+	LES TROIS HORLOGES d'une case cochée — version Claude.
+	L'anneau tourne LARGE et grossit, le fond RESPIRE (ce que HighTech s'interdit), et le
+	point arrive nettement en retard, en rebondissant. Trois temps qu'on lit à l'œil nu.
+*/
+z-checkbox z-layer[part="ring"] {
+	transition: rotate var(--z-dur-select) var(--z-ease-spring), scale var(--z-dur-select) var(--z-ease-spring);
+}
+
+z-checkbox z-layer[part="background"] {
+	transition: scale var(--z-dur-select) var(--z-ease-spring);
+}
+
+/* LE RETARD — c'est lui qu'on vient voir : le point arrive après les deux autres. */
+z-checkbox z-layer[part="dot"] {
+	transition: scale var(--z-dur-select) var(--z-ease-spring) .14s;
+}
+
+z-checkbox:state(current) z-layer[part="ring"] {
+	rotate: 90deg;
+	scale: 1.18;
+}
+
+z-checkbox:state(current) z-layer[part="background"] {
+	scale: 1.07;
 }

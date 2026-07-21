@@ -10,72 +10,106 @@
        <z-cursor fx="click"></z-cursor>   il FUSE d'un clic au suivant
        <z-cursor fx="none"></z-cursor>    rien
 
-   La couleur suit la peau (--z-accent) sauf si on pose --z-cursor-color / --z-trail-color.
-   Coupé sous prefers-reduced-motion.
+   La balise ne se voit JAMAIS : elle déclare, elle ne dessine pas. Tout le dessin est
+   fait au pinceau par le moteur, dans un canevas plein écran — d'où l'absence totale de
+   règles de peinture ici. Ce fichier ne contient donc que les RÉGLAGES du ruban.
+
+   La couleur suit la peau (--z-accent) sauf si on pose --z-trail-color.
+   Coupé sous prefers-reduced-motion (garde-fou tenu par le moteur).
    ====================================================================== */
 
-/* La SOURCE écrite par l'auteur : pure déclaration, aucun rendu. Elle se distingue de
-   la peinture par sa place — la peinture naît DANS z-overlay, la source vit dans la
-   page. */
-body > z-cursor {
+/* LA BALISE — pure déclaration, aucun rendu.
+   --------------------------------------------------------------------------
+   Elle dit « le sillage tourne ici » et rien d'autre. Le 2026-07-21, le rond qui
+   suivait la souris a été retiré (« je ne garde que le follow-mouse et le
+   click2click ») : sa peinture est partie avec lui, et avec elle ses quatre réglages
+   (--z-cursor-size / -color / -blend) et ses deux marques (data-on, data-punch), que
+   plus aucune ligne du repo ne posait. Rayé = purgé. */
+z-cursor {
   display: none;
 }
 
-/* LA PEINTURE — la comète, peinte dans l'overlay. Cachée par défaut (opacity 0),
-   révélée par `data-on` ; le ruban, lui, gère son opacité en JS. */
-z-cursor {
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 10000;
-  width: var(--z-cursor-size, 18px);
-  height: var(--z-cursor-size, 18px);
-  border-radius: 50%;
-  background: var(--z-cursor-color, var(--z-accent, #006eff));
-  pointer-events: none;
-  will-change: transform;
-  mix-blend-mode: var(--z-cursor-blend, normal);
-  --c: var(--z-cursor-color, var(--z-accent, #006eff));
-  /* Caché par défaut ; révélé par data-on (smear = toujours). Le trail gère son
-     opacité en JS (fondu du vol). */
-  opacity: 0;
-  transition: opacity 0.18s var(--z-ease), background var(--z-duration) var(--z-ease);
+/* LES RÉGLAGES DU RUBAN                                       Styleguide 13.1
+   --------------------------------------------------------------------------
+   Chaque réglage est ANNONCÉ, avec sa valeur de repos. C'est ce qui le rend réglable
+   partout à la fois :
+
+     · une peau les pose sur `:root` et ça DESCEND jusqu'à la balise ;
+     · l'auteur les repose sur SA balise, et c'est lui qui gagne — une valeur écrite sur
+       l'élément bat toujours celle dont il hérite.
+
+   Avant, ces valeurs vivaient dans un bloc `:root` et le moteur allait les y lire :
+   `z-cursor { --z-trail-thickness: 30 }` ne faisait rien. Le moteur lit désormais sur la
+   balise, et le mur est tombé.
+
+   `--z-trail-color` n'est PAS annoncé, et c'est voulu : sans valeur, le moteur retombe
+   sur l'accent de la peau. Une couleur de repos écrite ici le figerait. */
+@property --z-trail-thickness {  /* grosseur de la tête (px) */
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 14;
 }
 
-/* COMÈTE (smear/trail) : tête ronde pleine sur ~la moitié (droite = sens du
-   mouvement), puis dégradé qui s'efface vers la queue → « gros sur la moitié
-   puis fine et fade ». L'étirement scaleX déforme l'arrondi tout seul (ta transfo). */
-/* La COMÈTE et le carré qui fusait d'un clic à l'autre ont été retirés le 2026-07-21
-   (« je ne garde que le follow-mouse et le click2click »). Leur CSS est parti avec :
-   rayé = purgé. Ne restent que la plomberie de la peinture et les tokens du ruban. */
-
-z-cursor[data-on] {
-  opacity: 1;
+@property --z-trail-fade {  /* vie d'un point (ms) = longueur du ruban */
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 500;
 }
 
-/* MOUSETRAIL — le ruban qui suit le curseur (moteur cursor.js, canvas plein écran).
-   Défauts globaux (l'effet n'a pas d'élément propre : il lit ces tokens sur :root). */
-:root {
-  --z-trail-thickness: 14;
-  /* grosseur de la tête (px) */
-  --z-trail-fade: 500;
-  /* durée de vie d'un point (ms) = longueur du trail */
-  --z-trail-speed-ref: 1.2;
-  /* vitesse px/ms qui donne la tête pleine (bas = tête réactive) */
-  --z-trail-smooth: 0.5;
-  /* fluidité du suivi (bas = plus lisse et traînant, 1 = collé) */
-  --z-trail-ease: linear;
-  /* décroissance de l'épaisseur tête→queue (8 familles) */
-  --z-trail-color: var(--z-accent, #006eff);
+@property --z-trail-speed-ref {  /* vitesse (px/ms) qui remplit la tête ; bas = tête réactive */
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1.2;
 }
 
-/* Au clic : petit « punch » (le blob gonfle un instant). */
-z-cursor[data-punch] {
-  --z-cursor-size: 26px;
+@property --z-trail-speed-fuse {  /* vitesse (px/ms) du voyage d'un clic au suivant */
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 3;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  z-cursor {
-    display: none;
-  }
+@property --z-trail-smooth {  /* fluidité du suivi ; bas = traîne, 1 = collé au pointeur */
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0.5;
+}
+
+@property --z-trail-ease {  /* décroissance tête→queue : linear quad cubic quart quint expo sine back */
+  syntax: "<custom-ident>";
+  inherits: true;
+  initial-value: linear;
+}
+
+@property --z-trail-scale {  /* multiplie la grosseur — c'est ce que pose l'attribut `size` */
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+/* L'ATTRIBUT POSE LES RÉGLAGES, ET IL GAGNE                   Styleguide 13.2
+   --------------------------------------------------------------------------
+   `size` et `tone` ne peignent rien : ils posent les réglages ci-dessus. Un mot dans le
+   HTML, ou les réglages écrits à la main — au choix, et le résultat est le même.
+
+   Le `!important` n'est pas une rustine, c'est LA RÈGLE (2026-07-21, Christophe) :
+   « les attributs sont prioritaires sur le CSS chargé, comme le style en ligne ». Ce qui
+   est écrit dans le HTML est plus près de l'élément, donc plus fort — et ça se retient
+   sans rien apprendre. Une règle CSS ordinaire ne peut pas atteindre ce rang.
+
+   Le prix, assumé : tant qu'un attribut est posé, la feuille ne peut plus le contredire.
+   Pour reprendre la main, on retire l'attribut. */
+z-cursor[size="xs"] { --z-trail-scale: var(--z-scale-xs, .8) !important; }
+z-cursor[size="s"]  { --z-trail-scale: var(--z-scale-s, .9) !important; }
+z-cursor[size="m"]  { --z-trail-scale: var(--z-scale-m, 1) !important; }
+z-cursor[size="l"]  { --z-trail-scale: var(--z-scale-l, 1.2) !important; }
+z-cursor[size="xl"] { --z-trail-scale: var(--z-scale-xl, 1.6) !important; }
+
+z-cursor[tone] {
+  --z-trail-color: var(--z-tone__fill) !important;
+}
+
+/* `soft` vaut « pas de surface » : un sillage invisible n'aurait aucun sens, on prend
+   donc son encre — la couleur estompée de la peau. */
+z-cursor[tone="soft"] {
+  --z-trail-color: var(--z-tone__ink) !important;
 }

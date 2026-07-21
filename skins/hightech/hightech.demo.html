@@ -65,6 +65,34 @@ body {
     <p class="edito">HighTech</p>
     <p style="color:var(--z-ink-soft);margin:0 0 18px">Les composants Zoé sous la peau — à comparer, à droite, avec la source dont elle est tirée.</p>
 
+    <!--
+      LA MOLETTE DE DENSITÉ. Toute la peau part d'UN pas (`--z-unit`) et de deux
+      facteurs. On ne discute pas d'un chiffre : on le tourne, on regarde la source à
+      droite, et la valeur qui gagne part dans hightech.css. Rien n'est mémorisé — la
+      page rechargée revient à la peau écrite.
+    -->
+    <section class="panel">
+      <h2><span class="code">UN</span> L'unité — tourne, compare, tranche</h2>
+      <div class="body" style="display:block">
+        <label style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
+          <span style="width:9em">--z-unit</span>
+          <input type="range" id="m-unit" min="2" max="8" step=".5" value="4" style="flex:1">
+          <output id="o-unit" style="width:5em;text-align:right">4px</output>
+        </label>
+        <label style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
+          <span style="width:9em">--z-pad-x ×</span>
+          <input type="range" id="m-padx" min="1" max="6" step=".25" value="3.5" style="flex:1">
+          <output id="o-padx" style="width:5em;text-align:right">3.5</output>
+        </label>
+        <label style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
+          <span style="width:9em">--z-pad-y ×</span>
+          <input type="range" id="m-pady" min=".5" max="4" step=".25" value="1.75" style="flex:1">
+          <output id="o-pady" style="width:5em;text-align:right">1.75</output>
+        </label>
+        <p class="eyebrow" style="margin:10px 0 0">Bouton rendu : <b id="o-haut">—</b> · la source d'origine dit <b>2.55rem ≈ 41px</b></p>
+      </div>
+    </section>
+
     <section class="panel">
       <h2><span class="code">LO</span> Les cinq lois</h2>
       <div class="body" style="display:block">
@@ -136,5 +164,44 @@ body {
   import "../../components/z-checkbox/z-checkbox.js";
   import "../../components/z-radio-group/z-radio-group.js";
   import "../../tools/z-contact/z-contact.js";
+
+  /*
+    La molette de densité : elle écrit sur :root, donc elle gagne sur la peau sans la
+    modifier. Le bouton mesuré est le PREMIER de la planche — celui qu'on compare à
+    l'œil avec la source, à droite.
+  */
+  const racine = document.documentElement;
+  const temoin = document.querySelector("z-button");
+  const hauteur = document.querySelector("#o-haut");
+
+  const molettes = {
+    unit: { entree: "#m-unit", lecture: "#o-unit", ecrit: (v) => `${v}px` },
+    padx: { entree: "#m-padx", lecture: "#o-padx", ecrit: (v) => v },
+    pady: { entree: "#m-pady", lecture: "#o-pady", ecrit: (v) => v }
+  };
+
+  function applique() {
+    const unit = document.querySelector("#m-unit").value;
+    const padx = document.querySelector("#m-padx").value;
+    const pady = document.querySelector("#m-pady").value;
+    racine.style.setProperty("--z-unit", `${unit}px`);
+    racine.style.setProperty("--z-pad-x", `calc(var(--z-unit) * ${padx})`);
+    racine.style.setProperty("--z-pad-y", `calc(var(--z-unit) * ${pady})`);
+    racine.style.setProperty("--z-gap", `calc(var(--z-unit) * 2)`);
+    racine.style.setProperty("--z-control-height", `calc(var(--z-unit) * 8)`);
+    /* mesuré au tour suivant : la valeur vient d'être posée, le layout n'a pas suivi */
+    requestAnimationFrame(() => {
+      hauteur.textContent = `${temoin.getBoundingClientRect().height.toFixed(1)}px`;
+    });
+  }
+
+  for (const { entree, lecture, ecrit } of Object.values(molettes)) {
+    const curseur = document.querySelector(entree);
+    curseur.addEventListener("input", () => {
+      document.querySelector(lecture).textContent = ecrit(curseur.value);
+      applique();
+    });
+  }
+  applique();
 </script>
 </html>
