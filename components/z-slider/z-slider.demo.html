@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <title>z-slider — démo</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+      'puis passe par <code>http://localhost:5173/</code>.</div>'
+    );
+  </script>
+
+  <link rel="stylesheet" href="../../tools/z-motion/z-motion.css">
+  <link rel="stylesheet" href="../../tools/z-contact/z-contact.css">
+  <link rel="stylesheet" href="../../core/z-layer/z-layer.css">
+  <link rel="stylesheet" href="./z-slider.css">
+  <style>
+    body {
+      background: var(--z-page);
+      color: var(--z-ink);
+      font-family: var(--z-font);
+      padding: 2.5rem;
+      max-width: 820px;
+      margin: auto;
+    }
+
+    h1 { font-size: 1.2rem; }
+
+    .lead {
+      color: var(--z-ink-soft);
+      font-size: .9rem;
+      margin: .2rem 0 1.6rem;
+    }
+
+    h2 {
+      font-size: .95rem;
+      margin: 2.4rem 0 .6rem;
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      /* Large : une étiquette `under` déborde sous la piste et viendrait sinon se
+         poser sur le curseur suivant. */
+      gap: 2.4rem;
+      align-items: flex-start;
+      margin: 1.4rem 0;                         /* une étiquette `over` remonte au-dessus de la piste */
+    }
+
+    .row {
+      display: flex;
+      gap: 2.4rem;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .note {
+      color: var(--z-ink-soft);
+      font-size: .82rem;
+      margin-top: .4rem;
+    }
+
+    code.tag { color: var(--z-accent); }
+
+    /*
+    LA PREUVE VIVANTE — un curseur qui pilote une propriété de la page.
+    Le composant ne connaît pas ce carré : il pose --z-slider__value, un écouteur le
+    relaie. C'est le canal, dans sa forme la plus simple.
+    */
+    .cible {
+      width: 6rem;
+      height: 6rem;
+      background: var(--z-accent);
+      border-radius: var(--z-radius);
+      transition: rotate .3s var(--z-ease), opacity .3s var(--z-ease);
+    }
+
+    /*
+    LA PREUVE DES CALQUES — une skin locale qui n'anime QUE des pièces. La poignée
+    pulse pendant le glissé, la piste s'illumine, les graduations s'écartent : trois
+    horloges pour un seul curseur. Impossible sur la forme courte, où tout est une
+    seule image.
+    */
+    .fou > z-layer[part="background"] {
+      --z-slider--background__thickness: .5em;
+      transition: box-shadow .3s var(--z-ease);
+    }
+    .fou:state(drag) > z-layer[part="background"] {
+      box-shadow: 0 0 1.4em var(--z-accent);
+    }
+    .fou > z-layer[part="marker"] > z-layer[part="dot"] {
+      --z-slider--dot__size: 1.3em;
+    }
+    .fou:state(drag) > z-layer[part="marker"] > z-layer[part="dot"] {
+      animation: pop .5s var(--z-ease-spring) infinite;
+    }
+  </style>
+
+  <h1>z-slider</h1>
+  <p class="lead">
+    Un curseur de valeur. Le JS pose <b>un seul nombre</b> —
+    <code>--z-slider__progress</code>, de 0 à 1 — et tout le dessin en découle en CSS :
+    le remplissage, la poignée, les graduations, l'étiquette. Rien n'est mesuré, rien
+    n'est injecté.
+  </p>
+
+  <h2>1 · Forme courte — une ligne</h2>
+  <div class="stack">
+    <z-slider value="40"></z-slider>
+    <z-slider value="70" label="over"></z-slider>
+    <z-slider value="3" min="0" max="10" step="1" markers label="under"></z-slider>
+    <z-slider value="55" disabled label="over"></z-slider>
+  </div>
+  <p class="note">
+    <code class="tag">&lt;z-slider value="40"&gt;&lt;/z-slider&gt;</code> — c'est tout.
+    Clic n'importe où sur la piste : la poignée y va. Glisse-la. Au clavier :
+    <kbd>←</kbd> <kbd>→</kbd> d'un cran, <kbd>PgUp</kbd> <kbd>PgDn</kbd> de dix,
+    <kbd>Début</kbd> <kbd>Fin</kbd> aux bornes.
+  </p>
+
+  <h2>2 · Le pas et les graduations</h2>
+  <div class="stack">
+    <z-slider value="50" step="25" markers label="under"></z-slider>
+    <z-slider value="6" min="0" max="12" step="1" markers="12" label="under"></z-slider>
+    <z-slider value="33" step="any" label="under"></z-slider>
+  </div>
+  <p class="note">
+    <code>markers</code> nu = une graduation par pas. <code>markers="12"</code> = douze
+    intervalles, quel que soit le pas. <code>step="any"</code> = continu, sans crans —
+    et au clavier on avance quand même, par centièmes de course.
+  </p>
+
+  <h2>3 · Vertical</h2>
+  <div class="row">
+    <z-slider orientation="vertical" value="60" label="over"></z-slider>
+    <z-slider orientation="vertical" value="30" step="10" markers label="over"></z-slider>
+    <z-slider orientation="vertical" value="80"></z-slider>
+    <z-slider orientation="vertical" value="45" disabled></z-slider>
+  </div>
+  <p class="note">
+    En vertical on va de <b>bas en haut</b> : monter, c'est augmenter. Les quatre
+    flèches marchent quand même — personne ne devrait avoir à deviner l'orientation
+    avant d'appuyer sur une touche.
+  </p>
+
+  <h2>4 · Forme en calques — le même curseur, pièce par pièce</h2>
+  <div class="stack">
+    <z-slider value="40" step="10" markers label="over">
+      <z-layer part="background"><z-layer part="ticks"></z-layer></z-layer>
+      <z-layer part="marker"><z-layer part="dot"></z-layer></z-layer>
+      <z-layer part="infos"><z-layer part="label"></z-layer></z-layer>
+      <z-layer part="contact"></z-layer>
+    </z-slider>
+  </div>
+  <p class="note">
+    Rendu identique à la forme courte — c'est le but : la structure change, la peau ne
+    bouge pas. Le <code>[part="label"]</code> est laissé <b>vide</b> : le CSS y écrit la
+    valeur tout seul. Écris-y ton texte et il se tait.
+  </p>
+
+  <h2>5 · Ce que les calques permettent (et que la forme courte ne peut pas)</h2>
+  <div class="stack">
+    <z-slider class="fou" value="35" step="5" markers>
+      <z-layer part="background"><z-layer part="ticks"></z-layer></z-layer>
+      <z-layer part="marker"><z-layer part="dot"></z-layer></z-layer>
+      <z-layer part="contact"></z-layer>
+    </z-slider>
+  </div>
+  <p class="note">
+    Attrape la poignée : elle pulse, la piste s'illumine, les graduations s'effacent.
+    Trois pièces, trois horloges, <b>un</b> curseur. Aucune ligne de JS — que des rôles
+    et des tokens.
+  </p>
+
+  <h2>6 · Des graduations irrégulières — écrites à la main</h2>
+  <div class="stack">
+    <z-slider value="60" step="any">
+      <z-layer part="background">
+        <z-layer part="tick" style="--z-tick__at: 20%"></z-layer>
+        <z-layer part="tick" style="--z-tick__at: 33%"></z-layer>
+        <z-layer part="tick" style="--z-tick__at: 90%"></z-layer>
+      </z-layer>
+      <z-layer part="marker"><z-layer part="dot"></z-layer></z-layer>
+      <z-layer part="contact"></z-layer>
+    </z-slider>
+  </div>
+  <p class="note">
+    Un dégradé ne sait pas faire 20, 33 et 90. Alors on ne l'y force pas : l'auteur
+    pose ses <code>[part="tick"]</code> dans la piste, avec leur
+    <code>--z-tick__at</code>. Zoé n'injecte rien — le vocabulaire court
+    (<code>markers</code>) est un chemin rapide, <b>pas un périmètre</b>.
+  </p>
+
+  <h2>7 · Ce qu'il pilote</h2>
+  <div class="row">
+    <div class="stack">
+      <z-slider id="pilote-rotation" value="0" max="360" label="under"></z-slider>
+      <z-slider id="pilote-opacite" value="100" label="under"></z-slider>
+    </div>
+    <div class="cible" id="cible"></div>
+  </div>
+  <p class="note">
+    Deux curseurs, une cible. Le composant ne connaît pas ce carré : il émet
+    <code>input</code> pendant le glissé et <code>change</code> quand on lâche — comme un
+    contrôle natif.
+  </p>
+
+  <script type="module">
+    import "../../examples/skin-switch.js";
+    import "../../tools/z-contact/z-contact.js";
+    import "../../core/z-layer/z-layer.js";
+    import "./z-slider.js";
+
+    /* La preuve du 6 : on écoute `input`, on écrit une propriété. Rien d'autre. */
+    const cible = document.getElementById("cible");
+    document.getElementById("pilote-rotation").addEventListener("input", (e) => {
+      cible.style.rotate = `${e.target.value}deg`;
+    });
+    document.getElementById("pilote-opacite").addEventListener("input", (e) => {
+      cible.style.opacity = String(e.target.value / 100);
+    });
+  </script>
+
+</html>

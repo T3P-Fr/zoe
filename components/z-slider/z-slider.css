@@ -1,0 +1,386 @@
+/*
+	============================================================
+	z-slider.css — le rendu de z-slider, EN CALQUES
+	------------------------------------------------------------
+	Ce que ce fichier peint : une piste, une part remplie, une poignée, des
+	graduations, une étiquette de valeur — dans les DEUX écritures de Zoé (forme
+	courte peinte sur l'hôte, forme en calques).
+
+	Tout, absolument tout, découle d'UN nombre posé par le JS : `--z-slider__progress`
+	(0→1). Aucune longueur n'est mesurée en JS, aucune pièce n'est déplacée à la main.
+	Conséquence directe : le curseur est animable de bout en bout, et une peau qui
+	change la courbe d'interpolation change le geste entier.
+
+	Requiert : une peau (tokens) + core/z-layer.
+
+	CE QU'IL NE FAIT PAS : il n'écrit pas d'étiquette libre. `label` affiche la valeur
+	BRUTE, en nombre entier, via counter() — sans créer un seul nœud. Pour « 40 % » ou
+	« 12,5 €», l'auteur écrit son texte dans `[part="label"]` et écoute `input` : c'est
+	du contenu, et le contenu lui appartient.
+
+	Styleguide 4.0
+	============================================================
+*/
+
+/*
+	Les deux nombres publiés par le composant.
+	Déclarés (et non simplement posés) pour qu'ils s'INTERPOLENT : une valeur changée
+	par API glisse au lieu de sauter, et l'ensemble du dessin suit d'un seul mouvement.
+	Styleguide 4.1
+*/
+@property --z-slider__progress { syntax: "<number>";  inherits: true; initial-value: 0; }
+@property --z-slider__value    { syntax: "<integer>"; inherits: true; initial-value: 0; }
+@property --z-slider__markers  { syntax: "<integer>"; inherits: true; initial-value: 0; }
+
+/*
+	z-slider — le sujet (commun aux deux formes)
+	Styleguide 4.2
+
+	L'hôte porte l'épaisseur de la POIGNÉE, pas celle de la piste : la piste est fine,
+	la poignée déborde, et sans cette réserve elle serait rognée par le voisin.
+*/
+z-slider {
+	display: inline-block;
+	position: relative;
+	box-sizing: border-box;
+	inline-size: var(--z-slider__length, 14em);
+	block-size: var(--z-slider--dot__size, 1.05em);
+	color: var(--z-ink);
+	font: inherit;
+	font-family: var(--z-font);
+	cursor: pointer;
+	user-select: none;
+	touch-action: none;                           /* sinon le navigateur fait défiler la page au lieu de glisser */
+	vertical-align: middle;
+	outline: none;
+	-webkit-tap-highlight-color: transparent;
+	/* La course du dessin s'anime, pas le geste : pendant un glissé le JS repose
+	   progress à chaque frame, la transition n'a pas le temps de traîner. */
+	transition: --z-slider__progress var(--z-dur-slide, .18s) var(--z-ease);
+}
+
+z-slider[orientation="vertical"] {
+	inline-size: var(--z-slider--dot__size, 1.05em);
+	block-size: var(--z-slider__length, 9em);
+}
+
+/*
+	═══ FORME COURTE — aucun calque écrit : le CSS peint l'hôte ═══
+	Styleguide 4.3
+
+	Le curseur entier tient dans UN pseudo, en quatre couches de background empilées :
+	poignée · graduations · remplissage · rail. Un seul pseudo parce que `::after` reste
+	réservé à l'étiquette (4.4) — et parce que quatre couches d'une même image restent
+	parfaitement alignées entre elles, ce que quatre éléments ne garantissent pas.
+
+	Le PIÈGE qui justifie tout ce bloc : `background-position` en pourcentage ne
+	positionne pas le bord gauche à X %, il place l'image de sorte que son X % coïncide
+	avec le X % de la boîte. C'est exactement le placement voulu pour une poignée — à 0
+	elle affleure à gauche, à 100 % à droite, sans jamais dépasser — et ça évite le
+	`calc()` correcteur qu'on écrit d'habitude. On s'appuie dessus : ne pas « corriger ».
+*/
+z-slider:not(:has(z-layer))::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: var(--z-slider--dot__radius, 50%);
+	/*
+		ORDRE DES COUCHES — poignée · remplissage · graduations · rail, de la plus haute
+		à la plus basse. Les graduations passent SOUS le remplissage, exactement comme
+		en forme en calques où elles vivent dans la piste : les deux formes doivent
+		donner la même image, sinon changer de forme devient un changement de peau.
+
+		PIÈGE : seule la couche des graduations se répète, et sur UN seul axe. Un
+		`repeat` global dupliquerait les trois autres pièces, et un `repeat` deux axes
+		empilerait des colonnes de traits hors de la piste.
+	*/
+	background-repeat: no-repeat, no-repeat, repeat-x, no-repeat;
+	background-image:
+		radial-gradient(circle closest-side, var(--z-slider--dot__color, var(--z-surface)) 98%, transparent),
+		linear-gradient(var(--z-slider--marker__color, var(--z-accent)) 0 0),
+		repeating-linear-gradient(90deg,
+			var(--z-slider--ticks__color, var(--z-line)) 0 var(--z-slider--ticks__width, 1px),
+			transparent var(--z-slider--ticks__width, 1px) 100%),
+		linear-gradient(var(--z-slider--background__color, var(--z-surface-sunken)) 0 0);
+	background-size:
+		var(--z-slider--dot__size, 1.05em) var(--z-slider--dot__size, 1.05em),
+		calc(var(--z-slider__progress) * 100%) var(--z-slider--background__thickness, .35em),
+		calc(100% / max(var(--z-slider__markers), 1)) var(--z-slider--ticks__length, .5em),
+		100% var(--z-slider--background__thickness, .35em);
+	background-position:
+		calc(var(--z-slider__progress) * 100%) center,
+		left center,
+		left center,
+		left center;
+	transition: background-size var(--z-dur) var(--z-ease), filter var(--z-dur) var(--z-ease);
+}
+
+/* Sans `markers`, la couche de graduations doit disparaître : un compte ramené à 1
+   par le `max()` dessinerait sinon un trait unique collé à gauche, qui ressemble à
+   un bug d'alignement. On la remplace par `none` — l'ordre des quatre couches doit
+   rester le même, d'où le `none` explicite en 2e position et non un raccourci. */
+z-slider:not([markers]):not(:has(z-layer))::before {
+	background-image:
+		radial-gradient(circle closest-side, var(--z-slider--dot__color, var(--z-surface)) 98%, transparent),
+		linear-gradient(var(--z-slider--marker__color, var(--z-accent)) 0 0),
+		none,
+		linear-gradient(var(--z-slider--background__color, var(--z-surface-sunken)) 0 0);
+}
+
+/* En vertical le remplissage part du BAS : monter, c'est augmenter. */
+z-slider[orientation="vertical"]:not(:has(z-layer))::before {
+	background-repeat: no-repeat, no-repeat, repeat-y, no-repeat;
+	background-image:
+		radial-gradient(circle closest-side, var(--z-slider--dot__color, var(--z-surface)) 98%, transparent),
+		linear-gradient(var(--z-slider--marker__color, var(--z-accent)) 0 0),
+		repeating-linear-gradient(0deg,
+			var(--z-slider--ticks__color, var(--z-line)) 0 var(--z-slider--ticks__width, 1px),
+			transparent var(--z-slider--ticks__width, 1px) 100%),
+		linear-gradient(var(--z-slider--background__color, var(--z-surface-sunken)) 0 0);
+	background-size:
+		var(--z-slider--dot__size, 1.05em) var(--z-slider--dot__size, 1.05em),
+		var(--z-slider--background__thickness, .35em) calc(var(--z-slider__progress) * 100%),
+		var(--z-slider--ticks__length, .5em) calc(100% / max(var(--z-slider__markers), 1)),
+		var(--z-slider--background__thickness, .35em) 100%;
+	background-position:
+		center calc((1 - var(--z-slider__progress)) * 100%),
+		center bottom,
+		center bottom,
+		center bottom;
+}
+z-slider[orientation="vertical"]:not([markers]):not(:has(z-layer))::before {
+	background-image:
+		radial-gradient(circle closest-side, var(--z-slider--dot__color, var(--z-surface)) 98%, transparent),
+		linear-gradient(var(--z-slider--marker__color, var(--z-accent)) 0 0),
+		none,
+		linear-gradient(var(--z-slider--background__color, var(--z-surface-sunken)) 0 0);
+}
+
+/*
+	═══ L'ÉTIQUETTE DE VALEUR (les deux formes) ═══
+	Styleguide 4.4
+
+	`counter-reset` avec une custom property : le seul moyen d'ÉCRIRE un nombre en CSS
+	sans injecter de nœud. D'où `--z-slider__value` déclaré en `<integer>` — un counter
+	n'accepte rien d'autre, et une valeur décimale y serait simplement ignorée.
+	L'étiquette suit la poignée par le même pourcentage que le dessin.
+*/
+z-slider[label="over"]::after,
+z-slider[label="under"]::after {
+	content: counter(z-value);
+	counter-reset: z-value var(--z-slider__value);
+	position: absolute;
+	left: calc(var(--z-slider__progress) * 100%);
+	translate: -50% 0;
+	font-size: var(--z-slider--label__size, .78em);
+	font-family: var(--z-font-mono, inherit);      /* les chiffres ne doivent pas danser en glissant */
+	font-variant-numeric: tabular-nums;
+	color: var(--z-slider--label__color, var(--z-ink));
+	background: var(--z-slider--label__background, transparent);
+	padding: var(--z-slider--label__padding, 0 .25em);
+	border-radius: var(--z-radius);
+	pointer-events: none;
+	white-space: nowrap;
+}
+z-slider[label="over"]::after  { bottom: calc(100% + var(--z-slider--label__gap, .25em)); }
+z-slider[label="under"]::after { top: calc(100% + var(--z-slider--label__gap, .25em)); }
+
+/* En vertical l'étiquette longe la piste : au-dessus n'aurait aucun sens, elle
+   couvrirait la poignée à chaque valeur haute. `over` passe à droite, `under` à gauche. */
+z-slider[orientation="vertical"][label="over"]::after,
+z-slider[orientation="vertical"][label="under"]::after {
+	left: auto;
+	bottom: auto;
+	top: calc((1 - var(--z-slider__progress)) * 100%);
+	translate: 0 -50%;
+}
+z-slider[orientation="vertical"][label="over"]::after  { inset-inline-start: calc(100% + var(--z-slider--label__gap, .25em)); }
+z-slider[orientation="vertical"][label="under"]::after { inset-inline-end:   calc(100% + var(--z-slider--label__gap, .25em)); }
+
+/*
+	═══ FORME EN CALQUES — chaque pièce est un élément ═══
+	Styleguide 4.5
+
+	Les chemins sont écrits en entier : la structure est figée, donc le chemin est
+	connu, et un curseur imbriqué dans un autre composant ne peut pas se faire peindre
+	par le CSS de son parent.
+*/
+z-slider > z-layer[part="background"] {
+	inset-block: auto;
+	top: 50%;
+	translate: 0 -50%;
+	block-size: var(--z-slider--background__thickness, .35em);
+	border-radius: var(--z-slider--background__radius, 999px);
+	background: var(--z-slider--background__color, var(--z-surface-sunken));
+	overflow: hidden;                              /* le remplissage s'arrête au rail, pas au composant */
+}
+z-slider[orientation="vertical"] > z-layer[part="background"] {
+	inset-inline: auto;
+	inset-block: 0;
+	left: 50%;
+	top: auto;
+	translate: -50% 0;
+	inline-size: var(--z-slider--background__thickness, .35em);
+	block-size: auto;
+}
+
+/* Les graduations : un motif, pas des nœuds. Elles vivent DANS la piste, donc elles
+   se déplacent et s'animent avec elle sans rien savoir de la valeur. */
+z-slider > z-layer[part="background"] > z-layer[part="ticks"] {
+	position: absolute;
+	inset: 0;
+	background-image: repeating-linear-gradient(90deg,
+		var(--z-slider--ticks__color, var(--z-line)) 0 var(--z-slider--ticks__width, 1px),
+		transparent var(--z-slider--ticks__width, 1px) 100%);
+	background-size: calc(100% / max(var(--z-slider__markers), 1)) 100%;
+	opacity: var(--z-slider--ticks__opacity, 1);
+	transition: opacity var(--z-dur) var(--z-ease);
+}
+z-slider:not([markers]) > z-layer[part="background"] > z-layer[part="ticks"] { opacity: 0; }
+z-slider[orientation="vertical"] > z-layer[part="background"] > z-layer[part="ticks"] {
+	background-image: repeating-linear-gradient(0deg,
+		var(--z-slider--ticks__color, var(--z-line)) 0 var(--z-slider--ticks__width, 1px),
+		transparent var(--z-slider--ticks__width, 1px) 100%);
+	background-size: 100% calc(100% / max(var(--z-slider__markers), 1));
+}
+
+/*
+	Une graduation ÉCRITE À LA MAIN, pour les positions irrégulières (0, 25, 90…) qu'un
+	gradient ne sait pas faire. Zoé n'en injecte aucune : l'auteur pose ses `tick` dans
+	la piste et donne à chacun son `--z-tick__at`. Le vocabulaire court (`markers`) est
+	un chemin rapide, pas un périmètre.
+*/
+z-slider > z-layer[part="background"] > z-layer[part="tick"] {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: var(--z-tick__at, 0%);
+	inline-size: var(--z-slider--ticks__width, 1px);
+	background: var(--z-slider--ticks__color, var(--z-line));
+}
+z-slider[orientation="vertical"] > z-layer[part="background"] > z-layer[part="tick"] {
+	inset-inline: 0;
+	top: auto;
+	bottom: var(--z-tick__at, 0%);                 /* en vertical, 0 % est en BAS : c'est le min */
+	block-size: var(--z-slider--ticks__width, 1px);
+	inline-size: auto;
+}
+
+/* Le remplissage EST l'état, rendu visible : sa longueur est la valeur. */
+z-slider > z-layer[part="marker"] {
+	position: absolute;
+	left: 0;
+	top: 50%;
+	translate: 0 -50%;
+	inline-size: calc(var(--z-slider__progress) * 100%);
+	block-size: var(--z-slider--background__thickness, .35em);
+	border-radius: var(--z-slider--background__radius, 999px);
+	background: var(--z-slider--marker__color, var(--z-accent));
+	transition: background var(--z-dur) var(--z-ease);
+}
+z-slider[orientation="vertical"] > z-layer[part="marker"] {
+	left: 50%;
+	top: auto;
+	bottom: 0;
+	translate: -50% 0;
+	inline-size: var(--z-slider--background__thickness, .35em);
+	block-size: calc(var(--z-slider__progress) * 100%);
+}
+
+/*
+	La poignée se pose au BOUT du remplissage — pas en son centre comme le veut le
+	placement universel du dot (z-layer 0.2.4). C'est la seule pièce que ce composant
+	déplace, et c'est ce qui fait qu'elle n'a besoin d'aucune position à elle : elle
+	suit son parent, qui suit la valeur.
+*/
+z-slider > z-layer[part="marker"] > z-layer[part="dot"] {
+	left: 100%;
+	top: 50%;
+	inline-size: var(--z-slider--dot__size, 1.05em);
+	block-size: var(--z-slider--dot__size, 1.05em);
+	border: var(--z-border-width, 1.5px) solid var(--z-slider--dot__border, var(--z-accent));
+	border-radius: var(--z-slider--dot__radius, 50%);
+	background: var(--z-slider--dot__color, var(--z-surface));
+	transition:
+		scale var(--z-dur) var(--z-ease-spring),
+		background var(--z-dur) var(--z-ease),
+		border-color var(--z-dur) var(--z-ease),
+		box-shadow var(--z-dur) var(--z-ease);
+}
+z-slider[orientation="vertical"] > z-layer[part="marker"] > z-layer[part="dot"] {
+	left: 50%;
+	top: 0;                                        /* le haut du remplissage = la valeur */
+}
+
+/* L'étiquette en calques suit la poignée par le même pourcentage. */
+z-slider > z-layer[part="infos"] {
+	position: absolute;
+	left: calc(var(--z-slider__progress) * 100%);
+	translate: -50% 0;
+	pointer-events: none;
+	font-size: var(--z-slider--label__size, .78em);
+	font-variant-numeric: tabular-nums;
+}
+z-slider[label="over"]  > z-layer[part="infos"] { bottom: calc(100% + var(--z-slider--label__gap, .25em)); }
+z-slider[label="under"] > z-layer[part="infos"] { top: calc(100% + var(--z-slider--label__gap, .25em)); }
+z-slider[label="none"]  > z-layer[part="infos"],
+z-slider:not([label])   > z-layer[part="infos"] { display: none; }
+
+/* Un label laissé VIDE se remplit tout seul : l'auteur qui veut son propre texte
+   l'écrit, et le CSS se tait. Le vide est le signal, pas un attribut de plus. */
+z-slider > z-layer[part="infos"] > z-layer[part="label"]:empty::before {
+	content: counter(z-value);
+	counter-reset: z-value var(--z-slider__value);
+}
+
+/* La piste est fine ; le doigt, non. La zone de geste déborde largement au-dessus et
+   en dessous, sans que le dessin grossisse. */
+z-slider > z-layer[part="contact"] {
+	--z-layer--contact__bleed: var(--z-slider--contact__bleed, .5em);
+}
+
+/*
+	═══ LES ÉTATS ═══
+	Styleguide 4.6
+
+	`drag` est ici l'état vedette : c'est le seul composant de Zoé où glisser est le
+	geste normal, et non un accident. La poignée grossit pendant le glissé — elle dit
+	« je suis à toi » — et rétrécit dès qu'on lâche.
+*/
+z-slider:state(over)  > z-layer[part="marker"] > z-layer[part="dot"] { scale: var(--z-slider--dot__scale-over, 1.1); }
+z-slider:state(press) > z-layer[part="marker"] > z-layer[part="dot"] { scale: var(--z-slider--dot__scale-press, .94); }
+z-slider:state(drag)  > z-layer[part="marker"] > z-layer[part="dot"] { scale: var(--z-slider--dot__scale-drag, 1.25); }
+z-slider:state(focus) > z-layer[part="marker"] > z-layer[part="dot"] {
+	/* box-shadow et pas outline : l'outline n'épouse pas le border-radius partout. */
+	box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-accent) 35%, transparent));
+}
+
+/* Pendant le glissé, les graduations s'effacent : elles ont servi à viser, elles
+   gêneraient la lecture du remplissage. */
+z-slider:state(drag) > z-layer[part="background"] > z-layer[part="ticks"] { opacity: var(--z-slider--ticks__opacity-drag, .35); }
+
+z-slider:state(disabled) {
+	cursor: not-allowed;
+	color: var(--z-disabled);
+}
+z-slider:state(disabled) > z-layer[part="marker"] { background: var(--z-disabled); }
+z-slider:state(disabled) > z-layer[part="marker"] > z-layer[part="dot"] {
+	border-color: var(--z-disabled);
+	background: var(--z-surface-sunken);
+}
+z-slider:state(error)   > z-layer[part="marker"] > z-layer[part="dot"] { border-color: var(--z-danger); }
+z-slider:state(success) > z-layer[part="marker"] > z-layer[part="dot"] { border-color: var(--z-success); }
+
+/* Forme courte : les mêmes états, sur l'unique pseudo. Le dessin étant une image, on
+   ne peut pas grossir la seule poignée — on grossit sa couche, ce qui revient au même
+   à l'œil et coûte une ligne au lieu d'un élément. */
+z-slider:not(:has(z-layer)):state(over)::before,
+z-slider:not(:has(z-layer)):state(drag)::before {
+	background-size:
+		calc(var(--z-slider--dot__size, 1.05em) * var(--z-slider--dot__scale-drag, 1.25))
+		calc(var(--z-slider--dot__size, 1.05em) * var(--z-slider--dot__scale-drag, 1.25)),
+		calc(100% / max(var(--z-slider__markers), 1)) var(--z-slider--ticks__length, .5em),
+		calc(var(--z-slider__progress) * 100%) var(--z-slider--background__thickness, .35em),
+		100% var(--z-slider--background__thickness, .35em);
+}
+z-slider:not(:has(z-layer)):state(disabled)::before { filter: grayscale(1) opacity(.55); }
