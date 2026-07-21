@@ -162,8 +162,11 @@ et je n'ouvre le lab que du composant que je touche.
 **Ce qu'il ne faut PAS faire** : recopier le contenu du lab dans l'index. Ce qui est
 écrit deux fois divergera — c'est la seule loi qui n'a jamais été prise en défaut ici.
 
-**Statut : proposé.** À appliquer aux autres composants seulement si Christophe garde le
-principe.
+**Statut : GARDÉ** (Christophe, 2026-07-21 — « Au fait, GARDES »). Le principe s'applique
+désormais à tout composant : un `z-x.lab.md` dans son dossier, une ligne dans l'index.
+
+*Reste en attente d'un go séparé : le renommage `--z-slider__progress` → `--z-progress`
+et la bascule « capacité ». Ce sont d'autres décisions, elles n'ont pas été validées ici.*
 
 ---
 
