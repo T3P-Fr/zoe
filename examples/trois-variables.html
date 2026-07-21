@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zoé — toute cette interface, trois variables</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte.
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Lance <code>node scripts/serve.mjs 5177</code> puis passe par <code>http://localhost:5177/</code>.</div>'
+    );
+  </script>
+
+  <link rel="stylesheet" href="../core/z-layer/z-layer.css">
+  <link rel="stylesheet" href="../components/z-slider/z-slider.css">
+
+  <style>
+/*
+	============================================================
+	LA DÉMONSTRATION — TROIS VARIABLES, UNE APPLICATION ENTIÈRE
+	------------------------------------------------------------
+	Cette page ne contient AUCUNE palette. Pas de --bleu-500, pas de --gris-200, pas
+	de thème sombre. Trois graines, une formule, et toute l'interface en découle :
+
+	    --z-canvas   sur QUOI je suis  (le fond, ici, à cet endroit)
+	    --z-tint     QUOI je peins     (l'encre, l'accent, l'alerte…)
+	    --z-dose     à quelle FORCE    (0 → 1)
+
+	    color-mix(in oklab, tint (dose × 100%), canvas)
+
+	C'est le même geste que z-slider : on pose un NOMBRE, et le reste en découle. Là
+	c'était la géométrie ; ici c'est la couleur.
+
+	Styleguide demo.trois-variables
+	============================================================
+*/
+
+/*
+	Déclarées et non simplement posées : elles deviennent des NOMBRES pour le
+	navigateur, donc elles s'interpolent. Une bascule jour/nuit n'est pas un thème
+	qu'on remplace, c'est un curseur qui glisse.
+	Styleguide demo.1
+*/
+@property --z-light { syntax: "<number>"; inherits: true; initial-value: 0.97; }
+@property --z-hue   { syntax: "<number>"; inherits: true; initial-value: 28; }
+@property --z-dose  { syntax: "<number>"; inherits: true; initial-value: 0.62; }
+
+:root {
+  /*
+    LE FOND. Une seule ligne, et la page va du papier au charbon sans qu'aucune
+    règle ne soit dupliquée nulle part.
+  */
+  --z-canvas: oklch(var(--z-light) 0.008 var(--z-hue));
+
+  /*
+    L'ENCRE, DÉDUITE DU FOND — et c'est ici que le « mode sombre » disparaît en tant
+    que concept. `* 1000` puis `clamp` fabrique un booléen en CSS pur : 0 tant que le
+    fond est clair, 1 dès qu'il passe sous la moitié. L'encre bascule alors d'un bloc.
+    Aucune media query, aucun thème, aucune classe : une soustraction.
+  */
+  --z-nuit: clamp(0, (0.5 - var(--z-light)) * 1000, 1);
+  --z-ink: oklch(calc(0.10 + var(--z-nuit) * 0.86) 0.02 var(--z-hue));
+
+  /* LA TEINTE qui décide. Un seul angle la déplace sur tout le cercle. */
+  --z-tint: oklch(calc(0.58 + var(--z-nuit) * 0.10) 0.19 var(--z-hue));
+  --z-alerte: oklch(calc(0.58 + var(--z-nuit) * 0.10) 0.19 calc(var(--z-hue) + 180));
+
+  color-scheme: light dark;
+  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+/*
+	LA FORMULE, ÉCRITE UNE FOIS. Tout ce qui suit dans le fichier n'est qu'un choix de
+	`tint` et de `dose` — jamais une couleur.
+	Styleguide demo.2
+*/
+.peint { color: color-mix(in oklab, var(--z-tint) calc(var(--z-dose) * 100%), var(--z-canvas)); }
+
+/*
+	LES PLANS. Un plan redéclare `--z-canvas` pour SON dedans : l'encre d'une carte se
+	calcule alors contre la carte, jamais contre la page. Le filet qui bave sur une
+	surface plus claire — le bug classique de tout design system — devient impossible,
+	pas « corrigé ».
+	Styleguide demo.3
+*/
+[data-plan] { background: var(--z-canvas); }
+[data-plan="haut"]  { --z-canvas: oklch(calc(var(--z-light) + 0.025 - var(--z-nuit) * 0.05) 0.008 var(--z-hue)); }
+[data-plan="creux"] { --z-canvas: oklch(calc(var(--z-light) - 0.025 + var(--z-nuit) * 0.05) 0.008 var(--z-hue)); }
+
+/* ── L'atelier ── */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--z-canvas);
+  color: color-mix(in oklab, var(--z-ink) 88%, var(--z-canvas));
+  transition: background .25s linear;
+}
+
+/*
+	LA CONSOLE — collée en haut, parce que le réglage et son effet ne doivent jamais
+	être aux deux bouts de l'écran. Elle est bâtie avec des z-slider : la démo est
+	faite AVEC Zoé et pilote Zoé.
+	Styleguide demo.4
+*/
+.console {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; gap: 2.2rem; align-items: center; flex-wrap: wrap;
+  padding: .9rem 1.6rem;
+  background: color-mix(in oklab, var(--z-canvas) 82%, transparent);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid color-mix(in oklab, var(--z-ink) 12%, var(--z-canvas));
+}
+.console .marque {
+  font-weight: 700; letter-spacing: .16em; font-size: .78rem;
+  color: var(--z-tint);
+}
+.console label { display: grid; gap: .3rem; font-size: .68rem; letter-spacing: .1em;
+  text-transform: uppercase; color: color-mix(in oklab, var(--z-ink) 45%, var(--z-canvas)); }
+.console .compte { margin-left: auto; text-align: right; font-size: .7rem; line-height: 1.5;
+  color: color-mix(in oklab, var(--z-ink) 45%, var(--z-canvas)); }
+.console .compte b { font-size: 1.5rem; display: block; color: var(--z-tint); font-variant-numeric: tabular-nums; }
+
+z-slider {
+  --z-slider__length: 9rem;
+  --z-slider--background__color: color-mix(in oklab, var(--z-ink) 15%, var(--z-canvas));
+  --z-slider--marker__color: var(--z-tint);
+  --z-slider--dot__color: var(--z-canvas);
+  --z-slider--dot__border: var(--z-tint);
+  --z-slider--background__thickness: 3px;
+  --z-slider--dot__size: 14px;
+}
+
+/* ── L'application ── */
+.app { display: grid; grid-template-columns: 200px 1fr; min-height: calc(100vh - 60px); }
+
+nav {
+  padding: 1.4rem 1rem;
+  border-right: 1px solid color-mix(in oklab, var(--z-ink) 12%, var(--z-canvas));
+  display: grid; gap: .2rem; align-content: start;
+}
+nav a {
+  padding: .5rem .7rem; border-radius: 6px; text-decoration: none; font-size: .87rem;
+  color: color-mix(in oklab, var(--z-ink) 62%, var(--z-canvas));
+  transition: background .15s, color .15s;
+}
+nav a:hover { background: color-mix(in oklab, var(--z-ink) 6%, var(--z-canvas)); }
+/*
+	L'ÉLÉMENT COURANT — il ne change pas de couleur, il change de TEINTE. Tout ce qu'il
+	contient suit, et rien d'autre sur la page ne bouge. C'est le geste central de Zoé.
+*/
+nav a[aria-current] {
+  --z-canvas: color-mix(in oklab, var(--z-tint) 14%, var(--z-canvas));
+  background: var(--z-canvas);
+  color: var(--z-tint);
+  font-weight: 600;
+}
+
+main { padding: 2rem 2.2rem; display: grid; gap: 1.6rem; align-content: start; }
+h1 { margin: 0; font-size: 1.5rem; letter-spacing: -.01em; }
+.sous { margin: -1.1rem 0 0; font-size: .9rem;
+  color: color-mix(in oklab, var(--z-ink) 52%, var(--z-canvas)); max-width: 60ch; }
+
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1rem; }
+.kpi {
+  padding: 1.1rem 1.2rem; border-radius: 10px;
+  border: 1px solid color-mix(in oklab, var(--z-ink) 11%, var(--z-canvas));
+}
+.kpi span { font-size: .72rem; letter-spacing: .09em; text-transform: uppercase;
+  color: color-mix(in oklab, var(--z-ink) 45%, var(--z-canvas)); }
+.kpi b { display: block; font-size: 1.9rem; margin-top: .3rem; font-variant-numeric: tabular-nums; }
+.kpi .delta { font-size: .78rem; color: var(--z-tint); }
+/*
+	La carte en alerte ne redéfinit qu'UNE chose : sa teinte. Son chiffre, son delta,
+	son filet, son fond — tout se repeint, et rien ne fuit hors de la carte.
+*/
+.kpi[data-alerte] { --z-tint: var(--z-alerte); }
+
+.bloc {
+  border-radius: 10px; padding: 1.2rem 1.3rem;
+  border: 1px solid color-mix(in oklab, var(--z-ink) 11%, var(--z-canvas));
+}
+.bloc h2 { margin: 0 0 .9rem; font-size: .95rem; }
+
+table { width: 100%; border-collapse: collapse; font-size: .87rem; }
+th { text-align: left; font-size: .69rem; letter-spacing: .09em; text-transform: uppercase;
+  font-weight: 600; padding: .4rem .6rem;
+  color: color-mix(in oklab, var(--z-ink) 45%, var(--z-canvas)); }
+td { padding: .55rem .6rem; border-top: 1px solid color-mix(in oklab, var(--z-ink) 10%, var(--z-canvas)); }
+tbody tr:hover { background: color-mix(in oklab, var(--z-ink) 5%, var(--z-canvas)); }
+
+.badge {
+  display: inline-block; padding: .12rem .55rem; border-radius: 20px; font-size: .74rem;
+  font-weight: 600;
+  background: color-mix(in oklab, var(--z-tint) 15%, var(--z-canvas));
+  color: var(--z-tint);
+}
+.badge[data-alerte] { --z-tint: var(--z-alerte); }
+
+.actions { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1rem; }
+button {
+  font: inherit; font-weight: 600; font-size: .87rem; cursor: pointer;
+  padding: .55rem 1.1rem; border-radius: 7px; border: 1px solid transparent;
+  transition: filter .15s;
+}
+button:hover { filter: brightness(1.08); }
+.plein { background: var(--z-tint); color: var(--z-canvas); }
+.doux  { background: color-mix(in oklab, var(--z-tint) 13%, var(--z-canvas)); color: var(--z-tint);
+         border-color: color-mix(in oklab, var(--z-tint) 32%, var(--z-canvas)); }
+.nu    { background: transparent; color: color-mix(in oklab, var(--z-ink) 58%, var(--z-canvas));
+         border-color: color-mix(in oklab, var(--z-ink) 22%, var(--z-canvas)); }
+
+.pitch {
+  margin-top: .6rem; padding: 1.2rem 1.4rem; border-radius: 10px;
+  border: 1px solid color-mix(in oklab, var(--z-tint) 28%, var(--z-canvas));
+  font-size: .9rem; line-height: 1.6;
+}
+.pitch b { color: var(--z-tint); }
+.pitch code { font-size: .85em; padding: .05em .35em; border-radius: 4px;
+  background: color-mix(in oklab, var(--z-ink) 8%, var(--z-canvas)); }
+  </style>
+
+  <div class="console">
+    <span class="marque">ZOÉ</span>
+
+    <label>Jour → Nuit
+      <z-slider id="s-light" min="8" max="99" value="97"></z-slider>
+    </label>
+
+    <label>Teinte
+      <z-slider id="s-hue" min="0" max="360" value="28"></z-slider>
+    </label>
+
+    <label>Dose
+      <z-slider id="s-dose" min="0" max="100" value="62"></z-slider>
+    </label>
+
+    <div class="compte">
+      <b>3</b>
+      variables pilotent cette page.<br>
+      Palettes écrites : <b style="display:inline;font-size:1rem">0</b>
+    </div>
+  </div>
+
+  <div class="app">
+    <nav data-plan="creux">
+      <a href="#" aria-current="page">Tableau de bord</a>
+      <a href="#">Commandes</a>
+      <a href="#">Clients</a>
+      <a href="#">Stock</a>
+      <a href="#">Rapports</a>
+      <a href="#">Réglages</a>
+    </nav>
+
+    <main>
+      <h1>Tableau de bord</h1>
+      <p class="sous">
+        Bouge le premier curseur. La page passe du papier au charbon —
+        <b>sans mode sombre</b>, sans media query, sans une seule couleur de rechange.
+        L'encre n'est pas choisie : elle est <em>déduite</em> du fond.
+      </p>
+
+      <div class="kpis">
+        <div class="kpi" data-plan="haut">
+          <span>Chiffre d'affaires</span><b>184 320 €</b>
+          <span class="delta">▲ 12,4 % ce mois</span>
+        </div>
+        <div class="kpi" data-plan="haut">
+          <span>Commandes</span><b>1 284</b>
+          <span class="delta">▲ 8,1 %</span>
+        </div>
+        <div class="kpi" data-plan="haut">
+          <span>Panier moyen</span><b>143,55 €</b>
+          <span class="delta">▲ 3,9 %</span>
+        </div>
+        <div class="kpi" data-plan="haut" data-alerte>
+          <span>Ruptures de stock</span><b>17</b>
+          <span class="delta">▼ à traiter</span>
+        </div>
+      </div>
+
+      <div class="bloc" data-plan="haut">
+        <h2>Dernières commandes</h2>
+        <table>
+          <thead>
+            <tr><th>Référence</th><th>Client</th><th>Montant</th><th>État</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>#48210</td><td>Maison Lefort</td><td>2 340,00 €</td><td><span class="badge">Expédiée</span></td></tr>
+            <tr><td>#48209</td><td>Atelier Roux</td><td>890,50 €</td><td><span class="badge">Préparée</span></td></tr>
+            <tr><td>#48208</td><td>Studio Bellec</td><td>4 120,00 €</td><td><span class="badge" data-alerte>En attente</span></td></tr>
+            <tr><td>#48207</td><td>Cave Marchand</td><td>615,20 €</td><td><span class="badge">Expédiée</span></td></tr>
+          </tbody>
+        </table>
+        <div class="actions">
+          <button class="plein">Exporter</button>
+          <button class="doux">Filtrer</button>
+          <button class="nu">Annuler</button>
+        </div>
+      </div>
+
+      <div class="pitch" data-plan="creux">
+        <b>Ce que tu viens de voir.</b> Cette page n'a <b>aucune palette</b>. Pas de
+        <code>--bleu-500</code>, pas de <code>--gris-200</code>, pas de thème sombre.
+        Trois variables — <code>canvas</code>, <code>tint</code>, <code>dose</code> — et
+        une formule écrite <b>une seule fois</b>.
+        <br><br>
+        La carte « Ruptures » et le badge « En attente » ne changent pas de couleur : ils
+        changent de <b>teinte</b>. Leur chiffre, leur filet, leur fond suivent — et rien
+        d'autre sur la page ne bouge. <b>C'est ça, Zoé.</b>
+        <br><br>
+        Les trois curseurs en haut sont des <code>&lt;z-slider&gt;</code>. La démo est
+        faite <b>avec</b> Zoé, et elle pilote Zoé.
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import "../core/z-layer/z-layer.js";
+    import "../components/z-slider/z-slider.js";
+
+    /*
+      Tout le JS de cette page. Trois curseurs, trois variables. Il n'y a rien d'autre
+      à câbler : le CSS fait le reste, y compris le passage jour/nuit.
+    */
+    const racine = document.documentElement;
+    const cable = (id, prop, facteur = 1) => {
+      const slider = document.getElementById(id);
+      const poser = () => racine.style.setProperty(prop, String(slider.value * facteur));
+      slider.addEventListener("input", poser);
+      poser();
+    };
+
+    cable("s-light", "--z-light", 0.01);
+    cable("s-hue", "--z-hue");
+    cable("s-dose", "--z-dose", 0.01);
+
+    /* Un état de départ partageable : ?light=15&hue=250 ouvre la page déjà réglée.
+       C'est ce qui permet d'envoyer une capture « de nuit » sans demander à personne
+       de bouger un curseur. */
+    for (const [cle, id] of [["light", "s-light"], ["hue", "s-hue"], ["dose", "s-dose"]]) {
+      const valeur = new URLSearchParams(location.search).get(cle);
+      if (valeur === null) continue;
+      const slider = document.getElementById(id);
+      slider.value = Number(valeur);
+      slider.dispatchEvent(new Event("input"));
+    }
+  </script>
+
+</html>
