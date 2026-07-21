@@ -76,10 +76,29 @@
 }
 
 /*
-	LA FORMULE, ÉCRITE UNE FOIS. Tout ce qui suit dans le fichier n'est qu'un choix de
-	`tint` et de `dose` — jamais une couleur.
+	LES CINQ RANGS — et c'est ici que « dose » cesse d'être une idée.
+
+	`--z-dose` n'est pas une valeur, c'est un CURSEUR DE CONTRASTE : les cinq rangs en
+	dérivent tous par un facteur. Pousse-le, et toute la hiérarchie de la page respire
+	ou se serre d'un bloc — le titre, la légende, les filets, les fonds teintés.
+
+	Un design system classique demande ici trente valeurs à décider, à maintenir, puis
+	à redécider pour le mode sombre. Il y en a cinq, et elles sont dérivées.
+
+	`min()` parce qu'une dose ne dépasse jamais 1 : au-delà, color-mix se plaint et la
+	couleur disparaît — un plafond silencieux qu'on préfère écrire.
 	Styleguide demo.2
 */
+:root {
+  --d-fort:    min(1, calc(var(--z-dose) * 1.42));   /* titre, chiffre, ce qu'on lit d'abord */
+  --d-corps:   var(--z-dose);                        /* le texte courant */
+  --d-doux:    calc(var(--z-dose) * 0.72);           /* légende, label, unité */
+  --d-filet:   calc(var(--z-dose) * 0.19);           /* le trait, la bordure */
+  --d-fantome: calc(var(--z-dose) * 0.09);           /* un fond à peine teinté */
+}
+
+/* LA FORMULE, ÉCRITE UNE FOIS. Tout le reste du fichier n'est qu'un choix de
+   `tint` et de rang — jamais une couleur. */
 .peint { color: color-mix(in oklab, var(--z-tint) calc(var(--z-dose) * 100%), var(--z-canvas)); }
 
 /*
@@ -99,7 +118,7 @@ body {
   margin: 0;
   min-height: 100vh;
   background: var(--z-canvas);
-  color: color-mix(in oklab, var(--z-ink) 88%, var(--z-canvas));
+  color: color-mix(in oklab, var(--z-ink) calc(var(--d-fort) * 100%), var(--z-canvas));
   transition: background .25s linear;
 }
 
@@ -115,21 +134,21 @@ body {
   padding: .9rem 1.6rem;
   background: color-mix(in oklab, var(--z-canvas) 82%, transparent);
   backdrop-filter: blur(16px);
-  border-bottom: 1px solid color-mix(in oklab, var(--z-ink) 12%, var(--z-canvas));
+  border-bottom: 1px solid color-mix(in oklab, var(--z-ink) calc(var(--d-filet) * 100%), var(--z-canvas));
 }
 .console .marque {
   font-weight: 700; letter-spacing: .16em; font-size: .78rem;
   color: var(--z-tint);
 }
 .console label { display: grid; gap: .3rem; font-size: .68rem; letter-spacing: .1em;
-  text-transform: uppercase; color: color-mix(in oklab, var(--z-ink) 45%, var(--z-canvas)); }
+  text-transform: uppercase; color: color-mix(in oklab, var(--z-ink) calc(var(--d-doux) * 100%), var(--z-canvas)); }
 .console .compte { margin-left: auto; text-align: right; font-size: .7rem; line-height: 1.5;
-  color: color-mix(in oklab, var(--z-ink) 45%, var(--z-canvas)); }
+  color: color-mix(in oklab, var(--z-ink) calc(var(--d-doux) * 100%), var(--z-canvas)); }
 .console .compte b { font-size: 1.5rem; display: block; color: var(--z-tint); font-variant-numeric: tabular-nums; }
 
 z-slider {
   --z-slider__length: 9rem;
-  --z-slider--background__color: color-mix(in oklab, var(--z-ink) 15%, var(--z-canvas));
+  --z-slider--background__color: color-mix(in oklab, var(--z-ink) calc(var(--d-filet) * 160%), var(--z-canvas));
   --z-slider--marker__color: var(--z-tint);
   --z-slider--dot__color: var(--z-canvas);
   --z-slider--dot__border: var(--z-tint);
@@ -142,21 +161,21 @@ z-slider {
 
 nav {
   padding: 1.4rem 1rem;
-  border-right: 1px solid color-mix(in oklab, var(--z-ink) 12%, var(--z-canvas));
+  border-right: 1px solid color-mix(in oklab, var(--z-ink) calc(var(--d-filet) * 100%), var(--z-canvas));
   display: grid; gap: .2rem; align-content: start;
 }
 nav a {
   padding: .5rem .7rem; border-radius: 6px; text-decoration: none; font-size: .87rem;
-  color: color-mix(in oklab, var(--z-ink) 62%, var(--z-canvas));
+  color: color-mix(in oklab, var(--z-ink) calc(var(--d-corps) * 100%), var(--z-canvas));
   transition: background .15s, color .15s;
 }
-nav a:hover { background: color-mix(in oklab, var(--z-ink) 6%, var(--z-canvas)); }
+nav a:hover { background: color-mix(in oklab, var(--z-ink) calc(var(--d-fantome) * 100%), var(--z-canvas)); }
 /*
 	L'ÉLÉMENT COURANT — il ne change pas de couleur, il change de TEINTE. Tout ce qu'il
 	contient suit, et rien d'autre sur la page ne bouge. C'est le geste central de Zoé.
 */
 nav a[aria-current] {
-  --z-canvas: color-mix(in oklab, var(--z-tint) 14%, var(--z-canvas));
+  --z-canvas: color-mix(in oklab, var(--z-tint) calc(var(--d-filet) * 130%), var(--z-canvas));
   background: var(--z-canvas);
   color: var(--z-tint);
   font-weight: 600;
@@ -165,15 +184,15 @@ nav a[aria-current] {
 main { padding: 2rem 2.2rem; display: grid; gap: 1.6rem; align-content: start; }
 h1 { margin: 0; font-size: 1.5rem; letter-spacing: -.01em; }
 .sous { margin: -1.1rem 0 0; font-size: .9rem;
-  color: color-mix(in oklab, var(--z-ink) 52%, var(--z-canvas)); max-width: 60ch; }
+  color: color-mix(in oklab, var(--z-ink) calc(var(--d-doux) * 100%), var(--z-canvas)); max-width: 60ch; }
 
 .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1rem; }
 .kpi {
   padding: 1.1rem 1.2rem; border-radius: 10px;
-  border: 1px solid color-mix(in oklab, var(--z-ink) 11%, var(--z-canvas));
+  border: 1px solid color-mix(in oklab, var(--z-ink) calc(var(--d-filet) * 100%), var(--z-canvas));
 }
 .kpi span { font-size: .72rem; letter-spacing: .09em; text-transform: uppercase;
-  color: color-mix(in oklab, var(--z-ink) 45%, var(--z-canvas)); }
+  color: color-mix(in oklab, var(--z-ink) calc(var(--d-doux) * 100%), var(--z-canvas)); }
 .kpi b { display: block; font-size: 1.9rem; margin-top: .3rem; font-variant-numeric: tabular-nums; }
 .kpi .delta { font-size: .78rem; color: var(--z-tint); }
 /*
@@ -184,21 +203,21 @@ h1 { margin: 0; font-size: 1.5rem; letter-spacing: -.01em; }
 
 .bloc {
   border-radius: 10px; padding: 1.2rem 1.3rem;
-  border: 1px solid color-mix(in oklab, var(--z-ink) 11%, var(--z-canvas));
+  border: 1px solid color-mix(in oklab, var(--z-ink) calc(var(--d-filet) * 100%), var(--z-canvas));
 }
 .bloc h2 { margin: 0 0 .9rem; font-size: .95rem; }
 
 table { width: 100%; border-collapse: collapse; font-size: .87rem; }
 th { text-align: left; font-size: .69rem; letter-spacing: .09em; text-transform: uppercase;
   font-weight: 600; padding: .4rem .6rem;
-  color: color-mix(in oklab, var(--z-ink) 45%, var(--z-canvas)); }
-td { padding: .55rem .6rem; border-top: 1px solid color-mix(in oklab, var(--z-ink) 10%, var(--z-canvas)); }
-tbody tr:hover { background: color-mix(in oklab, var(--z-ink) 5%, var(--z-canvas)); }
+  color: color-mix(in oklab, var(--z-ink) calc(var(--d-doux) * 100%), var(--z-canvas)); }
+td { padding: .55rem .6rem; border-top: 1px solid color-mix(in oklab, var(--z-ink) calc(var(--d-filet) * 100%), var(--z-canvas)); }
+tbody tr:hover { background: color-mix(in oklab, var(--z-ink) calc(var(--d-fantome) * 100%), var(--z-canvas)); }
 
 .badge {
   display: inline-block; padding: .12rem .55rem; border-radius: 20px; font-size: .74rem;
   font-weight: 600;
-  background: color-mix(in oklab, var(--z-tint) 15%, var(--z-canvas));
+  background: color-mix(in oklab, var(--z-tint) calc(var(--d-filet) * 140%), var(--z-canvas));
   color: var(--z-tint);
 }
 .badge[data-alerte] { --z-tint: var(--z-alerte); }
@@ -211,19 +230,42 @@ button {
 }
 button:hover { filter: brightness(1.08); }
 .plein { background: var(--z-tint); color: var(--z-canvas); }
-.doux  { background: color-mix(in oklab, var(--z-tint) 13%, var(--z-canvas)); color: var(--z-tint);
-         border-color: color-mix(in oklab, var(--z-tint) 32%, var(--z-canvas)); }
-.nu    { background: transparent; color: color-mix(in oklab, var(--z-ink) 58%, var(--z-canvas));
-         border-color: color-mix(in oklab, var(--z-ink) 22%, var(--z-canvas)); }
+.doux  { background: color-mix(in oklab, var(--z-tint) calc(var(--d-filet) * 120%), var(--z-canvas)); color: var(--z-tint);
+         border-color: color-mix(in oklab, var(--z-tint) calc(var(--d-doux) * 70%), var(--z-canvas)); }
+.nu    { background: transparent; color: color-mix(in oklab, var(--z-ink) calc(var(--d-corps) * 100%), var(--z-canvas));
+         border-color: color-mix(in oklab, var(--z-ink) calc(var(--d-filet) * 200%), var(--z-canvas)); }
 
 .pitch {
   margin-top: .6rem; padding: 1.2rem 1.4rem; border-radius: 10px;
-  border: 1px solid color-mix(in oklab, var(--z-tint) 28%, var(--z-canvas));
+  border: 1px solid color-mix(in oklab, var(--z-tint) calc(var(--d-doux) * 62%), var(--z-canvas));
   font-size: .9rem; line-height: 1.6;
 }
 .pitch b { color: var(--z-tint); }
+
+/*
+	SOUS LE CAPOT — la partie qui explique. Elle vient APRÈS la démonstration : on
+	montre d'abord, on justifie ensuite. Une fiche par rang : son nom, son métier, et
+	l'échantillon qui bouge, tous les trois côte à côte. Jamais le réglage ici et
+	l'effet ailleurs.
+	Styleguide demo.5
+*/
+.capot { margin-top: 2.4rem; display: grid; gap: .7rem; }
+.capot > h2 {
+  font-size: .74rem; letter-spacing: .13em; text-transform: uppercase; margin: 0 0 .2rem;
+  color: color-mix(in oklab, var(--z-ink) calc(var(--d-doux) * 100%), var(--z-canvas));
+}
+.rang {
+  display: grid; grid-template-columns: minmax(180px, 240px) 1fr; gap: 1.2rem;
+  align-items: center; padding: .9rem 1.1rem; border-radius: 10px;
+  border: 1px solid color-mix(in oklab, var(--z-ink) calc(var(--d-filet) * 100%), var(--z-canvas));
+}
+.rang .quoi code { font-size: .82rem; font-weight: 600; color: var(--z-tint); }
+.rang .quoi p { margin: .25rem 0 0; font-size: .78rem;
+  color: color-mix(in oklab, var(--z-ink) calc(var(--d-doux) * 100%), var(--z-canvas)); }
+.rang .vu { font-size: .95rem; }
+.rang .barre { height: 26px; border-radius: 5px; }
 .pitch code { font-size: .85em; padding: .05em .35em; border-radius: 4px;
-  background: color-mix(in oklab, var(--z-ink) 8%, var(--z-canvas)); }
+  background: color-mix(in oklab, var(--z-ink) calc(var(--d-fantome) * 100%), var(--z-canvas)); }
   </style>
 
   <div class="console">
@@ -317,6 +359,88 @@ button:hover { filter: brightness(1.08); }
         <br><br>
         Les trois curseurs en haut sont des <code>&lt;z-slider&gt;</code>. La démo est
         faite <b>avec</b> Zoé, et elle pilote Zoé.
+      </div>
+
+      <div class="capot">
+        <h2>Sous le capot — les cinq rangs de « dose »</h2>
+        <p class="sous" style="margin:0 0 .6rem">
+          <code>dose</code> n'est pas une valeur, c'est un <b>curseur de contraste</b>.
+          Les cinq rangs ci-dessous en dérivent tous par un simple facteur. Pousse le
+          troisième curseur en haut : ils bougent <b>ensemble</b>, et toute la page avec
+          eux. Un design system classique demande ici trente valeurs à décider, à
+          maintenir, puis à redécider pour le mode sombre.
+        </p>
+
+        <div class="rang" data-plan="haut">
+          <div class="quoi">
+            <code>--d-fort</code> <small>= dose × 1,42</small>
+            <p>Le titre, le chiffre. Ce qu'on lit en premier.</p>
+          </div>
+          <div class="vu" style="font-size:1.5rem; font-weight:600;
+            color: color-mix(in oklab, var(--z-ink) calc(var(--d-fort) * 100%), var(--z-canvas))">
+            184 320 €
+          </div>
+        </div>
+
+        <div class="rang" data-plan="haut">
+          <div class="quoi">
+            <code>--d-corps</code> <small>= dose</small>
+            <p>Le texte courant. Le rang le plus utilisé de toute l'interface.</p>
+          </div>
+          <div class="vu" style="color: color-mix(in oklab, var(--z-ink) calc(var(--d-corps) * 100%), var(--z-canvas))">
+            Bouge le curseur en lisant cette phrase : tu sens le moment exact où
+            l'effort de lecture change.
+          </div>
+        </div>
+
+        <div class="rang" data-plan="haut">
+          <div class="quoi">
+            <code>--d-doux</code> <small>= dose × 0,72</small>
+            <p>Légende, label, unité. Présent, jamais lu en premier.</p>
+          </div>
+          <div class="vu" style="font-size:.85rem;
+            color: color-mix(in oklab, var(--z-ink) calc(var(--d-doux) * 100%), var(--z-canvas))">
+            Chiffre d'affaires — cumul glissant sur trente jours
+          </div>
+        </div>
+
+        <div class="rang" data-plan="haut">
+          <div class="quoi">
+            <code>--d-filet</code> <small>= dose × 0,19</small>
+            <p>Le trait. Bordure, séparateur, ligne de tableau. Un seul pour toute l'app.</p>
+          </div>
+          <div class="vu">
+            <div style="border-top: 1px solid color-mix(in oklab, var(--z-ink) calc(var(--d-filet) * 100%), var(--z-canvas)); padding-top:.4rem"></div>
+            <div style="border-top: 1px solid color-mix(in oklab, var(--z-ink) calc(var(--d-filet) * 100%), var(--z-canvas)); padding-top:.4rem"></div>
+            <div style="border-top: 1px solid color-mix(in oklab, var(--z-ink) calc(var(--d-filet) * 100%), var(--z-canvas))"></div>
+          </div>
+        </div>
+
+        <div class="rang" data-plan="haut">
+          <div class="quoi">
+            <code>--d-fantome</code> <small>= dose × 0,09</small>
+            <p>Un fond à peine teinté : une zone, pas une couleur.</p>
+          </div>
+          <div class="vu barre"
+            style="background: color-mix(in oklab, var(--z-tint) calc(var(--d-fantome) * 400%), var(--z-canvas));
+                   display:flex; align-items:center; padding:0 .7rem; font-size:.8rem;
+                   color: color-mix(in oklab, var(--z-ink) calc(var(--d-corps) * 100%), var(--z-canvas))">
+            Une ligne sélectionnée dans une liste
+          </div>
+        </div>
+
+        <div class="pitch" data-plan="creux" style="margin-top:1.2rem">
+          <b>Ce qu'il faut retenir.</b> Trois variables décident de tout :
+          <code>canvas</code> dit <b>sur quoi</b> je suis, <code>tint</code> dit
+          <b>quoi</b> je peins, <code>dose</code> dit <b>à quelle force</b>.
+          <br><br>
+          C'est exactement le geste du <code>&lt;z-slider&gt;</code> : on pose un
+          <b>nombre</b>, et le reste en découle. Là c'était la géométrie — un knob et une
+          jauge sont sortis d'une simple feuille de style. Ici c'est la couleur.
+          <br><br>
+          <b>Rien à mémoriser, donc rien à oublier</b> — ni pour toi, ni pour l'IA à qui
+          un développeur demandera d'écrire du Zoé.
+        </div>
       </div>
     </main>
   </div>
