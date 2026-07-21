@@ -47,32 +47,82 @@
 	qu'on remplace, c'est un curseur qui glisse.
 	Styleguide demo.1
 */
+/*
+	UNE COULEUR N'EST PAS UNE VALEUR, C'EST TROIS NOMBRES.
+
+	L (clarté) · C (chroma) · H (teinte) sont déclarés SÉPARÉMENT, et la couleur n'est
+	que leur assemblage. C'est ce qui rend chaque dérivée calculable au lieu d'être
+	choisie — et chaque composante a son métier à elle :
+
+	    L  →  jour ⇄ nuit, survol, élévation
+	    C  →  l'intensité de marque… et le `disabled`
+	    H  →  l'identité, et toutes les harmonies
+
+	Conséquence directe, en bas de fichier : un bouton désactivé perd sa CHROMA, pas sa
+	teinte. Il reste reconnaissable. Un système qui stocke `#d5432c` stocke le résultat
+	et ne peut plus en tirer « le même, mais éteint » sans une bibliothèque JS.
+	Styleguide demo.1
+*/
+@property --z-color--accent__l { syntax: "<number>"; inherits: true; initial-value: 0.58; }
+@property --z-color--accent__c { syntax: "<number>"; inherits: true; initial-value: 0.19; }
+@property --z-color--accent__h { syntax: "<number>"; inherits: true; initial-value: 28; }
 @property --z-light { syntax: "<number>"; inherits: true; initial-value: 0.97; }
-@property --z-hue   { syntax: "<number>"; inherits: true; initial-value: 28; }
 @property --z-dose  { syntax: "<number>"; inherits: true; initial-value: 0.62; }
 
 :root {
   /*
     LE FOND. Une seule ligne, et la page va du papier au charbon sans qu'aucune
-    règle ne soit dupliquée nulle part.
+    règle ne soit dupliquée nulle part. Il emprunte sa teinte à l'accent : un papier
+    parfaitement neutre n'existe pas, il a toujours la couleur de ce qu'on imprime.
   */
-  --z-canvas: oklch(var(--z-light) 0.008 var(--z-hue));
+  --z-canvas: oklch(var(--z-light) 0.008 var(--z-color--accent__h));
 
   /*
     L'ENCRE, DÉDUITE DU FOND — et c'est ici que le « mode sombre » disparaît en tant
     que concept. `* 1000` puis `clamp` fabrique un booléen en CSS pur : 0 tant que le
     fond est clair, 1 dès qu'il passe sous la moitié. L'encre bascule alors d'un bloc.
     Aucune media query, aucun thème, aucune classe : une soustraction.
+    Noter qu'il ne touche QUE L. C'est tout l'intérêt d'avoir séparé les trois.
   */
   --z-nuit: clamp(0, (0.5 - var(--z-light)) * 1000, 1);
-  --z-ink: oklch(calc(0.10 + var(--z-nuit) * 0.86) 0.02 var(--z-hue));
+  --z-ink: oklch(calc(0.10 + var(--z-nuit) * 0.86) 0.02 var(--z-color--accent__h));
 
-  /* LA TEINTE qui décide. Un seul angle la déplace sur tout le cercle. */
-  --z-tint: oklch(calc(0.58 + var(--z-nuit) * 0.10) 0.19 var(--z-hue));
-  --z-alerte: oklch(calc(0.58 + var(--z-nuit) * 0.10) 0.19 calc(var(--z-hue) + 180));
+  /* L'ACCENT — l'assemblage de ses trois nombres, rien de plus. En nuit il s'éclaircit
+     un peu : la même couleur paraît plus sombre sur du charbon que sur du papier. */
+  --z-color--accent: oklch(calc(var(--z-color--accent__l) + var(--z-nuit) * 0.10)
+                           var(--z-color--accent__c)
+                           var(--z-color--accent__h));
+
+  /*
+    LA SECONDE COULEUR — et son ANGLE est le vrai paramètre. Réglable, il ne donne pas
+    « la complémentaire » : il donne TOUTES les harmonies avec un seul mécanisme.
+        180 complémentaire · 150 split · 120 triade · 30 analogue
+    « complémentaire » n'est qu'une valeur de ce curseur, pas un concept à part.
+  */
+  --z-color--mate__angle: 180;
+  --z-color--mate__h: calc(var(--z-color--accent__h) + var(--z-color--mate__angle));
+  --z-color--mate: oklch(calc(var(--z-color--accent__l) + var(--z-nuit) * 0.10)
+                         var(--z-color--accent__c)
+                         var(--z-color--mate__h));
+
+  /* Les deux noms courts que le reste du fichier emploie. */
+  --z-tint: var(--z-color--accent);
+  --z-alerte: var(--z-color--mate);
 
   color-scheme: light dark;
   font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+/*
+	LES ÉTATS DEVIENNENT DE L'ARITHMÉTIQUE.
+	Aucun de ces trois blocs n'écrit de couleur : ils déplacent un des trois nombres.
+	Styleguide demo.1.1
+*/
+button:hover   { --z-color--accent__l: 0.64; }             /* juste plus clair */
+button:active  { --z-color--accent__l: 0.52; }             /* juste plus sombre */
+button:disabled, [data-eteint] {
+  --z-color--accent__c: 0.03;                              /* désaturé, PAS gris */
+  cursor: not-allowed;
 }
 
 /*
@@ -109,8 +159,8 @@
 	Styleguide demo.3
 */
 [data-plan] { background: var(--z-canvas); }
-[data-plan="haut"]  { --z-canvas: oklch(calc(var(--z-light) + 0.025 - var(--z-nuit) * 0.05) 0.008 var(--z-hue)); }
-[data-plan="creux"] { --z-canvas: oklch(calc(var(--z-light) - 0.025 + var(--z-nuit) * 0.05) 0.008 var(--z-hue)); }
+[data-plan="haut"]  { --z-canvas: oklch(calc(var(--z-light) + 0.025 - var(--z-nuit) * 0.05) 0.008 var(--z-color--accent__h)); }
+[data-plan="creux"] { --z-canvas: oklch(calc(var(--z-light) - 0.025 + var(--z-nuit) * 0.05) 0.008 var(--z-color--accent__h)); }
 
 /* ── L'atelier ── */
 * { box-sizing: border-box; }
@@ -154,6 +204,14 @@ z-slider {
   --z-slider--dot__border: var(--z-tint);
   --z-slider--background__thickness: 3px;
   --z-slider--dot__size: 14px;
+  /*
+    PIÈGE, et il a fait disparaître un curseur entier : les graduations retombent sur
+    `var(--z-line)`, un token de peau que cette page n'a pas. Une seule couleur
+    invalide rend TOUTE la propriété `background-image` invalide — le composant ne
+    s'affiche plus du tout, sans une erreur, sans un warning.
+    C'est exactement le « danger silencieux » du pacte : Zoé devrait gueuler ici.
+  */
+  --z-slider--ticks__color: color-mix(in oklab, var(--z-ink) calc(var(--d-filet) * 200%), var(--z-canvas));
 }
 
 /* ── L'application ── */
@@ -275,8 +333,16 @@ button:hover { filter: brightness(1.08); }
       <z-slider id="s-light" min="8" max="99" value="97"></z-slider>
     </label>
 
-    <label>Teinte
+    <label>Teinte · H
       <z-slider id="s-hue" min="0" max="360" value="28"></z-slider>
+    </label>
+
+    <label>Intensité · C
+      <z-slider id="s-chroma" min="0" max="30" value="19"></z-slider>
+    </label>
+
+    <label>Harmonie · angle
+      <z-slider id="s-angle" min="0" max="360" step="15" value="180" markers="24"></z-slider>
     </label>
 
     <label>Dose
@@ -284,8 +350,8 @@ button:hover { filter: brightness(1.08); }
     </label>
 
     <div class="compte">
-      <b>3</b>
-      variables pilotent cette page.<br>
+      <b>6</b>
+      nombres pilotent cette page.<br>
       Palettes écrites : <b style="display:inline;font-size:1rem">0</b>
     </div>
   </div>
@@ -462,13 +528,15 @@ button:hover { filter: brightness(1.08); }
     };
 
     cable("s-light", "--z-light", 0.01);
-    cable("s-hue", "--z-hue");
+    cable("s-hue", "--z-color--accent__h");
+    cable("s-chroma", "--z-color--accent__c", 0.01);
+    cable("s-angle", "--z-color--mate__angle");
     cable("s-dose", "--z-dose", 0.01);
 
     /* Un état de départ partageable : ?light=15&hue=250 ouvre la page déjà réglée.
        C'est ce qui permet d'envoyer une capture « de nuit » sans demander à personne
        de bouger un curseur. */
-    for (const [cle, id] of [["light", "s-light"], ["hue", "s-hue"], ["dose", "s-dose"]]) {
+    for (const [cle, id] of [["light", "s-light"], ["hue", "s-hue"], ["chroma", "s-chroma"], ["angle", "s-angle"], ["dose", "s-dose"]]) {
       const valeur = new URLSearchParams(location.search).get(cle);
       if (valeur === null) continue;
       const slider = document.getElementById(id);
