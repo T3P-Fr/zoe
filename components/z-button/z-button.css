@@ -128,7 +128,7 @@ z-button {
 	/* box-shadow et pas outline : l'outline n'épouse pas le border-radius partout. Il
 	   remplace le focus natif coupé plus haut — le clavier doit voir où il est. */
 	&:not(:has(z-layer)):state(focus) {
-		box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 40%, transparent);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-state__color) 40%, transparent);
 	}
 
 	&:not(:has(z-layer)):state(current) {
@@ -195,7 +195,7 @@ z-button {
 	/* Le halo se pose sur le FOND, pas sur l'hôte : il suit la pièce, même si une
 	   animation de peau l'a déplacée ou mise à l'échelle. */
 	&:has(z-layer):state(focus) > [part=background] {
-		box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 40%, transparent);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-state__color) 40%, transparent);
 	}
 
 	/* Seul le fond s'inverse ici : la couleur du TEXTE est traitée en 3.4, parce qu'elle

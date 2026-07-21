@@ -31,7 +31,7 @@
 	--z-accent: #c4562f;
 	--z-accent-ink: #fbf5ec;
 	--z-accent-soft: #f0dccf;
-	--z-focus-halo: #eccdb9;
+	--z-focus-halo: color-mix(in oklab, var(--z-state__color) 30%, transparent);
 	--z-disabled: #c4b8a3;
 	/* statut métier */
 	--z-danger: #c0362f;

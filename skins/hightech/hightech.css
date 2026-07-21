@@ -90,7 +90,7 @@
 	--z-accent-line: color-mix(in oklab, var(--z-accent) 42%, var(--z-line));
 
 	/* Le halo — l'UNIQUE effet lumineux (loi 3) : focus et onde au clic. */
-	--z-focus-halo: color-mix(in oklab, var(--z-accent) 28%, transparent);
+	--z-focus-halo: color-mix(in oklab, var(--z-state__color) 28%, transparent);
 	--z-halo: var(--z-focus-halo);
 
 	/* Statut métier — la source ne les nomme pas : on reste sobre, filet coloré. */
