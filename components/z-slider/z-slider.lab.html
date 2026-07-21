@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <title>z-slider — labo : le curseur est-il une capacité ?</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte.
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Lance <code>node scripts/serve.mjs 5177</code> puis passe par <code>http://localhost:5177/</code>.</div>'
+    );
+  </script>
+
+  <link rel="stylesheet" href="../../tools/z-motion/z-motion.css">
+  <link rel="stylesheet" href="../../tools/z-contact/z-contact.css">
+  <link rel="stylesheet" href="../../core/z-layer/z-layer.css">
+  <link rel="stylesheet" href="./z-slider.css">
+  <style>
+    body {
+      background: var(--z-page);
+      color: var(--z-ink);
+      font-family: var(--z-font);
+      padding: 2.5rem;
+      max-width: 840px;
+      margin: auto;
+    }
+
+    h1 { font-size: 1.2rem; }
+    h2 { font-size: .95rem; margin: 2.6rem 0 .6rem; }
+
+    .lead, .note {
+      color: var(--z-ink-soft);
+      font-size: .85rem;
+    }
+    .lead { margin: .2rem 0 1.6rem; }
+    .note { margin-top: .6rem; }
+
+    .banc {
+      display: flex;
+      gap: 3rem;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 1.6rem 0;
+    }
+
+    .verdict {
+      border: 1px solid var(--z-line-strong, var(--z-line));
+      padding: 1rem 1.2rem;
+      margin-top: 2rem;
+      font-size: .88rem;
+    }
+    .verdict b { color: var(--z-accent); }
+
+    /*
+    ═══ LA PREUVE — UN KNOB, ÉCRIT EN PEAU, SUR LE MÊME COMPOSANT ═══
+
+    Rien ici ne touche au JS. Le composant pose --z-slider__progress (0→1) ; tout ce
+    qui suit n'est qu'une géométrie posée dessus. Si ce bloc suffit, alors le curseur
+    n'est pas un composant : c'est une capacité que la peau met en forme.
+
+    La course d'un knob fait 270°, centrée sur le haut : de -135° à +135°. C'est la
+    convention de tous les instruments — les 90° du bas restent vides, c'est là que
+    l'œil lit « minimum » et « maximum » sans qu'on écrive un chiffre.
+    */
+    .knob {
+      --taille: 5.5rem;
+      --course: 270deg;
+      --depart: 225deg;                        /* 225 = bas-gauche : le début de la course */
+      inline-size: var(--taille);
+      block-size: var(--taille);
+    }
+
+    /*
+    Le cadran : l'arc parcouru, en dégradé conique. Un seul calque, aucune image.
+
+    PIÈGE, et il m'a coûté un premier jet mort : le composant pose `top: 50%` +
+    `translate` pour centrer une piste fine. Il faut annuler ces deux-là, mais SANS
+    écrire `top: auto` après `inset: 0` — l'ordre compte, et le `top: auto` rendait la
+    boîte haute de zéro. Rien ne s'affichait, et rien ne le disait.
+    */
+    .knob > z-layer[part="background"] {
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      border-radius: 50%;
+      background: conic-gradient(from var(--depart),
+        var(--z-accent) 0 calc(var(--z-slider__progress) * var(--course)),
+        var(--z-line) calc(var(--z-slider__progress) * var(--course)) var(--course),
+        transparent var(--course));
+      /* Le centre est évidé par un masque : le cadran devient un ANNEAU sans qu'on
+         empile un deuxième calque. `closest-side` pour que 100 % soit le bord du rond
+         et non le coin de la boîte — sinon l'anneau déborde de l'instrument. */
+      mask: radial-gradient(circle closest-side, transparent 0 62%, #000 62.5%);
+    }
+
+    /* Le corps de l'instrument : un rond net, filet 1px, comme tout le reste. Il doit
+       rester DANS le trou du masque, sinon il recouvre l'arc qu'on vient de dessiner. */
+    .knob::before {
+      content: "";
+      position: absolute;
+      inset: 24%;
+      border: 1px solid var(--z-line-strong, var(--z-ink-75));
+      border-radius: 50%;
+      background: var(--z-surface-raised, var(--z-surface));
+    }
+
+    /*
+    L'AIGUILLE. Le `marker` ne remplit plus une piste : il devient le pivot, posé au
+    centre, et c'est lui qui TOURNE. Le `dot` n'est plus qu'un trait accroché à son
+    extrémité haute — il ne sait même pas qu'il tourne.
+    */
+    .knob > z-layer[part="marker"] {
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      background: none;
+      rotate: calc(var(--z-slider__progress) * var(--course) - calc(var(--course) / 2));
+      transition: rotate .12s var(--z-ease);
+    }
+    .knob > z-layer[part="marker"] > z-layer[part="dot"] {
+      left: 50%;
+      top: 24%;
+      inline-size: 2px;
+      block-size: 22%;
+      translate: -50% 0;
+      border: none;
+      border-radius: 0;
+      background: var(--z-ink-100, currentColor);
+    }
+    .knob:state(drag) > z-layer[part="marker"] > z-layer[part="dot"] {
+      background: var(--z-accent);
+      block-size: 28%;
+    }
+
+    /*
+    ═══ LA JAUGE — le même objet, sans le geste ═══
+    Un demi-cadran, et `disabled` : on lit, on ne touche pas. Zéro ligne de plus que
+    le knob, à part l'angle de course.
+    */
+    .jauge {
+      --taille: 6rem;
+      --course: 180deg;
+      --depart: 270deg;
+      inline-size: var(--taille);
+      block-size: calc(var(--taille) / 2);
+      cursor: default;
+    }
+    .jauge > z-layer[part="background"] {
+      inset: 0 0 auto;
+      inline-size: auto;
+      block-size: var(--taille);
+      translate: none;
+      border-radius: 50%;
+      background: conic-gradient(from var(--depart),
+        var(--z-accent) 0 calc(var(--z-slider__progress) * var(--course)),
+        var(--z-line) calc(var(--z-slider__progress) * var(--course)) var(--course),
+        transparent var(--course));
+      mask: radial-gradient(circle closest-side, transparent 0 62%, #000 62.5%);
+    }
+    .jauge::after {
+      content: counter(z-value) "%";
+      counter-reset: z-value var(--z-slider__value);
+      position: absolute;
+      inset: auto 0 0;
+      text-align: center;
+      font-size: .8rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /*
+    ═══ LE SCRUBBER — la même piste, juste plus épaisse ═══
+    Pas une ligne de CSS de structure : trois tokens. C'est l'argument le plus court
+    de toute la démonstration.
+    */
+    .scrubber {
+      --z-slider__length: 18rem;
+      --z-slider--background__thickness: 6px;
+      --z-slider--dot__height: 22px;
+    }
+  </style>
+
+  <h1>Labo — le curseur est-il un composant, ou une capacité ?</h1>
+  <p class="lead">
+    La question posée dans <a href="./z-slider.lab.md">z-slider.lab.md</a> : les huit
+    curseurs de la planche HighTech (slider, vertical, range, scrubber, jauge, knob, pad
+    XY, champ) sont-ils huit composants, ou <b>un seul</b> nombre mis en forme huit fois
+    par la peau&nbsp;?
+    <br><br>
+    Cette page est la preuve. Tout ce qui suit tourne sur <code>&lt;z-slider&gt;</code>,
+    <b>sans une ligne de JS ajoutée</b> — que du CSS posé sur
+    <code>--z-slider__progress</code>.
+  </p>
+
+  <h2>1 · Le knob — 270° de course</h2>
+  <div class="banc">
+    <z-slider class="knob" value="30">
+      <z-layer part="background"></z-layer>
+      <z-layer part="marker"><z-layer part="dot"></z-layer></z-layer>
+      <z-layer part="contact"></z-layer>
+    </z-slider>
+
+    <z-slider class="knob" value="70">
+      <z-layer part="background"></z-layer>
+      <z-layer part="marker"><z-layer part="dot"></z-layer></z-layer>
+      <z-layer part="contact"></z-layer>
+    </z-slider>
+
+    <z-slider class="knob" value="100" step="25">
+      <z-layer part="background"></z-layer>
+      <z-layer part="marker"><z-layer part="dot"></z-layer></z-layer>
+      <z-layer part="contact"></z-layer>
+    </z-slider>
+  </div>
+  <p class="note">
+    Attrape-les et glisse. Le <code>marker</code> ne remplit plus une piste : il devient
+    le <b>pivot</b> et tourne ; le <code>dot</code> n'est qu'un trait accroché à son
+    extrémité, et il ne sait même pas qu'il tourne. Le cadran est un
+    <code>conic-gradient</code>, évidé par un masque — un seul calque, aucune image.
+  </p>
+
+  <h2>2 · La jauge — le même objet, sans le geste</h2>
+  <div class="banc">
+    <z-slider class="jauge" value="72" disabled>
+      <z-layer part="background"></z-layer>
+    </z-slider>
+
+    <z-slider class="jauge" value="24" disabled>
+      <z-layer part="background"></z-layer>
+    </z-slider>
+  </div>
+  <p class="note">
+    Une jauge, c'est un knob à 180° avec <code>disabled</code> : on lit, on ne touche
+    pas. Le pourcentage est écrit par <code>counter()</code> — aucun nœud, aucun JS.
+  </p>
+
+  <h2>3 · Le scrubber — trois tokens, zéro structure</h2>
+  <div class="banc">
+    <z-slider class="scrubber" value="38">
+      <z-layer part="background"></z-layer>
+      <z-layer part="marker"><z-layer part="dot"></z-layer></z-layer>
+      <z-layer part="contact"></z-layer>
+    </z-slider>
+  </div>
+  <p class="note">
+    Aucune règle de structure : une longueur, une épaisseur, une hauteur de poignée.
+    C'est l'argument le plus court de la page.
+  </p>
+
+  <div class="verdict">
+    <b>Ce que ça prouve, et ce que ça ne prouve pas.</b><br><br>
+    ✔ Le knob, la jauge et le scrubber sortent <b>d'une peau seule</b>. Trois composants
+    du catalogue qui deviennent trois feuilles de style.<br>
+    ✔ La trigonométrie n'a même pas été nécessaire : un <code>conic-gradient</code> pour
+    le cadran, une <code>rotate</code> pour l'aiguille.<br><br>
+    ✘ <b>Le geste du knob reste celui d'une piste</b> : on glisse horizontalement sur la
+    largeur du rond, pas en tournant. C'est utilisable, mais ce n'est pas un vrai
+    potentiomètre. Un geste rotatif toucherait au JS — c'est la seule chose que la peau
+    ne peut pas prendre.<br>
+    ✘ <b>Le range (deux poignées) n'est pas ici</b>, et il ne le sera pas : il faut savoir
+    laquelle on attrape. C'est le seul des huit qui coûte du JS.<br><br>
+    <b>Verdict : six sur huit sortent de la peau.</b> Reste à trancher le geste rotatif
+    et le range — deux vraies décisions, pas six.
+  </div>
+
+  <script type="module">
+    import "../../examples/skin-switch.js";
+    import "../../tools/z-contact/z-contact.js";
+    import "../../core/z-layer/z-layer.js";
+    import "./z-slider.js";
+  </script>
+
+</html>
