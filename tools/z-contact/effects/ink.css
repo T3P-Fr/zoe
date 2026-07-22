@@ -1,83 +1,92 @@
 /* ==========================================================================
-   effet · INK — deux gouttes d'encre chaude qui giclent et boivent dans le papier
+   effet · INK — une giclée d'encre qui éclabousse et boit dans le papier
    --------------------------------------------------------------------------
-   UNE RECETTE DU CATALOGUE, chargée par personne par défaut : une peau l'importe si
-   c'est sa signature (`@import ".../effects/ink.css";`). C'est la SIGNATURE de la peau
-   Claude — le contre-pied exact de `morph`/HighTech : pas un filet, un APLAT ; pas du
-   cobalt sec, de l'encre terre ; pas une trajectoire d'ingénieur, un jet vif.
+   UNE RECETTE DU CATALOGUE. La SIGNATURE de la peau Claude — le contre-pied de
+   `morph`/HighTech : pas un filet cobalt, une masse d'encre terre, molle et vivante.
 
-   LE GESTE (direction de Christophe) : deux cercles FLOUS (bord dégradé, pas de filtre)
-   qui grandissent TRÈS vite puis ralentissent d'un coup (ease-out franc), chacun partant
-   dans une direction différente — l'encre gicle, elle n'enfle pas symétriquement. Une
-   OMBRE INTERNE qui grandit creuse le contact (le papier qui se gorge), et un halo diffus
-   derrière (le buvard). Deux ronds + une profondeur, tout en dégradés — aucun `blur`.
+   LE GESTE : un pâté central au bord IRRÉGULIER qui se déforme en s'épanouissant, une
+   VOLÉE de gouttes (portées par des box-shadow floues) qui giclent en s'écartant, et un
+   HALO qui boit le papier derrière. Un léger `blur()` donne le bord humide. Pas un cercle
+   qui gonfle : une éclaboussure.
 
-   Trois surfaces, zéro pièce ajoutée au moteur : `z-foreground` (goutte A + l'ombre
-   interne) · `::before` (goutte B, l'autre direction) · `::after` (le buvard). On ne
-   touche pas à z-contact.
+   Trois surfaces, zéro pièce ajoutée au moteur : `z-foreground` = le pâté + la volée,
+   `::before` = une coulée satellite, `::after` = le buvard. Le moteur n'est pas touché.
 
+   DÉCLARATION DÉCOUVRABLE (voir implode.css) + règles SCOPÉES par `[fx="ink"]`.
    Réglages (posés par la peau) : --z-contact-size · --z-contact-duration · --z-contact-color.
    Styleguide 12.4
    ====================================================================== */
-
-/* Déclaration DÉCOUVRABLE (voir implode.css) + règles SCOPÉES par `[fx="ink"]`. */
 @property --z-contact__fx--ink { syntax: "*"; inherits: false; }
 
-/* Le jet gicle vite puis se fige — c'est l'accélération d'une éclaboussure, pas un ressort. */
+/* LE PÂTÉ + LA VOLÉE. Le fond est un dégradé (bord fondu, pas de filtre), les box-shadow
+   sont les gouttes projetées — floues, de tailles et d'angles variés. Tout gicle vite
+   puis se fige (ease-out franc), en tournant et en se déformant. */
 z-overlay z-contact[fx="ink"] z-foreground {
-	width: var(--z-contact-size, 26px);
-	height: var(--z-contact-size, 26px);
-	border-radius: 50%;
-	/* un cercle FLOU par le dégradé lui-même : plein au cœur, évanoui au bord — aucun blur */
-	background: radial-gradient(circle, var(--c) 46%, transparent 72%);
-	/* l'ombre interne qui creuse le contact (grandit dans la keyframe) */
-	box-shadow: inset 0 0 0 0 color-mix(in oklab, var(--c) 55%, #000 12%);
-	will-change: transform, opacity, box-shadow;
-	animation: z-contact-ink-a var(--z-contact-duration, 0.6s) cubic-bezier(0.08, 0.85, 0.18, 1) forwards;
+	--s: var(--z-contact-size, 28px);   /* les gouttes se mesurent sur la taille de l'encre */
+	width: var(--s);
+	height: var(--s);
+	border-radius: 47% 53% 44% 56% / 55% 44% 56% 45%;
+	background: radial-gradient(circle at 43% 40%, var(--c) 46%, color-mix(in oklab, var(--c) 55%, transparent) 66%, transparent 80%);
+	box-shadow:
+		calc(var(--s) * 0.55) calc(var(--s) * -0.45) calc(var(--s) * 0.18) calc(var(--s) * -0.06) var(--c),
+		calc(var(--s) * -0.64) calc(var(--s) * 0.34) calc(var(--s) * 0.2) calc(var(--s) * -0.12) color-mix(in oklab, var(--c) 88%, transparent),
+		calc(var(--s) * 0.4) calc(var(--s) * 0.58) calc(var(--s) * 0.16) calc(var(--s) * -0.14) var(--c),
+		calc(var(--s) * -0.44) calc(var(--s) * -0.56) calc(var(--s) * 0.18) calc(var(--s) * -0.12) color-mix(in oklab, var(--c) 80%, transparent),
+		calc(var(--s) * 0.76) calc(var(--s) * 0.15) calc(var(--s) * 0.2) calc(var(--s) * -0.16) var(--c),
+		calc(var(--s) * -0.2) calc(var(--s) * 0.68) calc(var(--s) * 0.16) calc(var(--s) * -0.18) color-mix(in oklab, var(--c) 84%, transparent);
+	filter: blur(0.6px);
+	will-change: transform, opacity, border-radius;
+	animation: z-contact-ink var(--z-contact-duration, 0.6s) cubic-bezier(0.1, 0.72, 0.2, 1) forwards;
 }
 
-/* GOUTTE A — gicle vers le haut-gauche. */
-@keyframes z-contact-ink-a {
+@keyframes z-contact-ink {
 	0% {
-		transform: translate(-50%, -50%) scale(0.12);
-		box-shadow: inset 0 0 0 0 color-mix(in oklab, var(--c) 55%, #000 12%);
-		opacity: 0.72;
+		transform: translate(-50%, -50%) scale(0.12) rotate(-14deg);
+		opacity: 0.92;
+		border-radius: 47% 53% 44% 56% / 55% 44% 56% 45%;
+	}
+
+	60% {
+		opacity: 0.8;
 	}
 
 	100% {
-		transform: translate(-72%, -66%) scale(2.15);
-		box-shadow: inset 0 0 14px 2px color-mix(in oklab, var(--c) 55%, #000 22%);
+		transform: translate(-50%, -50%) scale(2.8) rotate(11deg);
 		opacity: 0;
+		border-radius: 56% 44% 53% 47% / 44% 56% 47% 53%;
 	}
 }
 
-/* GOUTTE B (::before) — même gicle, direction opposée (bas-droite). */
+/* LA COULÉE satellite (::before) — une deuxième tache qui part franchement de côté. */
 z-overlay z-contact[fx="ink"] z-foreground::before {
 	content: "";
 	position: absolute;
-	inset: 0;
-	border-radius: 50%;
-	background: radial-gradient(circle, var(--c) 44%, transparent 70%);
-	animation: z-contact-ink-b var(--z-contact-duration, 0.6s) cubic-bezier(0.08, 0.85, 0.18, 1) forwards;
+	left: 8%;
+	top: 4%;
+	width: 40%;
+	height: 40%;
+	border-radius: 52% 48% 46% 54% / 50% 56% 44% 50%;
+	background: radial-gradient(circle, var(--c) 50%, transparent 78%);
+	animation: z-contact-ink-splat var(--z-contact-duration, 0.6s) cubic-bezier(0.1, 0.72, 0.2, 1) forwards;
 }
 
-@keyframes z-contact-ink-b {
+@keyframes z-contact-ink-splat {
 	0% {
-		transform: scale(0.12);
-		opacity: 0.62;
+		transform: scale(0.2);
+		opacity: 0.8;
 	}
 
 	100% {
-		transform: translate(28%, 24%) scale(1.7);
+		transform: scale(2) translate(-55%, -60%);
 		opacity: 0;
 	}
 }
 
-/* LE BUVARD (::after) — un halo diffus, plus lent, qui reste rond et pâle. */
+/* LE BUVARD (::after) — un halo diffus, plus lent, qui reste pâle : le papier qui boit. */
 z-overlay z-contact[fx="ink"] z-foreground::after {
 	content: "";
 	position: absolute;
-	inset: -30%;
+	inset: -32%;
 	border-radius: 50%;
 	background: radial-gradient(circle, color-mix(in oklab, var(--c) 34%, transparent) 0%, transparent 64%);
 	animation: z-contact-ink-halo var(--z-contact-duration, 0.6s) ease-out forwards;
@@ -91,6 +100,6 @@ z-overlay z-contact[fx="ink"] z-foreground::after {
 
 	to {
 		opacity: 0;
-		transform: scale(1.7);
+		transform: scale(1.8);
 	}
 }

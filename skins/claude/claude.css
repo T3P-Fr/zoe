@@ -75,7 +75,7 @@
 		tête). Ample, chaude, et elle s'attarde : le geste de cette peau ne se presse jamais.
 	*/
 	--z-contact-fx: ink;         /* SA signature — lue par la démo de la doc pour l'afficher d'office */
-	--z-contact-size: 24px;      /* une belle goutte, pas une pointe */
+	--z-contact-size: 40px;      /* une VRAIE tache d'encre, franche */
 	--z-contact-duration: .6s;   /* elle s'épanouit et sèche sans hâte */
 	--z-contact-color: var(--z-accent);   /* terre cuite : l'encre de la maison */
 
