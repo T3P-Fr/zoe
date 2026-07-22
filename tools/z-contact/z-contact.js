@@ -187,9 +187,9 @@ export class ZContact extends HTMLElement {
 	static api = {
 		tag: "z-contact",
 		summary: {
-			en: "The click leaves a mark where the pointer touched. Write it once, flat: the whole page answers.",
-			fr: "Le clic laisse une trace là où le pointeur a touché. Écrit une fois, à plat : toute la page répond.",
-			es: "El clic deja una marca donde el puntero tocó. Se escribe una vez, plano: toda la página responde."
+			en: "A visual effect on every click, across the whole page. Drop the tag once, anywhere — and you're done. Two effects ready to use; yours takes a few lines of CSS.",
+			fr: "Un effet visuel à chaque clic, sur toute la page. Pose la balise une fois, n'importe où — et c'est réglé. Deux effets prêts à l'emploi ; le tien tient en quelques lignes de CSS.",
+			es: "Un efecto visual en cada clic, en toda la página. Pon la etiqueta una vez, donde sea — y listo. Dos efectos listos para usar; el tuyo cabe en unas líneas de CSS."
 		},
 		attributes: [
 			{ name: "fx", type: "string", description: { en: "Kill switch: fx=\"none\" disables the effect on this page. WHICH effect is shown is chosen by the skin (it imports a recipe from effects/), never by the page.", fr: "Coupe-circuit : fx=\"none\" désactive l'effet sur cette page. QUEL effet s'affiche est choisi par la peau (elle importe une recette de effects/), jamais par la page.", es: "Interruptor: fx=\"none\" desactiva el efecto en esta página. QUÉ efecto se muestra lo elige la piel (importa una receta de effects/), nunca la página." } },

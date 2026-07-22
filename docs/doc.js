@@ -77,6 +77,18 @@ const APRES = `<z-element><button>Envoyer</button></z-element>
 z-element:state(over)  { background: orange; }
 z-element:state(press) { transform: scale(.97); }`;
 
+/*
+	Les textes de la démo z-contact. Déclarés ICI (près de HOME) et non près de contactDemo :
+	render() tourne en haut du fichier, donc ces const doivent être initialisées avant, sinon
+	TDZ (« Cannot access 'CDEMO' before initialization »).
+*/
+const CDEMO = {
+	en: { target: "Click me (or anywhere in the zone)", hint: "The effect is born where you touch — try different spots.", effect: "Effect", none: "off", css: "Not your taste? One effect = one small CSS file. Pick another, or write your own." },
+	fr: { target: "Clique-moi (ou n'importe où dans la zone)", hint: "L'effet naît là où tu touches — essaie plusieurs endroits.", effect: "Effet", none: "aucun", css: "Pas à ton goût ? Un effet = un petit fichier CSS. Prends-en un autre, ou écris le tien." },
+	es: { target: "Púlsame (o en cualquier parte de la zona)", hint: "El efecto nace donde tocas — prueba en varios sitios.", effect: "Efecto", none: "ninguno", css: "¿No es tu estilo? Un efecto = un pequeño archivo CSS. Elige otro, o escribe el tuyo." }
+};
+const CDEMO_EFFECTS = ["implode", "explode", "morph"];
+
 addLink(`${ROOT}tools/z-motion/z-motion.css`);
 
 const manifest = await (await fetch(`${ROOT}dist/custom-elements.json`)).json();
@@ -227,10 +239,18 @@ function entrySection(d, group) {
 	const sec = el("section", { class: "entry", id: d.tagName });
 	sec.append(el("h2", { text: `<${d.tagName}>` }));
 	sec.append(el("p", { class: "summary", text: desc(d.summary) }));
-	sec.append(usageBlock(d));
 
-	/* Le tester interactif UNE fois (le noyau) ; un composant = aperçu ; un tool = renvoi. */
+	/*
+		L'ordre d'une fiche : le BESOIN (le summary, écrit comme une promesse), puis l'ESSAI
+		(on manipule), puis SEULEMENT le technique (les tables) plus bas. z-contact a sa
+		vraie zone de démo avec sélecteur d'effet — pas un renvoi. Les autres gardent leur
+		aperçu ; le bloc « ce que tu écris » ne s'affiche que là où il aide encore.
+	*/
+	const isContact = d.tagName === "z-contact";
+	if (!isContact) sec.append(usageBlock(d));
+
 	if (group === "core") sec.append(visualizer(d));
+	else if (isContact) sec.append(contactDemo(d));
 	else if (group === "components") sec.append(preview(d));
 	else sec.append(el("p", { class: "seealso", text: t("seealso") }));
 
@@ -242,6 +262,58 @@ function entrySection(d, group) {
 	if (d.cssProperties?.length) sec.append(heading(t("cssVars"), t("cssVarsHint")), table([t("variable"), t("role")],
 		d.cssProperties.map((v) => [code(v.name), desc(v.description)])));
 	return sec;
+}
+
+/*
+	LA DÉMO DE z-contact — la vraie, pas un renvoi. Une zone où l'on clique, un sélecteur
+	d'effet, et l'effet naît sous le pointeur (répliqué dans l'overlay, comme en vrai). On
+	branche les vrais fichiers : la base z-contact.css positionne la scène, et une « recette »
+	(effects/<fx>.css) donne l'apparence — exactement le mécanisme réel : changer d'effet =
+	changer de recette. Une source <z-contact> invisible dit au moteur « tourne ici ».
+*/
+/* Charge (ou remplace) la recette d'effet, appendue APRÈS la peau pour gagner la cascade. */
+function ensureContactRecipe(fx) {
+	let link = document.getElementById("doc-contact-recipe");
+	if (fx === "none") { link?.remove(); return; }
+	if (!link) { link = document.createElement("link"); link.id = "doc-contact-recipe"; link.rel = "stylesheet"; }
+	document.head.append(link);                    /* ré-append → reste le dernier, donc gagne */
+	link.href = `${ROOT}tools/z-contact/effects/${fx}.css`;
+}
+
+function contactDemo(d) {
+	const c = CDEMO[LANG] || CDEMO.en;
+	addLink(`${ROOT}tools/z-contact/z-contact.css`);   /* la base : positionne l'overlay/les parts */
+
+	/* la SOURCE déclarée (invisible) : elle dit au moteur « le contact tourne sur cette page ». */
+	let src = document.getElementById("doc-contact-src");
+	if (!src) { src = document.createElement("z-contact"); src.id = "doc-contact-src"; document.body.append(src); }
+
+	const box = el("div", { class: "cdemo" });
+
+	/* les paramètres : le sélecteur d'effet (changer d'effet = changer de recette). */
+	const params = el("div", { class: "cdemo-params" });
+	params.append(el("span", { class: "cdemo-plabel", text: c.effect }));
+	const buttons = new Map();
+	const select = (fx) => {
+		src.setAttribute("fx", fx);
+		ensureContactRecipe(fx);
+		for (const [name, b] of buttons) b.classList.toggle("on", name === fx);
+	};
+	for (const fx of [...CDEMO_EFFECTS, "none"]) {
+		const b = el("button", { class: "cdemo-choice", text: fx === "none" ? c.none : fx });
+		b.addEventListener("click", () => select(fx));
+		params.append(b); buttons.set(fx, b);
+	}
+
+	/* la zone : cliquable partout (tabindex → le moteur la voit comme interactive). */
+	const zone = el("div", { class: "cdemo-zone" });
+	zone.tabIndex = 0;
+	const target = el("button", { class: "cdemo-target", text: c.target });
+	zone.append(target, el("p", { class: "cdemo-hint", text: c.hint }));
+
+	box.append(params, zone, el("p", { class: "cdemo-css", text: c.css }));
+	select("implode");                                 /* effet par défaut */
+	return box;
 }
 
 /*

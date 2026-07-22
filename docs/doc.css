@@ -86,6 +86,38 @@ body { margin: 0; background: var(--z-page); color: var(--z-ink);
 .avapres .avant pre { background: color-mix(in srgb, var(--z-ink) 8%, var(--z-surface)); color: var(--z-ink-soft); }
 .avapres .apres pre { background: color-mix(in srgb, var(--z-ink) 92%, #000); color: var(--z-page); }
 
+/*
+	── LA DÉMO z-contact : une zone où l'on clique + un sélecteur d'effet ──
+	L'essai avant le technique : on manipule d'abord, on lit les tables après.
+	Styleguide docs.cdemo
+*/
+.cdemo { margin: .4rem 0 1.6rem; }
+.cdemo-params { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin-bottom: .7rem; }
+.cdemo-plabel { font: 700 .64rem/1 var(--doc-prose); text-transform: uppercase; letter-spacing: .11em; color: var(--z-ink-soft); margin-right: .2rem; }
+.cdemo-choice {
+	font: 600 .85rem/1 var(--doc-mono); cursor: pointer;
+	padding: .38rem .7rem; border-radius: 7px;
+	border: 1px solid var(--z-line); background: var(--z-surface); color: var(--z-ink-soft);
+	transition: all .12s;
+}
+.cdemo-choice:hover { color: var(--z-ink); border-color: var(--z-line-strong, var(--z-ink-soft)); }
+.cdemo-choice.on { background: var(--z-accent); border-color: var(--z-accent); color: var(--z-accent-ink, #fff); }
+
+.cdemo-zone {
+	display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
+	min-height: 240px; padding: 2rem; border-radius: var(--z-radius, 10px);
+	border: 1px dashed var(--z-line); background: var(--z-surface-raised);
+	cursor: crosshair; outline: none;
+}
+.cdemo-zone:focus-visible { border-color: var(--z-accent); }
+.cdemo-target {
+	font: 600 1rem/1 var(--doc-prose); cursor: pointer;
+	padding: .8rem 1.5rem; border-radius: var(--z-radius, 8px);
+	border: 1px solid var(--z-accent); background: var(--z-accent); color: var(--z-accent-ink, #fff);
+}
+.cdemo-hint { margin: 0; font-size: .85rem; color: var(--z-ink-soft); text-align: center; }
+.cdemo-css { margin: .8rem 0 0; font-size: .92rem; line-height: 1.5; color: var(--z-ink-soft); max-width: 60ch; }
+
 /* ── Le visualiseur : gros bouton draggable + liste d'états à points ── */
 .viz { display: grid; grid-template-columns: 1fr 180px; gap: 1.2rem; border: 1px solid var(--z-line-soft); border-radius: var(--z-radius, 8px); background: var(--z-surface-raised); margin-bottom: 1.4rem; padding: 1.4rem; }
 .viz-stage { position: relative; min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; border: 1px dashed var(--z-line-soft); border-radius: var(--z-radius, 8px); overflow: hidden; }
