@@ -86,7 +86,9 @@ export class ZElement extends HTMLElement {
 			{ name: "error", type: "boolean", description: { en: "Status: error.", fr: "Statut : en erreur.", es: "Estado: error." } },
 			{ name: "success", type: "boolean", description: { en: "Status: valid / done.", fr: "Statut : validé.", es: "Estado: válido / hecho." } },
 			{ name: "name", type: "string", description: { en: "Form field name — used only by components that submit a value.", fr: "Nom du champ dans le formulaire — utilisé par les composants qui envoient une valeur.", es: "Nombre del campo en el formulario — usado por los componentes que envían un valor." } },
-			{ name: "required", type: "boolean", description: { en: "The form is invalid until this control has a value.", fr: "Le formulaire est invalide tant que ce contrôle n'a pas de valeur.", es: "El formulario es inválido mientras este control no tenga valor." } }
+			{ name: "required", type: "boolean", description: { en: "The form is invalid until this control has a value.", fr: "Le formulaire est invalide tant que ce contrôle n'a pas de valeur.", es: "El formulario es inválido mientras este control no tenga valor." } },
+			{ name: "state", values: [{ value: "<nom(s)>", note: { en: "one or more custom states to raise — works with or without a :state() rule, in any order", fr: "un ou plusieurs états custom à lever — avec ou sans règle :state(), dans n'importe quel ordre", es: "uno o varios estados personalizados a activar — con o sin regla :state(), en cualquier orden" } }] },
+			{ name: "when", values: [{ value: "<geste> +<délai>", note: { en: "condition that raises `state` — e.g. « press +2s » (2s after press), cleared when it stops", fr: "la condition qui lève `state` — ex. « press +2s » (2s après l'appui), retiré quand elle cesse", es: "la condición que activa `state` — p. ej. « press +2s » (2s tras pulsar), se retira cuando cesa" } }] }
 		],
 		events: [
 			{ name: "z-state", description: { en: "Emitted on every state change. detail: { states, changed, on }.", fr: "Émis à chaque changement d'état. detail : { states, changed, on }.", es: "Emitido en cada cambio de estado. detail: { states, changed, on }." } }
@@ -135,7 +137,7 @@ export class ZElement extends HTMLElement {
 	/* Attributs observés = les durables de la classe + les états déclarés-en-CSS
 	   découverts à la définition (mettre le CSS avant le script du composant). */
 	static get observedAttributes() {
-		return [...this.durableStates, ...this.discoveredStates()];
+		return ["state", "when", ...this.durableStates, ...this.discoveredStates()];
 	}
 
 	/*
@@ -156,6 +158,10 @@ export class ZElement extends HTMLElement {
 	#startY = 0;
 	#releaseTimer = 0;
 	#keyboard = false;
+	#targetStates = [];   /* les états nommés par `state=` */
+	#raised = [];         /* ceux effectivement levés (pour les rebaisser à l'identique) */
+	#when = null;         /* condition parsée { trigger, delay } ou null */
+	#whenTimer = 0;
 
 	connectedCallback() {
 		if (this.#wired) { this.#flash("enter"); return; }
@@ -167,6 +173,7 @@ export class ZElement extends HTMLElement {
 		this.addEventListener("pointerup", this.#onUp);
 		this.addEventListener("focusin", this.#onFocusIn);
 		this.addEventListener("focusout", this.#onFocusOut);
+		this.addEventListener("z-state", this.#onWhen);   /* le déclencheur `when` observe mes propres états */
 		this.addEventListener("pointerdown", () => { this.#keyboard = false; }, true);
 		window.addEventListener("keydown", () => { this.#keyboard = true; }, true);
 
@@ -174,6 +181,11 @@ export class ZElement extends HTMLElement {
 		this.#syncDefault();
 		/* enter : transitoire, au montage (loi Zoe : rien ne pope). */
 		this.#flash("enter");
+	}
+
+	disconnectedCallback() {
+		/* un `when` en attente ne doit pas se déclencher après le retrait de l'élément. */
+		clearTimeout(this.#whenTimer);
 	}
 
 	/* Pose `default` ⟺ aucun statut métier n'est actif. Le repos est un état à part
@@ -187,6 +199,8 @@ export class ZElement extends HTMLElement {
 		<z-element loading> pose :state(loading), tout comme el.setState("loading").
 	*/
 	attributeChangedCallback(name, _old, value) {
+		/* `state` / `when` ne sont pas des états eux-mêmes : ils DÉCLENCHENT des états. */
+		if (name === "state" || name === "when") { this.#reconfigure(); return; }
 		const on = value !== null;
 		this.#set(name, on);
 		const aria = STATUS_ARIA[name];
@@ -348,6 +362,54 @@ export class ZElement extends HTMLElement {
 		if (!raw) return fallback;
 		return raw.endsWith("ms") ? parseFloat(raw) : parseFloat(raw) * 1000;
 	}
+
+	/* ── DÉCLENCHEURS DÉCLARATIFS : `state` (QUELS états) × `when` (à QUELLE condition) ── */
+
+	/*
+		(Re)configure d'après `state` et `when`.
+		`state="coucou autre"` nomme les états custom à lever. Ils marchent AVEC ou SANS
+		règle `:state(coucou)`, et quel que soit l'ORDRE (CSS écrit avant, après, ou jamais)
+		— parce que l'état est posé nativement en `:state()`, la règle ne fait que le peindre
+		si elle existe. C'est la parité, appliquée aux états : attribut OU CSS, même résultat.
+		`when="press +2s"` les CONDITIONNE : levés 2s après l'entrée en `:state(press)`,
+		rebaissés dès qu'elle cesse. Sans `when`, `state` lève tout de suite.
+	*/
+	#reconfigure() {
+		clearTimeout(this.#whenTimer);
+		this.#lower();
+		this.#targetStates = (this.getAttribute("state") || "").trim().split(/\s+/).filter(Boolean);
+		this.#when = this.#parseWhen(this.getAttribute("when"));
+		if (this.#targetStates.length && !this.#when) this.#raise();
+	}
+
+	/* Parse `when` : un déclencheur (un état/geste) + un délai optionnel (`+2s`, `500ms`).
+	   @param {string|null} str  @returns {{trigger: string, delay: number}|null} */
+	#parseWhen(str) {
+		if (!str) return null;
+		let trigger = null, delay = 0;
+		for (let token of str.trim().split(/\s+/)) {
+			token = token.replace(/^\+/, "");
+			if (/^\d/.test(token)) delay = token.endsWith("ms") ? parseFloat(token) : parseFloat(token) * 1000;
+			else if (token) trigger = token;
+		}
+		return trigger ? { trigger, delay } : null;
+	}
+
+	#raise() { for (const state of this.#targetStates) this.#set(state, true); this.#raised = [...this.#targetStates]; }
+	#lower() { for (const state of this.#raised) this.#set(state, false); this.#raised = []; }
+
+	/*
+		Le déclencheur : mon propre `when.trigger` s'allume → j'arme le délai puis je lève ;
+		il s'éteint → j'annule et je baisse. `event.target === this` : jamais le geste d'un
+		z-element imbriqué. (Lever un état custom réémet `z-state`, mais son nom ≠ trigger,
+		donc pas de boucle.)
+	*/
+	#onWhen = (event) => {
+		if (!this.#when || event.target !== this || event.detail.changed !== this.#when.trigger) return;
+		clearTimeout(this.#whenTimer);
+		if (event.detail.on) this.#whenTimer = setTimeout(() => this.#raise(), this.#when.delay);
+		else this.#lower();
+	};
 
 	/*
 		IMBRICATION : un événement bulle depuis sa cible. On ne le traite que si le
