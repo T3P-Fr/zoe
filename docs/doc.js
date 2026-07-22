@@ -262,8 +262,7 @@ function entrySection(d, group) {
 	else if (group === "components") sec.append(preview(d));
 	else sec.append(el("p", { class: "seealso", text: t("seealso") }));
 
-	if (d.attributes?.length) sec.append(heading(t("attributes"), t("attributesHint")), table([t("attributes"), t("values"), t("role")],
-		d.attributes.map((a) => [code(a.name), valuesCell(a), desc(a.description)])));
+	if (d.attributes?.length) sec.append(heading(t("attributes"), t("attributesHint")), attributesTable(d.attributes));
 	if (d.events?.length) sec.append(heading(t("events"), t("eventsHint")), table([t("event"), t("role")],
 		d.events.map((ev) => [code(ev.name), desc(ev.description)])));
 	if (d.cssStates?.length) { sec.append(heading(t("states"), t("statesHint"))); sec.append(chips(d.cssStates.map((s) => s.name))); }
@@ -528,36 +527,61 @@ function table(head, rows) {
 	return tbl;
 }
 /*
-	La cellule « Valeurs » d'un attribut : les valeurs concrètes qu'il accepte, pas son type.
-	« string » ne dit rien à personne ; « implode · explode · morph · none », si.
-
-	Une valeur peut être SIMPLE (un mot) ou DÉCRITE (un objet { value, note, default }) —
-	c'est ce qui permet des valeurs complexes : chacune porte son sens, et un intervalle
-	ou un type se dit en une entrée notée (`0 → 360` « l'angle, en degrés » ; `<color>`
-	« une couleur CSS »).
-
-	UN SEUL FORMAT, toujours : une liste verticale, une valeur par ligne. Jamais de
-	pastilles ici, jamais un « présent / absent » inline à côté d'une liste ailleurs — le
-	cerveau ne doit pas ré-apprendre la mise en page à chaque ligne du tableau (uniformité).
-	  - liste de valeurs   → une ligne « valeur [défaut] — sens » par valeur ;
-	  - booléen            → deux lignes, « présent » / « absent » ;
-	  - texte libre        → une ligne, un tiret.
+	LA TABLE DES ATTRIBUTS — chaque VALEUR est sa propre ligne, alignée avec son RÔLE.
+	« string » ne dit rien ; « implode | l'anneau se ramasse en un point » dit tout. Le
+	sens d'une valeur vit dans la colonne Rôle, sur la MÊME ligne que la valeur — jamais
+	entassé sous elle dans la colonne étroite. Le nom de l'attribut chapeaute ses lignes
+	(rowspan). Un seul gabarit du plus simple au plus complexe (uniformité) :
+	  - valeurs décrites → une ligne par valeur : valeur [défaut] | son sens ;
+	  - liste simple     → une ligne par valeur, le rôle général sur la première ;
+	  - booléen          → une ligne « présent / absent » | le rôle ;
+	  - texte libre      → une ligne « — » | le rôle.
 */
-function valuesCell(a) {
-	let entries;
-	if (a.values?.length) entries = a.values.map((v) => (typeof v === "string" ? { value: v } : v));
-	else if (a.type?.text === "boolean") entries = t("boolPresent").split(" / ").map((value) => ({ value, plain: true }));
-	else entries = [{ value: "—", plain: true }];
+function attributesTable(attrs) {
+	const tbl = document.createElement("table");
+	tbl.className = "attrs";
+	const head = document.createElement("tr");
+	for (const h of [t("attributes"), t("values"), t("role")]) head.append(el("th", { text: h }));
+	tbl.append(head);
 
-	const box = el("div", { class: "vals" });
-	for (const v of entries) {
-		const row = el("div", { class: "val" });
-		row.append(v.plain ? el("span", { class: "val-plain", text: v.value }) : code(v.value));
-		if (v.default) row.append(el("span", { class: "val-def", text: t("default") }));
-		if (v.note) row.append(el("span", { class: "val-note", text: `— ${desc(v.note)}` }));
-		box.append(row);
+	for (const a of attrs) {
+		const rows = valueRows(a);
+		rows.forEach((r, i) => {
+			const tr = document.createElement("tr");
+			tr.className = i === 0 ? "row-attr" : "row-sub";
+			if (i === 0) {
+				const td = document.createElement("td");
+				td.rowSpan = rows.length;
+				td.append(code(a.name));
+				tr.append(td);
+			}
+			const tdV = document.createElement("td");
+			tdV.className = "td-val";
+			tdV.append(r.valueNode);
+			if (r.def) tdV.append(el("span", { class: "val-def", text: t("default") }));
+			tr.append(tdV);
+			const tdR = document.createElement("td");
+			tdR.append(document.createTextNode(r.role || ""));
+			tr.append(tdR);
+			tbl.append(tr);
+		});
 	}
-	return box;
+	return tbl;
+}
+
+/* Décompose un attribut en lignes { valueNode, def, role } — une par valeur. */
+function valueRows(a) {
+	if (a.values?.length) {
+		const norm = a.values.map((v) => (typeof v === "string" ? { value: v } : v));
+		const described = norm.some((v) => v.note);
+		return norm.map((v, i) => ({
+			valueNode: code(v.value),
+			def: v.default,
+			role: described ? (v.note ? desc(v.note) : "") : (i === 0 ? desc(a.description) : "")
+		}));
+	}
+	const plain = a.type?.text === "boolean" ? t("boolPresent") : "—";
+	return [{ valueNode: el("span", { class: "val-plain", text: plain }), role: desc(a.description) }];
 }
 function chips(names) {
 	const box = el("div", { class: "chips" });

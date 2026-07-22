@@ -172,14 +172,19 @@ td:first-child { white-space: nowrap; }
 td code, .chips code { font-family: var(--doc-mono); background: var(--z-surface-sunken); padding: .14em .45em; border-radius: 5px; font-size: .85em; color: var(--z-ink); }
 .chips { display: flex; gap: .45rem; flex-wrap: wrap; }
 
-/* Valeurs DÉCRITES : une ligne par valeur — le mot, un éventuel « défaut », puis son sens. */
-.vals { display: grid; gap: .4rem; }
-.val { display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; line-height: 1.4; }
+/*
+	Table des attributs : chaque valeur sur SA ligne, alignée avec son rôle ; le nom de
+	l'attribut chapeaute ses lignes (rowspan). Les séparateurs entre sous-lignes d'un même
+	attribut sont plus légers que la frontière entre deux attributs → on lit le groupe.
+*/
+.attrs td { vertical-align: top; }
+.attrs .td-val { white-space: nowrap; }
+.attrs .row-sub td { border-top-color: color-mix(in srgb, var(--z-line-soft) 45%, transparent); }
 .val-def { font: 700 .58rem/1 var(--doc-prose); text-transform: uppercase; letter-spacing: .08em;
-	padding: .16em .4em; border-radius: 4px; background: var(--z-accent-soft, var(--z-surface-sunken)); color: var(--z-accent); }
-.val-note { font-size: .88rem; color: var(--z-ink-soft); }
-/* Valeur sans jeton à taper (état d'un booléen, texte libre) : même gabarit, sans le chip mono. */
-.val-plain { font-size: .92rem; color: var(--z-ink); }
+	margin-left: .5rem; padding: .16em .4em; border-radius: 4px; vertical-align: middle;
+	background: var(--z-accent-soft, var(--z-surface-sunken)); color: var(--z-accent); }
+/* Valeur sans jeton à taper (état d'un booléen, texte libre) : sans le chip mono. */
+.val-plain { color: var(--z-ink); }
 
 /*
 	La LÉGENDE d'une section — la phrase qui dit ce qu'on regarde. Sans elle, « Attributs »
