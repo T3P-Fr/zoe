@@ -131,7 +131,11 @@ body { margin: 0; background: var(--z-page); color: var(--z-ink);
 .cdemo-swatch { width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 2px solid var(--z-line); cursor: pointer; }
 .cdemo-swatch.on { border-color: var(--z-ink); box-shadow: 0 0 0 2px var(--z-surface), 0 0 0 4px var(--z-ink-soft); }
 
-.cdemo-css { margin: .9rem 0 0; font-size: .92rem; line-height: 1.5; color: var(--z-ink-soft); max-width: 62ch; }
+/* Le code vivant : ce que l'auteur écrirait, dans le mode choisi (attribut ou CSS). */
+.cdemo-code { margin: 1rem 0 0; padding: .9rem 1.1rem; border-radius: var(--z-radius, 8px);
+	background: color-mix(in srgb, var(--z-ink) 92%, #000); color: var(--z-page);
+	font: .82rem/1.6 var(--doc-mono); overflow-x: auto; white-space: pre; }
+.cdemo-css { margin: .7rem 0 0; font-size: .92rem; line-height: 1.5; color: var(--z-ink-soft); max-width: 62ch; }
 
 /* ── Le visualiseur : gros bouton draggable + liste d'états à points ── */
 .viz { display: grid; grid-template-columns: 1fr 180px; gap: 1.2rem; border: 1px solid var(--z-line-soft); border-radius: var(--z-radius, 8px); background: var(--z-surface-raised); margin-bottom: 1.4rem; padding: 1.4rem; }

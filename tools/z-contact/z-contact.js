@@ -202,7 +202,13 @@ export class ZContact extends HTMLElement {
 				],
 				description: { en: "Which effect plays where the pointer touches.", fr: "Quel effet se joue là où le pointeur touche.", es: "Qué efecto se reproduce donde el puntero toca." }
 			},
-			{ name: "disabled", type: "boolean", description: { en: "Set by the engine on every source but the last one — the last declared wins.", fr: "Posé par le moteur sur toutes les sources sauf la dernière — la dernière déclarée gagne.", es: "Puesto por el motor en todas las fuentes menos la última — la última declarada gana." } }
+			{ name: "disabled", type: "boolean", description: { en: "Set by the engine on every source but the last one — the last declared wins.", fr: "Posé par le moteur sur toutes les sources sauf la dernière — la dernière déclarée gagne.", es: "Puesto por el motor en todas las fuentes menos la última — la última declarada gana." } },
+			/* Les 4 raccourcis : un attribut qui POSE son token (parité attribut/token) — au
+			   CHOIX avec la variable CSS du même nom, plus bas. Les deux font la même chose. */
+			{ name: "size", values: [{ value: "<longueur>", note: { en: "e.g. 24px — sets --z-contact-size", fr: "ex. 24px — pose --z-contact-size", es: "p. ej. 24px — pone --z-contact-size" } }] },
+			{ name: "width", values: [{ value: "<longueur>", note: { en: "e.g. 2px — sets --z-contact-width", fr: "ex. 2px — pose --z-contact-width", es: "p. ej. 2px — pone --z-contact-width" } }] },
+			{ name: "duration", values: [{ value: "<durée>", note: { en: "e.g. 2s — sets --z-contact-duration", fr: "ex. 2s — pose --z-contact-duration", es: "p. ej. 2s — pone --z-contact-duration" } }] },
+			{ name: "color", values: [{ value: "<couleur>", note: { en: "e.g. tomato — sets --z-contact-color", fr: "ex. tomato — pose --z-contact-color", es: "p. ej. tomato — pone --z-contact-color" } }] }
 		],
 		events: [
 			{ name: "zoe:contact", description: { en: "Emitted on the touched target. detail: { fx, x, y, size, duration, pointerType }.", fr: "Émis sur la cible touchée. detail : { fx, x, y, size, duration, pointerType }.", es: "Emitido en el objetivo tocado. detail: { fx, x, y, size, duration, pointerType }." } }
@@ -215,6 +221,36 @@ export class ZContact extends HTMLElement {
 			{ name: "--z-contact-color", description: { en: "Colour — defaults to the accent of the touched element.", fr: "La couleur — par défaut l'accent de l'élément touché.", es: "El color — por defecto el acento del elemento tocado." } }
 		]
 	};
+
+	/*
+		LA PARITÉ ATTRIBUT / TOKEN — la force : chaque réglage se pose AU CHOIX en CSS
+		(`--z-contact-duration: 2s`) OU en attribut (`<z-contact duration="2s">`). L'attribut
+		ne peint pas : il POSE le token sur :root, d'où l'effet — né dans l'overlay — en
+		hérite. On ne touche PAS au moteur : juste cette réflexion sur la source déclarée.
+	*/
+	static shortcuts = { size: "--z-contact-size", width: "--z-contact-width", duration: "--z-contact-duration", color: "--z-contact-color" };
+	static observedAttributes = ["size", "width", "duration", "color"];
+
+	attributeChangedCallback(name, _old, value) {
+		const prop = ZContact.shortcuts[name];
+		if (!prop) return;
+		if (value == null) document.documentElement.style.removeProperty(prop);
+		else document.documentElement.style.setProperty(prop, value);
+	}
+
+	/*
+		LE DANGER SILENCIEUX, MORT — un attribut hors du vocabulaire n'est JAMAIS bloqué
+		(pas de plafond), mais il est DIT tout haut : une faute de frappe ne se perd plus.
+		Les attributs natifs (id, class, data-*, aria-*…) sont laissés tranquilles.
+	*/
+	connectedCallback() {
+		const known = new Set(["fx", "disabled", "size", "width", "duration", "color"]);
+		const native = new Set(["id", "class", "style", "hidden", "role", "slot", "title"]);
+		for (const { name } of this.attributes) {
+			if (known.has(name) || native.has(name) || name.startsWith("data-") || name.startsWith("aria-")) continue;
+			console.warn(`[z-contact] attribut inconnu « ${name} » — ignoré (jamais bloqué). Connus : fx · size · width · duration · color. Pour un réglage libre : le token CSS --z-contact-${name}.`);
+		}
+	}
 }
 
 /* Enregistre <z-contact>. Garde-fou contre la double définition. */

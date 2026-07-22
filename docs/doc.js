@@ -83,17 +83,17 @@ z-element:state(press) { transform: scale(.97); }`;
 	TDZ (« Cannot access 'CDEMO' before initialization »).
 */
 const CDEMO = {
-	en: { target: "Click here — or anywhere in the zone", hint: "The effect is born where the pointer touches. Move a slider: it replays live.", effect: "Effect", none: "off", size: "Size", thickness: "Thickness", duration: "Duration", color: "Colour", css: "These four values are plain CSS variables. Set them once in your stylesheet — or make a whole new effect in a few lines." },
-	fr: { target: "Cliquez ici — ou n'importe où dans la zone", hint: "L'effet naît là où le pointeur touche. Bougez un curseur : il se rejoue en direct.", effect: "Effet", none: "aucun", size: "Taille", thickness: "Épaisseur", duration: "Durée", color: "Couleur", css: "Ces quatre valeurs sont de simples variables CSS. Posez-les une fois dans votre feuille de style — ou refaites un effet entier en quelques lignes." },
-	es: { target: "Pulse aquí — o en cualquier parte de la zona", hint: "El efecto nace donde el puntero toca. Mueva un control: se repite en directo.", effect: "Efecto", none: "ninguno", size: "Tamaño", thickness: "Grosor", duration: "Duración", color: "Color", css: "Estos cuatro valores son simples variables CSS. Póngalas una vez en su hoja de estilo — o haga un efecto entero en unas líneas." }
+	en: { target: "Click here — or anywhere in the zone", hint: "The effect is born where the pointer touches. Move a slider: it replays live.", effect: "Effect", none: "off", write: "Write as", modeAttr: "attribute", modeCss: "CSS", size: "Size", thickness: "Thickness", duration: "Duration", color: "Colour", css: "Same result, two ways to write it — flip « attribute / CSS » above. That's the point: attribute OR CSS, your choice." },
+	fr: { target: "Cliquez ici — ou n'importe où dans la zone", hint: "L'effet naît là où le pointeur touche. Bougez un curseur : il se rejoue en direct.", effect: "Effet", none: "aucun", write: "Écrire en", modeAttr: "attribut", modeCss: "CSS", size: "Taille", thickness: "Épaisseur", duration: "Durée", color: "Couleur", css: "Même résultat, deux façons de l'écrire — basculez « attribut / CSS » au-dessus. C'est ça, la force : attribut OU CSS, au choix." },
+	es: { target: "Pulse aquí — o en cualquier parte de la zona", hint: "El efecto nace donde el puntero toca. Mueva un control: se repite en directo.", effect: "Efecto", none: "ninguno", write: "Escribir como", modeAttr: "atributo", modeCss: "CSS", size: "Tamaño", thickness: "Grosor", duration: "Duración", color: "Color", css: "Mismo resultado, dos formas de escribirlo — cambie « atributo / CSS » arriba. Esa es la fuerza: atributo O CSS, a su elección." }
 };
 const CDEMO_EFFECTS = ["implode", "explode", "morph"];
-/* Les 4 réglages vivants = les 4 variables CSS réelles du composant. Bouger un curseur
-   pose la variable sur :root ET rejoue l'effet → on voit le changement en temps réel. */
+/* Les réglages vivants : `key` nomme le libellé (CDEMO[lang][key]), `token` la variable
+   CSS réelle (et le nom de l'attribut-raccourci). Bouger un curseur rejoue l'effet. */
 const CDEMO_CTLS = [
-	{ key: "size", prop: "--z-contact-size", min: 8, max: 64, value: 26, unit: "px" },
-	{ key: "thickness", prop: "--z-contact-width", min: 1, max: 16, value: 6, unit: "px" },
-	{ key: "duration", prop: "--z-contact-duration", min: 200, max: 2000, value: 550, unit: "ms" }
+	{ key: "size", token: "size", prop: "--z-contact-size", min: 8, max: 64, value: 26, unit: "px" },
+	{ key: "thickness", token: "width", prop: "--z-contact-width", min: 1, max: 16, value: 6, unit: "px" },
+	{ key: "duration", token: "duration", prop: "--z-contact-duration", min: 200, max: 2000, value: 550, unit: "ms" }
 ];
 const CDEMO_SWATCHES = ["var(--z-accent)", "#e0662c", "#22a06b", "#c4562f", "#7b61ff"];
 
@@ -296,9 +296,11 @@ function contactDemo(d) {
 	if (!src) { src = document.createElement("z-contact"); src.id = "doc-contact-src"; document.body.append(src); }
 
 	const box = el("div", { class: "cdemo" });
-	const root = document.documentElement;
-	/* Les réglages vivent sur :root → le spawn, né dans l'overlay, en hérite. */
-	for (const ctl of CDEMO_CTLS) root.style.setProperty(ctl.prop, `${ctl.value}${ctl.unit}`);
+	const rootStyle = document.documentElement.style;
+	const TOKENS = { size: "--z-contact-size", width: "--z-contact-width", duration: "--z-contact-duration", color: "--z-contact-color" };
+	/* L'état, un seul, quel que soit le mode d'écriture. */
+	const state = { fx: "implode", size: "26px", width: "6px", duration: "550ms", color: null };
+	let mode = "css";   /* « css » (variables) ou « attr » (attributs) — même résultat */
 
 	/* la zone : cliquable partout (tabindex → le moteur la voit comme interactive). */
 	const zone = el("div", { class: "cdemo-zone" });
@@ -310,6 +312,7 @@ function contactDemo(d) {
 	   fasse refleurir en direct sans saturer. */
 	let last = 0;
 	const fire = () => {
+		if (state.fx === "none") return;
 		const now = performance.now();
 		if (now - last < 90) return;
 		last = now;
@@ -317,34 +320,81 @@ function contactDemo(d) {
 		target.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, pointerId: 1 }));
 	};
 
+	/* Le CODE vivant : ce que l'auteur écrirait, dans le mode choisi. C'est là que la
+	   parité se voit — le MÊME réglage, en attribut ou en CSS. */
+	const codePre = document.createElement("pre");
+	codePre.className = "cdemo-code";
+	const codeEl = document.createElement("code");
+	codePre.append(codeEl);
+	const renderCode = () => {
+		const set = Object.keys(TOKENS).filter((k) => state[k]);
+		if (mode === "attr") {
+			codeEl.textContent = `<z-contact${["fx", ...set].map((k) => ` ${k}="${state[k]}"`).join("")}>`;
+		} else {
+			const decl = set.map((k) => `${TOKENS[k]}: ${state[k]};`).join(" ");
+			codeEl.textContent = `<z-contact fx="${state.fx}">\nz-contact { ${decl} }`;
+		}
+	};
+
+	/* Applique l'état par le CHEMIN choisi (attribut OU CSS) ; l'autre est nettoyé pour que
+	   le code affiché soit honnête. Les deux finissent sur le même token, d'où le même effet. */
+	const apply = () => {
+		if (mode === "attr") {
+			for (const prop of Object.values(TOKENS)) rootStyle.removeProperty(prop);
+			for (const k of Object.keys(TOKENS)) state[k] ? src.setAttribute(k, state[k]) : src.removeAttribute(k);
+		} else {
+			for (const k of Object.keys(TOKENS)) src.removeAttribute(k);
+			for (const [k, prop] of Object.entries(TOKENS)) state[k] ? rootStyle.setProperty(prop, state[k]) : rootStyle.removeProperty(prop);
+		}
+		renderCode();
+		fire();
+	};
+
 	/* le sélecteur d'effet (changer d'effet = changer de recette). */
 	const params = el("div", { class: "cdemo-params" });
 	params.append(el("span", { class: "cdemo-plabel", text: c.effect }));
 	const fxButtons = new Map();
-	const select = (fx) => {
+	const selectFx = (fx) => {
+		state.fx = fx;
 		src.setAttribute("fx", fx);
 		ensureContactRecipe(fx);
 		for (const [name, b] of fxButtons) b.classList.toggle("on", name === fx);
-		if (fx !== "none") fire();
+		renderCode();
+		fire();
 	};
 	for (const fx of [...CDEMO_EFFECTS, "none"]) {
 		const b = el("button", { class: "cdemo-choice", text: fx === "none" ? c.none : fx });
-		b.addEventListener("click", () => select(fx));
+		b.addEventListener("click", () => selectFx(fx));
 		params.append(b); fxButtons.set(fx, b);
 	}
 
-	/* les réglages VIVANTS : un z-slider par variable CSS (la démo faite AVEC Zoé). */
+	/* la bascule d'écriture : attribut OU CSS — le cœur de la démonstration. */
+	const modeRow = el("div", { class: "cdemo-params" });
+	modeRow.append(el("span", { class: "cdemo-plabel", text: c.write }));
+	const modeButtons = new Map();
+	const selectMode = (m) => {
+		mode = m;
+		for (const [name, b] of modeButtons) b.classList.toggle("on", name === m);
+		apply();
+	};
+	for (const [m, label] of [["attr", c.modeAttr], ["css", c.modeCss]]) {
+		const b = el("button", { class: "cdemo-choice", text: label });
+		b.addEventListener("click", () => selectMode(m));
+		modeRow.append(b); modeButtons.set(m, b);
+	}
+
+	/* les réglages VIVANTS : un z-slider par token (la démo faite AVEC Zoé). */
 	const controls = el("div", { class: "cdemo-controls" });
 	for (const ctl of CDEMO_CTLS) {
 		const row = el("label", { class: "cdemo-ctl" });
 		row.append(el("span", { class: "cdemo-ctl-label", text: c[ctl.key] }));
 		const s = document.createElement("z-slider");
 		s.setAttribute("min", ctl.min); s.setAttribute("max", ctl.max); s.setAttribute("value", ctl.value);
-		s.addEventListener("input", () => { root.style.setProperty(ctl.prop, `${s.value}${ctl.unit}`); fire(); });
+		s.addEventListener("input", () => { state[ctl.token] = `${s.value}${ctl.unit}`; apply(); });
 		row.append(s);
 		controls.append(row);
 	}
-	/* la couleur : des pastilles (pas un curseur) — un clic pose --z-contact-color et rejoue. */
+	/* la couleur : des pastilles — un clic met à jour l'état et réapplique. */
 	const colorRow = el("label", { class: "cdemo-ctl" });
 	colorRow.append(el("span", { class: "cdemo-ctl-label", text: c.color }));
 	const swatches = el("div", { class: "cdemo-swatches" });
@@ -352,18 +402,23 @@ function contactDemo(d) {
 		const sw = el("button", { class: "cdemo-swatch" });
 		sw.style.background = col;
 		sw.addEventListener("click", () => {
-			if (col.startsWith("var(")) root.style.removeProperty("--z-contact-color");
-			else root.style.setProperty("--z-contact-color", col);
+			state.color = col.startsWith("var(") ? null : col;
 			[...swatches.children].forEach((n) => n.classList.toggle("on", n === sw));
-			fire();
+			apply();
 		});
 		swatches.append(sw);
 	}
 	colorRow.append(swatches);
 	controls.append(colorRow);
 
-	box.append(params, zone, controls, el("p", { class: "cdemo-css", text: c.css }));
-	select("implode");                                 /* effet par défaut */
+	box.append(params, zone, modeRow, controls, codePre, el("p", { class: "cdemo-css", text: c.css }));
+
+	/* état initial : implode, mode CSS. */
+	fxButtons.get("implode").classList.add("on");
+	modeButtons.get("css").classList.add("on");
+	src.setAttribute("fx", "implode");
+	ensureContactRecipe("implode");
+	apply();
 	return box;
 }
 
