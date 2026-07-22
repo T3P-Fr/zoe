@@ -6,12 +6,14 @@
    Claude — le contre-pied exact de `morph`/HighTech : pas un filet, un APLAT ; pas du
    cobalt sec, de l'encre terre ; pas une trajectoire d'ingénieur, un ressort qui déborde.
 
-   Le geste : sous le doigt naît une petite goutte pleine (z-foreground) qui gonfle d'un
-   coup — un ressort qui dépasse (`--z-ease-spring`) — puis se dilue en fondant, pendant
-   qu'un halo plus clair la suit, comme le papier qui boit l'encre. Rempli, chaud, mou.
+   PAS UN CERCLE. Une vraie encre a un bord IRRÉGULIER (border-radius asymétrique qui se
+   déforme pendant l'animation → le blob « vit »), elle BAVE (léger flou = bord humide),
+   et elle projette une petite goutte de côté (`::before`, une éclaboussure). Derrière,
+   le papier qui BOIT (`::after`, un halo diffus plus lent). Trois surfaces, zéro pièce
+   ajoutée au moteur : `z-foreground` + ses deux pseudo-éléments suffisent.
 
    Le moteur ne crée qu'un `z-foreground` pour cet effet (le `z-marker` est réservé à
-   `implode`) : le halo « papier qui boit » est donc porté par un `::after`, pas une pièce.
+   `implode`). On ne le touche pas : tout vit ici.
 
    Réglages (posés par la peau) : --z-contact-size · --z-contact-duration ·
    --z-contact-color · --z-ease-spring.
@@ -21,33 +23,67 @@ z-overlay z-contact z-foreground {
 	width: var(--z-contact-size, 26px);
 	height: var(--z-contact-size, 26px);
 	background: var(--c);
-	will-change: transform, opacity;
+	/* un bord d'encre, jamais un cercle net */
+	border-radius: 47% 53% 45% 55% / 52% 48% 55% 45%;
+	/* le bord humide : un rien de bave */
+	filter: blur(0.5px);
+	will-change: transform, opacity, border-radius;
 	animation: z-contact-ink var(--z-contact-duration, 0.55s) var(--z-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) forwards;
 }
 
+/* Le blob GONFLE, TOURNE un peu et se DÉFORME en s'épanouissant — l'encre n'est jamais
+   symétrique deux instants de suite. */
 @keyframes z-contact-ink {
 	0% {
-		transform: translate(-50%, -50%) scale(0.2);
-		opacity: 0.55;
+		transform: translate(-50%, -50%) scale(0.16) rotate(-10deg);
+		opacity: 0.6;
+		border-radius: 47% 53% 45% 55% / 52% 48% 55% 45%;
 	}
 
 	45% {
-		opacity: 0.42;
+		opacity: 0.5;
+		border-radius: 61% 39% 56% 44% / 41% 59% 41% 59%;
 	}
 
 	100% {
-		transform: translate(-50%, -50%) scale(2.4);
+		transform: translate(-50%, -50%) scale(2.3) rotate(7deg);
+		opacity: 0;
+		border-radius: 43% 57% 52% 48% / 57% 43% 51% 49%;
+	}
+}
+
+/* L'ÉCLABOUSSURE — une petite goutte qui part de côté, en haut à gauche du contact. */
+z-overlay z-contact z-foreground::before {
+	content: "";
+	position: absolute;
+	left: 6%;
+	top: 2%;
+	width: 34%;
+	height: 34%;
+	background: var(--c);
+	border-radius: 54% 46% 48% 52% / 50% 55% 45% 50%;
+	animation: z-contact-ink-splat var(--z-contact-duration, 0.55s) var(--z-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) forwards;
+}
+
+@keyframes z-contact-ink-splat {
+	0% {
+		transform: scale(0) translate(0, 0);
+		opacity: 0.65;
+	}
+
+	100% {
+		transform: scale(1.9) translate(-40%, -55%);
 		opacity: 0;
 	}
 }
 
-/* Le halo — le papier qui boit l'encre : plus clair, plus lent, jamais net. */
+/* LE PAPIER QUI BOIT — un halo plus clair, plus lent, jamais net. */
 z-overlay z-contact z-foreground::after {
 	content: "";
 	position: absolute;
-	inset: -35%;
+	inset: -38%;
 	border-radius: 50%;
-	background: radial-gradient(circle, color-mix(in oklab, var(--c) 45%, transparent) 0%, transparent 68%);
+	background: radial-gradient(circle, color-mix(in oklab, var(--c) 42%, transparent) 0%, transparent 66%);
 	animation: z-contact-ink-halo var(--z-contact-duration, 0.55s) var(--z-ease, ease-out) forwards;
 }
 
@@ -59,6 +95,6 @@ z-overlay z-contact z-foreground::after {
 
 	to {
 		opacity: 0;
-		transform: scale(1.7);
+		transform: scale(1.75);
 	}
 }
