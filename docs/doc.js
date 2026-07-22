@@ -534,21 +534,25 @@ function table(head, rows) {
 	Une valeur peut être SIMPLE (un mot) ou DÉCRITE (un objet { value, note, default }) —
 	c'est ce qui permet des valeurs complexes : chacune porte son sens, et un intervalle
 	ou un type se dit en une entrée notée (`0 → 360` « l'angle, en degrés » ; `<color>`
-	« une couleur CSS »). Le rendu suit :
-	  - que des mots simples        → des pastilles compactes ;
-	  - au moins une valeur décrite → une ligne « valeur [défaut] — sens » par valeur ;
-	  - aucune valeur, booléen      → « présent / absent » ;
-	  - aucune valeur, texte libre  → un tiret.
+	« une couleur CSS »).
+
+	UN SEUL FORMAT, toujours : une liste verticale, une valeur par ligne. Jamais de
+	pastilles ici, jamais un « présent / absent » inline à côté d'une liste ailleurs — le
+	cerveau ne doit pas ré-apprendre la mise en page à chaque ligne du tableau (uniformité).
+	  - liste de valeurs   → une ligne « valeur [défaut] — sens » par valeur ;
+	  - booléen            → deux lignes, « présent » / « absent » ;
+	  - texte libre        → une ligne, un tiret.
 */
 function valuesCell(a) {
-	const vals = a.values;
-	if (!vals?.length) return document.createTextNode(a.type?.text === "boolean" ? t("boolPresent") : "—");
-	const norm = vals.map((v) => (typeof v === "string" ? { value: v } : v));
-	if (!norm.some((v) => v.note || v.default)) return chips(norm.map((v) => v.value));
+	let entries;
+	if (a.values?.length) entries = a.values.map((v) => (typeof v === "string" ? { value: v } : v));
+	else if (a.type?.text === "boolean") entries = t("boolPresent").split(" / ").map((value) => ({ value, plain: true }));
+	else entries = [{ value: "—", plain: true }];
+
 	const box = el("div", { class: "vals" });
-	for (const v of norm) {
+	for (const v of entries) {
 		const row = el("div", { class: "val" });
-		row.append(code(v.value));
+		row.append(v.plain ? el("span", { class: "val-plain", text: v.value }) : code(v.value));
 		if (v.default) row.append(el("span", { class: "val-def", text: t("default") }));
 		if (v.note) row.append(el("span", { class: "val-note", text: `— ${desc(v.note)}` }));
 		box.append(row);

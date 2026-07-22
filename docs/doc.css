@@ -178,6 +178,8 @@ td code, .chips code { font-family: var(--doc-mono); background: var(--z-surface
 .val-def { font: 700 .58rem/1 var(--doc-prose); text-transform: uppercase; letter-spacing: .08em;
 	padding: .16em .4em; border-radius: 4px; background: var(--z-accent-soft, var(--z-surface-sunken)); color: var(--z-accent); }
 .val-note { font-size: .88rem; color: var(--z-ink-soft); }
+/* Valeur sans jeton à taper (état d'un booléen, texte libre) : même gabarit, sans le chip mono. */
+.val-plain { font-size: .92rem; color: var(--z-ink); }
 
 /*
 	La LÉGENDE d'une section — la phrase qui dit ce qu'on regarde. Sans elle, « Attributs »
