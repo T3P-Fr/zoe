@@ -116,7 +116,22 @@ body { margin: 0; background: var(--z-page); color: var(--z-ink);
 	border: 1px solid var(--z-accent); background: var(--z-accent); color: var(--z-accent-ink, #fff);
 }
 .cdemo-hint { margin: 0; font-size: .85rem; color: var(--z-ink-soft); text-align: center; }
-.cdemo-css { margin: .8rem 0 0; font-size: .92rem; line-height: 1.5; color: var(--z-ink-soft); max-width: 60ch; }
+
+/* Les réglages VIVANTS : les 4 variables CSS, pilotées par des z-slider + pastilles.
+   Bouger l'un rejoue l'effet → le changement se voit en direct (loi « params temps réel »). */
+.cdemo-controls {
+	display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .9rem 1.6rem;
+	margin-top: 1rem; padding: 1.1rem 1.3rem;
+	border: 1px solid var(--z-line-soft); border-radius: var(--z-radius, 8px); background: var(--z-surface);
+}
+.cdemo-ctl { display: grid; grid-template-columns: 5.5rem 1fr; align-items: center; gap: .7rem; }
+.cdemo-ctl-label { font: 700 .64rem/1.2 var(--doc-prose); text-transform: uppercase; letter-spacing: .09em; color: var(--z-ink-soft); }
+.cdemo-ctl z-slider { --z-slider__length: 100%; width: 100%; }
+.cdemo-swatches { display: flex; gap: .45rem; }
+.cdemo-swatch { width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 2px solid var(--z-line); cursor: pointer; }
+.cdemo-swatch.on { border-color: var(--z-ink); box-shadow: 0 0 0 2px var(--z-surface), 0 0 0 4px var(--z-ink-soft); }
+
+.cdemo-css { margin: .9rem 0 0; font-size: .92rem; line-height: 1.5; color: var(--z-ink-soft); max-width: 62ch; }
 
 /* ── Le visualiseur : gros bouton draggable + liste d'états à points ── */
 .viz { display: grid; grid-template-columns: 1fr 180px; gap: 1.2rem; border: 1px solid var(--z-line-soft); border-radius: var(--z-radius, 8px); background: var(--z-surface-raised); margin-bottom: 1.4rem; padding: 1.4rem; }

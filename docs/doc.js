@@ -83,11 +83,19 @@ z-element:state(press) { transform: scale(.97); }`;
 	TDZ (« Cannot access 'CDEMO' before initialization »).
 */
 const CDEMO = {
-	en: { target: "Click me (or anywhere in the zone)", hint: "The effect is born where you touch — try different spots.", effect: "Effect", none: "off", css: "Not your taste? One effect = one small CSS file. Pick another, or write your own." },
-	fr: { target: "Clique-moi (ou n'importe où dans la zone)", hint: "L'effet naît là où tu touches — essaie plusieurs endroits.", effect: "Effet", none: "aucun", css: "Pas à ton goût ? Un effet = un petit fichier CSS. Prends-en un autre, ou écris le tien." },
-	es: { target: "Púlsame (o en cualquier parte de la zona)", hint: "El efecto nace donde tocas — prueba en varios sitios.", effect: "Efecto", none: "ninguno", css: "¿No es tu estilo? Un efecto = un pequeño archivo CSS. Elige otro, o escribe el tuyo." }
+	en: { target: "Click here — or anywhere in the zone", hint: "The effect is born where the pointer touches. Move a slider: it replays live.", effect: "Effect", none: "off", size: "Size", thickness: "Thickness", duration: "Duration", color: "Colour", css: "These four values are plain CSS variables. Set them once in your stylesheet — or make a whole new effect in a few lines." },
+	fr: { target: "Cliquez ici — ou n'importe où dans la zone", hint: "L'effet naît là où le pointeur touche. Bougez un curseur : il se rejoue en direct.", effect: "Effet", none: "aucun", size: "Taille", thickness: "Épaisseur", duration: "Durée", color: "Couleur", css: "Ces quatre valeurs sont de simples variables CSS. Posez-les une fois dans votre feuille de style — ou refaites un effet entier en quelques lignes." },
+	es: { target: "Pulse aquí — o en cualquier parte de la zona", hint: "El efecto nace donde el puntero toca. Mueva un control: se repite en directo.", effect: "Efecto", none: "ninguno", size: "Tamaño", thickness: "Grosor", duration: "Duración", color: "Color", css: "Estos cuatro valores son simples variables CSS. Póngalas una vez en su hoja de estilo — o haga un efecto entero en unas líneas." }
 };
 const CDEMO_EFFECTS = ["implode", "explode", "morph"];
+/* Les 4 réglages vivants = les 4 variables CSS réelles du composant. Bouger un curseur
+   pose la variable sur :root ET rejoue l'effet → on voit le changement en temps réel. */
+const CDEMO_CTLS = [
+	{ key: "size", prop: "--z-contact-size", min: 8, max: 64, value: 26, unit: "px" },
+	{ key: "thickness", prop: "--z-contact-width", min: 1, max: 16, value: 6, unit: "px" },
+	{ key: "duration", prop: "--z-contact-duration", min: 200, max: 2000, value: 550, unit: "ms" }
+];
+const CDEMO_SWATCHES = ["var(--z-accent)", "#e0662c", "#22a06b", "#c4562f", "#7b61ff"];
 
 addLink(`${ROOT}tools/z-motion/z-motion.css`);
 
@@ -289,21 +297,9 @@ function contactDemo(d) {
 	if (!src) { src = document.createElement("z-contact"); src.id = "doc-contact-src"; document.body.append(src); }
 
 	const box = el("div", { class: "cdemo" });
-
-	/* les paramètres : le sélecteur d'effet (changer d'effet = changer de recette). */
-	const params = el("div", { class: "cdemo-params" });
-	params.append(el("span", { class: "cdemo-plabel", text: c.effect }));
-	const buttons = new Map();
-	const select = (fx) => {
-		src.setAttribute("fx", fx);
-		ensureContactRecipe(fx);
-		for (const [name, b] of buttons) b.classList.toggle("on", name === fx);
-	};
-	for (const fx of [...CDEMO_EFFECTS, "none"]) {
-		const b = el("button", { class: "cdemo-choice", text: fx === "none" ? c.none : fx });
-		b.addEventListener("click", () => select(fx));
-		params.append(b); buttons.set(fx, b);
-	}
+	const root = document.documentElement;
+	/* Les réglages vivent sur :root → le spawn, né dans l'overlay, en hérite. */
+	for (const ctl of CDEMO_CTLS) root.style.setProperty(ctl.prop, `${ctl.value}${ctl.unit}`);
 
 	/* la zone : cliquable partout (tabindex → le moteur la voit comme interactive). */
 	const zone = el("div", { class: "cdemo-zone" });
@@ -311,7 +307,63 @@ function contactDemo(d) {
 	const target = el("button", { class: "cdemo-target", text: c.target });
 	zone.append(target, el("p", { class: "cdemo-hint", text: c.hint }));
 
-	box.append(params, zone, el("p", { class: "cdemo-css", text: c.css }));
+	/* Rejoue l'effet au centre de la cible — throttlé, pour que glisser un curseur le
+	   fasse refleurir en direct sans saturer. */
+	let last = 0;
+	const fire = () => {
+		const now = performance.now();
+		if (now - last < 90) return;
+		last = now;
+		const r = target.getBoundingClientRect();
+		target.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, pointerId: 1 }));
+	};
+
+	/* le sélecteur d'effet (changer d'effet = changer de recette). */
+	const params = el("div", { class: "cdemo-params" });
+	params.append(el("span", { class: "cdemo-plabel", text: c.effect }));
+	const fxButtons = new Map();
+	const select = (fx) => {
+		src.setAttribute("fx", fx);
+		ensureContactRecipe(fx);
+		for (const [name, b] of fxButtons) b.classList.toggle("on", name === fx);
+		if (fx !== "none") fire();
+	};
+	for (const fx of [...CDEMO_EFFECTS, "none"]) {
+		const b = el("button", { class: "cdemo-choice", text: fx === "none" ? c.none : fx });
+		b.addEventListener("click", () => select(fx));
+		params.append(b); fxButtons.set(fx, b);
+	}
+
+	/* les réglages VIVANTS : un z-slider par variable CSS (la démo faite AVEC Zoé). */
+	const controls = el("div", { class: "cdemo-controls" });
+	for (const ctl of CDEMO_CTLS) {
+		const row = el("label", { class: "cdemo-ctl" });
+		row.append(el("span", { class: "cdemo-ctl-label", text: c[ctl.key] }));
+		const s = document.createElement("z-slider");
+		s.setAttribute("min", ctl.min); s.setAttribute("max", ctl.max); s.setAttribute("value", ctl.value);
+		s.addEventListener("input", () => { root.style.setProperty(ctl.prop, `${s.value}${ctl.unit}`); fire(); });
+		row.append(s);
+		controls.append(row);
+	}
+	/* la couleur : des pastilles (pas un curseur) — un clic pose --z-contact-color et rejoue. */
+	const colorRow = el("label", { class: "cdemo-ctl" });
+	colorRow.append(el("span", { class: "cdemo-ctl-label", text: c.color }));
+	const swatches = el("div", { class: "cdemo-swatches" });
+	for (const col of CDEMO_SWATCHES) {
+		const sw = el("button", { class: "cdemo-swatch" });
+		sw.style.background = col;
+		sw.addEventListener("click", () => {
+			if (col.startsWith("var(")) root.style.removeProperty("--z-contact-color");
+			else root.style.setProperty("--z-contact-color", col);
+			[...swatches.children].forEach((n) => n.classList.toggle("on", n === sw));
+			fire();
+		});
+		swatches.append(sw);
+	}
+	colorRow.append(swatches);
+	controls.append(colorRow);
+
+	box.append(params, zone, controls, el("p", { class: "cdemo-css", text: c.css }));
 	select("implode");                                 /* effet par défaut */
 	return box;
 }

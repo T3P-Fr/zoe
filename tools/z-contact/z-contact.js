@@ -187,9 +187,9 @@ export class ZContact extends HTMLElement {
 	static api = {
 		tag: "z-contact",
 		summary: {
-			en: "A visual effect on every click, across the whole page. Drop the tag once, anywhere — and you're done. Two effects ready to use; yours takes a few lines of CSS.",
-			fr: "Un effet visuel à chaque clic, sur toute la page. Pose la balise une fois, n'importe où — et c'est réglé. Deux effets prêts à l'emploi ; le tien tient en quelques lignes de CSS.",
-			es: "Un efecto visual en cada clic, en toda la página. Pon la etiqueta una vez, donde sea — y listo. Dos efectos listos para usar; el tuyo cabe en unas líneas de CSS."
+			en: "Need a click effect across your whole page? Drop this tag anywhere — problem solved. Two effects by default; not to your taste? Make your own in a few lines of CSS.",
+			fr: "Besoin d'un effet de clic visuel sur toute votre page ? Posez cette balise n'importe où — problème résolu. Deux effets par défaut ; ils ne vous conviennent pas ? Faites le vôtre en quelques lignes de CSS.",
+			es: "¿Un efecto de clic visual en toda su página? Coloque esta etiqueta donde sea — resuelto. Dos efectos por defecto; ¿no le convienen? Haga el suyo en unas líneas de CSS."
 		},
 		attributes: [
 			{ name: "fx", type: "string", description: { en: "Kill switch: fx=\"none\" disables the effect on this page. WHICH effect is shown is chosen by the skin (it imports a recipe from effects/), never by the page.", fr: "Coupe-circuit : fx=\"none\" désactive l'effet sur cette page. QUEL effet s'affiche est choisi par la peau (elle importe une recette de effects/), jamais par la page.", es: "Interruptor: fx=\"none\" desactiva el efecto en esta página. QUÉ efecto se muestra lo elige la piel (importa una receta de effects/), nunca la página." } },
@@ -200,7 +200,7 @@ export class ZContact extends HTMLElement {
 		],
 		states: [],
 		cssVars: [
-			{ name: "--z-contact-size", description: { en: "Size of the starting dot.", fr: "La taille du rond de départ.", es: "El tamaño del punto inicial." } },
+			{ name: "--z-contact-size", description: { en: "The size of the effect.", fr: "La taille de l'effet.", es: "El tamaño del efecto." } },
 			{ name: "--z-contact-width", description: { en: "Thickness of the outline.", fr: "L'épaisseur du contour.", es: "El grosor del contorno." } },
 			{ name: "--z-contact-duration", description: { en: "Duration of the effect.", fr: "La durée de l'effet.", es: "La duración del efecto." } },
 			{ name: "--z-contact-color", description: { en: "Colour — defaults to the accent of the touched element.", fr: "La couleur — par défaut l'accent de l'élément touché.", es: "El color — por defecto el acento del elemento tocado." } }
