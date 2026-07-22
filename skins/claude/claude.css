@@ -8,15 +8,16 @@
 
 	SA SIGNATURE AU CLIC — `ink` : une goutte d'encre chaude qui s'épanouit sous le doigt,
 	déborde d'un ressort, puis boit dans le papier. Le contre-pied exact de HighTech (qui
-	prend `morph`, un filet cobalt sec) : ici un APLAT terre, mou, rempli. Une peau = une
-	signature, importée en une ligne, tout en tête de ce fichier (ci-dessous). Ses réglages
-	(taille, durée, couleur) sont posés plus bas avec les autres tokens.
+	prend `morph`, un filet cobalt sec) : ici un APLAT terre, mou, rempli.
+
+	La peau NE L'IMPORTE PLUS elle-même : elle DÉCLARE sa signature en token
+	`--z-contact-fx: ink` (plus bas), et le chargeur (tools/z-contact/z-contact-effect.js)
+	la charge dans l'UNIQUE lien d'effet. Ainsi changer de peau REMPLACE l'effet — les deux
+	ne coexistent jamais. Ses réglages (taille, durée, couleur) sont juste à côté du token.
 
 	Styleguide skin.claude
 	============================================================
 */
-
-@import url("../../tools/z-contact/effects/ink.css");
 
 :root {
 	/* couleurs — crème, encre brun-noir, terre cuite */

@@ -12,6 +12,7 @@
 */
 
 import "../examples/skin-switch.js";   /* le pacte : sélecteur de peau */
+import { setContactEffect } from "../tools/z-contact/z-contact-effect.js";   /* l'unique lien d'effet */
 
 const ROOT = new URL("../", import.meta.url).href;   /* …/zoé/ */
 
@@ -278,15 +279,6 @@ function entrySection(d, group) {
 	(effects/<fx>.css) donne l'apparence — exactement le mécanisme réel : changer d'effet =
 	changer de recette. Une source <z-contact> invisible dit au moteur « tourne ici ».
 */
-/* Charge (ou remplace) la recette d'effet, appendue APRÈS la peau pour gagner la cascade. */
-function ensureContactRecipe(fx) {
-	let link = document.getElementById("doc-contact-recipe");
-	if (fx === "none") { link?.remove(); return; }
-	if (!link) { link = document.createElement("link"); link.id = "doc-contact-recipe"; link.rel = "stylesheet"; }
-	document.head.append(link);                    /* ré-append → reste le dernier, donc gagne */
-	link.href = `${ROOT}tools/z-contact/effects/${fx}.css`;
-}
-
 function contactDemo(d) {
 	const c = CDEMO[LANG] || CDEMO.en;
 	addLink(`${ROOT}tools/z-contact/z-contact.css`);   /* la base : positionne l'overlay/les parts */
@@ -361,7 +353,7 @@ function contactDemo(d) {
 	const selectFx = (fx) => {
 		state.fx = fx;
 		src.setAttribute("fx", fx);
-		ensureContactRecipe(fx);
+		setContactEffect(fx);   /* l'unique lien : le nouvel effet remplace l'ancien, pas d'empilement */
 		for (const [name, b] of fxButtons) b.classList.toggle("on", name === fx);
 		renderCode();
 		fire();
@@ -421,7 +413,7 @@ function contactDemo(d) {
 	fxButtons.get(initialFx).classList.add("on");
 	modeButtons.get("css").classList.add("on");
 	src.setAttribute("fx", initialFx);
-	ensureContactRecipe(initialFx);
+	setContactEffect(initialFx);
 	apply();
 	return box;
 }

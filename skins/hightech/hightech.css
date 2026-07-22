@@ -41,12 +41,12 @@
 
 /*
 	SA SIGNATURE AU CLIC (loi 3 : le halo et l'onde sont les seuls effets lumineux).
-	HighTech PREND l'effet `morph` au catalogue de z-contact : un rond naît sous la
-	souris et meurt en épousant la boîte du composant touché. C'est un choix de PEAU,
-	pas de page — une peau qui n'importe rien (Claude) n'a aucun effet au curseur.
+	HighTech signe avec `morph` : un rond naît sous la souris et meurt en épousant la boîte
+	du composant touché. La peau NE L'IMPORTE PLUS : elle le DÉCLARE en token
+	`--z-contact-fx: morph` (plus bas), et le chargeur (z-contact-effect.js) le charge dans
+	l'UNIQUE lien d'effet — changer de peau REMPLACE l'effet, jamais de coexistence.
 	Les valeurs se règlent plus bas (--z-contact-*).
 */
-@import url("../../tools/z-contact/effects/morph.css");
 
 :root {
 	/* D'OÙ ÇA VIENT — lisible par l'outillage ET par l'humain qui doute. */

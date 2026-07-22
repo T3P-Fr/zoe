@@ -18,6 +18,7 @@
 */
 import { topLayer } from "./z-overlay.js";
 import { activeSource, startContactSources } from "./z-contact-source.js";
+import "./z-contact-effect.js";   /* le chargeur : un seul effet chargé, celui de la peau */
 
 const INTERACTIVE =
 	"a[href], button, input, select, textarea, label, [role='button'], [tabindex]," +
