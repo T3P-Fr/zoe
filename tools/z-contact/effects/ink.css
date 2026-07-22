@@ -1,0 +1,64 @@
+/* ==========================================================================
+   effet · INK — une goutte d'encre chaude qui s'épanouit et boit dans le papier
+   --------------------------------------------------------------------------
+   UNE RECETTE DU CATALOGUE, chargée par personne par défaut : une peau l'importe si
+   c'est sa signature (`@import ".../effects/ink.css";`). C'est la SIGNATURE de la peau
+   Claude — le contre-pied exact de `morph`/HighTech : pas un filet, un APLAT ; pas du
+   cobalt sec, de l'encre terre ; pas une trajectoire d'ingénieur, un ressort qui déborde.
+
+   Le geste : sous le doigt naît une petite goutte pleine (z-foreground) qui gonfle d'un
+   coup — un ressort qui dépasse (`--z-ease-spring`) — puis se dilue en fondant, pendant
+   qu'un halo plus clair la suit, comme le papier qui boit l'encre. Rempli, chaud, mou.
+
+   Le moteur ne crée qu'un `z-foreground` pour cet effet (le `z-marker` est réservé à
+   `implode`) : le halo « papier qui boit » est donc porté par un `::after`, pas une pièce.
+
+   Réglages (posés par la peau) : --z-contact-size · --z-contact-duration ·
+   --z-contact-color · --z-ease-spring.
+   Styleguide 12.4
+   ====================================================================== */
+z-overlay z-contact z-foreground {
+	width: var(--z-contact-size, 26px);
+	height: var(--z-contact-size, 26px);
+	background: var(--c);
+	will-change: transform, opacity;
+	animation: z-contact-ink var(--z-contact-duration, 0.55s) var(--z-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) forwards;
+}
+
+@keyframes z-contact-ink {
+	0% {
+		transform: translate(-50%, -50%) scale(0.2);
+		opacity: 0.55;
+	}
+
+	45% {
+		opacity: 0.42;
+	}
+
+	100% {
+		transform: translate(-50%, -50%) scale(2.4);
+		opacity: 0;
+	}
+}
+
+/* Le halo — le papier qui boit l'encre : plus clair, plus lent, jamais net. */
+z-overlay z-contact z-foreground::after {
+	content: "";
+	position: absolute;
+	inset: -35%;
+	border-radius: 50%;
+	background: radial-gradient(circle, color-mix(in oklab, var(--c) 45%, transparent) 0%, transparent 68%);
+	animation: z-contact-ink-halo var(--z-contact-duration, 0.55s) var(--z-ease, ease-out) forwards;
+}
+
+@keyframes z-contact-ink-halo {
+	from {
+		opacity: 0.5;
+		transform: scale(0.5);
+	}
+
+	to {
+		opacity: 0;
+		transform: scale(1.7);
+	}
+}

@@ -6,17 +6,17 @@
 	crème, accent argile/terre cuite, serif humaniste, mouvement qui REBONDIT.
 	Signée par Claude, invitée par Christophe. Remplace hightech.css → tout suit.
 
-	SA SIGNATURE AU CLIC — AUCUN effet au curseur, et c'est un CHOIX, pas un oubli :
-	cette peau signe avec l'onde de ses propres composants, qui part du composant et
-	non du pointeur. Elle n'importe donc rien du catalogue `tools/z-contact/effects/`
-	(HighTech, elle, y prend `morph`). Pour lui en donner un, une seule ligne suffit,
-	tout en tête de ce fichier :
-
-	    @import url("../../tools/z-contact/effects/implode.css");
+	SA SIGNATURE AU CLIC — `ink` : une goutte d'encre chaude qui s'épanouit sous le doigt,
+	déborde d'un ressort, puis boit dans le papier. Le contre-pied exact de HighTech (qui
+	prend `morph`, un filet cobalt sec) : ici un APLAT terre, mou, rempli. Une peau = une
+	signature, importée en une ligne, tout en tête de ce fichier (ci-dessous). Ses réglages
+	(taille, durée, couleur) sont posés plus bas avec les autres tokens.
 
 	Styleguide skin.claude
 	============================================================
 */
+
+@import url("../../tools/z-contact/effects/ink.css");
 
 :root {
 	/* couleurs — crème, encre brun-noir, terre cuite */
@@ -65,6 +65,14 @@
 	--z-trail-speed-ref: .5;     /* la tête se gorge d'encre au moindre geste */
 	--z-trail-ease: sine;        /* l'épaisseur fond vers la queue, elle ne tombe pas */
 	--z-trail-color: var(--z-accent);
+
+	/*
+		SON CLIC (z-contact) — les réglages de la goutte d'encre `ink` (recette importée en
+		tête). Ample, chaude, et elle s'attarde : le geste de cette peau ne se presse jamais.
+	*/
+	--z-contact-size: 24px;      /* une belle goutte, pas une pointe */
+	--z-contact-duration: .6s;   /* elle s'épanouit et sèche sans hâte */
+	--z-contact-color: var(--z-accent);   /* terre cuite : l'encre de la maison */
 
 	--z-scale-xs: .8;
 	--z-scale-s: .9;
