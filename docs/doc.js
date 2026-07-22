@@ -12,7 +12,7 @@
 */
 
 import "../examples/skin-switch.js";   /* le pacte : sélecteur de peau */
-import { setContactEffect } from "../tools/z-contact/z-contact-effect.js";   /* l'unique lien d'effet */
+import { syncContactEffectFromSkin } from "../tools/z-contact/z-contact-effect.js";   /* l'effet suit la peau */
 
 const ROOT = new URL("../", import.meta.url).href;   /* …/zoé/ */
 
@@ -84,11 +84,10 @@ z-element:state(press) { transform: scale(.97); }`;
 	TDZ (« Cannot access 'CDEMO' before initialization »).
 */
 const CDEMO = {
-	en: { target: "Click here — or anywhere in the zone", hint: "The effect is born where the pointer touches. Move a slider: it replays live.", effect: "Effect", none: "off", write: "Write as", modeAttr: "attribute", modeCss: "CSS", size: "Size", thickness: "Thickness", duration: "Duration", color: "Colour", css: "Same result, two ways to write it — flip « attribute / CSS » above. That's the point: attribute OR CSS, your choice." },
-	fr: { target: "Cliquez ici — ou n'importe où dans la zone", hint: "L'effet naît là où le pointeur touche. Bougez un curseur : il se rejoue en direct.", effect: "Effet", none: "aucun", write: "Écrire en", modeAttr: "attribut", modeCss: "CSS", size: "Taille", thickness: "Épaisseur", duration: "Durée", color: "Couleur", css: "Même résultat, deux façons de l'écrire — basculez « attribut / CSS » au-dessus. C'est ça, la force : attribut OU CSS, au choix." },
-	es: { target: "Pulse aquí — o en cualquier parte de la zona", hint: "El efecto nace donde el puntero toca. Mueva un control: se repite en directo.", effect: "Efecto", none: "ninguno", write: "Escribir como", modeAttr: "atributo", modeCss: "CSS", size: "Tamaño", thickness: "Grosor", duration: "Duración", color: "Color", css: "Mismo resultado, dos formas de escribirlo — cambie « atributo / CSS » arriba. Esa es la fuerza: atributo O CSS, a su elección." }
+	en: { target: "Click here — or anywhere in the zone", hint: "The effect is born where the pointer touches. Move a slider: it replays live.", belongsToSkin: "The effect belongs to the skin — switch it (top-right) to see another. The page never picks it.", write: "Write as", modeAttr: "attribute", modeCss: "CSS", size: "Size", thickness: "Thickness", duration: "Duration", color: "Colour", css: "Same result, two ways to write it — flip « attribute / CSS » above. That's the point: attribute OR CSS, your choice." },
+	fr: { target: "Cliquez ici — ou n'importe où dans la zone", hint: "L'effet naît là où le pointeur touche. Bougez un curseur : il se rejoue en direct.", belongsToSkin: "L'effet appartient à la peau — bascule-la (en haut à droite) pour en voir un autre. La page ne le choisit jamais.", write: "Écrire en", modeAttr: "attribut", modeCss: "CSS", size: "Taille", thickness: "Épaisseur", duration: "Durée", color: "Couleur", css: "Même résultat, deux façons de l'écrire — basculez « attribut / CSS » au-dessus. C'est ça, la force : attribut OU CSS, au choix." },
+	es: { target: "Pulse aquí — o en cualquier parte de la zona", hint: "El efecto nace donde el puntero toca. Mueva un control: se repite en directo.", belongsToSkin: "El efecto pertenece a la piel — cámbiela (arriba a la derecha) para ver otro. La página nunca lo elige.", write: "Escribir como", modeAttr: "atributo", modeCss: "CSS", size: "Tamaño", thickness: "Grosor", duration: "Duración", color: "Color", css: "Mismo resultado, dos formas de escribirlo — cambie « atributo / CSS » arriba. Esa es la fuerza: atributo O CSS, a su elección." }
 };
-const CDEMO_EFFECTS = ["implode", "explode", "morph", "ink"];
 /* Les réglages vivants : `key` nomme le libellé (CDEMO[lang][key]), `token` la variable
    CSS réelle (et le nom de l'attribut-raccourci). Bouger un curseur rejoue l'effet. */
 const CDEMO_CTLS = [
@@ -290,12 +289,8 @@ function contactDemo(d) {
 	const box = el("div", { class: "cdemo" });
 	const rootStyle = document.documentElement.style;
 	const TOKENS = { size: "--z-contact-size", width: "--z-contact-width", duration: "--z-contact-duration", color: "--z-contact-color" };
-	/* La démo ouvre sur la SIGNATURE de la peau active (--z-contact-fx) : sous Claude on
-	   voit « ink » d'office, sous HighTech « morph ». Repli sur implode si la peau n'en pose pas. */
-	const skinFx = getComputedStyle(document.documentElement).getPropertyValue("--z-contact-fx").trim();
-	const initialFx = CDEMO_EFFECTS.includes(skinFx) ? skinFx : "implode";
-	/* L'état, un seul, quel que soit le mode d'écriture. */
-	const state = { fx: initialFx, size: "26px", width: "6px", duration: "550ms", color: null };
+	/* L'état des RÉGLAGES (l'EFFET, lui, appartient à la peau — jamais un choix de la démo). */
+	const state = { size: "26px", width: "6px", duration: "550ms", color: null };
 	let mode = "css";   /* « css » (variables) ou « attr » (attributs) — même résultat */
 
 	/* la zone : cliquable partout (tabindex → le moteur la voit comme interactive). */
@@ -308,7 +303,6 @@ function contactDemo(d) {
 	   fasse refleurir en direct sans saturer. */
 	let last = 0;
 	const fire = () => {
-		if (state.fx === "none") return;
 		const now = performance.now();
 		if (now - last < 90) return;
 		last = now;
@@ -325,10 +319,10 @@ function contactDemo(d) {
 	const renderCode = () => {
 		const set = Object.keys(TOKENS).filter((k) => state[k]);
 		if (mode === "attr") {
-			codeEl.textContent = `<z-contact${["fx", ...set].map((k) => ` ${k}="${state[k]}"`).join("")}>`;
+			codeEl.textContent = `<z-contact${set.map((k) => ` ${k}="${state[k]}"`).join("")}>`;
 		} else {
 			const decl = set.map((k) => `${TOKENS[k]}: ${state[k]};`).join(" ");
-			codeEl.textContent = `<z-contact fx="${state.fx}">\nz-contact { ${decl} }`;
+			codeEl.textContent = `<z-contact>\nz-contact { ${decl} }`;
 		}
 	};
 
@@ -346,23 +340,9 @@ function contactDemo(d) {
 		fire();
 	};
 
-	/* le sélecteur d'effet (changer d'effet = changer de recette). */
-	const params = el("div", { class: "cdemo-params" });
-	params.append(el("span", { class: "cdemo-plabel", text: c.effect }));
-	const fxButtons = new Map();
-	const selectFx = (fx) => {
-		state.fx = fx;
-		src.setAttribute("fx", fx);
-		setContactEffect(fx);   /* l'unique lien : le nouvel effet remplace l'ancien, pas d'empilement */
-		for (const [name, b] of fxButtons) b.classList.toggle("on", name === fx);
-		renderCode();
-		fire();
-	};
-	for (const fx of [...CDEMO_EFFECTS, "none"]) {
-		const b = el("button", { class: "cdemo-choice", text: fx === "none" ? c.none : fx });
-		b.addEventListener("click", () => selectFx(fx));
-		params.append(b); fxButtons.set(fx, b);
-	}
+	/* PAS de sélecteur d'effet : l'effet appartient à la PEAU, pas à la page (le concept).
+	   On le MONTRE, on ne le choisit pas — pour en changer, on change de peau. */
+	const skinNote = el("p", { class: "cdemo-skin", text: c.belongsToSkin });
 
 	/* la bascule d'écriture : attribut OU CSS — le cœur de la démonstration. */
 	const modeRow = el("div", { class: "cdemo-params" });
@@ -407,13 +387,13 @@ function contactDemo(d) {
 	colorRow.append(swatches);
 	controls.append(colorRow);
 
-	box.append(params, zone, modeRow, controls, codePre, el("p", { class: "cdemo-css", text: c.css }));
+	box.append(zone, skinNote, modeRow, controls, codePre, el("p", { class: "cdemo-css", text: c.css }));
 
-	/* état initial : la signature de la peau, mode CSS. */
-	fxButtons.get(initialFx).classList.add("on");
+	/* état initial : mode CSS. L'effet est celui de la PEAU — on le (re)charge depuis elle,
+	   et on garde la source active (sans fx : le moteur peint l'effet chargé). */
 	modeButtons.get("css").classList.add("on");
-	src.setAttribute("fx", initialFx);
-	setContactEffect(initialFx);
+	src.removeAttribute("fx");
+	syncContactEffectFromSkin();
 	apply();
 	return box;
 }

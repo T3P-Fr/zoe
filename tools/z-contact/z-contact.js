@@ -194,14 +194,9 @@ export class ZContact extends HTMLElement {
 		},
 		attributes: [
 			{
-				name: "fx", type: "string",
-				values: [
-					{ value: "implode", default: true, note: { en: "the ring gathers to a point", fr: "l'anneau se ramasse en un point", es: "el anillo se concentra en un punto" } },
-					{ value: "explode", note: { en: "the wave bursts from the touch", fr: "l'onde jaillit du point touché", es: "la onda brota del punto tocado" } },
-					{ value: "morph", note: { en: "the ring hugs the component's shape", fr: "l'anneau épouse la forme du composant", es: "el anillo abraza la forma del componente" } },
-					{ value: "none", note: { en: "turns the effect off on this page", fr: "coupe l'effet sur cette page", es: "corta el efecto en esta página" } }
-				],
-				description: { en: "Which effect plays where the pointer touches.", fr: "Quel effet se joue là où le pointeur touche.", es: "Qué efecto se reproduce donde el puntero toca." }
+				name: "fx",
+				values: [{ value: "none", note: { en: "cut the effect on this page — fx's ONLY role. WHICH effect shows belongs to the skin, never the page", fr: "coupe l'effet sur cette page — le SEUL rôle de fx. QUEL effet s'affiche appartient à la peau, jamais à la page", es: "corta el efecto en esta página — el ÚNICO papel de fx. QUÉ efecto se muestra pertenece a la piel, nunca a la página" } }],
+				description: { en: "Kill switch only; the effect itself belongs to the skin.", fr: "Coupe-circuit, rien d'autre ; l'effet lui-même appartient à la peau.", es: "Solo interruptor; el efecto pertenece a la piel." }
 			},
 			{ name: "disabled", type: "boolean", description: { en: "Set by the engine on every source but the last one — the last declared wins.", fr: "Posé par le moteur sur toutes les sources sauf la dernière — la dernière déclarée gagne.", es: "Puesto por el motor en todas las fuentes menos la última — la última declarada gana." } },
 			/* Les 4 raccourcis : un attribut qui POSE son token (parité attribut/token) — au

@@ -116,6 +116,9 @@ body { margin: 0; background: var(--z-page); color: var(--z-ink);
 	border: 1px solid var(--z-accent); background: var(--z-accent); color: var(--z-accent-ink, #fff);
 }
 .cdemo-hint { margin: 0; font-size: .85rem; color: var(--z-ink-soft); text-align: center; }
+/* L'effet appartient à la peau : une note, pas un sélecteur. */
+.cdemo-skin { margin: .8rem 0 0; padding-left: .8rem; border-left: 3px solid var(--z-accent);
+	font-size: .9rem; line-height: 1.5; color: var(--z-ink); opacity: .85; }
 
 /* Les réglages VIVANTS : les 4 variables CSS, pilotées par des z-slider + pastilles.
    Bouger l'un rejoue l'effet → le changement se voit en direct (loi « params temps réel »). */
