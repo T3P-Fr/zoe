@@ -30,6 +30,53 @@ const t = (k) => I18N[LANG]?.[k] ?? I18N.en[k] ?? k;
 /* résout une description : string (anglais) OU { en, fr, es } → la langue courante. */
 const desc = (v) => (typeof v === "string" ? v : (v && (v[LANG] || v.en || Object.values(v)[0])) || "");
 
+/*
+	L'ACCUEIL — L'ESSAI ROUTIER, pas le capot. Un visiteur ne doit pas tomber sur des
+	tableaux ni sur une preuve de plomberie (« regarde, au survol ça ne fuit pas » = « elle
+	roule » : toute voiture roule). Il doit VOIR le résultat : une application entière,
+	vivante, qui se transforme sous sa main pour presque rien d'écrit. On MONTRE la voiture
+	en train de rouler — la démo « cinq nombres », en vrai, incrustée à la porte. Le
+	mécanisme (le geste, le « avant/après ») descend sous le capot, pour qui veut le voir.
+	(Recadré avec Christophe le 2026-07-22 : « ne me dis pas qu'elle roule, fais-moi
+	l'essai. » Comparaisons Flash retirées : trop datées pour un visiteur.)
+*/
+const DEMO = `${ROOT}examples/trois-variables.html`;   /* la voiture — on l'incruste, on ne la décrit pas */
+
+const HOME = {
+	en: {
+		menu: "the drive", title: "Five numbers. A whole interface.",
+		tagline: "This isn't a screenshot — grab it. Push a slider, and the entire page re-harmonizes. Not one palette was written.",
+		caption: "Everything above — backgrounds, cards, hairlines — descends from five numbers. No greys, no palette, no dark-mode file. That's Zoé.",
+		underHood: "Under the hood — the code you no longer write",
+		before: "By hand — on every component", after: "With Zoé"
+	},
+	fr: {
+		menu: "l'essai", title: "Cinq nombres. Une interface entière.",
+		tagline: "Ce n'est pas une capture — attrape-la. Pousse un curseur, et toute la page se ré-harmonise. Pas une seule palette écrite.",
+		caption: "Tout ce qui est au-dessus — fonds, cartes, filets — descend de cinq nombres. Aucun gris, aucune palette, aucun fichier « mode sombre ». C'est ça, Zoé.",
+		underHood: "Sous le capot — le code que tu n'écris plus",
+		before: "À la main — sur chaque composant", after: "Avec Zoé"
+	},
+	es: {
+		menu: "la prueba", title: "Cinco números. Una interfaz entera.",
+		tagline: "No es una captura — agárrala. Empuja un control, y toda la página se re-armoniza. Ni una sola paleta escrita.",
+		caption: "Todo lo de arriba — fondos, tarjetas, filetes — desciende de cinco números. Sin grises, sin paleta, sin archivo « modo oscuro ». Eso es Zoé.",
+		underHood: "Bajo el capó — el código que ya no escribes",
+		before: "A mano — en cada componente", after: "Con Zoé"
+	}
+};
+
+/* Le « avant/après » — du code, donc pas de traduction (il vit tel quel dans z-element.doc.md). */
+const AVANT = `btn.addEventListener("pointerenter", () => btn.classList.add("is-over"));
+btn.addEventListener("pointerleave", () => btn.classList.remove("is-over"));
+btn.addEventListener("pointerdown",  () => btn.classList.add("is-press"));
+btn.addEventListener("pointerup",    (e) => { /* dedans ? dehors ? annulé ? */ });
+// + le glissé, + le focus clavier, + retirer les écouteurs au démontage…`;
+const APRES = `<z-element><button>Envoyer</button></z-element>
+
+z-element:state(over)  { background: orange; }
+z-element:state(press) { transform: scale(.97); }`;
+
 addLink(`${ROOT}tools/z-motion/z-motion.css`);
 
 const manifest = await (await fetch(`${ROOT}dist/custom-elements.json`)).json();
@@ -109,6 +156,13 @@ function render() {
 	while (menu.children.length > 1) menu.lastChild.remove();   /* on garde le <h1>, on rebâtit */
 	main.innerHTML = "";
 
+	/* L'accueil d'abord : un lien tout en haut du menu, et la section en tête du corps. */
+	const home = HOME[LANG] || HOME.en;
+	const homeLink = el("a", { href: "#home", text: home.menu });
+	homeLink.style.fontWeight = "600";
+	menu.append(homeLink);
+	main.append(homeSection());
+
 	const groups = { core: [], tools: [], components: [] };
 	for (const e of entries) (groups[groupOf(e.path)] ||= []).push(e);
 
@@ -120,6 +174,53 @@ function render() {
 			main.append(entrySection(e.api, key));
 		}
 	}
+}
+
+/*
+	L'ACCUEIL : l'essai routier, dans l'ordre où l'œil doit le prendre.
+	① LA VOITURE QUI ROULE — la vraie démo « cinq nombres » incrustée en live (iframe).
+	   On ne la décrit pas, on la fait rouler sous la main du visiteur. C'est la porte.
+	② LA LÉGENDE — ce qu'il vient de voir, en une phrase.
+	③ SOUS LE CAPOT — le « avant/après » : le moteur, pour qui veut le voir APRÈS l'essai.
+*/
+function homeSection() {
+	const h = HOME[LANG] || HOME.en;
+	const sec = el("section", { class: "entry home", id: "home" });
+	sec.append(el("h2", { text: h.title }));
+	sec.append(el("p", { class: "summary", text: h.tagline }));
+
+	/* ① la voiture qui roule — la démo, en vrai, cadrée comme un écran vivant */
+	const screen = el("div", { class: "hero-screen" });
+	const bar = el("div", { class: "hero-bar" });
+	bar.append(el("span", { class: "hero-live" }), el("span", { class: "hero-url", text: "examples/trois-variables.html" }));
+	const frame = document.createElement("iframe");
+	frame.className = "hero-frame";
+	frame.src = DEMO;
+	frame.loading = "lazy";
+	frame.title = h.title;
+	screen.append(bar, frame);
+	sec.append(screen);
+	sec.append(el("p", { class: "hero-caption", text: h.caption }));
+
+	/* ③ sous le capot — le avant/après */
+	sec.append(el("h3", { text: h.underHood }));
+	const cmp = el("div", { class: "avapres" });
+	cmp.append(codeCol(h.before, AVANT, "avant"), codeCol(h.after, APRES, "apres"));
+	sec.append(cmp);
+
+	return sec;
+}
+
+/* Une colonne de code du « avant/après » : un titre + le bloc, tel quel. */
+function codeCol(title, source, cls) {
+	const box = el("div", { class: `col ${cls}` });
+	box.append(el("p", { class: "col-title", text: title }));
+	const pre = document.createElement("pre");
+	const c = document.createElement("code");
+	c.textContent = source;
+	pre.append(c);
+	box.append(pre);
+	return box;
 }
 
 function entrySection(d, group) {

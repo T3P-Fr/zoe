@@ -31,8 +31,9 @@ z-element surveille l'élément et **écrit dessus ce qui lui arrive**, en `:sta
 un sélecteur natif du navigateur, pas une classe inventée. Tu ne décris plus que
 l'apparence. Zéro JavaScript, zéro dépendance, rien à nettoyer.
 
-> Si tu as fait du Flash : ce sont les images-clés `Up / Over / Down` d'un bouton.
-> Une quinzaine au lieu de trois, dessinées en CSS, sur n'importe quel élément.
+> Un bouton n'a plus trois apparences (repos, survol, appui) mais une quinzaine —
+> survol, appui, lâché dedans, lâché dehors, glissé, focus… — chacune un simple
+> `:state()` en CSS, sur n'importe quel élément.
 
 ## Les mots que Zoé pose toute seule
 

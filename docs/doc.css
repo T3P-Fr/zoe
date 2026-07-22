@@ -24,6 +24,51 @@ body { margin: 0; background: var(--z-page); color: var(--z-ink); font-family: v
 .entry h2 { font-family: ui-monospace, monospace; font-size: 1.3rem; margin: 0 0 .3rem; }
 .entry .summary { color: var(--z-ink-soft); margin: 0 0 1.4rem; }
 
+/*
+	── L'ACCUEIL : l'essai routier, pas le capot ──
+	On ne DÉCRIT pas Zoé, on la fait rouler : la vraie démo « cinq nombres » incrustée en
+	live, cadrée comme un écran allumé. Le visiteur attrape un curseur, toute l'interface
+	se ré-harmonise — puis seulement, plus bas, le moteur (« sous le capot »).
+	Styleguide docs.home
+*/
+.home .summary { font-size: 1.05rem; max-width: 62ch; }
+
+/* L'écran vivant : une barre « allumé » + l'appli qui tourne pour de vrai dedans. */
+.hero-screen {
+	border: 1px solid var(--z-line-soft); border-radius: var(--z-radius, 10px);
+	overflow: hidden; background: var(--z-surface-raised);
+	box-shadow: 0 18px 40px -22px color-mix(in srgb, var(--z-ink) 55%, transparent);
+	margin: .4rem 0 .7rem;
+}
+.hero-bar {
+	display: flex; align-items: center; gap: .55rem;
+	padding: .5rem .8rem; border-bottom: 1px solid var(--z-line-soft);
+	background: var(--z-surface); font: 500 .72rem/1 ui-monospace, monospace; color: var(--z-ink-soft);
+}
+/* la pastille « en direct » qui respire — ça tourne, ce n'est pas une image. */
+.hero-live { width: 9px; height: 9px; border-radius: 50%; background: #2ec77a; flex: none;
+	box-shadow: 0 0 0 0 color-mix(in srgb, #2ec77a 70%, transparent); animation: hero-pulse 2s infinite; }
+@keyframes hero-pulse {
+	0% { box-shadow: 0 0 0 0 color-mix(in srgb, #2ec77a 60%, transparent); }
+	70% { box-shadow: 0 0 0 7px transparent; }
+	100% { box-shadow: 0 0 0 0 transparent; }
+}
+.hero-frame { display: block; width: 100%; height: 640px; border: 0; background: var(--z-page); }
+.hero-caption { margin: 0 0 2rem; font-size: .92rem; line-height: 1.55; color: var(--z-ink-soft); max-width: 66ch; }
+
+/* Le « avant / après » : deux colonnes, la douleur à gauche, le soulagement à droite. */
+.avapres { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.6rem; }
+/* min-width:0 : sans ça, une ligne de code longue force la colonne à s'élargir et le
+   bloc déborde à droite. Avec, la colonne tient et c'est le `pre` qui défile (overflow-x). */
+.avapres .col { min-width: 0; }
+.avapres .col-title { margin: 0 0 .4rem; font: 600 .68rem/1 ui-monospace, monospace;
+	text-transform: uppercase; letter-spacing: .06em; color: var(--z-ink-soft); }
+.avapres pre { margin: 0; padding: .9rem 1rem; border-radius: var(--z-radius, 8px);
+	overflow-x: auto; font-size: .74rem; line-height: 1.65; }
+.avapres code { font-family: ui-monospace, monospace; }
+.avapres .avant pre { background: color-mix(in srgb, var(--z-ink) 8%, var(--z-surface)); color: var(--z-ink-soft); }
+.avapres .apres pre { background: color-mix(in srgb, var(--z-ink) 92%, #000); color: var(--z-page); }
+
 /* ── Le visualiseur : gros bouton draggable + liste d'états à points ── */
 .viz { display: grid; grid-template-columns: 1fr 180px; gap: 1.2rem; border: 1px solid var(--z-line-soft); border-radius: var(--z-radius, 8px); background: var(--z-surface-raised); margin-bottom: 1.4rem; padding: 1.4rem; }
 .viz-stage { position: relative; min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; border: 1px dashed var(--z-line-soft); border-radius: var(--z-radius, 8px); overflow: hidden; }
