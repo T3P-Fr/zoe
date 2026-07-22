@@ -1,90 +1,83 @@
 /* ==========================================================================
-   effet · INK — une goutte d'encre chaude qui s'épanouit et boit dans le papier
+   effet · INK — deux gouttes d'encre chaude qui giclent et boivent dans le papier
    --------------------------------------------------------------------------
    UNE RECETTE DU CATALOGUE, chargée par personne par défaut : une peau l'importe si
    c'est sa signature (`@import ".../effects/ink.css";`). C'est la SIGNATURE de la peau
    Claude — le contre-pied exact de `morph`/HighTech : pas un filet, un APLAT ; pas du
-   cobalt sec, de l'encre terre ; pas une trajectoire d'ingénieur, un ressort qui déborde.
+   cobalt sec, de l'encre terre ; pas une trajectoire d'ingénieur, un jet vif.
 
-   PAS UN CERCLE. Une vraie encre a un bord IRRÉGULIER (border-radius asymétrique qui se
-   déforme pendant l'animation → le blob « vit »), elle BAVE (léger flou = bord humide),
-   et elle projette une petite goutte de côté (`::before`, une éclaboussure). Derrière,
-   le papier qui BOIT (`::after`, un halo diffus plus lent). Trois surfaces, zéro pièce
-   ajoutée au moteur : `z-foreground` + ses deux pseudo-éléments suffisent.
+   LE GESTE (direction de Christophe) : deux cercles FLOUS (bord dégradé, pas de filtre)
+   qui grandissent TRÈS vite puis ralentissent d'un coup (ease-out franc), chacun partant
+   dans une direction différente — l'encre gicle, elle n'enfle pas symétriquement. Une
+   OMBRE INTERNE qui grandit creuse le contact (le papier qui se gorge), et un halo diffus
+   derrière (le buvard). Deux ronds + une profondeur, tout en dégradés — aucun `blur`.
 
-   Le moteur ne crée qu'un `z-foreground` pour cet effet (le `z-marker` est réservé à
-   `implode`). On ne le touche pas : tout vit ici.
+   Trois surfaces, zéro pièce ajoutée au moteur : `z-foreground` (goutte A + l'ombre
+   interne) · `::before` (goutte B, l'autre direction) · `::after` (le buvard). On ne
+   touche pas à z-contact.
 
-   Réglages (posés par la peau) : --z-contact-size · --z-contact-duration ·
-   --z-contact-color · --z-ease-spring.
+   Réglages (posés par la peau) : --z-contact-size · --z-contact-duration · --z-contact-color.
    Styleguide 12.4
    ====================================================================== */
+
+/* Le jet gicle vite puis se fige — c'est l'accélération d'une éclaboussure, pas un ressort. */
 z-overlay z-contact z-foreground {
 	width: var(--z-contact-size, 26px);
 	height: var(--z-contact-size, 26px);
-	background: var(--c);
-	/* un bord d'encre, jamais un cercle net */
-	border-radius: 47% 53% 45% 55% / 52% 48% 55% 45%;
-	/* le bord humide : un rien de bave */
-	filter: blur(0.5px);
-	will-change: transform, opacity, border-radius;
-	animation: z-contact-ink var(--z-contact-duration, 0.55s) var(--z-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) forwards;
+	border-radius: 50%;
+	/* un cercle FLOU par le dégradé lui-même : plein au cœur, évanoui au bord — aucun blur */
+	background: radial-gradient(circle, var(--c) 46%, transparent 72%);
+	/* l'ombre interne qui creuse le contact (grandit dans la keyframe) */
+	box-shadow: inset 0 0 0 0 color-mix(in oklab, var(--c) 55%, #000 12%);
+	will-change: transform, opacity, box-shadow;
+	animation: z-contact-ink-a var(--z-contact-duration, 0.6s) cubic-bezier(0.08, 0.85, 0.18, 1) forwards;
 }
 
-/* Le blob GONFLE, TOURNE un peu et se DÉFORME en s'épanouissant — l'encre n'est jamais
-   symétrique deux instants de suite. */
-@keyframes z-contact-ink {
+/* GOUTTE A — gicle vers le haut-gauche. */
+@keyframes z-contact-ink-a {
 	0% {
-		transform: translate(-50%, -50%) scale(0.16) rotate(-10deg);
-		opacity: 0.6;
-		border-radius: 47% 53% 45% 55% / 52% 48% 55% 45%;
-	}
-
-	45% {
-		opacity: 0.5;
-		border-radius: 61% 39% 56% 44% / 41% 59% 41% 59%;
+		transform: translate(-50%, -50%) scale(0.12);
+		box-shadow: inset 0 0 0 0 color-mix(in oklab, var(--c) 55%, #000 12%);
+		opacity: 0.72;
 	}
 
 	100% {
-		transform: translate(-50%, -50%) scale(2.3) rotate(7deg);
+		transform: translate(-72%, -66%) scale(2.15);
+		box-shadow: inset 0 0 14px 2px color-mix(in oklab, var(--c) 55%, #000 22%);
 		opacity: 0;
-		border-radius: 43% 57% 52% 48% / 57% 43% 51% 49%;
 	}
 }
 
-/* L'ÉCLABOUSSURE — une petite goutte qui part de côté, en haut à gauche du contact. */
+/* GOUTTE B (::before) — même gicle, direction opposée (bas-droite). */
 z-overlay z-contact z-foreground::before {
 	content: "";
 	position: absolute;
-	left: 6%;
-	top: 2%;
-	width: 34%;
-	height: 34%;
-	background: var(--c);
-	border-radius: 54% 46% 48% 52% / 50% 55% 45% 50%;
-	animation: z-contact-ink-splat var(--z-contact-duration, 0.55s) var(--z-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) forwards;
+	inset: 0;
+	border-radius: 50%;
+	background: radial-gradient(circle, var(--c) 44%, transparent 70%);
+	animation: z-contact-ink-b var(--z-contact-duration, 0.6s) cubic-bezier(0.08, 0.85, 0.18, 1) forwards;
 }
 
-@keyframes z-contact-ink-splat {
+@keyframes z-contact-ink-b {
 	0% {
-		transform: scale(0) translate(0, 0);
-		opacity: 0.65;
+		transform: scale(0.12);
+		opacity: 0.62;
 	}
 
 	100% {
-		transform: scale(1.9) translate(-40%, -55%);
+		transform: translate(28%, 24%) scale(1.7);
 		opacity: 0;
 	}
 }
 
-/* LE PAPIER QUI BOIT — un halo plus clair, plus lent, jamais net. */
+/* LE BUVARD (::after) — un halo diffus, plus lent, qui reste rond et pâle. */
 z-overlay z-contact z-foreground::after {
 	content: "";
 	position: absolute;
-	inset: -38%;
+	inset: -30%;
 	border-radius: 50%;
-	background: radial-gradient(circle, color-mix(in oklab, var(--c) 42%, transparent) 0%, transparent 66%);
-	animation: z-contact-ink-halo var(--z-contact-duration, 0.55s) var(--z-ease, ease-out) forwards;
+	background: radial-gradient(circle, color-mix(in oklab, var(--c) 34%, transparent) 0%, transparent 64%);
+	animation: z-contact-ink-halo var(--z-contact-duration, 0.6s) ease-out forwards;
 }
 
 @keyframes z-contact-ink-halo {
@@ -95,6 +88,6 @@ z-overlay z-contact z-foreground::after {
 
 	to {
 		opacity: 0;
-		transform: scale(1.75);
+		transform: scale(1.7);
 	}
 }
