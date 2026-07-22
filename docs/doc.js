@@ -22,9 +22,9 @@ const UTILITY = ["current", "loading", "disabled", "error", "success"];        /
 /* Langue courante + dictionnaire de l'UI de la doc (l'API vit dans les static api). */
 let LANG = new URLSearchParams(location.search).get("lang") || localStorage.getItem("zoe-lang") || "en";
 const I18N = {
-	en: { attributesHint: "Written on THIS element, in your HTML. A named shortcut: one word, and the component knows what to do.", eventsHint: "What the component tells you. Listen with addEventListener.", statesHint: "They HAPPEN — on gesture, or set by your code. You don't set them here, you paint them: z-button:state(over) { … }", cssVarsHint: "Written in your CSS, and they flow DOWN to everything inside. The fine-grained setting: an attribute is a shortcut that sets several of them at once.", core: "core", tools: "tools", components: "components", attributes: "Attributes", type: "Type", role: "Role", events: "Events", event: "Event", states: "States :state()", cssVars: "CSS variables", variable: "Variable", tryme: "Try me", hint: "Hover, press, DRAG it (drop inside / outside) — the « mouse » dots follow.", mouse: "Mouse — on gesture", utility: "Utility — on click", seealso: "Same states as z-element — try them above.", clickState: "click to set this state", promisePre: "States · interaction · animation: ", promiseBold: "zero JS to manage.", promisePost: " You write this HTML — and your CSS for :state().", default: "default" },
-	fr: { attributesHint: "S'écrit sur CET élément, dans ton HTML. Un raccourci nommé : un mot, et le composant sait quoi faire.", eventsHint: "Ce que le composant te dit. Écoute-le avec addEventListener.", statesHint: "Ils ARRIVENT — au geste, ou posés par ton code. On ne les règle pas ici, on les peint : z-button:state(over) { … }", cssVarsHint: "S'écrit dans ton CSS, et ça DESCEND sur tout ce qu'il y a dedans. Le réglage fin : un attribut n'est qu'un raccourci qui en pose plusieurs d'un coup.", core: "noyau", tools: "tools", components: "composants", attributes: "Attributs", type: "Type", role: "Rôle", events: "Événements", event: "Événement", states: "États :state()", cssVars: "Variables CSS", variable: "Variable", tryme: "Testez-moi", hint: "Survole, presse, GLISSE-le (lâche dedans / dehors) — les points « souris » suivent.", mouse: "Souris — au geste", utility: "Utilitaires — au clic", seealso: "Mêmes états que z-element — teste-les là-haut.", clickState: "clique pour poser cet état", promisePre: "États · interaction · animation : ", promiseBold: "zéro JS à gérer.", promisePost: " Tu écris ce HTML — et ton CSS pour :state().", default: "défaut" },
-	es: { attributesHint: "Se escribe en ESTE elemento, en tu HTML. Un atajo con nombre: una palabra, y el componente sabe qué hacer.", eventsHint: "Lo que el componente te dice. Escúchalo con addEventListener.", statesHint: "OCURREN — con el gesto, o puestos por tu código. No se ajustan aquí, se pintan: z-button:state(over) { … }", cssVarsHint: "Se escribe en tu CSS, y BAJA a todo lo que hay dentro. El ajuste fino: un atributo solo es un atajo que pone varios de una vez.", core: "núcleo", tools: "herramientas", components: "componentes", attributes: "Atributos", type: "Tipo", role: "Función", events: "Eventos", event: "Evento", states: "Estados :state()", cssVars: "Variables CSS", variable: "Variable", tryme: "Pruébame", hint: "Pasa el ratón, presiona, ARRÁSTRALO (suelta dentro / fuera) — los puntos « ratón » siguen.", mouse: "Ratón — al gesto", utility: "Utilitarios — al clic", seealso: "Mismos estados que z-element — pruébalos arriba.", clickState: "clic para poner este estado", promisePre: "Estados · interacción · animación: ", promiseBold: "cero JS que gestionar.", promisePost: " Escribes este HTML — y tu CSS para :state().", default: "predeterminado" }
+	en: { attributesHint: "Written on THIS element, in the HTML. A named shortcut: one word, and the component knows what to do.", eventsHint: "What the component signals. Listen with addEventListener.", statesHint: "They HAPPEN — on gesture, or set by code. You don't set them here, you paint them: z-button:state(over) { … }", cssVarsHint: "Written in CSS, and flows DOWN to everything inside. The fine-grained setting; an attribute is a shortcut that sets several at once.", core: "core", tools: "tools", components: "components", attributes: "Attributes", type: "Type", values: "Values", boolPresent: "present / absent", role: "Role", events: "Events", event: "Event", states: "States :state()", cssVars: "CSS variables", variable: "Variable", tryme: "Try me", hint: "Hover, press, DRAG it (drop inside / outside) — the « mouse » dots follow.", mouse: "Mouse — on gesture", utility: "Utility — on click", seealso: "Same states as z-element — try them above.", clickState: "click to set this state", promisePre: "States · interaction · animation: ", promiseBold: "zero JS to manage.", promisePost: " Write this HTML — and the CSS for :state().", default: "default" },
+	fr: { attributesHint: "S'écrit sur CET élément, dans le HTML. Un raccourci nommé : un mot, et le composant sait quoi faire.", eventsHint: "Ce que le composant signale. À écouter avec addEventListener.", statesHint: "Ils ARRIVENT — au geste, ou posés par le code. On ne les règle pas ici, on les peint : z-button:state(over) { … }", cssVarsHint: "S'écrit en CSS, et descend sur tout le contenu. Le réglage fin ; un attribut n'est qu'un raccourci qui en pose plusieurs d'un coup.", core: "noyau", tools: "tools", components: "composants", attributes: "Attributs", type: "Type", values: "Valeurs", boolPresent: "présent / absent", role: "Rôle", events: "Événements", event: "Événement", states: "États :state()", cssVars: "Variables CSS", variable: "Variable", tryme: "Testez-moi", hint: "Survolez, pressez, GLISSEZ-le (lâchez dedans / dehors) — les points « souris » suivent.", mouse: "Souris — au geste", utility: "Utilitaires — au clic", seealso: "Mêmes états que z-element — voir plus haut.", clickState: "clic pour poser cet état", promisePre: "États · interaction · animation : ", promiseBold: "zéro JS à gérer.", promisePost: " Le HTML à écrire — et le CSS pour :state().", default: "défaut" },
+	es: { attributesHint: "Se escribe en ESTE elemento, en el HTML. Un atajo con nombre: una palabra, y el componente sabe qué hacer.", eventsHint: "Lo que el componente señala. Escúchelo con addEventListener.", statesHint: "OCURREN — con el gesto, o puestos por el código. No se ajustan aquí, se pintan: z-button:state(over) { … }", cssVarsHint: "Se escribe en CSS, y BAJA a todo lo que hay dentro. El ajuste fino; un atributo solo es un atajo que pone varios de una vez.", core: "núcleo", tools: "herramientas", components: "componentes", attributes: "Atributos", type: "Tipo", values: "Valores", boolPresent: "presente / ausente", role: "Función", events: "Eventos", event: "Evento", states: "Estados :state()", cssVars: "Variables CSS", variable: "Variable", tryme: "Pruébame", hint: "Pase el ratón, presione, ARRÁSTRELO (suelte dentro / fuera) — los puntos « ratón » siguen.", mouse: "Ratón — al gesto", utility: "Utilitarios — al clic", seealso: "Mismos estados que z-element — ver más arriba.", clickState: "clic para poner este estado", promisePre: "Estados · interacción · animación: ", promiseBold: "cero JS que gestionar.", promisePost: " El HTML a escribir — y el CSS para :state().", default: "predeterminado" }
 };
 const t = (k) => I18N[LANG]?.[k] ?? I18N.en[k] ?? k;
 /* résout une description : string (anglais) OU { en, fr, es } → la langue courante. */
@@ -156,7 +156,7 @@ function rawApi(tag) {
 	return {
 		tagName: api.tag,
 		summary: api.summary,
-		attributes: (api.attributes || []).map((a) => ({ name: a.name, type: { text: a.type || "string" }, description: a.description })),
+		attributes: (api.attributes || []).map((a) => ({ name: a.name, type: { text: a.type || "string" }, values: a.values || null, description: a.description })),
 		events: (api.events || []).map((ev) => ({ name: ev.name, description: ev.description })),
 		cssStates: (api.states || []).map((s) => ({ name: s })),
 		cssProperties: (api.cssVars || []).map((v) => ({ name: v.name, description: v.description }))
@@ -262,8 +262,8 @@ function entrySection(d, group) {
 	else if (group === "components") sec.append(preview(d));
 	else sec.append(el("p", { class: "seealso", text: t("seealso") }));
 
-	if (d.attributes?.length) sec.append(heading(t("attributes"), t("attributesHint")), table([t("attributes"), t("type"), t("role")],
-		d.attributes.map((a) => [code(a.name), a.type?.text || "", desc(a.description)])));
+	if (d.attributes?.length) sec.append(heading(t("attributes"), t("attributesHint")), table([t("attributes"), t("values"), t("role")],
+		d.attributes.map((a) => [code(a.name), valuesCell(a), desc(a.description)])));
 	if (d.events?.length) sec.append(heading(t("events"), t("eventsHint")), table([t("event"), t("role")],
 		d.events.map((ev) => [code(ev.name), desc(ev.description)])));
 	if (d.cssStates?.length) { sec.append(heading(t("states"), t("statesHint"))); sec.append(chips(d.cssStates.map((s) => s.name))); }
@@ -526,6 +526,18 @@ function table(head, rows) {
 		tbl.append(tr);
 	}
 	return tbl;
+}
+/*
+	La cellule « Valeurs » d'un attribut : les valeurs concrètes qu'il accepte, pas son type.
+	« string » ne dit rien à personne ; « implode · explode · morph · none », si.
+	- liste de valeurs → des pastilles cliquables à lire ;
+	- booléen        → « présent / absent » (l'attribut EST la valeur) ;
+	- reste (texte libre) → un tiret (à vous de le remplir).
+*/
+function valuesCell(a) {
+	if (a.values?.length) return chips(a.values);
+	if (a.type?.text === "boolean") return document.createTextNode(t("boolPresent"));
+	return document.createTextNode("—");
 }
 function chips(names) {
 	const box = el("div", { class: "chips" });

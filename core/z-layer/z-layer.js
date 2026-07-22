@@ -68,9 +68,9 @@ export class ZLayer extends ZElement {
 	static api = {
 		tag: "z-layer",
 		summary: {
-			en: "The pieces of a component — its background, its label, its tick — already painted for you. You only write a layer when you want to take over one precise part.",
-			fr: "Les pièces d'un composant — son fond, son libellé, sa coche — déjà peintes pour toi. Tu n'écris un calque que pour reprendre la main sur une partie précise.",
-			es: "Las piezas de un componente — su fondo, su etiqueta, su marca — ya pintadas para ti. Solo escribes una capa cuando quieres tomar el control de una parte concreta."
+			en: "The pieces of a component — its background, its label, its tick — already painted for you. You only write a layer to take over one precise part.",
+			fr: "Les pièces d'un composant — son fond, son libellé, sa coche — déjà peintes pour vous. Vous n'écrivez un calque que pour reprendre la main sur une partie précise.",
+			es: "Las piezas de un componente — su fondo, su etiqueta, su marca — ya pintadas para usted. Solo escribe una capa para tomar el control de una parte concreta."
 		},
 		attributes: [
 			{

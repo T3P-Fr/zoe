@@ -192,7 +192,7 @@ export class ZContact extends HTMLElement {
 			es: "¿Un efecto de clic visual en toda su página? Coloque esta etiqueta donde sea — resuelto. Dos efectos por defecto; ¿no le convienen? Haga el suyo en unas líneas de CSS."
 		},
 		attributes: [
-			{ name: "fx", type: "string", description: { en: "Kill switch: fx=\"none\" disables the effect on this page. WHICH effect is shown is chosen by the skin (it imports a recipe from effects/), never by the page.", fr: "Coupe-circuit : fx=\"none\" désactive l'effet sur cette page. QUEL effet s'affiche est choisi par la peau (elle importe une recette de effects/), jamais par la page.", es: "Interruptor: fx=\"none\" desactiva el efecto en esta página. QUÉ efecto se muestra lo elige la piel (importa una receta de effects/), nunca la página." } },
+			{ name: "fx", type: "string", values: ["implode", "explode", "morph", "none"], description: { en: "Which effect plays. Kill switch: fx=\"none\" turns it off on this page.", fr: "Quel effet se joue. Coupe-circuit : fx=\"none\" le désactive sur cette page.", es: "Qué efecto se reproduce. Interruptor: fx=\"none\" lo desactiva en esta página." } },
 			{ name: "disabled", type: "boolean", description: { en: "Set by the engine on every source but the last one — the last declared wins.", fr: "Posé par le moteur sur toutes les sources sauf la dernière — la dernière déclarée gagne.", es: "Puesto por el motor en todas las fuentes menos la última — la última declarada gana." } }
 		],
 		events: [
