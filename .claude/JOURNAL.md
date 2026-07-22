@@ -2,6 +2,34 @@
 
 ## Historique
 
+## Session du 2026-07-22 → 23
+
+**Impact (1-5) :** 5
+
+**Fait :**
+- 18 commits sur master. La doc ouvre sur l'ESSAI (démo « cinq nombres » live), typo
+  propre, table `Valeurs`/`Rôle` alignée (rowspan), démo z-contact à réglages temps réel.
+- **Parité attribut/token** sur z-contact (size/width/duration/color en attribut OU en
+  CSS) + warn sur attribut inconnu. **`state` × `when`** sur z-element (déclencheurs
+  déclaratifs). Peau Claude dotée de sa signature `ink`.
+- **LE modèle des effets tranché** : déclarés par la peau (`@property --z-contact__fx--*`),
+  découverts (récursif dans les `@import`), scopés `[fx=<nom>]`. HighTech → implode/
+  explode/morph ; Claude → ink. Sélecteur + doc dynamiques, changent avec la peau.
+
+**En cours :**
+- Rien de non commité. Rien n'est poussé. Tout sur master.
+
+**Décisions :**
+- **L'effet appartient à la peau, DÉCLARÉ et DÉCOUVERT, pas figé par attribut** (`fx` =
+  coupe-circuit). On ne connaît pas d'avance ce qu'un user déclare → on le découvre.
+- **Zigzag assumé** (scope → lien unique → déclaré/découvert/scopé) : le scope par nom
+  réconcilie « coexistent sans se mélanger » et « une peau ne charge que les siens ».
+- **Voix de la doc** : parler au besoin (pas à la plomberie), vouvoyer, uniformité.
+
+**Prochain pas :**
+- Réécrire `z-contact.doc.md` pour EXPLIQUER le modèle déclaré/découvert (« la doc à
+  revoir »). Pousser l'encre « de OUF » (goo SVG en vrai navigateur, ou hook JS).
+
 ## Session du 2026-07-20 → 21
 
 **Impact (1-5) :** 5
