@@ -87,7 +87,7 @@ const CDEMO = {
 	fr: { target: "Cliquez ici — ou n'importe où dans la zone", hint: "L'effet naît là où le pointeur touche. Bougez un curseur : il se rejoue en direct.", effect: "Effet", none: "aucun", write: "Écrire en", modeAttr: "attribut", modeCss: "CSS", size: "Taille", thickness: "Épaisseur", duration: "Durée", color: "Couleur", css: "Même résultat, deux façons de l'écrire — basculez « attribut / CSS » au-dessus. C'est ça, la force : attribut OU CSS, au choix." },
 	es: { target: "Pulse aquí — o en cualquier parte de la zona", hint: "El efecto nace donde el puntero toca. Mueva un control: se repite en directo.", effect: "Efecto", none: "ninguno", write: "Escribir como", modeAttr: "atributo", modeCss: "CSS", size: "Tamaño", thickness: "Grosor", duration: "Duración", color: "Color", css: "Mismo resultado, dos formas de escribirlo — cambie « atributo / CSS » arriba. Esa es la fuerza: atributo O CSS, a su elección." }
 };
-const CDEMO_EFFECTS = ["implode", "explode", "morph"];
+const CDEMO_EFFECTS = ["implode", "explode", "morph", "ink"];
 /* Les réglages vivants : `key` nomme le libellé (CDEMO[lang][key]), `token` la variable
    CSS réelle (et le nom de l'attribut-raccourci). Bouger un curseur rejoue l'effet. */
 const CDEMO_CTLS = [
@@ -298,8 +298,12 @@ function contactDemo(d) {
 	const box = el("div", { class: "cdemo" });
 	const rootStyle = document.documentElement.style;
 	const TOKENS = { size: "--z-contact-size", width: "--z-contact-width", duration: "--z-contact-duration", color: "--z-contact-color" };
+	/* La démo ouvre sur la SIGNATURE de la peau active (--z-contact-fx) : sous Claude on
+	   voit « ink » d'office, sous HighTech « morph ». Repli sur implode si la peau n'en pose pas. */
+	const skinFx = getComputedStyle(document.documentElement).getPropertyValue("--z-contact-fx").trim();
+	const initialFx = CDEMO_EFFECTS.includes(skinFx) ? skinFx : "implode";
 	/* L'état, un seul, quel que soit le mode d'écriture. */
-	const state = { fx: "implode", size: "26px", width: "6px", duration: "550ms", color: null };
+	const state = { fx: initialFx, size: "26px", width: "6px", duration: "550ms", color: null };
 	let mode = "css";   /* « css » (variables) ou « attr » (attributs) — même résultat */
 
 	/* la zone : cliquable partout (tabindex → le moteur la voit comme interactive). */
@@ -413,11 +417,11 @@ function contactDemo(d) {
 
 	box.append(params, zone, modeRow, controls, codePre, el("p", { class: "cdemo-css", text: c.css }));
 
-	/* état initial : implode, mode CSS. */
-	fxButtons.get("implode").classList.add("on");
+	/* état initial : la signature de la peau, mode CSS. */
+	fxButtons.get(initialFx).classList.add("on");
 	modeButtons.get("css").classList.add("on");
-	src.setAttribute("fx", "implode");
-	ensureContactRecipe("implode");
+	src.setAttribute("fx", initialFx);
+	ensureContactRecipe(initialFx);
 	apply();
 	return box;
 }

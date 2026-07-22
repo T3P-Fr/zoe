@@ -183,6 +183,8 @@
 		la recette (tools/z-contact/effects/morph.css).
 	*/
 
+	--z-contact-fx: morph;   /* SA signature — lue par la démo de la doc pour l'afficher d'office */
+
 	/* Le diamètre de l'anneau à sa naissance, sous le curseur. Il grandit ensuite jusqu'à
 	   la taille du composant : c'est un point de DÉPART, pas une taille finale. */
 	--z-contact-size: 20px;
