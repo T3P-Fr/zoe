@@ -192,7 +192,16 @@ export class ZContact extends HTMLElement {
 			es: "¿Un efecto de clic visual en toda su página? Coloque esta etiqueta donde sea — resuelto. Dos efectos por defecto; ¿no le convienen? Haga el suyo en unas líneas de CSS."
 		},
 		attributes: [
-			{ name: "fx", type: "string", values: ["implode", "explode", "morph", "none"], description: { en: "Which effect plays. Kill switch: fx=\"none\" turns it off on this page.", fr: "Quel effet se joue. Coupe-circuit : fx=\"none\" le désactive sur cette page.", es: "Qué efecto se reproduce. Interruptor: fx=\"none\" lo desactiva en esta página." } },
+			{
+				name: "fx", type: "string",
+				values: [
+					{ value: "implode", default: true, note: { en: "the ring gathers to a point", fr: "l'anneau se ramasse en un point", es: "el anillo se concentra en un punto" } },
+					{ value: "explode", note: { en: "the wave bursts from the touch", fr: "l'onde jaillit du point touché", es: "la onda brota del punto tocado" } },
+					{ value: "morph", note: { en: "the ring hugs the component's shape", fr: "l'anneau épouse la forme du composant", es: "el anillo abraza la forma del componente" } },
+					{ value: "none", note: { en: "turns the effect off on this page", fr: "coupe l'effet sur cette page", es: "corta el efecto en esta página" } }
+				],
+				description: { en: "Which effect plays where the pointer touches.", fr: "Quel effet se joue là où le pointeur touche.", es: "Qué efecto se reproduce donde el puntero toca." }
+			},
 			{ name: "disabled", type: "boolean", description: { en: "Set by the engine on every source but the last one — the last declared wins.", fr: "Posé par le moteur sur toutes les sources sauf la dernière — la dernière déclarée gagne.", es: "Puesto por el motor en todas las fuentes menos la última — la última declarada gana." } }
 		],
 		events: [

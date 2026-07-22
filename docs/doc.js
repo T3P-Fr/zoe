@@ -530,14 +530,30 @@ function table(head, rows) {
 /*
 	La cellule « Valeurs » d'un attribut : les valeurs concrètes qu'il accepte, pas son type.
 	« string » ne dit rien à personne ; « implode · explode · morph · none », si.
-	- liste de valeurs → des pastilles cliquables à lire ;
-	- booléen        → « présent / absent » (l'attribut EST la valeur) ;
-	- reste (texte libre) → un tiret (à vous de le remplir).
+
+	Une valeur peut être SIMPLE (un mot) ou DÉCRITE (un objet { value, note, default }) —
+	c'est ce qui permet des valeurs complexes : chacune porte son sens, et un intervalle
+	ou un type se dit en une entrée notée (`0 → 360` « l'angle, en degrés » ; `<color>`
+	« une couleur CSS »). Le rendu suit :
+	  - que des mots simples        → des pastilles compactes ;
+	  - au moins une valeur décrite → une ligne « valeur [défaut] — sens » par valeur ;
+	  - aucune valeur, booléen      → « présent / absent » ;
+	  - aucune valeur, texte libre  → un tiret.
 */
 function valuesCell(a) {
-	if (a.values?.length) return chips(a.values);
-	if (a.type?.text === "boolean") return document.createTextNode(t("boolPresent"));
-	return document.createTextNode("—");
+	const vals = a.values;
+	if (!vals?.length) return document.createTextNode(a.type?.text === "boolean" ? t("boolPresent") : "—");
+	const norm = vals.map((v) => (typeof v === "string" ? { value: v } : v));
+	if (!norm.some((v) => v.note || v.default)) return chips(norm.map((v) => v.value));
+	const box = el("div", { class: "vals" });
+	for (const v of norm) {
+		const row = el("div", { class: "val" });
+		row.append(code(v.value));
+		if (v.default) row.append(el("span", { class: "val-def", text: t("default") }));
+		if (v.note) row.append(el("span", { class: "val-note", text: `— ${desc(v.note)}` }));
+		box.append(row);
+	}
+	return box;
 }
 function chips(names) {
 	const box = el("div", { class: "chips" });

@@ -172,6 +172,13 @@ td:first-child { white-space: nowrap; }
 td code, .chips code { font-family: var(--doc-mono); background: var(--z-surface-sunken); padding: .14em .45em; border-radius: 5px; font-size: .85em; color: var(--z-ink); }
 .chips { display: flex; gap: .45rem; flex-wrap: wrap; }
 
+/* Valeurs DÉCRITES : une ligne par valeur — le mot, un éventuel « défaut », puis son sens. */
+.vals { display: grid; gap: .4rem; }
+.val { display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; line-height: 1.4; }
+.val-def { font: 700 .58rem/1 var(--doc-prose); text-transform: uppercase; letter-spacing: .08em;
+	padding: .16em .4em; border-radius: 4px; background: var(--z-accent-soft, var(--z-surface-sunken)); color: var(--z-accent); }
+.val-note { font-size: .88rem; color: var(--z-ink-soft); }
+
 /*
 	La LÉGENDE d'une section — la phrase qui dit ce qu'on regarde. Sans elle, « Attributs »
 	et « Variables CSS » se lisaient comme deux façons de faire la même chose.
