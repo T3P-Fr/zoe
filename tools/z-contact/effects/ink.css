@@ -20,8 +20,11 @@
    Styleguide 12.4
    ====================================================================== */
 
+/* Déclaration DÉCOUVRABLE (voir implode.css) + règles SCOPÉES par `[fx="ink"]`. */
+@property --z-contact__fx--ink { syntax: "*"; inherits: false; }
+
 /* Le jet gicle vite puis se fige — c'est l'accélération d'une éclaboussure, pas un ressort. */
-z-overlay z-contact z-foreground {
+z-overlay z-contact[fx="ink"] z-foreground {
 	width: var(--z-contact-size, 26px);
 	height: var(--z-contact-size, 26px);
 	border-radius: 50%;
@@ -49,7 +52,7 @@ z-overlay z-contact z-foreground {
 }
 
 /* GOUTTE B (::before) — même gicle, direction opposée (bas-droite). */
-z-overlay z-contact z-foreground::before {
+z-overlay z-contact[fx="ink"] z-foreground::before {
 	content: "";
 	position: absolute;
 	inset: 0;
@@ -71,7 +74,7 @@ z-overlay z-contact z-foreground::before {
 }
 
 /* LE BUVARD (::after) — un halo diffus, plus lent, qui reste rond et pâle. */
-z-overlay z-contact z-foreground::after {
+z-overlay z-contact[fx="ink"] z-foreground::after {
 	content: "";
 	position: absolute;
 	inset: -30%;

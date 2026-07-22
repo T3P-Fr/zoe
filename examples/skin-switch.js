@@ -15,8 +15,6 @@
 /* HighTech EN TÊTE, donc par défaut (2026-07-21) : c'est la peau de référence, celle qui
    doit finir identique à la planche d'origine. Une démo s'ouvre sur elle ; Claude est la
    contre-épreuve qu'on va chercher. */
-import { syncContactEffectFromSkin } from "../tools/z-contact/z-contact-effect.js";
-
 const SKINS = [
 	{ id: "hightech", label: "HighTech — la planche" },
 	{ id: "claude", label: "Claude — encre chaude" }
@@ -37,9 +35,9 @@ link.rel = "stylesheet";
 link.id = "zoe-skin";
 const href = (id) => `${ROOT}skins/${id}/${id}.css`;
 link.href = href(current);
-/* Quand la peau (re)charge, on resynchronise l'effet de clic : la nouvelle peau tue et
-   remplace l'effet de l'ancienne (un seul lien d'effet, jamais deux). */
-link.addEventListener("load", syncContactEffectFromSkin);
+/* Quand la peau (re)charge, on prévient : ses effets (les @property --z-contact__fx--*)
+   ont changé, donc toute vue qui les DÉCOUVRE (la doc) doit se reconstruire. */
+link.addEventListener("load", () => window.dispatchEvent(new CustomEvent("zoe:skin")));
 document.head.append(link);
 
 function mount() {

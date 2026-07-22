@@ -1,42 +1,42 @@
 /*
 	============================================================
-	z-contact-effect — LE CHARGEUR D'EFFET : un seul <link>, ÉCHANGÉ
+	z-contact-effect — LA DÉCOUVERTE DES EFFETS FOURNIS PAR LA PEAU
 	------------------------------------------------------------
-	Un effet de clic se comporte comme une PEAU : on le REMPLACE, on ne l'empile pas.
-	Deux recettes qui visent `z-overlay z-contact z-foreground` se mélangeraient (l'une
-	garde son fond, l'autre son filet…) — un « frankenstein ». On l'interdit à la racine :
-	il n'existe qu'UN <link> d'effet à la fois. Charger le suivant efface entièrement le
-	précédent — ils s'entretuent, ils ne s'empilent jamais.
+	Un effet de clic se déclare comme un état : chaque recette pose
+	`@property --z-contact__fx--<nom>` (ex. `--z-contact__fx--implode`). Ce module scanne
+	les feuilles chargées et rend la liste des noms trouvés — exactement comme z-element
+	scanne `--z-state__` pour les états. On ne connaît pas d'avance ce qu'une peau (ou un
+	user) déclare : on le DÉCOUVRE.
 
-	La peau déclare sa signature en token `--z-contact-fx` (claude → ink, hightech → morph) ;
-	ce module la charge dans l'unique lien. Une page — ou la démo de la doc — peut l'écraser
-	via `setContactEffect(fx)`. `fx="none"` (ou vide) retire le lien : aucun effet.
+	Conséquence : chaque peau ne charge que SES recettes → seuls ses effets sont découverts,
+	donc disponibles. Les règles de chaque recette sont scopées par `[fx="<nom>"]`, si bien
+	que plusieurs coexistent sans jamais se mélanger. La doc (sélecteur + tableau) se remplit
+	à partir de cette découverte : elle change avec la peau.
 	============================================================
 */
 
-const ROOT = new URL("../../", import.meta.url).href;   /* …/zoé/ */
-const LINK_ID = "z-contact-fx";
+const PREFIX = "--z-contact__fx--";
 
 /*
-	Charge la recette `<fx>` dans l'unique lien d'effet — ou le retire pour « none »/vide.
-	Toujours ré-appendu en dernier : il gagne la cascade, et il est SEUL de toute façon.
-	@param {string} fx  le nom de l'effet (implode · explode · morph · ink…) ou "none"
+	Les effets fournis par la/les feuille(s) chargée(s), dans l'ordre de déclaration.
+	@returns {string[]} les noms (implode · explode · morph · ink…)
 */
-export function setContactEffect(fx) {
-	const name = (fx || "").trim().toLowerCase();
-	let link = document.getElementById(LINK_ID);
-	if (!name || name === "none") { link?.remove(); return; }
-	if (!link) { link = document.createElement("link"); link.id = LINK_ID; link.rel = "stylesheet"; }
-	document.head.append(link);
-	link.href = `${ROOT}tools/z-contact/effects/${name}.css`;
-}
-
-/* Lit la signature de la peau active (--z-contact-fx sur :root) et la charge. */
-export function syncContactEffectFromSkin() {
-	setContactEffect(getComputedStyle(document.documentElement).getPropertyValue("--z-contact-fx"));
-}
-
-/* Au chargement : une frame pour laisser la peau s'appliquer, puis on synchronise. */
-if (typeof document !== "undefined" && typeof requestAnimationFrame === "function") {
-	requestAnimationFrame(syncContactEffectFromSkin);
+export function discoverContactEffects() {
+	const found = [];
+	/* Récursif : les recettes sont @importées par la peau (et par zoe.css) → les @property
+	   vivent dans des feuilles IMBRIQUÉES, pas au niveau racine. On descend dans les @import. */
+	const scan = (rules) => {
+		for (const rule of rules) {
+			if (rule instanceof CSSPropertyRule && rule.name.startsWith(PREFIX)) {
+				const name = rule.name.slice(PREFIX.length);
+				if (!found.includes(name)) found.push(name);
+			} else if (rule instanceof CSSImportRule && rule.styleSheet) {
+				try { scan(rule.styleSheet.cssRules); } catch { /* feuille cross-origin : on passe */ }
+			}
+		}
+	};
+	for (const sheet of document.styleSheets) {
+		try { scan(sheet.cssRules); } catch { /* cross-origin */ }
+	}
+	return found;
 }

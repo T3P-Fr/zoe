@@ -22,7 +22,11 @@
    --z-contact-duration · --z-contact-color.
    Styleguide 12.4
    ====================================================================== */
-z-overlay z-contact z-foreground {
+
+/* Déclaration DÉCOUVRABLE (voir implode.css) + règles SCOPÉES par `[fx="morph"]`. */
+@property --z-contact__fx--morph { syntax: "*"; inherits: false; }
+
+z-overlay z-contact[fx="morph"] z-foreground {
 	width: var(--z-contact-size, 22px);
 	height: var(--z-contact-size, 22px);
 	border: var(--z-contact-width, 2px) solid var(--c);

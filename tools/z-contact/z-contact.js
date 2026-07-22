@@ -18,7 +18,6 @@
 */
 import { topLayer } from "./z-overlay.js";
 import { activeSource, startContactSources } from "./z-contact-source.js";
-import "./z-contact-effect.js";   /* le chargeur : un seul effet chargé, celui de la peau */
 
 const INTERACTIVE =
 	"a[href], button, input, select, textarea, label, [role='button'], [tabindex]," +
@@ -47,7 +46,12 @@ function reduced() {
 */
 function effectOf() {
 	const src = activeSource();
-	return src ? (src.getAttribute("fx") || "implode").toLowerCase() : "none";
+	if (!src) return "none";
+	const explicit = src.getAttribute("fx");
+	if (explicit) return explicit.toLowerCase();
+	/* pas de `fx` écrit → la signature PAR DÉFAUT de la peau (token --z-contact-fx),
+	   sinon rien. C'est la peau qui décide, jamais un défaut codé en dur. */
+	return getComputedStyle(document.documentElement).getPropertyValue("--z-contact-fx").trim().toLowerCase() || "none";
 }
 
 function onPointerDown(event) {

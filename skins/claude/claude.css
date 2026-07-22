@@ -10,14 +10,17 @@
 	déborde d'un ressort, puis boit dans le papier. Le contre-pied exact de HighTech (qui
 	prend `morph`, un filet cobalt sec) : ici un APLAT terre, mou, rempli.
 
-	La peau NE L'IMPORTE PLUS elle-même : elle DÉCLARE sa signature en token
-	`--z-contact-fx: ink` (plus bas), et le chargeur (tools/z-contact/z-contact-effect.js)
-	la charge dans l'UNIQUE lien d'effet. Ainsi changer de peau REMPLACE l'effet — les deux
-	ne coexistent jamais. Ses réglages (taille, durée, couleur) sont juste à côté du token.
+	Claude ne FOURNIT que `ink` : la recette est importée ci-dessous, se DÉCLARE
+	(`@property --z-contact__fx--ink`, découvrable) et SCOPE ses règles par `[fx="ink"]`.
+	Les effets de HighTech (implode/explode/morph) ne sont PAS chargés ici → sous Claude,
+	ils ne marchent pas ; seul `ink` existe. Sa signature par défaut : le token
+	`--z-contact-fx: ink` (plus bas). Réglages (taille, durée, couleur) juste à côté.
 
 	Styleguide skin.claude
 	============================================================
 */
+
+@import url("../../tools/z-contact/effects/ink.css");
 
 :root {
 	/* couleurs — crème, encre brun-noir, terre cuite */

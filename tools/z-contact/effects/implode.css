@@ -12,7 +12,14 @@
    --z-contact-color.
    Styleguide 12.3
    ====================================================================== */
-z-overlay z-contact z-foreground {
+
+/* Déclaration DÉCOUVRABLE : z-contact scanne les `--z-contact__*` pour savoir quels effets
+   la peau chargée fournit (comme `--z-state__` pour les états). Un marqueur, pas un réglage.
+   Les règles ci-dessous sont SCOPÉES par `[fx="implode"]` → plusieurs recettes peuvent
+   coexister sans se mélanger ; seule celle dont la peau a chargé le fichier existe. */
+@property --z-contact__fx--implode { syntax: "*"; inherits: false; }
+
+z-overlay z-contact[fx="implode"] z-foreground {
 	width: calc(var(--z-contact-size, 22px) * 3.7);
 	height: calc(var(--z-contact-size, 22px) * 3.7);
 	border: 1px solid var(--c);
@@ -43,7 +50,7 @@ z-overlay z-contact z-foreground {
 /* Le point (z-marker), décalé dans le temps pour arriver pile quand l'anneau converge.
    Le moteur ne crée ce z-marker que pour l'effet « implode » — les autres recettes
    n'ont rien à peindre dessus. */
-z-overlay z-contact z-marker {
+z-overlay z-contact[fx="implode"] z-marker {
 	width: var(--z-contact-size, 22px);
 	height: var(--z-contact-size, 22px);
 	background: var(--c);

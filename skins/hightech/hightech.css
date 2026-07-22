@@ -40,13 +40,16 @@
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400..700&display=swap");
 
 /*
-	SA SIGNATURE AU CLIC (loi 3 : le halo et l'onde sont les seuls effets lumineux).
-	HighTech signe avec `morph` : un rond naît sous la souris et meurt en épousant la boîte
-	du composant touché. La peau NE L'IMPORTE PLUS : elle le DÉCLARE en token
-	`--z-contact-fx: morph` (plus bas), et le chargeur (z-contact-effect.js) le charge dans
-	l'UNIQUE lien d'effet — changer de peau REMPLACE l'effet, jamais de coexistence.
-	Les valeurs se règlent plus bas (--z-contact-*).
+	SES EFFETS AU CLIC (loi 3 : le halo et l'onde sont les seuls effets lumineux).
+	HighTech FOURNIT trois effets — implode · explode · morph — importés ci-dessous. Chaque
+	recette se DÉCLARE (`@property --z-contact__fx--<nom>`, découvrable comme un état) et
+	SCOPE ses règles par `[fx="<nom>"]` : les trois coexistent sans se mélanger. Sa signature
+	PAR DÉFAUT est `morph` (token `--z-contact-fx`, plus bas). Passer à une autre peau retire
+	ces effets et charge les siens — une peau ne fournit QUE les siens. Valeurs plus bas.
 */
+@import url("../../tools/z-contact/effects/implode.css");
+@import url("../../tools/z-contact/effects/explode.css");
+@import url("../../tools/z-contact/effects/morph.css");
 
 :root {
 	/* D'OÙ ÇA VIENT — lisible par l'outillage ET par l'humain qui doute. */
