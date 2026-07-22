@@ -6,23 +6,38 @@
 	Styleguide docs
 	============================================================
 */
+/*
+	LA DOC A SA PROPRE TYPOGRAPHIE. La peau colore (encre, accent, surfaces) et habille les
+	composants VIVANTS montrés dedans — mais la PROSE de la doc, elle, se lit toujours dans
+	une humane lisible, jamais dans la police d'affichage d'une peau. Sinon HighTech impose
+	son IBM Plex Mono à chaque phrase et la doc devient un dump de terminal. Le mono est
+	réservé à ce qui EST du code : balises, jetons, blocs de code.
+*/
+:root {
+	--doc-prose: "Segoe UI Variable Text", "Segoe UI", ui-sans-serif, system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+	--doc-mono: ui-monospace, SFMono-Regular, "IBM Plex Mono", Menlo, Consolas, monospace;
+}
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--z-page); color: var(--z-ink); font-family: var(--z-font); }
+body { margin: 0; background: var(--z-page); color: var(--z-ink);
+	font-family: var(--doc-prose); font-size: 16px; line-height: 1.6;
+	-webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
 
-.layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+.layout { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
 
 /* Le menu (ton point d'entrée) */
 .menu { position: sticky; top: 0; align-self: start; height: 100vh; overflow: auto;
-	border-right: 1px solid var(--z-line-soft); padding: 1.4rem 1rem; background: var(--z-surface); }
-.menu h1 { font-size: 1rem; margin: 0 0 1rem; font-family: var(--z-font-title); }
-.menu .group { font: 600 .68rem/1 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .1em; color: var(--z-ink-soft); margin: 1.2rem 0 .5rem; }
-.menu a { display: block; padding: .3rem .5rem; border-radius: 6px; color: var(--z-ink); text-decoration: none; font-family: ui-monospace, monospace; font-size: .85rem; }
-.menu a:hover { background: var(--z-surface-raised); }
+	border-right: 1px solid var(--z-line-soft); padding: 1.6rem 1.1rem; background: var(--z-surface); }
+.menu h1 { font: 700 1.15rem/1 var(--doc-prose); letter-spacing: .01em; margin: 0 0 1.4rem; }
+.menu .group { font: 700 .64rem/1 var(--doc-prose); text-transform: uppercase; letter-spacing: .14em; color: var(--z-ink-soft); margin: 1.5rem 0 .5rem; }
+.menu a { display: block; padding: .34rem .6rem; border-radius: 7px; color: var(--z-ink); text-decoration: none; font-family: var(--doc-mono); font-size: .84rem; transition: background .12s, color .12s; }
+.menu a:hover { background: var(--z-accent-soft, var(--z-surface-raised)); color: var(--z-accent); }
 
-.main { padding: 2.5rem 3rem; max-width: 820px; }
-.entry { padding-bottom: 2.5rem; margin-bottom: 2.5rem; border-bottom: 1px solid var(--z-line-soft); }
-.entry h2 { font-family: ui-monospace, monospace; font-size: 1.3rem; margin: 0 0 .3rem; }
-.entry .summary { color: var(--z-ink-soft); margin: 0 0 1.4rem; }
+.main { padding: 3rem 3.5rem; max-width: 800px; }
+.entry { padding-bottom: 3rem; margin-bottom: 3rem; border-bottom: 1px solid var(--z-line-soft); }
+.entry:last-child { border-bottom: 0; }
+/* Le titre d'un composant EST une balise → mono, teinté de l'accent de la peau. */
+.entry h2 { font-family: var(--doc-mono); font-size: 1.5rem; font-weight: 600; letter-spacing: -.01em; margin: 0 0 .5rem; color: var(--z-accent); }
+.entry .summary { font-size: 1.15rem; line-height: 1.5; color: var(--z-ink); opacity: .82; margin: 0 0 1.6rem; max-width: 60ch; }
 
 /*
 	── L'ACCUEIL : l'essai routier, pas le capot ──
@@ -31,7 +46,9 @@ body { margin: 0; background: var(--z-page); color: var(--z-ink); font-family: v
 	se ré-harmonise — puis seulement, plus bas, le moteur (« sous le capot »).
 	Styleguide docs.home
 */
-.home .summary { font-size: 1.05rem; max-width: 62ch; }
+/* L'accueil est éditorial, pas une balise : titre en humane, gras, grand. */
+.home h2 { font-family: var(--doc-prose); font-weight: 700; font-size: 1.95rem; letter-spacing: -.02em; color: var(--z-ink); }
+.home .summary { font-size: 1.2rem; opacity: .9; max-width: 58ch; }
 
 /* L'écran vivant : une barre « allumé » + l'appli qui tourne pour de vrai dedans. */
 .hero-screen {
@@ -54,15 +71,15 @@ body { margin: 0; background: var(--z-page); color: var(--z-ink); font-family: v
 	100% { box-shadow: 0 0 0 0 transparent; }
 }
 .hero-frame { display: block; width: 100%; height: 640px; border: 0; background: var(--z-page); }
-.hero-caption { margin: 0 0 2rem; font-size: .92rem; line-height: 1.55; color: var(--z-ink-soft); max-width: 66ch; }
+.hero-caption { margin: 0 0 2.2rem; font-size: 1rem; line-height: 1.6; color: var(--z-ink-soft); max-width: 64ch; }
 
 /* Le « avant / après » : deux colonnes, la douleur à gauche, le soulagement à droite. */
 .avapres { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.6rem; }
 /* min-width:0 : sans ça, une ligne de code longue force la colonne à s'élargir et le
    bloc déborde à droite. Avec, la colonne tient et c'est le `pre` qui défile (overflow-x). */
 .avapres .col { min-width: 0; }
-.avapres .col-title { margin: 0 0 .4rem; font: 600 .68rem/1 ui-monospace, monospace;
-	text-transform: uppercase; letter-spacing: .06em; color: var(--z-ink-soft); }
+.avapres .col-title { margin: 0 0 .4rem; font: 700 .66rem/1 var(--doc-prose);
+	text-transform: uppercase; letter-spacing: .11em; color: var(--z-ink-soft); }
 .avapres pre { margin: 0; padding: .9rem 1rem; border-radius: var(--z-radius, 8px);
 	overflow-x: auto; font-size: .74rem; line-height: 1.65; }
 .avapres code { font-family: ui-monospace, monospace; }
@@ -79,7 +96,7 @@ body { margin: 0; background: var(--z-page); color: var(--z-ink); font-family: v
 /* deux familles : SOURIS (points, au geste) et UTILITAIRES (lignes cliquables). */
 .viz-panel { align-self: start; }
 .viz-group + .viz-group { margin-top: 1rem; }
-.viz-group-title { margin: 0 0 .4rem; font: 600 .64rem/1 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .08em; color: var(--z-ink-soft); }
+.viz-group-title { margin: 0 0 .4rem; font: 700 .64rem/1 var(--doc-prose); text-transform: uppercase; letter-spacing: .11em; color: var(--z-ink-soft); }
 .viz-row { display: flex; align-items: center; gap: .55rem; width: 100%; padding: .25rem .35rem; border: 0; background: transparent; font-family: ui-monospace, monospace; font-size: .8rem; color: var(--z-ink-soft); border-radius: 6px; text-align: left; }
 .viz-row.clickable { cursor: pointer; }
 .viz-row.clickable:hover { background: var(--z-surface); color: var(--z-ink); }
@@ -91,18 +108,22 @@ body { margin: 0; background: var(--z-page); color: var(--z-ink); font-family: v
 .usage { margin-bottom: 1.2rem; }
 .usage pre { background: color-mix(in srgb, var(--z-ink) 92%, #000); color: var(--z-page); padding: .9rem 1.1rem; border-radius: var(--z-radius, 8px); overflow-x: auto; font-size: .85rem; line-height: 1.7; margin: 0 0 .6rem; }
 .usage pre code { font-family: ui-monospace, monospace; }
-.promise { margin: 0; font-size: .85rem; color: var(--z-ink-soft); }
+.promise { margin: 0; font-size: .95rem; color: var(--z-ink-soft); }
 .promise b { color: var(--z-accent); }
 /* aperçu d'un composant (quelques états, pas le tester) */
-.preview { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; padding: 1.6rem; border: 1px solid var(--z-line-soft); border-radius: var(--z-radius, 8px); background: var(--z-surface-raised); margin-bottom: 1.4rem; }
-.seealso { padding: 1rem 1.2rem; border: 1px dashed var(--z-line-soft); border-radius: var(--z-radius, 8px); color: var(--z-ink-soft); font-size: .85rem; margin-bottom: 1.4rem; }
+.preview { display: flex; gap: 1.2rem; flex-wrap: wrap; align-items: center; padding: 1.8rem; border: 1px solid var(--z-line-soft); border-radius: var(--z-radius, 8px); background: var(--z-surface-raised); margin-bottom: 1.4rem; }
+/* Le renvoi « mêmes états que z-element » : une note propre, filet d'accent, pas une boîte morte en pointillés. */
+.seealso { padding: .85rem 1.1rem; border-left: 3px solid var(--z-accent); border-radius: 0 8px 8px 0;
+	background: var(--z-surface-raised); color: var(--z-ink); opacity: .85; font-size: .95rem; margin: .4rem 0 1.4rem; }
 
-h3 { font: 600 .72rem/1 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .08em; color: var(--z-ink-soft); margin: 1.4rem 0 .6rem; }
-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
-th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid var(--z-line-soft); vertical-align: top; }
-th { font: 600 .72rem/1 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .05em; color: var(--z-ink-soft); }
-td code, .chips code { font-family: ui-monospace, monospace; background: var(--z-surface-sunken); padding: .1em .4em; border-radius: 4px; font-size: .92em; }
-.chips { display: flex; gap: .4rem; flex-wrap: wrap; }
+/* Les intitulés de section : petites capitales espacées, en humane — sobres, pas « techno ». */
+h3 { font: 700 .7rem/1 var(--doc-prose); text-transform: uppercase; letter-spacing: .13em; color: var(--z-ink-soft); margin: 2rem 0 .3rem; }
+table { width: 100%; border-collapse: collapse; font-size: .95rem; margin-top: .5rem; }
+th { text-align: left; font: 700 .64rem/1 var(--doc-prose); text-transform: uppercase; letter-spacing: .1em; color: var(--z-ink-soft); padding: 0 .8rem .55rem; }
+td { text-align: left; padding: .7rem .8rem; border-top: 1px solid var(--z-line-soft); vertical-align: top; line-height: 1.5; }
+td:first-child { white-space: nowrap; }
+td code, .chips code { font-family: var(--doc-mono); background: var(--z-surface-sunken); padding: .14em .45em; border-radius: 5px; font-size: .85em; color: var(--z-ink); }
+.chips { display: flex; gap: .45rem; flex-wrap: wrap; }
 
 /*
 	La LÉGENDE d'une section — la phrase qui dit ce qu'on regarde. Sans elle, « Attributs »
@@ -110,9 +131,9 @@ td code, .chips code { font-family: ui-monospace, monospace; background: var(--z
 	Styleguide doc.hint
 */
 p.hint {
-	margin: -.3rem 0 .7rem;
-	max-width: 62ch;
+	margin: 0 0 1rem;
+	max-width: 64ch;
 	color: var(--z-ink-soft);
-	font-size: .82rem;
-	line-height: 1.45;
+	font-size: .92rem;
+	line-height: 1.5;
 }
