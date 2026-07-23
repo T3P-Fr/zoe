@@ -87,8 +87,7 @@ export class ZElement extends HTMLElement {
 			{ name: "success", type: "boolean", description: { en: "Status: valid / done.", fr: "Statut : validé.", es: "Estado: válido / hecho." } },
 			{ name: "name", type: "string", description: { en: "Form field name — used only by components that submit a value.", fr: "Nom du champ dans le formulaire — utilisé par les composants qui envoient une valeur.", es: "Nombre del campo en el formulario — usado por los componentes que envían un valor." } },
 			{ name: "required", type: "boolean", description: { en: "The form is invalid until this control has a value.", fr: "Le formulaire est invalide tant que ce contrôle n'a pas de valeur.", es: "El formulario es inválido mientras este control no tenga valor." } },
-			{ name: "state", values: [{ value: "<nom(s)>", note: { en: "one or more custom states to raise — works with or without a :state() rule, in any order", fr: "un ou plusieurs états custom à lever — avec ou sans règle :state(), dans n'importe quel ordre", es: "uno o varios estados personalizados a activar — con o sin regla :state(), en cualquier orden" } }] },
-			{ name: "when", values: [{ value: "<geste> +<délai>", note: { en: "condition that raises `state` — e.g. « press +2s » (2s after press), cleared when it stops", fr: "la condition qui lève `state` — ex. « press +2s » (2s après l'appui), retiré quand elle cesse", es: "la condición que activa `state` — p. ej. « press +2s » (2s tras pulsar), se retira cuando cesa" } }] }
+			{ name: "state", values: [{ value: "état: condition, …", note: { en: "custom states, each with an optional condition — state=\"armed: press +2s, glow: over, busy\". Comma separates; `:` adds a condition (gesture like `press +2s`, or clock `every 2s`); no condition = posed at once.", fr: "des états custom, chacun avec une condition optionnelle — state=\"armed: press +2s, glow: over, busy\". La virgule sépare ; `:` ajoute une condition (geste comme `press +2s`, ou horloge `every 2s`) ; sans condition = posé tout de suite.", es: "estados personalizados, cada uno con una condición opcional — state=\"armed: press +2s, glow: over, busy\". La coma separa; `:` añade una condición (gesto como `press +2s`, o reloj `every 2s`); sin condición = puesto de inmediato." } }] }
 		],
 		events: [
 			{ name: "z-state", description: { en: "Emitted on every state change. detail: { states, changed, on }.", fr: "Émis à chaque changement d'état. detail : { states, changed, on }.", es: "Emitido en cada cambio de estado. detail: { states, changed, on }." } }
@@ -137,7 +136,7 @@ export class ZElement extends HTMLElement {
 	/* Attributs observés = les durables de la classe + les états déclarés-en-CSS
 	   découverts à la définition (mettre le CSS avant le script du composant). */
 	static get observedAttributes() {
-		return ["state", "when", ...this.durableStates, ...this.discoveredStates()];
+		return ["state", ...this.durableStates, ...this.discoveredStates()];
 	}
 
 	/*
@@ -158,10 +157,10 @@ export class ZElement extends HTMLElement {
 	#startY = 0;
 	#releaseTimer = 0;
 	#keyboard = false;
-	#targetStates = [];   /* les états nommés par `state=` */
-	#raised = [];         /* ceux effectivement levés (pour les rebaisser à l'identique) */
-	#when = null;         /* condition parsée { trigger, delay } ou null */
-	#whenTimer = 0;
+	#rules = [];             /* [{ state, when }] — when = {trigger, delay} | {every} | null */
+	#raised = new Set();     /* les états levés par une règle (pour les rebaisser) */
+	#timers = new Map();     /* état → timeout du délai d'un geste */
+	#intervals = new Map();  /* état → interval d'une horloge `every` */
 
 	connectedCallback() {
 		if (this.#wired) { this.#flash("enter"); return; }
@@ -184,8 +183,9 @@ export class ZElement extends HTMLElement {
 	}
 
 	disconnectedCallback() {
-		/* un `when` en attente ne doit pas se déclencher après le retrait de l'élément. */
-		clearTimeout(this.#whenTimer);
+		/* aucun déclencheur en attente ne doit survivre au retrait de l'élément. */
+		for (const id of this.#timers.values()) clearTimeout(id);
+		for (const id of this.#intervals.values()) clearInterval(id);
 	}
 
 	/* Pose `default` ⟺ aucun statut métier n'est actif. Le repos est un état à part
@@ -199,8 +199,8 @@ export class ZElement extends HTMLElement {
 		<z-element loading> pose :state(loading), tout comme el.setState("loading").
 	*/
 	attributeChangedCallback(name, _old, value) {
-		/* `state` / `when` ne sont pas des états eux-mêmes : ils DÉCLENCHENT des états. */
-		if (name === "state" || name === "when") { this.#reconfigure(); return; }
+		/* `state` n'est pas un état : il DÉCLENCHE des états (chacun avec sa condition). */
+		if (name === "state") { this.#reconfigure(); return; }
 		const on = value !== null;
 		this.#set(name, on);
 		const aria = STATUS_ARIA[name];
@@ -363,52 +363,96 @@ export class ZElement extends HTMLElement {
 		return raw.endsWith("ms") ? parseFloat(raw) : parseFloat(raw) * 1000;
 	}
 
-	/* ── DÉCLENCHEURS DÉCLARATIFS : `state` (QUELS états) × `when` (à QUELLE condition) ── */
+	/* ── DÉCLENCHEURS DÉCLARATIFS : `state="état: condition, …"` ── */
 
 	/*
-		(Re)configure d'après `state` et `when`.
-		`state="coucou autre"` nomme les états custom à lever. Ils marchent AVEC ou SANS
-		règle `:state(coucou)`, et quel que soit l'ORDRE (CSS écrit avant, après, ou jamais)
-		— parce que l'état est posé nativement en `:state()`, la règle ne fait que le peindre
-		si elle existe. C'est la parité, appliquée aux états : attribut OU CSS, même résultat.
-		`when="press +2s"` les CONDITIONNE : levés 2s après l'entrée en `:state(press)`,
-		rebaissés dès qu'elle cesse. Sans `when`, `state` lève tout de suite.
+		(Re)configure d'après `state`. UNE forme, dense :
+
+		    state="armed: press +2s, glow: over, busy"
+
+		· la VIRGULE sépare les états ;
+		· `:` introduit sa CONDITION (optionnelle) ; sans elle, l'état est posé tout de suite ;
+		· `+délai` optionnel dans la condition (`press +2s` = 2s après l'appui) ;
+		· deux familles de condition : GESTE (`press`, `over`… un de mes propres états) et
+		  HORLOGE (`every 2s` = un pouls, l'état bat tout seul, sans aucun geste).
+		Le sujet (l'état) est toujours EN TÊTE — cohérent avec `--z-…__prop`. Un état levé
+		marche AVEC ou SANS règle `:state()` : l'attribut le pose nativement, le CSS ne fait
+		que le peindre s'il existe (la parité, appliquée aux états).
 	*/
 	#reconfigure() {
-		clearTimeout(this.#whenTimer);
-		this.#lower();
-		this.#targetStates = (this.getAttribute("state") || "").trim().split(/\s+/).filter(Boolean);
-		this.#when = this.#parseWhen(this.getAttribute("when"));
-		if (this.#targetStates.length && !this.#when) this.#raise();
+		for (const id of this.#timers.values()) clearTimeout(id);
+		for (const id of this.#intervals.values()) clearInterval(id);
+		this.#timers.clear();
+		this.#intervals.clear();
+		for (const state of this.#raised) this.#set(state, false);
+		this.#raised.clear();
+
+		this.#rules = this.#parseState(this.getAttribute("state"));
+		for (const rule of this.#rules) {
+			if (!rule.when) { this.#raiseState(rule.state); continue; }   /* posé tout de suite */
+			if (rule.when.every) {                                        /* horloge : un pouls */
+				this.#intervals.set(rule.state, setInterval(() => this.#flash(rule.state), rule.when.every));
+			}
+			/* geste : la levée attend #onWhen (mon propre état `trigger` qui s'allume). */
+		}
 	}
 
-	/* Parse `when` : un déclencheur (un état/geste) + un délai optionnel (`+2s`, `500ms`).
-	   @param {string|null} str  @returns {{trigger: string, delay: number}|null} */
-	#parseWhen(str) {
-		if (!str) return null;
+	/* Parse `state` en règles { state, when }. Virgule entre états, `:` avant la condition.
+	   @param {string|null} attr  @returns {{state: string, when: object|null}[]} */
+	#parseState(attr) {
+		const rules = [];
+		for (const item of (attr || "").split(",")) {
+			const trimmed = item.trim();
+			if (!trimmed) continue;
+			const colon = trimmed.indexOf(":");
+			if (colon === -1) { rules.push({ state: trimmed, when: null }); continue; }
+			const state = trimmed.slice(0, colon).trim();
+			if (state) rules.push({ state, when: this.#parseCondition(trimmed.slice(colon + 1)) });
+		}
+		return rules;
+	}
+
+	/* Parse une condition : GESTE (`press +2s`) ou HORLOGE (`every 2s`).
+	   @param {string} str  @returns {{trigger: string, delay: number}|{every: number}|null} */
+	#parseCondition(str) {
+		const tokens = str.trim().split(/\s+/).filter(Boolean);
+		if (!tokens.length) return null;
+		if (tokens[0] === "every") return { every: this.#delayMs(tokens[1]) || 1000 };
 		let trigger = null, delay = 0;
-		for (let token of str.trim().split(/\s+/)) {
-			token = token.replace(/^\+/, "");
-			if (/^\d/.test(token)) delay = token.endsWith("ms") ? parseFloat(token) : parseFloat(token) * 1000;
-			else if (token) trigger = token;
+		for (const token of tokens) {
+			const bare = token.replace(/^\+/, "");
+			if (/^[\d.]/.test(bare)) delay = this.#delayMs(bare);
+			else trigger = token;
 		}
 		return trigger ? { trigger, delay } : null;
 	}
 
-	#raise() { for (const state of this.#targetStates) this.#set(state, true); this.#raised = [...this.#targetStates]; }
-	#lower() { for (const state of this.#raised) this.#set(state, false); this.#raised = []; }
+	/* Un délai texte (`2s`, `+2s`, `500ms`) en millisecondes. @param {string} tok @returns {number} */
+	#delayMs(tok) {
+		if (!tok) return 0;
+		return tok.endsWith("ms") ? parseFloat(tok) : parseFloat(tok) * 1000;
+	}
+
+	#raiseState(state) { this.#set(state, true); this.#raised.add(state); }
+	#lowerState(state) { this.#set(state, false); this.#raised.delete(state); }
 
 	/*
-		Le déclencheur : mon propre `when.trigger` s'allume → j'arme le délai puis je lève ;
-		il s'éteint → j'annule et je baisse. `event.target === this` : jamais le geste d'un
-		z-element imbriqué. (Lever un état custom réémet `z-state`, mais son nom ≠ trigger,
-		donc pas de boucle.)
+		Le déclencheur GESTE : un de mes propres états (`when.trigger`) s'allume → j'arme le
+		délai puis je lève l'état de la règle ; il s'éteint → j'annule et je baisse. On ne
+		regarde QUE mes propres z-state (event.target === this) : jamais le geste d'un
+		z-element imbriqué. (Lever l'état réémet `z-state`, mais son nom ≠ trigger — sauf
+		enchaînement voulu `state="b: a"`, borné, jamais circulaire par nature.)
 	*/
 	#onWhen = (event) => {
-		if (!this.#when || event.target !== this || event.detail.changed !== this.#when.trigger) return;
-		clearTimeout(this.#whenTimer);
-		if (event.detail.on) this.#whenTimer = setTimeout(() => this.#raise(), this.#when.delay);
-		else this.#lower();
+		if (event.target !== this) return;
+		for (const rule of this.#rules) {
+			if (!rule.when?.trigger || rule.when.trigger !== event.detail.changed) continue;
+			clearTimeout(this.#timers.get(rule.state));
+			if (!event.detail.on) { this.#lowerState(rule.state); continue; }
+			/* délai 0 (`glow: over`) → levée IMMÉDIATE ; un délai (`armed: press +2s`) → différée. */
+			if (rule.when.delay > 0) this.#timers.set(rule.state, setTimeout(() => this.#raiseState(rule.state), rule.when.delay));
+			else this.#raiseState(rule.state);
+		}
 	};
 
 	/*

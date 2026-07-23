@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-element — la forme state="état: condition" (auto-test)</title>
+
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem;background:#7a1d0c;color:#fff;font:15px system-ui">' +
+		'Ouverte en file:// — lance <code>node scripts/serve.mjs 5173</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<style>
+	body { font: 15px/1.5 ui-sans-serif, system-ui; padding: 2rem; }
+	.row { padding: .35rem .6rem; border-bottom: 1px solid #0002; font-family: ui-monospace, monospace; }
+	.ok { color: #1a7a3c; } .ko { color: #b00; font-weight: 700; }
+	#verdict { margin-top: 1rem; font: 700 16px ui-monospace, monospace; padding: .6rem 1rem; border-radius: 8px; }
+</style>
+
+<h1>z-element — <code>state="état: condition, …"</code></h1>
+<p>Auto-test : on pilote un z-element par événements synthétiques et on lit <code>:state()</code>.</p>
+<div id="out"></div>
+<div id="verdict"></div>
+
+<script type="module">
+	import "./z-element.js";
+
+	const raf = () => new Promise((r) => requestAnimationFrame(r));
+	const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+	const out = document.getElementById("out");
+	const results = [];
+	const check = (label, pass) => { results.push(pass); out.append(Object.assign(document.createElement("div"), { className: `row ${pass ? "ok" : "ko"}`, textContent: `${pass ? "✅" : "❌"} ${label}` })); };
+
+	/* Un z-element avec trois règles : un posé d'office, un au survol, un après un press temporisé. */
+	const host = document.createElement("z-element");
+	host.setAttribute("state", "armed: press +0.15s, glow: over, busy");
+	document.body.append(host);
+	await raf();
+	const has = (s) => host.matches(`:state(${s})`);
+
+	check('busy est posé tout de suite (pas de condition)', has("busy"));
+
+	host.dispatchEvent(new PointerEvent("pointerenter", { bubbles: true }));
+	check('glow s\'allume au survol (over)', has("glow"));
+	host.dispatchEvent(new PointerEvent("pointerleave", { bubbles: true }));
+	check('glow s\'éteint à la sortie', !has("glow"));
+
+	host.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: 5, clientY: 5, pointerId: 1 }));
+	check('armed PAS encore levé (avant le délai)', !has("armed"));
+	await wait(230);
+	check('armed levé 0.15s après le press', has("armed"));
+	host.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, clientX: 5, clientY: 5, pointerId: 1 }));
+	check('armed retiré quand le press cesse', !has("armed"));
+
+	/* horloge : l'état bat tout seul. On échantillonne : sur ~0.5s il doit s'allumer au moins une fois. */
+	const clock = document.createElement("z-element");
+	clock.setAttribute("state", "pulse: every 0.1s");
+	document.body.append(clock);
+	let sawPulse = false;
+	for (let i = 0; i < 12; i++) { if (clock.matches(":state(pulse)")) sawPulse = true; await wait(50); }
+	check('every : pulse a battu au moins une fois', sawPulse);
+
+	const allOk = results.every(Boolean);
+	const v = document.getElementById("verdict");
+	v.textContent = allOk ? `TOUT PASSE (${results.length}/${results.length})` : `ÉCHEC : ${results.filter(Boolean).length}/${results.length}`;
+	v.style.cssText += allOk ? "background:#1a7a3c;color:#fff" : "background:#b00;color:#fff";
+	document.title += allOk ? " — OK" : " — ÉCHEC";
+</script>
+</html>

@@ -173,7 +173,7 @@ que le poser ou le retirer. Ce que tu lis dans le HTML est ce qui est vrai.
 Un `setState("nimporteQuoi")` fonctionne aussi : le mot est posé directement en
 `:state()` sans passer par un attribut. Utile pour un état maison ponctuel.
 
-## Déclencher un état : `state` × `when`
+## Déclencher un état : `state="état: condition"`
 
 `state` lève un état **par son nom**, en HTML — même s'il n'est pas dans le contrat, et
 même **sans aucune règle CSS**. L'état est posé nativement en `:state()` ; une règle
@@ -184,19 +184,25 @@ même **sans aucune règle CSS**. L'état est posé nativement en `:state()` ; u
 ```
 
 C'est la **parité, appliquée aux états** : CSS d'abord, attribut d'abord, règle écrite
-après ou jamais — même résultat. `state` accepte plusieurs noms séparés par une espace.
+après ou jamais — même résultat.
 
-`when` **conditionne** : l'état n'est levé que lorsqu'une condition arrive — un geste, un
-délai, ou les deux :
+Un `:` ajoute une **condition** : l'état n'est levé que lorsqu'elle arrive. Une seule
+forme, dense, la virgule sépare les états :
 
 ```html
-<z-element state="coucou" when="press +2s">…</z-element>
+<z-element state="armed: press +2s, glow: over, busy">…</z-element>
 ```
 
-→ `coucou` s'allume **2 s après l'appui**, et se retire dès que l'appui cesse. Le
-déclencheur est n'importe quel état émis par l'élément (`press`, `over`, `current`…) ;
-`+2s` (ou `500ms`) est le délai, optionnel. Les receveurs réagissent en local
-(`z-element:state(coucou) …`) ou à distance par le **canal** — sans une ligne de JS.
+→ `armed` s'allume **2 s après l'appui** (et se retire dès qu'il cesse), `glow` **au
+survol**, `busy` **tout de suite** (pas de condition). Le sujet — l'état — est toujours en
+tête. Deux familles de condition :
+
+- **geste** — `press`, `over`, `current`… n'importe quel état émis par l'élément, avec un
+  délai optionnel (`+2s`, `500ms`) ;
+- **horloge** — `every 2s` : l'état **bat tout seul** (un pouls), sans aucun geste.
+
+Les receveurs réagissent en local (`z-element:state(armed) …`) ou à distance par le
+**canal** — sans une ligne de JS.
 
 ## Transitoire ou durable
 
