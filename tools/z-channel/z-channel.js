@@ -304,7 +304,9 @@ export function join(element) {
 let wired = false;
 
 export function wireChannels() {
-	if (wired || typeof document === "undefined") return;
+	/* Hors vrai navigateur (outil de manifeste, SSR : `document` factice sans écouteurs),
+	   l'outil ne s'arme pas — il n'a rien à câbler et ne doit pas planter l'import. */
+	if (wired || typeof document === "undefined" || typeof document.addEventListener !== "function") return;
 	wired = true;
 
 	/*

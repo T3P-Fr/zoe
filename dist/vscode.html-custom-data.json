@@ -29,12 +29,25 @@
           "name": "success",
           "description": "Status: valid / done.",
           "values": []
+        },
+        {
+          "name": "name",
+          "description": "Form field name — used only by components that submit a value."
+        },
+        {
+          "name": "required",
+          "description": "The form is invalid until this control has a value.",
+          "values": []
+        },
+        {
+          "name": "state",
+          "description": ""
         }
       ]
     },
     {
       "name": "z-layer",
-      "description": "A layer: one piece of a component, carrying one role (part). Painted by the skin, placed by the component.",
+      "description": "The pieces of a component — its background, its label, its tick — already painted for you. You only write a layer to take over one precise part.",
       "attributes": [
         {
           "name": "part",
@@ -44,16 +57,32 @@
     },
     {
       "name": "z-contact",
-      "description": "The click leaves a mark where the pointer touched. Write it once, flat: the whole page answers.",
+      "description": "Need a click effect across your whole page? Drop this tag anywhere — problem solved. Two effects by default; not to your taste? Make your own in a few lines of CSS.",
       "attributes": [
         {
           "name": "fx",
-          "description": "Kill switch: fx=\"none\" disables the effect on this page. WHICH effect is shown is chosen by the skin (it imports a recipe from effects/), never by the page."
+          "description": "Kill switch only; the effect itself belongs to the skin."
         },
         {
           "name": "disabled",
           "description": "Set by the engine on every source but the last one — the last declared wins.",
           "values": []
+        },
+        {
+          "name": "size",
+          "description": ""
+        },
+        {
+          "name": "width",
+          "description": ""
+        },
+        {
+          "name": "duration",
+          "description": ""
+        },
+        {
+          "name": "color",
+          "description": ""
         }
       ]
     },
@@ -85,6 +114,24 @@
           "values": []
         },
         {
+          "name": "indeterminate",
+          "description": "Neither checked nor unchecked — the state of a 'check all' box whose children disagree. Any click resolves it to checked.",
+          "values": []
+        },
+        {
+          "name": "name",
+          "description": "Form field name."
+        },
+        {
+          "name": "value",
+          "description": "What is submitted when checked (default: \"on\", like the native input)."
+        },
+        {
+          "name": "required",
+          "description": "The form is invalid until this box is checked.",
+          "values": []
+        },
+        {
           "name": "disabled",
           "description": "Disabled: blocks interaction.",
           "values": []
@@ -105,6 +152,10 @@
       "name": "z-button",
       "description": "A button — inherits all z-element states, skinnable by themes.",
       "attributes": [
+        {
+          "name": "type",
+          "description": "What it does inside a form: submit (default), reset, or nothing."
+        },
         {
           "name": "disabled",
           "description": "Disabled: blocks interaction.",
@@ -178,6 +229,45 @@
         {
           "name": "success",
           "description": "The group's choice is valid.",
+          "values": []
+        }
+      ]
+    },
+    {
+      "name": "z-slider",
+      "description": "A value slider — poses progress (0→1) in the cascade, the skin paints everything.",
+      "attributes": [
+        {
+          "name": "value",
+          "description": "Current value. Clamped to [min, max] and snapped to step."
+        },
+        {
+          "name": "min",
+          "description": "Lower bound (default 0)."
+        },
+        {
+          "name": "max",
+          "description": "Upper bound (default 100)."
+        },
+        {
+          "name": "step",
+          "description": "Increment. `any` for a continuous slider (default 1)."
+        },
+        {
+          "name": "orientation",
+          "description": "Track direction. Vertical runs bottom→top: up means more."
+        },
+        {
+          "name": "markers",
+          "description": "Graduations. Bare = one per step; a number = that many intervals."
+        },
+        {
+          "name": "label",
+          "description": "Where the value is written, relative to the track. `none` (default) writes nothing."
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled: blocks interaction.",
           "values": []
         }
       ]

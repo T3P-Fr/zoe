@@ -46,6 +46,27 @@
                 "text": "boolean"
               },
               "description": "Status: valid / done."
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Form field name — used only by components that submit a value."
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "The form is invalid until this control has a value."
+            },
+            {
+              "name": "state",
+              "type": {
+                "text": "string"
+              },
+              "description": ""
             }
           ],
           "events": [
@@ -134,7 +155,7 @@
           "kind": "class",
           "name": "ZLayer",
           "tagName": "z-layer",
-          "summary": "A layer: one piece of a component, carrying one role (part). Painted by the skin, placed by the component.",
+          "summary": "The pieces of a component — its background, its label, its tick — already painted for you. You only write a layer to take over one precise part.",
           "attributes": [
             {
               "name": "part",
@@ -146,7 +167,56 @@
           ],
           "events": [],
           "cssProperties": [],
-          "cssStates": []
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
         }
       ],
       "exports": [
@@ -167,14 +237,14 @@
           "kind": "class",
           "name": "ZContact",
           "tagName": "z-contact",
-          "summary": "The click leaves a mark where the pointer touched. Write it once, flat: the whole page answers.",
+          "summary": "Need a click effect across your whole page? Drop this tag anywhere — problem solved. Two effects by default; not to your taste? Make your own in a few lines of CSS.",
           "attributes": [
             {
               "name": "fx",
               "type": {
                 "text": "string"
               },
-              "description": "Kill switch: fx=\"none\" disables the effect on this page. WHICH effect is shown is chosen by the skin (it imports a recipe from effects/), never by the page."
+              "description": "Kill switch only; the effect itself belongs to the skin."
             },
             {
               "name": "disabled",
@@ -182,6 +252,34 @@
                 "text": "boolean"
               },
               "description": "Set by the engine on every source but the last one — the last declared wins."
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "string"
+              },
+              "description": ""
+            },
+            {
+              "name": "width",
+              "type": {
+                "text": "string"
+              },
+              "description": ""
+            },
+            {
+              "name": "duration",
+              "type": {
+                "text": "string"
+              },
+              "description": ""
+            },
+            {
+              "name": "color",
+              "type": {
+                "text": "string"
+              },
+              "description": ""
             }
           ],
           "events": [
@@ -193,7 +291,7 @@
           "cssProperties": [
             {
               "name": "--z-contact-size",
-              "description": "Size of the starting dot."
+              "description": "The size of the effect."
             },
             {
               "name": "--z-contact-width",
@@ -260,8 +358,28 @@
               "description": "Head thickness (px)."
             },
             {
+              "name": "--z-trail-scale",
+              "description": "Multiplies the thickness — what the `size` attribute sets."
+            },
+            {
               "name": "--z-trail-fade",
               "description": "Life of a point (ms) — the wake's length."
+            },
+            {
+              "name": "--z-trail-smooth",
+              "description": "Follow smoothness: low = it trails, 1 = glued to the pointer."
+            },
+            {
+              "name": "--z-trail-speed-ref",
+              "description": "Mouse speed (px/ms) that fills the head."
+            },
+            {
+              "name": "--z-trail-speed-fuse",
+              "description": "Speed (px/ms) of the trip from one click to the next."
+            },
+            {
+              "name": "--z-trail-ease",
+              "description": "Head→tail falloff: linear quad cubic quart quint expo sine back."
             },
             {
               "name": "--z-trail-color",
@@ -348,6 +466,34 @@
               "description": "Checked: a durable selection set by the component (click / Space)."
             },
             {
+              "name": "indeterminate",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Neither checked nor unchecked — the state of a 'check all' box whose children disagree. Any click resolves it to checked."
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Form field name."
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "What is submitted when checked (default: \"on\", like the native input)."
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "The form is invalid until this box is checked."
+            },
+            {
               "name": "disabled",
               "type": {
                 "text": "boolean"
@@ -428,6 +574,9 @@
             },
             {
               "name": "success"
+            },
+            {
+              "name": "indeterminate"
             }
           ]
         }
@@ -452,6 +601,13 @@
           "tagName": "z-button",
           "summary": "A button — inherits all z-element states, skinnable by themes.",
           "attributes": [
+            {
+              "name": "type",
+              "type": {
+                "text": "\"submit\" | \"reset\" | \"button\""
+              },
+              "description": "What it does inside a form: submit (default), reset, or nothing."
+            },
             {
               "name": "disabled",
               "type": {
@@ -726,6 +882,10 @@
             {
               "name": "--z-radio-group__direction",
               "description": "Layout direction: column (default) or row."
+            },
+            {
+              "name": "--z-radio-group__align",
+              "description": "Cross-axis alignment of the choices."
             }
           ],
           "cssStates": [
@@ -786,6 +946,163 @@
           "name": "z-radio-group",
           "declaration": {
             "name": "ZRadioGroup"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-slider/z-slider.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZSlider",
+          "tagName": "z-slider",
+          "summary": "A value slider — poses progress (0→1) in the cascade, the skin paints everything.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "description": "Current value. Clamped to [min, max] and snapped to step."
+            },
+            {
+              "name": "min",
+              "type": {
+                "text": "number"
+              },
+              "description": "Lower bound (default 0)."
+            },
+            {
+              "name": "max",
+              "type": {
+                "text": "number"
+              },
+              "description": "Upper bound (default 100)."
+            },
+            {
+              "name": "step",
+              "type": {
+                "text": "number"
+              },
+              "description": "Increment. `any` for a continuous slider (default 1)."
+            },
+            {
+              "name": "orientation",
+              "type": {
+                "text": "'horizontal' | 'vertical'"
+              },
+              "description": "Track direction. Vertical runs bottom→top: up means more."
+            },
+            {
+              "name": "markers",
+              "type": {
+                "text": "boolean | number"
+              },
+              "description": "Graduations. Bare = one per step; a number = that many intervals."
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "'over' | 'under' | 'none'"
+              },
+              "description": "Where the value is written, relative to the track. `none` (default) writes nothing."
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disabled: blocks interaction."
+            }
+          ],
+          "events": [
+            {
+              "name": "input",
+              "description": "Emitted on every value change, including during the drag. Read `.value`."
+            },
+            {
+              "name": "change",
+              "description": "Emitted once the gesture is over (pointer released, key up)."
+            },
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [
+            {
+              "name": "--z-slider__progress",
+              "description": "0→1, posed by the component. Everything else is derived from it in CSS."
+            },
+            {
+              "name": "--z-slider__value",
+              "description": "The value, so the CSS can write it via counter() without any injected node."
+            },
+            {
+              "name": "--z-slider__markers",
+              "description": "Number of intervals between graduations (0 = none)."
+            }
+          ],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-slider",
+          "declaration": {
+            "name": "ZSlider"
           }
         }
       ]
