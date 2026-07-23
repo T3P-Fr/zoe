@@ -2,6 +2,33 @@
 
 ## Historique
 
+## Session du 2026-07-23 → 24
+
+**Impact (1-5) :** 5
+
+**Fait :**
+- 5 commits sur master (`243fc3c`..`bb8a4f6`). **Le canal porté dans zoé** (outil autonome
+  `channel=`, `tune()` bidirectionnel, fiche vivante dans le viewer). **La doc à source
+  unique** : le narratif du `.doc.md` s'affiche enfin (mini-Markdown maison), doublons de
+  tables retirés. **`state`/`when` fusionnés** en un attribut `state="armed: press +2s,
+  glow: over, busy"` (vérifié 7/7). Fix z-channel qui cassait le manifeste.
+- **Ma mémoire refactorisée** (~/.claude) : noyau « COMMENT J'AGIS » + déclencheur « humain »,
+  format `FAIS/JAMAIS/À LA PLACE`, la fiche « lis l'intention pas la forme ».
+
+**En cours :**
+- Rien, tout est commité et sur master.
+
+**Décisions :**
+- `state`/`when` fusionnent (deux formes perdaient Christophe) ; state/when/channel restent
+  distincts (l'état ne fuit pas, le canal traverse — opposés complémentaires).
+- Doc : une source par info (narratif au `.doc.md`, structuré au `static api`).
+- `::part()` écarté — testé, il ne matche pas le light DOM ; `[part=background]` est le
+  vrai sélecteur humain, et il marche déjà.
+
+**Prochain pas :**
+- Migrer les tokens z-checkbox/z-radio dans leur `static api` (cohérence). Faire juger le
+  mouvement `every` à Christophe. Éventuellement reformuler la doc autour de `[part=]`.
+
 ## Session du 2026-07-22 → 23
 
 **Impact (1-5) :** 5
