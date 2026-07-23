@@ -13,6 +13,7 @@
 
 import "../examples/skin-switch.js";   /* le pacte : sélecteur de peau */
 import { discoverContactEffects } from "../tools/z-contact/z-contact-effect.js";   /* les effets que la peau déclare */
+import { api as CHANNEL_API } from "../tools/z-channel/z-channel.js";   /* le canal : un tool-attribut, absent du manifeste (pas de balise) */
 
 const ROOT = new URL("../", import.meta.url).href;   /* …/zoé/ */
 
@@ -110,6 +111,10 @@ for (const e of entries) {
 	e.api = rawApi(e.tag);
 }
 
+/* z-channel n'est pas une balise (c'est l'attribut channel=), donc absent du manifeste
+   des custom elements. On l'ajoute à la main, à sa place dans « tools » — même contrat. */
+entries.push({ path: "tools/z-channel/z-channel.js", tag: "z-channel", api: normalizeApi(CHANNEL_API) });
+
 mountLangSwitch();
 render();
 /* La peau a changé → ses effets déclarés (--z-contact__fx--*) aussi : on reconstruit la
@@ -153,17 +158,26 @@ if (location.hash === "#selftest") try {
 /* ── rendu ─────────────────────────────────────────────────── */
 
 /* Lit l'API BRUTE (multilingue) d'une classe vivante et la normalise pour le rendu. */
-function rawApi(tag) {
-	const api = customElements.get(tag)?.api;
-	if (!api) return null;
+/* Normalise une API BRUTE (celle d'un composant OU celle d'un tool-attribut) vers la
+   forme que le rendu attend. `attributeTool` / `example` ne concernent que les tools
+   sans balise (z-channel) ; ils valent false/null pour un composant. */
+function normalizeApi(api) {
 	return {
 		tagName: api.tag,
 		summary: api.summary,
+		attributeTool: api.attributeTool || false,
+		example: api.example || null,
 		attributes: (api.attributes || []).map((a) => ({ name: a.name, type: { text: a.type || "string" }, values: a.values || null, description: a.description })),
 		events: (api.events || []).map((ev) => ({ name: ev.name, description: ev.description })),
 		cssStates: (api.states || []).map((s) => ({ name: s })),
 		cssProperties: (api.cssVars || []).map((v) => ({ name: v.name, description: v.description }))
 	};
+}
+
+function rawApi(tag) {
+	const api = customElements.get(tag)?.api;
+	if (!api) return null;
+	return normalizeApi(api);
 }
 
 function groupOf(path) {
@@ -193,7 +207,7 @@ function render() {
 		if (!list.length) continue;
 		menu.append(el("div", { class: "group", text: t(key) }));
 		for (const e of list) {
-			menu.append(el("a", { href: `#${e.api.tagName}`, text: `<${e.api.tagName}>` }));
+			menu.append(el("a", { href: `#${e.api.tagName}`, text: e.api.attributeTool ? e.api.tagName : `<${e.api.tagName}>` }));
 			main.append(entrySection(e.api, key));
 		}
 	}
@@ -248,7 +262,8 @@ function codeCol(title, source, cls) {
 
 function entrySection(d, group) {
 	const sec = el("section", { class: "entry", id: d.tagName });
-	sec.append(el("h2", { text: `<${d.tagName}>` }));
+	/* Un tool-attribut (z-channel) n'est PAS une balise : on montre son nom, pas <z-channel>. */
+	sec.append(el("h2", { text: d.attributeTool ? d.tagName : `<${d.tagName}>` }));
 	sec.append(el("p", { class: "summary", text: desc(d.summary) }));
 
 	/*
@@ -258,10 +273,12 @@ function entrySection(d, group) {
 		aperçu ; le bloc « ce que tu écris » ne s'affiche que là où il aide encore.
 	*/
 	const isContact = d.tagName === "z-contact";
-	if (!isContact) sec.append(usageBlock(d));
+	/* Le bloc « ce que tu écris » suppose une balise <tag> : hors-sujet pour un tool-attribut. */
+	if (!isContact && !d.attributeTool) sec.append(usageBlock(d));
 
 	if (group === "core") sec.append(visualizer(d));
 	else if (isContact) sec.append(contactDemo(d));
+	else if (d.example) sec.append(liveExample(d));   /* l'essai incrusté, comme l'accueil */
 	else if (group === "components") sec.append(preview(d));
 	else sec.append(el("p", { class: "seealso", text: t("seealso") }));
 
@@ -272,6 +289,24 @@ function entrySection(d, group) {
 	if (d.cssProperties?.length) sec.append(heading(t("cssVars"), t("cssVarsHint")), table([t("variable"), t("role")],
 		d.cssProperties.map((v) => [code(v.name), desc(v.description)])));
 	return sec;
+}
+
+/*
+	L'ESSAI INCRUSTÉ d'un tool-attribut (z-channel) : sa page lab, en vrai, dans le même
+	cadre « écran vivant » que l'accueil. On ne le décrit pas, on le fait tourner sous la
+	main du visiteur (curseur → barre, point 2D, tune()). Réutilise le style hero-*.
+*/
+function liveExample(d) {
+	const screen = el("div", { class: "hero-screen" });
+	const bar = el("div", { class: "hero-bar" });
+	bar.append(el("span", { class: "hero-live" }), el("span", { class: "hero-url", text: d.example }));
+	const frame = document.createElement("iframe");
+	frame.className = "hero-frame";
+	frame.src = `${ROOT}${d.example}`;
+	frame.loading = "lazy";
+	frame.title = d.tagName;
+	screen.append(bar, frame);
+	return screen;
 }
 
 /*

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-channel — le canal, en direct</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis passe par <code>http://localhost:5173/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+	.essais { display: flex; flex-wrap: wrap; gap: 40px; margin-top: 30px; }
+	.essai {
+		border: 1px solid var(--z-line); background: var(--z-surface);
+		padding: 26px 24px; position: relative; min-width: 280px;
+	}
+	.essai h2 {
+		font-size: 11px; margin: 0 0 18px; color: var(--z-ink-soft);
+		letter-spacing: 2px; text-transform: uppercase;
+	}
+	.essai p.note { margin: 14px 0 0; font-size: 13px; color: var(--z-ink-soft); }
+
+	input[type=range] { width: 240px; display: block; }
+
+	/*
+		ESSAI 1 — LE GESTE CENTRAL. La barre ne connaît pas le curseur : elle lit un
+		token que le canal pose sur elle. `channel="tempo"` sur les deux, un mot commun.
+	*/
+	.barre {
+		height: 14px; margin-top: 16px; border-radius: 7px;
+		width: calc(var(--z-channel-tempo, 0) * 1%);
+		background: var(--z-accent);
+		transition: width .18s var(--z-ease, ease);
+	}
+	.barre-cadre { background: var(--z-line); border-radius: 7px; }
+
+	/*
+		ESSAI 2 — MULTI-CANAL. Un seul point, membre de DEUX canaux (`channel="px py"`).
+		Deux curseurs → deux tokens → une position 2D. Aucun JS de liaison.
+	*/
+	.scene {
+		position: relative; width: 240px; height: 160px; margin-top: 16px;
+		border: 1px dashed var(--z-line); border-radius: 8px; overflow: hidden;
+	}
+	.point {
+		position: absolute; width: 22px; height: 22px; border-radius: 50%;
+		background: var(--z-accent); transform: translate(-50%, -50%);
+		left: calc(var(--z-channel-px, 50) * 1%);
+		top:  calc(var(--z-channel-py, 50) * 1%);
+		transition: left .12s var(--z-ease, ease), top .12s var(--z-ease, ease);
+	}
+</style>
+
+<h1>z-channel — le canal, en direct</h1>
+<p class="lead">Le même <b>nom de canal</b> sur deux éléments les relie. Ce qui change ici
+bouge là-bas — et <b>c'est le CSS</b> qui décide quoi. Zéro classe, zéro écouteur.</p>
+
+<div class="essais">
+
+	<!-- 1 · le geste central : input natif → div, en CSS pur -->
+	<div class="essai">
+		<h2>1 · curseur → barre</h2>
+		<input type="range" min="0" max="100" value="40" channel="tempo">
+		<div class="barre-cadre"><div class="barre" channel="tempo"></div></div>
+		<p class="note">Un <code>&lt;input&gt;</code> émet, une <code>&lt;div&gt;</code>
+			vide lit <code>--z-channel-tempo</code>. Rien entre les deux.</p>
+	</div>
+
+	<!-- 2 · multi-canal : un point membre de deux canaux -->
+	<div class="essai">
+		<h2>2 · deux canaux → un point 2D</h2>
+		<input type="range" min="0" max="100" value="30" channel="px">
+		<input type="range" min="0" max="100" value="60" channel="py">
+		<div class="scene"><div class="point" channel="px py"></div></div>
+		<p class="note">Le point porte <code>channel="px py"</code> : deux tokens, une
+			position. Multi-canal gratuit, sans plafond.</p>
+	</div>
+
+	<!-- 3 · le monde parle : tune() bidirectionnel -->
+	<div class="essai">
+		<h2>3 · le monde parle — <code>tune()</code></h2>
+		<p class="note" style="margin-top:0">Une valeur peut venir d'ailleurs qu'un doigt.
+			Le canal est bidirectionnel : les curseurs de l'essai 1 suivent.</p>
+		<div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap">
+			<button type="button" data-tempo="0">tempo → 0</button>
+			<button type="button" data-tempo="50">tempo → 50</button>
+			<button type="button" data-tempo="100">tempo → 100</button>
+		</div>
+		<p class="note">Chaque bouton appelle <code>tune("tempo", n)</code> — la barre ET
+			le curseur de l'essai 1 se replacent.</p>
+	</div>
+
+</div>
+
+<script type="module">
+	import "../../examples/skin-switch.js";
+	import { tune } from "./z-channel.js";
+
+	/* Essai 3 : le « monde » (ici, des boutons) pousse une valeur dans le canal.
+	   Comme le canal est bidirectionnel, le curseur émetteur de l'essai 1 se replace. */
+	for (const bouton of document.querySelectorAll("[data-tempo]")) {
+		bouton.addEventListener("click", () => tune("tempo", Number(bouton.dataset.tempo)));
+	}
+</script>
+</html>
