@@ -68,14 +68,10 @@ assez haut.
 
 ## Ce que la peau règle
 
-| Token | Effet |
-|---|---|
-| `--z-contact-size` | la taille du rond de départ |
-| `--z-contact-width` | l'épaisseur du contour |
-| `--z-contact-duration` | la durée |
-| `--z-contact-color` | la couleur (défaut : l'accent **de l'élément touché**) |
-
-HighTech les pose déjà : rond de 20 px, filet 1,5 px, **0,3 s** (elle répond sec), cobalt.
+Les tokens `--z-contact-size · -width · -duration · -color` (voir la table ci-dessous) :
+la taille du rond, l'épaisseur du contour, la durée, la couleur (défaut : l'accent **de
+l'élément touché**). HighTech les pose déjà : rond de 20 px, filet 1,5 px, **0,3 s** (elle
+répond sec), cobalt.
 
 ## Vérifier
 

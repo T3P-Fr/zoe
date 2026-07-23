@@ -60,15 +60,9 @@ Le remplissage, la poignée, les graduations et l'étiquette sont du CSS qui lit
 
 ## Les paramètres
 
-| Attribut | Valeurs | Ce qu'il décide |
-|---|---|---|
-| `value` | nombre | la valeur — bornée à `[min, max]` et calée sur `step` |
-| `min` `max` | nombres | les bornes (0 et 100 par défaut) |
-| `step` | nombre · `any` | l'incrément. `any` = curseur continu |
-| `orientation` | `horizontal` · `vertical` | le sens de la piste |
-| `markers` | *nu* · nombre | les graduations : nu = une par pas, un nombre = ce nombre d'intervalles |
-| `label` | `over` · `under` · `none` | où s'écrit la valeur (rien par défaut) |
-| `disabled` | booléen | coupe l'interaction |
+Tous en attributs (table ci-dessous) : `value` (bornée à `[min, max]`, calée sur `step`),
+`min`/`max`, `step` (`any` = curseur continu), `orientation`, `markers` (nu = une par pas),
+`label` (`over`/`under`/`none`), `disabled`.
 
 **En vertical on va de bas en haut** : monter, c'est augmenter. Et les quatre flèches
 marchent dans les deux orientations — personne ne devrait avoir à deviner le sens d'une

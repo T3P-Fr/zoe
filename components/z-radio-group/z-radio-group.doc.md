@@ -53,12 +53,8 @@ que l'imbrication dans `z-element`. Deux groupes emboîtés ne se volent pas leu
 
 ## Mise en page & statuts
 
-| Token | Peint |
-|---|---|
-| `--z-radio-group__direction` | `column` (défaut) ou `row` |
-| `--z-radio-group__gap` | l'écart entre les choix |
-| `--z-radio-group__align` | l'alignement transversal |
-
+La disposition tient en trois tokens — `--z-radio-group__direction` (`column`/`row`),
+`__gap`, `__align` (voir la table) — et les statuts descendent :
 `disabled` sur le groupe **descend** sur ses radios (elles ne connaissent pas le
 groupe : c'est lui qui sait qu'il enferme un choix). `error` se pose aussi sur le
 **groupe** — « choisis-en un » n'est le défaut d'aucune radio en particulier.

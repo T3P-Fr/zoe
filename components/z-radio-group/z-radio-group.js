@@ -56,7 +56,8 @@ export class ZRadioGroup extends ZElement {
 		states: ZElement.api.states,
 		cssVars: [
 			{ name: "--z-radio-group__gap", description: { en: "Space between the radios.", fr: "L'écart entre les radios.", es: "El espacio entre las radios." } },
-			{ name: "--z-radio-group__direction", description: { en: "Layout direction: column (default) or row.", fr: "Sens de mise en page : column (défaut) ou row.", es: "Dirección de disposición: column (predeterminado) o row." } }
+			{ name: "--z-radio-group__direction", description: { en: "Layout direction: column (default) or row.", fr: "Sens de mise en page : column (défaut) ou row.", es: "Dirección de disposición: column (predeterminado) o row." } },
+			{ name: "--z-radio-group__align", description: { en: "Cross-axis alignment of the choices.", fr: "L'alignement transversal des choix.", es: "La alineación transversal de las opciones." } }
 		]
 	};
 
