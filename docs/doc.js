@@ -100,6 +100,11 @@ const CDEMO_SWATCHES = ["var(--z-accent)", "#e0662c", "#22a06b", "#c4562f", "#7b
 
 addLink(`${ROOT}tools/z-motion/z-motion.css`);
 
+/* Style du narratif rendu (.doc-md) — minimal, il s'appuie sur les tokens de la peau. */
+const mdStyle = document.createElement("style");
+mdStyle.textContent = ".doc-md{margin:1.6rem 0;line-height:1.6}.doc-md h3{margin:1.6rem 0 .5rem}.doc-md h4{margin:1.2rem 0 .4rem}.doc-md pre{overflow-x:auto;padding:.8rem 1rem;border-radius:8px;background:var(--z-surface,#f4f0ea)}.doc-md code{font-size:.92em}.doc-md table.md-table{border-collapse:collapse;margin:1rem 0;width:100%}.doc-md .md-table th,.doc-md .md-table td{border:1px solid var(--z-line);padding:.45rem .7rem;text-align:left;vertical-align:top}.doc-md blockquote{margin:1rem 0;padding:.3rem 1rem;border-left:3px solid var(--z-line);color:var(--z-ink-soft)}.doc-md ul{margin:.6rem 0;padding-left:1.3rem}";
+document.head.append(mdStyle);
+
 const manifest = await (await fetch(`${ROOT}dist/custom-elements.json`)).json();
 const entries = manifest.modules.map((m) => ({ path: m.path, tag: m.declarations[0]?.tagName })).filter((e) => e.tag);
 
@@ -114,6 +119,16 @@ for (const e of entries) {
 /* z-channel n'est pas une balise (c'est l'attribut channel=), donc absent du manifeste
    des custom elements. On l'ajoute à la main, à sa place dans « tools » — même contrat. */
 entries.push({ path: "tools/z-channel/z-channel.js", tag: "z-channel", api: normalizeApi(CHANNEL_API) });
+
+/* LE NARRATIF vit dans le .doc.md du composant — UNE source (le structuré, lui, vient du
+   static api). On le charge ici pour que le viewer l'AFFICHE enfin : jusqu'ici il était
+   écrit à la main puis jamais montré, en doublon du static api. Absent = pas de narratif. */
+for (const e of entries) {
+	try {
+		const res = await fetch(`${ROOT}${e.path.replace(/\.js$/, ".doc.md")}`);
+		if (res.ok) e.api.narrative = await res.text();
+	} catch { /* pas de .doc.md : la fiche se contente du static api */ }
+}
 
 mountLangSwitch();
 render();
@@ -273,14 +288,18 @@ function entrySection(d, group) {
 		aperçu ; le bloc « ce que tu écris » ne s'affiche que là où il aide encore.
 	*/
 	const isContact = d.tagName === "z-contact";
-	/* Le bloc « ce que tu écris » suppose une balise <tag> : hors-sujet pour un tool-attribut. */
-	if (!isContact && !d.attributeTool) sec.append(usageBlock(d));
+	/* Le bloc « ce que tu écris » suppose une balise <tag> ; le narratif du .doc.md, s'il
+	   existe, porte déjà le pitch et les exemples → on ne le double pas. */
+	if (!isContact && !d.attributeTool && !d.narrative) sec.append(usageBlock(d));
 
 	if (group === "core") sec.append(visualizer(d));
 	else if (isContact) sec.append(contactDemo(d));
 	else if (d.example) sec.append(liveExample(d));   /* l'essai incrusté, comme l'accueil */
 	else if (group === "components") sec.append(preview(d));
-	else sec.append(el("p", { class: "seealso", text: t("seealso") }));
+	else if (!d.narrative) sec.append(el("p", { class: "seealso", text: t("seealso") }));
+
+	/* Le NARRATIF (source unique du texte) — enfin affiché, sous la démo, avant les tables. */
+	if (d.narrative) sec.append(narrativeBlock(d.narrative));
 
 	if (d.attributes?.length) sec.append(heading(t("attributes"), t("attributesHint")), attributesTable(d.attributes));
 	if (d.events?.length) sec.append(heading(t("events"), t("eventsHint")), table([t("event"), t("role")],
@@ -289,6 +308,78 @@ function entrySection(d, group) {
 	if (d.cssProperties?.length) sec.append(heading(t("cssVars"), t("cssVarsHint")), table([t("variable"), t("role")],
 		d.cssProperties.map((v) => [code(v.name), desc(v.description)])));
 	return sec;
+}
+
+/*
+	Mini-rendu Markdown — juste le sous-ensemble qu'on écrit dans les .doc.md (titres,
+	paragraphes, gras, code, blocs de code, tables, citations, listes, liens). Aucune
+	dépendance (ODE2JS : on n'embarque pas une lib pour ça). Le contenu est le NÔTRE (un
+	fichier du repo), donc innerHTML est sûr ici.
+	@param {string} md
+	@returns {string} du HTML
+*/
+function renderMarkdown(md) {
+	const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+	const inline = (s) => esc(s)
+		.replace(/`([^`]+)`/g, "<code>$1</code>")
+		.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+		.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+
+	const lines = md.replace(/\r/g, "").split("\n");
+	const out = [];
+	let i = 0;
+	while (i < lines.length) {
+		const line = lines[i];
+
+		if (line.startsWith("```")) {                       /* bloc de code */
+			const buf = [];
+			i++;
+			while (i < lines.length && !lines[i].startsWith("```")) buf.push(lines[i++]);
+			i++;
+			out.push(`<pre><code>${esc(buf.join("\n"))}</code></pre>`);
+			continue;
+		}
+		if (line.trim().startsWith("|") && lines[i + 1] && /^\s*\|[\s:|-]+\|\s*$/.test(lines[i + 1])) {
+			const row = (l) => l.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+			const head = row(line);
+			i += 2;
+			const body = [];
+			while (i < lines.length && lines[i].trim().startsWith("|")) body.push(row(lines[i++]));
+			const th = head.map((c) => `<th>${inline(c)}</th>`).join("");
+			const tr = body.map((r) => `<tr>${r.map((c) => `<td>${inline(c)}</td>`).join("")}</tr>`).join("");
+			out.push(`<table class="md-table"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table>`);
+			continue;
+		}
+		const h = line.match(/^(#{1,4})\s+(.*)$/);          /* titre → décalé d'un cran (le h2 est pris) */
+		if (h) { const n = Math.min(h[1].length + 1, 6); out.push(`<h${n}>${inline(h[2])}</h${n}>`); i++; continue; }
+
+		if (line.startsWith(">")) {                          /* citation */
+			const buf = [];
+			while (i < lines.length && lines[i].startsWith(">")) buf.push(lines[i++].replace(/^>\s?/, ""));
+			out.push(`<blockquote>${inline(buf.join(" "))}</blockquote>`);
+			continue;
+		}
+		if (/^\s*[-*]\s+/.test(line)) {                      /* liste */
+			const buf = [];
+			while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) buf.push(lines[i++].replace(/^\s*[-*]\s+/, ""));
+			out.push(`<ul>${buf.map((b) => `<li>${inline(b)}</li>`).join("")}</ul>`);
+			continue;
+		}
+		if (!line.trim()) { i++; continue; }                 /* ligne vide */
+
+		const buf = [];                                      /* paragraphe */
+		while (i < lines.length && lines[i].trim() && !/^(#{1,4}\s|```|>|\s*[-*]\s|\s*\|)/.test(lines[i])) buf.push(lines[i++]);
+		out.push(`<p>${inline(buf.join(" "))}</p>`);
+	}
+	return out.join("\n");
+}
+
+/* Le narratif d'un composant, rendu depuis son .doc.md. On retire le titre de niveau 1 :
+   la section porte déjà son <h2>, on ne le redit pas. */
+function narrativeBlock(md) {
+	const box = el("div", { class: "doc-md" });
+	box.innerHTML = renderMarkdown(md.replace(/^\s*#\s+.*(\n|$)/, ""));
+	return box;
 }
 
 /*
