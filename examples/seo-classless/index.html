@@ -120,6 +120,35 @@
 
 	<hr>
 
+	<h2>Et le formulaire ?</h2>
+	<p>
+		L'autre moitié de « relooke sans rien renommer » : un <code>&lt;form&gt;</code> natif,
+		habillé par la peau, <strong>sans un seul <code>z-*</code></strong>. Change de peau, il
+		change de monde — et il <em>répond</em> (focus, survol, press).
+	</p>
+	<form onsubmit="return false">
+		<p>
+			<label for="mail">Ton adresse</label><br>
+			<input id="mail" type="email" placeholder="toi@exemple.fr">
+		</p>
+		<p>
+			<label for="mot">Un mot</label><br>
+			<textarea id="mot" placeholder="Écris ici…"></textarea>
+		</p>
+		<p>
+			<label><input type="checkbox" checked> Je garde le natif</label>
+			&nbsp;&nbsp;
+			<label><input type="radio" name="r" checked> Habiller</label>
+			<label><input type="radio" name="r"> Remplacer</label>
+		</p>
+		<p>
+			<button type="submit">Envoyer</button>
+			<button type="reset">Effacer</button>
+		</p>
+	</form>
+
+	<hr>
+
 	<h2>Et si je veux l'animer ?</h2>
 	<p>
 		Habiller n'est pas animer. Pour qu'un titre <em>apparaisse</em> en mouvement, tu

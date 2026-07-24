@@ -558,3 +558,61 @@ article :where(kbd) { font-family: var(--z-font); font-size: 0.88em; padding: 0.
 article :where(small) { font-size: var(--z-font-size-sm); color: var(--z-ink-soft); }
 article :where(sub, sup) { font-size: 0.72em; }
 article :where(abbr) { text-decoration: underline dotted; text-underline-offset: 2px; cursor: help; }
+
+/*
+	============================================================
+	CLASSLESS · FORMULAIRE — le natif interactif habillé (niveau 1 Relookr)
+	------------------------------------------------------------
+	L'autre moitié de « relooke sans rien renommer » : un <form> natif (button, input,
+	select, textarea, label) habillé par la peau, SANS z-*. Pour qui ne veut pas des
+	composants Zoé et pose son HTML de formulaire nu — Pico, mais à la charte HighTech.
+
+	Les lois commandent ici aussi : FILET jamais aplat (loi 2), angle 2px (loi 1), mono
+	(loi 4), COBALT = l'activation (loi 5) → il n'apparaît qu'au FOCUS et sur l'action.
+	Scopé `:where(article, form)` — spécificité 0, et hors du chrome (le sélecteur de peau).
+	Styleguide skin.hightech.classless.form
+	============================================================
+*/
+
+:where(article, form) :where(label) { display: inline-block; font-family: var(--z-font); font-size: var(--z-font-size-sm); color: var(--z-ink-soft); margin-bottom: 0.3rem; }
+
+/* Champs texte : le FILET, angle 2px, mono. Au focus, le cobalt SIGNALE (loi 5) + halo. */
+:where(article, form) :where(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]), textarea, select) {
+	font-family: var(--z-font);
+	font-size: var(--z-font-size);
+	color: var(--z-ink);
+	padding: 0.5em 0.7em;
+	background: none;
+	border: 1px solid var(--z-line);
+	border-radius: 2px;
+	transition: border-color var(--z-dur), box-shadow var(--z-dur);
+}
+:where(article, form) :where(input, textarea, select):focus-visible {
+	outline: none;
+	border-color: var(--z-accent);
+	box-shadow: 0 0 0 3px var(--z-focus-halo, var(--z-accent-soft));
+}
+:where(article, form) textarea { min-height: 6em; resize: vertical; }
+
+/* Bouton natif : filet au repos, l'ACTION allume le cobalt (survol/press), rien ne s'élève. */
+:where(article, form) :where(button, input[type=submit], input[type=button], input[type=reset]) {
+	font-family: var(--z-font);
+	font-size: var(--z-font-size);
+	font-weight: var(--z-font-weight-strong);
+	color: var(--z-ink);
+	padding: 0.5em 1.1em;
+	background: none;
+	border: 1px solid var(--z-ink-100, var(--z-ink));
+	border-radius: 2px;
+	cursor: pointer;
+	transition: color var(--z-dur), border-color var(--z-dur), background var(--z-dur);
+}
+:where(article, form) :where(button, input[type=submit]):hover {
+	color: var(--z-accent);
+	border-color: var(--z-accent);
+}
+:where(article, form) :where(button, input[type=submit]):active { background: var(--z-accent-soft); }
+:where(article, form) :where(button:disabled, input:disabled) { opacity: 0.5; cursor: not-allowed; }
+
+/* Cases, ronds, curseurs natifs : le cobalt les colore (accent-color, sans réécrire). */
+:where(article, form) :where(input[type=checkbox], input[type=radio], input[type=range]) { accent-color: var(--z-accent); }

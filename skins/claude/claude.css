@@ -298,3 +298,56 @@ article :where(kbd) { font-family: ui-monospace, Menlo, monospace; font-size: 0.
 article :where(small) { font-size: var(--z-font-size-sm, 0.86em); color: var(--z-ink-soft); }
 article :where(sub, sup) { font-size: 0.72em; }
 article :where(abbr) { text-decoration: underline dotted; text-underline-offset: 2px; cursor: help; }
+
+/*
+	============================================================
+	CLASSLESS · FORMULAIRE — le natif interactif, à la voix « encre chaude »
+	------------------------------------------------------------
+	L'autre moitié de « relooke sans rien renommer », en contre-pied de HighTech : ici
+	les champs sont REMPLIS et arrondis, le focus terracotta REBONDIT, le bouton est un
+	aplat terre (la signature de Claude). Un <form> natif nu, habillé, sans z-*.
+	Scopé `:where(article, form)` — hors du chrome (sélecteur de peau).
+	Styleguide skin.claude.classless.form
+	============================================================
+*/
+
+:where(article, form) :where(label) { display: inline-block; font-family: var(--z-font); font-size: var(--z-font-size-sm, 0.86em); color: var(--z-ink-soft); margin-bottom: 0.3rem; }
+
+/* Champs : aplat crème rempli, arrondi 9px, serif. Focus terracotta + halo au ressort. */
+:where(article, form) :where(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]), textarea, select) {
+	font-family: var(--z-font);
+	font-size: var(--z-font-size);
+	color: var(--z-ink);
+	padding: 0.55em 0.8em;
+	background: var(--z-surface-raised, var(--z-surface));
+	border: 1px solid var(--z-line);
+	border-radius: var(--z-radius, 9px);
+	transition: border-color var(--z-dur) var(--z-ease-spring), box-shadow var(--z-dur) var(--z-ease-spring);
+}
+:where(article, form) :where(input, textarea, select):focus-visible {
+	outline: none;
+	border-color: var(--z-accent);
+	box-shadow: 0 0 0 3px var(--z-accent-soft, #f0dccf);
+}
+:where(article, form) textarea { min-height: 6em; resize: vertical; }
+
+/* Bouton natif : l'APLAT terre rempli (signature Claude), qui rebondit au press. */
+:where(article, form) :where(button, input[type=submit], input[type=button], input[type=reset]) {
+	font-family: var(--z-font);
+	font-size: var(--z-font-size);
+	font-weight: var(--z-font-weight-strong);
+	color: var(--z-accent-ink, #fff);
+	padding: 0.55em 1.2em;
+	background: var(--z-accent);
+	border: none;
+	border-radius: var(--z-radius, 9px);
+	cursor: pointer;
+	transition: transform var(--z-dur) var(--z-ease-spring), filter var(--z-dur);
+}
+:where(article, form) :where(button, input[type=submit]):hover { filter: brightness(1.06); }
+:where(article, form) :where(button, input[type=submit]):active { transform: scale(0.96); }
+:where(article, form) :where(button:disabled, input:disabled) { opacity: 0.5; cursor: not-allowed; }
+/* Reset = plus discret : un contour, pas un aplat plein. */
+:where(article, form) :where(input[type=reset], button[type=reset]) { color: var(--z-accent); background: none; border: 1px solid var(--z-line); }
+
+:where(article, form) :where(input[type=checkbox], input[type=radio], input[type=range]) { accent-color: var(--z-accent); }
