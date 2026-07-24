@@ -2018,6 +2018,1558 @@
           }
         }
       ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-card/z-card.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZCard",
+          "tagName": "z-card",
+          "summary": "A surface card holding free content — inherits tone & size; optionally interactive (hover + clickable, role=button).",
+          "attributes": [
+            {
+              "name": "interactive",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "The whole card reacts to hover (elevation + accent border) and becomes focusable/clickable — role=button, Enter/Space fire a click."
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "\"main\" | \"complement\" | \"soft\" | \"success\" | \"danger\""
+              },
+              "description": "Importance/colour, from the socle variant."
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "\"xs\" | \"s\" | \"m\" | \"l\" | \"xl\""
+              },
+              "description": "Size factor, from the socle variant (everything follows in em)."
+            }
+          ],
+          "events": [
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-card",
+          "declaration": {
+            "name": "ZCard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-skeleton/z-skeleton.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZSkeleton",
+          "tagName": "z-skeleton",
+          "summary": "A shimmering loading placeholder (skeleton). Purely visual and aria-hidden — a decoy holding the space until real content arrives.",
+          "attributes": [
+            {
+              "name": "w",
+              "type": {
+                "text": "string"
+              },
+              "description": "Convenience width (any CSS length, e.g. \"12em\"). You may style the box yourself instead."
+            },
+            {
+              "name": "h",
+              "type": {
+                "text": "string"
+              },
+              "description": "Convenience height (any CSS length, e.g. \"1em\")."
+            },
+            {
+              "name": "radius",
+              "type": {
+                "text": "\"pill\" | \"circle\""
+              },
+              "description": "\"pill\" for a text line, \"circle\" for an avatar. Default: the skin's radius."
+            }
+          ],
+          "events": [
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-skeleton",
+          "declaration": {
+            "name": "ZSkeleton"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-code/z-code.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZCode",
+          "tagName": "z-code",
+          "summary": "Displays code as written — a block by default (pre-like, scrolls horizontally) or inline with `inline` (a monospace chip). No syntax highlighting, nothing injected.",
+          "attributes": [
+            {
+              "name": "inline",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Render as an inline chip in a line of text instead of a block."
+            }
+          ],
+          "events": [
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-code",
+          "declaration": {
+            "name": "ZCode"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-divider/z-divider.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZDivider",
+          "tagName": "z-divider",
+          "summary": "A separator — a plain rule, or two rules framing a centred label. role=separator + aria-orientation.",
+          "attributes": [
+            {
+              "name": "orientation",
+              "type": {
+                "text": "\"horizontal\" | \"vertical\""
+              },
+              "description": "Direction of the rule: horizontal (default) or vertical (a short 1em stroke)."
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "\"xs\" | \"s\" | \"m\" | \"l\" | \"xl\""
+              },
+              "description": "Size factor, from the socle variant (label and stroke follow in em)."
+            }
+          ],
+          "events": [
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-divider",
+          "declaration": {
+            "name": "ZDivider"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-breadcrumb/z-breadcrumb.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZBreadcrumb",
+          "tagName": "z-breadcrumb",
+          "summary": "A breadcrumb trail — you write the links, Zoé adds the meaning (nav + label) and the « › » separators in CSS. Nothing injected.",
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "description": "The accessible name of the navigation (defaults to « Fil d'Ariane »)."
+            }
+          ],
+          "events": [
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [
+            {
+              "name": "--z-breadcrumb__separator",
+              "description": "The glyph drawn between links (default « › »)."
+            },
+            {
+              "name": "--z-breadcrumb__gap",
+              "description": "Space around each separator."
+            }
+          ],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-breadcrumb",
+          "declaration": {
+            "name": "ZBreadcrumb"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-meter/z-meter.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZMeter",
+          "tagName": "z-meter",
+          "summary": "A gauge (role=meter): a scalar measurement within a range, coloured by low/high/optimum thresholds. Not a progress bar — it shows a state, not an advance.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "description": "The measured amount (min…max)."
+            },
+            {
+              "name": "min",
+              "type": {
+                "text": "number"
+              },
+              "description": "Lower bound (default 0)."
+            },
+            {
+              "name": "max",
+              "type": {
+                "text": "number"
+              },
+              "description": "Upper bound (default 100)."
+            },
+            {
+              "name": "low",
+              "type": {
+                "text": "number"
+              },
+              "description": "Below this, the value is in the low segment."
+            },
+            {
+              "name": "high",
+              "type": {
+                "text": "number"
+              },
+              "description": "Above this, the value is in the high segment."
+            },
+            {
+              "name": "optimum",
+              "type": {
+                "text": "number"
+              },
+              "description": "Where the ideal sits — decides which side reads as good (success) or bad (danger)."
+            }
+          ],
+          "events": [
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "low"
+            },
+            {
+              "name": "high"
+            },
+            {
+              "name": "optimum"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-meter",
+          "declaration": {
+            "name": "ZMeter"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-kbd/z-kbd.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZKbd",
+          "tagName": "z-kbd",
+          "summary": "A keyboard key cap — pure display, monospace, bordered with a subtle key relief. Inherits size.",
+          "attributes": [
+            {
+              "name": "size",
+              "type": {
+                "text": "\"xs\" | \"s\" | \"m\" | \"l\" | \"xl\""
+              },
+              "description": "Size factor, from the socle variant (everything follows in em)."
+            }
+          ],
+          "events": [
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-kbd",
+          "declaration": {
+            "name": "ZKbd"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-stat/z-stat.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZStat",
+          "tagName": "z-stat",
+          "summary": "A KPI tile — a label, a big number, an optional delta. `trend` colours the delta (success/danger) and gives it an arrow, in pure CSS.",
+          "attributes": [
+            {
+              "name": "trend",
+              "type": {
+                "text": "\"up\" | \"down\""
+              },
+              "description": "Direction of the delta: up (success + ↑) or down (danger + ↓). Absent = neutral (soft ink)."
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "\"main\" | \"complement\" | \"soft\" | \"success\" | \"danger\""
+              },
+              "description": "Importance/colour of the tile, from the socle variant."
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "\"xs\" | \"s\" | \"m\" | \"l\" | \"xl\""
+              },
+              "description": "Size factor, from the socle variant (everything follows in em)."
+            }
+          ],
+          "events": [
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-stat",
+          "declaration": {
+            "name": "ZStat"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-rating/z-rating.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZRating",
+          "tagName": "z-rating",
+          "summary": "A star rating — a slider from 0 to max, set by click or keyboard, painted by the skin.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "description": "Current rating, an integer in [0, max]. Clamped and rounded."
+            },
+            {
+              "name": "max",
+              "type": {
+                "text": "number"
+              },
+              "description": "Number of stars (default 5)."
+            },
+            {
+              "name": "readonly",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Shown but not editable — a rating you display."
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disabled: blocks interaction."
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Form field name."
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "The form is invalid while the rating is 0."
+            }
+          ],
+          "events": [
+            {
+              "name": "input",
+              "description": "Emitted on every value change, including during keyboard steps. Read `.value`."
+            },
+            {
+              "name": "change",
+              "description": "Emitted once the gesture is over (click done, key up)."
+            },
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [
+            {
+              "name": "--z-rating__value",
+              "description": "The filled part, as a percentage — the CSS clips the full layer to it."
+            },
+            {
+              "name": "--z-rating__stars",
+              "description": "A string of `max` glyphs, written by content: without any injected node."
+            }
+          ],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-rating",
+          "declaration": {
+            "name": "ZRating"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-avatar-group/z-avatar-group.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZAvatarGroup",
+          "tagName": "z-avatar-group",
+          "summary": "A stack of overlapping z-avatar, each ringed in the page colour to stand out. On hover, the avatar lifts and comes to the front. Nothing injected.",
+          "attributes": [
+            {
+              "name": "max",
+              "type": {
+                "text": "number"
+              },
+              "description": "Author's guide: past this many faces, add a final <z-avatar>+N</z-avatar> yourself (no node is generated)."
+            }
+          ],
+          "events": [
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [
+            {
+              "name": "--z-avatar-group__overlap",
+              "description": "How much each avatar slides over the previous one (negative margin)."
+            },
+            {
+              "name": "--z-avatar-group__ring",
+              "description": "Thickness of the separating ring (page colour)."
+            },
+            {
+              "name": "--z-avatar-group__lift",
+              "description": "How high the hovered avatar rises."
+            }
+          ],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-avatar-group",
+          "declaration": {
+            "name": "ZAvatarGroup"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-accordion/z-accordion.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZAccordion",
+          "tagName": "z-accordion",
+          "summary": "A group of z-disclosure — when `exclusive`, opening one closes the others. Coordination only.",
+          "attributes": [
+            {
+              "name": "exclusive",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Only one disclosure open at a time — opening one closes the others."
+            }
+          ],
+          "events": [
+            {
+              "name": "toggle",
+              "description": "Bubbles from the disclosure that opened or closed; the group has already closed the others if exclusive."
+            },
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [
+            {
+              "name": "--z-accordion__gap",
+              "description": "Space between the stacked disclosures."
+            }
+          ],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-accordion",
+          "declaration": {
+            "name": "ZAccordion"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-stepper/z-stepper.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZStepper",
+          "tagName": "z-stepper",
+          "summary": "A number stepper wrapping a native <input>: paints − / + zones, the input stays the source of truth.",
+          "attributes": [
+            {
+              "name": "aria-label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Names the group for assistive tech (e.g. \"Quantity\")."
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables the − / + zones (the input keeps its own disabled state)."
+            }
+          ],
+          "events": [
+            {
+              "name": "input",
+              "description": "Fired ON THE INNER INPUT at each step, so native listeners follow."
+            },
+            {
+              "name": "change",
+              "description": "Fired on the inner input after a step (like leaving a native field)."
+            },
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [
+            {
+              "name": "--z-stepper__button-width",
+              "description": "Width reserved for each − / + zone (match BUTTON_ZONE_EM if overridden)."
+            }
+          ],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-stepper",
+          "declaration": {
+            "name": "ZStepper"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-tabs/z-tabs.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZTabs",
+          "tagName": "z-tabs",
+          "summary": "Tabs — author writes tabs + panels, z-tabs gives roles, keyboard, and a sliding indicator. Nestable.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "The active tab's value — set it to preselect, read it to know the choice."
+            }
+          ],
+          "events": [
+            {
+              "name": "change",
+              "description": "Emitted when the active tab changes. Read `.value` / `.selectedIndex`."
+            },
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [
+            {
+              "name": "--z-tabs__indicator-x",
+              "description": "Set by z-tabs — the active tab's left offset (drives the sliding underline)."
+            },
+            {
+              "name": "--z-tabs__indicator-w",
+              "description": "Set by z-tabs — the active tab's width."
+            }
+          ],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-tabs",
+          "declaration": {
+            "name": "ZTabs"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-segmented/z-segmented.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZSegmented",
+          "tagName": "z-segmented",
+          "summary": "A segmented control: single choice among 2–5 options, with an indicator that slides under the current one.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "The chosen segment's value — set it to preselect, read it to know the choice."
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables the whole control."
+            }
+          ],
+          "events": [
+            {
+              "name": "change",
+              "description": "Emitted when the choice changes. detail: { value }; also read `.value`."
+            },
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [
+            {
+              "name": "--z-segmented__x",
+              "description": "Left offset (px) of the current segment — the indicator slides to it."
+            },
+            {
+              "name": "--z-segmented__w",
+              "description": "Width (px) of the current segment — the indicator matches it."
+            }
+          ],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-segmented",
+          "declaration": {
+            "name": "ZSegmented"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-toast/z-toast.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZToast",
+          "tagName": "z-toast",
+          "summary": "An ephemeral notification — tone drives colour, auto-closes after `duration` (paused on hover/focus), animated in and out.",
+          "attributes": [
+            {
+              "name": "tone",
+              "type": {
+                "text": "\"main\" | \"complement\" | \"soft\" | \"success\" | \"danger\""
+              },
+              "description": "The kind of message — drives colour and, for danger, the live politeness."
+            },
+            {
+              "name": "duration",
+              "type": {
+                "text": "number"
+              },
+              "description": "Milliseconds before it auto-closes (default 4000). `0` never auto-closes."
+            },
+            {
+              "name": "dismissible",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Adds a × ; closes on click (on the ×) or Delete/Backspace when focused."
+            }
+          ],
+          "events": [
+            {
+              "name": "zoe:dismiss",
+              "description": "Cancelable — fired before closing. preventDefault() to handle it yourself."
+            },
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-toast",
+          "declaration": {
+            "name": "ZToast"
+          }
+        }
+      ]
     }
   ]
 }

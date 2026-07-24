@@ -1,0 +1,69 @@
+/*
+	============================================================
+	z-meter.css — le rendu de z-meter, une jauge de mesure à seuils
+	------------------------------------------------------------
+	Une PISTE + un REMPLISSAGE dont la largeur est la mesure. La largeur vient du token
+	`--z-meter__value` (posé par le JS depuis value/min/max) : le CSS lit un pourcentage,
+	il ne calcule rien. La COULEUR du remplissage suit la ZONE, exposée en état par le JS :
+
+	  · défaut (aucun seuil franchi) → accent, neutre ;
+	  · :state(low)     → danger (la peau ; valeur sous `low`) ;
+	  · :state(high)    → success (valeur au-dessus de `high`) ;
+	  · :state(optimum) → l'idéal, accent/success (gagne sur low/high).
+
+	Même patron que z-progress :
+	  · FORME COURTE — <z-meter value="72"> : host = piste, ::before = remplissage.
+	  · FORME EN CALQUES — background = piste, marker = remplissage (animable/colorable seul).
+
+	Requiert : une peau (tokens) + core/z-layer.
+	Styleguide 20.1
+	============================================================
+*/
+
+z-meter {
+
+	/* Le SUJET — commun : un rail qui prend la largeur qu'on lui donne. */
+	display: block;
+	position: relative;
+	width: 100%;
+	height: var(--z-meter--track__height, .55em);
+	border-radius: var(--z-radius-pill, 999px);
+	overflow: hidden;
+	--z-meter__value: 0%;               /* défaut ; le JS l'écrase */
+	--z-meter__fill: var(--z-accent);   /* couleur neutre par défaut ; les zones la changent */
+
+	/* ═══ COULEUR PAR ZONE — un seul token bascule, les deux formes le lisent ═══ Styleguide 20.1.1 */
+	&:state(low)     { --z-meter__fill: var(--z-danger); }
+	&:state(high)    { --z-meter__fill: var(--z-success); }
+	&:state(optimum) { --z-meter__fill: var(--z-tone__fill, var(--z-accent)); }
+
+	/* ═══ FORME COURTE — host = piste, ::before = remplissage ═══ Styleguide 20.1.2 */
+	&:not(:has(z-layer)) {
+		background: var(--z-meter--track__color, var(--z-surface-sunken, var(--z-line)));
+	}
+	&:not(:has(z-layer))::before {
+		content: "";
+		position: absolute;
+		inset: 0 auto 0 0;
+		width: var(--z-meter__value);
+		border-radius: inherit;
+		background: var(--z-meter--fill__color, var(--z-meter__fill));
+		transition: width var(--z-dur, .24s) var(--z-ease, ease), background var(--z-dur, .24s) var(--z-ease, ease);
+	}
+
+	/* ═══ FORME EN CALQUES — background = piste, marker = remplissage ═══ Styleguide 20.1.3 */
+	> [part=background] {
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background: var(--z-meter--track__color, var(--z-surface-sunken, var(--z-line)));
+	}
+	> [part=marker] {
+		position: absolute;
+		inset: 0 auto 0 0;
+		width: var(--z-meter__value);
+		border-radius: inherit;
+		background: var(--z-meter--fill__color, var(--z-meter__fill));
+		transition: width var(--z-dur, .24s) var(--z-ease, ease), background var(--z-dur, .24s) var(--z-ease, ease);
+	}
+}

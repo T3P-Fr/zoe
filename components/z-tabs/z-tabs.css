@@ -1,0 +1,105 @@
+/*
+	============================================================
+	z-tabs.css — le rendu de z-tabs
+	------------------------------------------------------------
+	Un rail d'onglets, un soulignement qui GLISSE sous l'actif, et un panneau à la fois.
+	L'indicateur ne bricole aucun px magique : z-tabs mesure l'onglet actif et pose
+	--z-tabs__indicator-x / -w ; le trait n'a plus qu'à se translater vers cette cible,
+	au ressort. C'est le même principe que la grille 0fr→1fr de z-disclosure : la mesure
+	est en JS, le MOUVEMENT est en CSS.
+
+	Requiert : une peau (tokens) + core/z-layer.
+	Styleguide 28.1
+	============================================================
+*/
+
+z-tabs {
+	display: block;
+	font-family: var(--z-font);
+	color: var(--z-ink);
+}
+
+/* ═══ LE RAIL ═══ Styleguide 28.1.1 */
+z-tabs > [part=tablist] {
+	position: relative;   /* ancre du soulignement absolu */
+	display: flex;
+	gap: .2em;
+	border-bottom: var(--z-border-width, 1px) solid var(--z-line);
+}
+
+/* Le soulignement glissant : un trait posé sur le filet du rail, largeur et position
+   pilotées par les variables que z-tabs mesure. Au ressort, jamais un saut. */
+z-tabs > [part=tablist]::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: -1px;
+	height: 2px;
+	width: var(--z-tabs__indicator-w, 0);
+	background: var(--z-accent);
+	border-radius: var(--z-radius-pill, 999px);
+	transform: translateX(var(--z-tabs__indicator-x, 0));
+	transition:
+		transform var(--z-dur-open, .32s) var(--z-ease-spring, ease-out),
+		width var(--z-dur-open, .32s) var(--z-ease-spring, ease-out);
+}
+
+/* ═══ UN ONGLET ═══ Styleguide 28.1.2 */
+z-tabs > [part=tablist] > [part=tab] {
+	appearance: none;
+	background: none;
+	border: none;
+	margin: 0;
+	padding: .6em .9em;
+	font: inherit;
+	font-size: var(--z-font-size, 1rem);
+	color: var(--z-ink-soft);
+	cursor: pointer;
+	white-space: nowrap;
+	border-radius: var(--z-radius, 8px) var(--z-radius, 8px) 0 0;
+	transition: color var(--z-dur, .2s) var(--z-ease, ease), background var(--z-dur, .2s) var(--z-ease, ease);
+}
+z-tabs > [part=tablist] > [part=tab]:hover {
+	color: var(--z-ink);
+	background: var(--z-surface-sunken, color-mix(in srgb, var(--z-ink) 6%, transparent));
+}
+
+/* L'onglet actif : encre pleine + demi-gras (règle Zoé « actif en gras », sans saut de
+   largeur — le poids ajouté vient d'un text-shadow, pas d'un vrai bold). */
+z-tabs > [part=tablist] > [part=tab][aria-selected="true"] {
+	color: var(--z-accent);
+	text-shadow: 0 0 .01em currentColor;
+}
+z-tabs > [part=tablist] > [part=tab]:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 40%, transparent);
+}
+z-tabs > [part=tablist] > [part=tab][disabled],
+z-tabs > [part=tablist] > [part=tab][aria-disabled="true"] {
+	opacity: .5;
+	cursor: not-allowed;
+}
+
+/* ═══ UN PANNEAU ═══ Styleguide 28.1.3 */
+z-tabs > [part=panel] {
+	padding: 1em .2em;
+	line-height: 1.6;
+	color: var(--z-ink-soft);
+	outline: none;
+}
+/* Le panneau qui vient d'apparaître entre en fondu (loi Zoé : rien ne pope sec). */
+z-tabs > [part=panel]:not([hidden]) {
+	animation: z-tabs-fade var(--z-dur-enter, .3s) var(--z-ease, ease);
+}
+z-tabs > [part=panel][hidden] {
+	display: none;   /* `hidden` est posé par le JS ; on force au cas où un reset l'écrase */
+}
+z-tabs > [part=panel]:focus-visible {
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 40%, transparent);
+	border-radius: var(--z-radius, 8px);
+}
+
+@keyframes z-tabs-fade {
+	from { opacity: 0; transform: translateY(.25em); }
+	to   { opacity: 1; transform: translateY(0); }
+}

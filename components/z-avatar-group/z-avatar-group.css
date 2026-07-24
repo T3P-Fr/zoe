@@ -1,0 +1,64 @@
+/*
+	============================================================
+	z-avatar-group.css — le chevauchement et son survol
+	------------------------------------------------------------
+	Le groupe ne PEINT aucun avatar : il les met en ligne, les fait se recouvrir (marge
+	négative sur tous SAUF le premier) et les détache d'un fin liseré de la couleur de
+	page (`--z-page`) — sans lui, deux avatars foncés se fondraient l'un dans l'autre.
+
+	Au survol, l'avatar visé remonte un peu et passe DEVANT ses voisins (z-index) : le
+	geste dit « regarde celui-là », près du curseur, là où est l'œil (loi de la VUE).
+
+	Avatars en enfant DIRECT (`> z-avatar`) : un groupe dans un groupe garde les siens.
+	Requiert : une peau (tokens) + components/z-avatar/z-avatar.css.
+	Styleguide 23.1
+	============================================================
+*/
+
+/*
+	z-avatar-group — le sujet
+	Une rangée serrée. `isolation: isolate` crée un contexte d'empilement propre : le
+	z-index du survol joue DANS le groupe, sans remonter par-dessus le reste de la page.
+	Styleguide 23.1.1
+*/
+z-avatar-group {
+	display: inline-flex;
+	align-items: center;
+	isolation: isolate;
+	vertical-align: middle;
+}
+
+/*
+	z-avatar-group — le chevauchement + le liseré
+	Chaque avatar mord sur son voisin de gauche (marge négative), sauf le premier. Le
+	liseré de couleur de page est un box-shadow (un anneau qui n'agrandit pas la boîte,
+	donc ne casse pas le calcul du recouvrement).
+	Styleguide 23.1.2
+*/
+z-avatar-group > z-avatar {
+	box-shadow: 0 0 0 var(--z-avatar-group__ring, .14em) var(--z-page);
+	transition:
+		transform var(--z-dur, .18s) var(--z-ease-spring, ease-out),
+		box-shadow var(--z-dur, .18s) var(--z-ease, ease);
+}
+z-avatar-group > z-avatar + z-avatar {
+	margin-inline-start: var(--z-avatar-group__overlap, -.7em);
+}
+
+/*
+	z-avatar-group — le survol
+	L'avatar visé remonte et repasse devant (z-index) ; son liseré s'épaissit un peu
+	pour renforcer le détachement. Pris en charge en :hover (état visuel, pas métier) et
+	via :state(over) que le socle pose — l'un pour la souris, l'autre pour la cohérence.
+	Styleguide 23.1.3
+*/
+z-avatar-group > z-avatar:hover,
+z-avatar-group > z-avatar:focus-within,
+z-avatar-group > z-avatar:state(over) {
+	transform: translateY(calc(-1 * var(--z-avatar-group__lift, .25em)));
+	box-shadow: 0 0 0 calc(var(--z-avatar-group__ring, .14em) * 1.4) var(--z-page);
+	z-index: 2;
+}
+
+/* Apparition douce du groupe entier (loi Zoé : rien ne pope sec). Styleguide 23.1.4 */
+z-avatar-group:state(enter) { animation: pop var(--z-dur-enter, .3s) var(--z-ease-spring, ease-out); }

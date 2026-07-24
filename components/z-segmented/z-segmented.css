@@ -1,0 +1,110 @@
+/*
+	============================================================
+	z-segmented.css — le rendu de z-segmented, indicateur glissant
+	------------------------------------------------------------
+	Une pilule qui aligne des segments, et un INDICATEUR (::after) qui glisse sous le
+	segment courant. Tout découle de deux nombres posés par le JS : `--z-segmented__x`
+	(position gauche, px) et `--z-segmented__w` (largeur, px). Aucun segment n'est
+	injecté (ADR-0018) : l'auteur les écrit, on ne fait que déplacer l'indicateur.
+
+	Le glissé est en `translate` (composé, pas de reflow) et rebondit
+	(--z-ease-spring) — le mouvement dit QUAND le choix a changé.
+
+	Requiert : une peau (tokens).
+	Styleguide 26.1
+	============================================================
+*/
+
+z-segmented {
+	display: inline-flex;
+	align-items: stretch;
+	position: relative;                     /* ancre l'indicateur ::after et l'offsetLeft des segments */
+	padding: var(--z-segmented__pad, .25em);
+	gap: var(--z-segmented__gap, 0);
+	font-family: var(--z-font);
+	font-size: var(--z-font-size, 1em);
+	color: var(--z-ink-soft, var(--z-ink));
+	background: var(--z-segmented--background__color, var(--z-surface-sunken, var(--z-surface)));
+	border-radius: var(--z-radius-pill, 999px);
+	user-select: none;
+	vertical-align: middle;
+	-webkit-tap-highlight-color: transparent;
+
+	/*
+		L'INDICATEUR — la pastille qui glisse, DERRIÈRE les segments (z-index 0).
+		Sa largeur épouse le segment courant ; il se déplace en translate.
+		Styleguide 26.1.1
+	*/
+	&::after {
+		content: "";
+		position: absolute;
+		top: var(--z-segmented__pad, .25em);
+		left: 0;
+		height: calc(100% - 2 * var(--z-segmented__pad, .25em));
+		width: var(--z-segmented__w, 0px);
+		translate: var(--z-segmented__x, 0px) 0;
+		border-radius: var(--z-radius-pill, 999px);
+		background: var(--z-segmented--indicator__color, var(--z-surface-raised, #fff));
+		box-shadow: var(--z-segmented--indicator__shadow, 0 1px 3px rgba(0, 0, 0, .18));
+		z-index: 0;
+		transition:
+			translate var(--z-dur-select, .28s) var(--z-ease-spring, ease-out),
+			width var(--z-dur-select, .28s) var(--z-ease-spring, ease-out);
+		pointer-events: none;
+	}
+	/* Aucun choix encore posé → largeur 0 (voir #place) : l'indicateur n'a rien à montrer. */
+
+	/*
+		LES SEGMENTS — écrits par l'auteur. On efface leur cadre natif de bouton ; ils
+		passent AU-DESSUS de l'indicateur (z-index 1) pour rester lisibles.
+		Styleguide 26.1.2
+	*/
+	> [part=segment] {
+		position: relative;
+		z-index: 1;
+		flex: 1 0 auto;
+		margin: 0;
+		padding: var(--z-segmented--segment__pad, .5em 1.1em);
+		border: 0;
+		background: none;
+		color: inherit;
+		font: inherit;
+		line-height: 1;
+		white-space: nowrap;
+		text-align: center;
+		border-radius: var(--z-radius-pill, 999px);
+		cursor: pointer;
+		transition: color var(--z-dur, .2s) var(--z-ease, ease);
+	}
+
+	/* Le survol éclaire le segment visé — feedback DANS la zone, là où l'œil est. */
+	> [part=segment]:hover { color: var(--z-ink); }
+
+	/* Le segment courant prend l'encre forte (l'indicateur est sous lui). */
+	> [part=segment][aria-checked="true"] {
+		color: var(--z-segmented--segment__ink, var(--z-ink));
+		font-weight: var(--z-font-weight-strong, 600);
+	}
+
+	/* Focus clavier : le halo se pose sur le segment visé (jamais l'outline natif). */
+	> [part=segment]:focus-visible {
+		outline: none;
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 40%, transparent);
+	}
+
+	/*
+		═══ COMMUN ═══
+		Styleguide 26.1.3
+	*/
+
+	/* Mort : tout s'éteint, plus de curseur main. */
+	&:state(disabled),
+	&:state(disabled) > [part=segment] {
+		color: var(--z-disabled);
+		cursor: not-allowed;
+	}
+	&:state(disabled) { opacity: .55; }
+
+	/* Apparition douce (loi Zoé). */
+	&:state(enter) { animation: pop var(--z-dur-enter, .3s) var(--z-ease-spring, ease-out); }
+}

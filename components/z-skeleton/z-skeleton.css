@@ -1,0 +1,94 @@
+/*
+	============================================================
+	z-skeleton.css — le rendu de z-skeleton, un bloc gris qui scintille
+	------------------------------------------------------------
+	Un placeholder d'attente : une surface neutre (creusée dans la peau) traversée par un
+	reflet qui balaye en boucle. Le scintillement est un `background-size: 250%` qu'on
+	fait courir — la MÊME mécanique que le balayage `loading` de z-button —, jamais un
+	déplacement de la boîte : rien ne saute, rien ne déborde.
+
+	  · FORME COURTE — <z-skeleton> : le CSS peint l'hôte (une seule surface d'attente).
+	  · FORME EN CALQUES — <z-skeleton><z-layer part="background"> : la surface qui
+	    scintille est une PIÈCE (utile si l'auteur superpose plusieurs blocs animés).
+
+	`radius` (pill/circle) et les raccourcis `w`/`h` (posés en variables inline par le JS)
+	ne font que régler la boîte. `prefers-reduced-motion` FIGE le reflet : on garde le bloc
+	gris (l'info « ça charge » reste), on retire seulement le mouvement.
+	Requiert : une peau (tokens) + core/z-layer.
+	Styleguide 18.1
+	============================================================
+*/
+
+z-skeleton {
+
+	/* Le SUJET — commun : une boîte d'attente. Par défaut un bloc pleine largeur, à la
+	   hauteur d'une ligne ; `w`/`h` (variables inline) l'ajustent sans une ligne de CSS. */
+	display: block;
+	position: relative;
+	width: var(--z-skeleton__width, 100%);
+	height: var(--z-skeleton__height, 1em);
+	border-radius: var(--z-skeleton--background__radius, var(--z-radius, .4em));
+	overflow: hidden;
+	user-select: none;
+
+	/* Le reflet : un dégradé oblique 3x plus large que la boîte, qu'on fait glisser. Il
+	   est défini ICI (commun) pour que les deux formes le partagent. */
+	--z-skeleton__base: var(--z-surface-sunken, var(--z-line));
+	--z-skeleton__sheen: color-mix(in srgb, var(--z-ink, #000) 8%, transparent);
+
+	/* ═══ FORME COURTE — le CSS peint l'hôte ═══ Styleguide 18.1.1 */
+	&:not(:has(z-layer)) {
+		background:
+			linear-gradient(100deg, transparent 30%, var(--z-skeleton__sheen) 50%, transparent 70%),
+			var(--z-skeleton__base);
+		background-size: 250% 100%, 100% 100%;
+		background-repeat: no-repeat;
+		animation: z-skeleton-shimmer 1.4s ease-in-out infinite;
+	}
+
+	/* ═══ FORME EN CALQUES — la surface qui scintille est une PIÈCE ═══ Styleguide 18.1.2 */
+	> [part=background] {
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background:
+			linear-gradient(100deg, transparent 30%, var(--z-skeleton__sheen) 50%, transparent 70%),
+			var(--z-skeleton__base);
+		background-size: 250% 100%, 100% 100%;
+		background-repeat: no-repeat;
+		animation: z-skeleton-shimmer 1.4s ease-in-out infinite;
+	}
+
+	/* ═══ RACCOURCIS DE FORME — une ligne, un avatar ═══ Styleguide 18.1.3 */
+
+	/* pill : une ligne de texte reste une gélule, quelle que soit sa hauteur. */
+	&[radius="pill"] {
+		--z-skeleton--background__radius: var(--z-radius-pill, 999px);
+	}
+
+	/* circle : un avatar. On force un carré (hauteur = largeur) pour ne pas ovaliser. */
+	&[radius="circle"] {
+		--z-skeleton--background__radius: 50%;
+		width: var(--z-skeleton__width, var(--z-skeleton__height, 3em));
+		aspect-ratio: 1;
+	}
+}
+
+/* Le balayage : on anime la POSITION du dégradé (background-position), jamais la boîte —
+   c'est ce qui garantit zéro saut de pixel et aucun débordement. */
+@keyframes z-skeleton-shimmer {
+	from { background-position: 150% 0, 0 0; }
+	to   { background-position: -150% 0, 0 0; }
+}
+
+/* ACCESSIBILITÉ — on fige le reflet mais on GARDE le bloc gris : l'info « ça charge »
+   passe par la présence du bloc, pas par le mouvement. Styleguide 18.1.4 */
+@media (prefers-reduced-motion: reduce) {
+	z-skeleton {
+		&:not(:has(z-layer)),
+		> [part=background] {
+			animation: none;
+			background-position: 0 0, 0 0;
+		}
+	}
+}

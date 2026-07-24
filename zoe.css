@@ -40,17 +40,32 @@
 @import url("./tools/z-contact/z-contact.css");
 
 /* 3 · LES COMPOSANTS — par ordre alphabétique : aucun ne dépend d'un autre */
+@import url("./components/z-accordion/z-accordion.css");
 @import url("./components/z-alert/z-alert.css");
 @import url("./components/z-avatar/z-avatar.css");
+@import url("./components/z-avatar-group/z-avatar-group.css");
 @import url("./components/z-badge/z-badge.css");
+@import url("./components/z-breadcrumb/z-breadcrumb.css");
 @import url("./components/z-button/z-button.css");
+@import url("./components/z-card/z-card.css");
 @import url("./components/z-checkbox/z-checkbox.css");
+@import url("./components/z-code/z-code.css");
 @import url("./components/z-disclosure/z-disclosure.css");
+@import url("./components/z-divider/z-divider.css");
+@import url("./components/z-kbd/z-kbd.css");
+@import url("./components/z-meter/z-meter.css");
 @import url("./components/z-progress/z-progress.css");
 @import url("./components/z-radio/z-radio.css");
 @import url("./components/z-radio-group/z-radio-group.css");
+@import url("./components/z-rating/z-rating.css");
+@import url("./components/z-segmented/z-segmented.css");
+@import url("./components/z-skeleton/z-skeleton.css");
 @import url("./components/z-slider/z-slider.css");
 @import url("./components/z-spinner/z-spinner.css");
+@import url("./components/z-stat/z-stat.css");
+@import url("./components/z-stepper/z-stepper.css");
 @import url("./components/z-switch/z-switch.css");
+@import url("./components/z-tabs/z-tabs.css");
 @import url("./components/z-tag/z-tag.css");
+@import url("./components/z-toast/z-toast.css");
 @import url("./components/z-tooltip/z-tooltip.css");

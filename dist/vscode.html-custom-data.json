@@ -431,6 +431,249 @@
           "description": "Where the bubble sits (default top)."
         }
       ]
+    },
+    {
+      "name": "z-card",
+      "description": "A surface card holding free content — inherits tone & size; optionally interactive (hover + clickable, role=button).",
+      "attributes": [
+        {
+          "name": "interactive",
+          "description": "The whole card reacts to hover (elevation + accent border) and becomes focusable/clickable — role=button, Enter/Space fire a click.",
+          "values": []
+        },
+        {
+          "name": "tone",
+          "description": "Importance/colour, from the socle variant."
+        },
+        {
+          "name": "size",
+          "description": "Size factor, from the socle variant (everything follows in em)."
+        }
+      ]
+    },
+    {
+      "name": "z-skeleton",
+      "description": "A shimmering loading placeholder (skeleton). Purely visual and aria-hidden — a decoy holding the space until real content arrives.",
+      "attributes": [
+        {
+          "name": "w",
+          "description": "Convenience width (any CSS length, e.g. \"12em\"). You may style the box yourself instead."
+        },
+        {
+          "name": "h",
+          "description": "Convenience height (any CSS length, e.g. \"1em\")."
+        },
+        {
+          "name": "radius",
+          "description": "\"pill\" for a text line, \"circle\" for an avatar. Default: the skin's radius."
+        }
+      ]
+    },
+    {
+      "name": "z-code",
+      "description": "Displays code as written — a block by default (pre-like, scrolls horizontally) or inline with `inline` (a monospace chip). No syntax highlighting, nothing injected.",
+      "attributes": [
+        {
+          "name": "inline",
+          "description": "Render as an inline chip in a line of text instead of a block.",
+          "values": []
+        }
+      ]
+    },
+    {
+      "name": "z-divider",
+      "description": "A separator — a plain rule, or two rules framing a centred label. role=separator + aria-orientation.",
+      "attributes": [
+        {
+          "name": "orientation",
+          "description": "Direction of the rule: horizontal (default) or vertical (a short 1em stroke)."
+        },
+        {
+          "name": "size",
+          "description": "Size factor, from the socle variant (label and stroke follow in em)."
+        }
+      ]
+    },
+    {
+      "name": "z-breadcrumb",
+      "description": "A breadcrumb trail — you write the links, Zoé adds the meaning (nav + label) and the « › » separators in CSS. Nothing injected.",
+      "attributes": [
+        {
+          "name": "label",
+          "description": "The accessible name of the navigation (defaults to « Fil d'Ariane »)."
+        }
+      ]
+    },
+    {
+      "name": "z-meter",
+      "description": "A gauge (role=meter): a scalar measurement within a range, coloured by low/high/optimum thresholds. Not a progress bar — it shows a state, not an advance.",
+      "attributes": [
+        {
+          "name": "value",
+          "description": "The measured amount (min…max)."
+        },
+        {
+          "name": "min",
+          "description": "Lower bound (default 0)."
+        },
+        {
+          "name": "max",
+          "description": "Upper bound (default 100)."
+        },
+        {
+          "name": "low",
+          "description": "Below this, the value is in the low segment."
+        },
+        {
+          "name": "high",
+          "description": "Above this, the value is in the high segment."
+        },
+        {
+          "name": "optimum",
+          "description": "Where the ideal sits — decides which side reads as good (success) or bad (danger)."
+        }
+      ]
+    },
+    {
+      "name": "z-kbd",
+      "description": "A keyboard key cap — pure display, monospace, bordered with a subtle key relief. Inherits size.",
+      "attributes": [
+        {
+          "name": "size",
+          "description": "Size factor, from the socle variant (everything follows in em)."
+        }
+      ]
+    },
+    {
+      "name": "z-stat",
+      "description": "A KPI tile — a label, a big number, an optional delta. `trend` colours the delta (success/danger) and gives it an arrow, in pure CSS.",
+      "attributes": [
+        {
+          "name": "trend",
+          "description": "Direction of the delta: up (success + ↑) or down (danger + ↓). Absent = neutral (soft ink)."
+        },
+        {
+          "name": "tone",
+          "description": "Importance/colour of the tile, from the socle variant."
+        },
+        {
+          "name": "size",
+          "description": "Size factor, from the socle variant (everything follows in em)."
+        }
+      ]
+    },
+    {
+      "name": "z-rating",
+      "description": "A star rating — a slider from 0 to max, set by click or keyboard, painted by the skin.",
+      "attributes": [
+        {
+          "name": "value",
+          "description": "Current rating, an integer in [0, max]. Clamped and rounded."
+        },
+        {
+          "name": "max",
+          "description": "Number of stars (default 5)."
+        },
+        {
+          "name": "readonly",
+          "description": "Shown but not editable — a rating you display.",
+          "values": []
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled: blocks interaction.",
+          "values": []
+        },
+        {
+          "name": "name",
+          "description": "Form field name."
+        },
+        {
+          "name": "required",
+          "description": "The form is invalid while the rating is 0.",
+          "values": []
+        }
+      ]
+    },
+    {
+      "name": "z-avatar-group",
+      "description": "A stack of overlapping z-avatar, each ringed in the page colour to stand out. On hover, the avatar lifts and comes to the front. Nothing injected.",
+      "attributes": [
+        {
+          "name": "max",
+          "description": "Author's guide: past this many faces, add a final <z-avatar>+N</z-avatar> yourself (no node is generated)."
+        }
+      ]
+    },
+    {
+      "name": "z-accordion",
+      "description": "A group of z-disclosure — when `exclusive`, opening one closes the others. Coordination only.",
+      "attributes": [
+        {
+          "name": "exclusive",
+          "description": "Only one disclosure open at a time — opening one closes the others.",
+          "values": []
+        }
+      ]
+    },
+    {
+      "name": "z-stepper",
+      "description": "A number stepper wrapping a native <input>: paints − / + zones, the input stays the source of truth.",
+      "attributes": [
+        {
+          "name": "aria-label",
+          "description": "Names the group for assistive tech (e.g. \"Quantity\")."
+        },
+        {
+          "name": "disabled",
+          "description": "Disables the − / + zones (the input keeps its own disabled state).",
+          "values": []
+        }
+      ]
+    },
+    {
+      "name": "z-tabs",
+      "description": "Tabs — author writes tabs + panels, z-tabs gives roles, keyboard, and a sliding indicator. Nestable.",
+      "attributes": [
+        {
+          "name": "value",
+          "description": "The active tab's value — set it to preselect, read it to know the choice."
+        }
+      ]
+    },
+    {
+      "name": "z-segmented",
+      "description": "A segmented control: single choice among 2–5 options, with an indicator that slides under the current one.",
+      "attributes": [
+        {
+          "name": "value",
+          "description": "The chosen segment's value — set it to preselect, read it to know the choice."
+        },
+        {
+          "name": "disabled",
+          "description": "Disables the whole control.",
+          "values": []
+        }
+      ]
+    },
+    {
+      "name": "z-toast",
+      "description": "An ephemeral notification — tone drives colour, auto-closes after `duration` (paused on hover/focus), animated in and out.",
+      "attributes": [
+        {
+          "name": "tone",
+          "description": "The kind of message — drives colour and, for danger, the live politeness."
+        },
+        {
+          "name": "duration",
+          "description": "Milliseconds before it auto-closes (default 4000). `0` never auto-closes."
+        },
+        {
+          "name": "dismissible",
+          "description": "Adds a × ; closes on click (on the ×) or Delete/Backspace when focused.",
+          "values": []
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,72 @@
+/*
+	============================================================
+	z-kbd.css — le rendu de z-kbd
+	------------------------------------------------------------
+	Un capuchon de touche : petit, monospace, fileté, avec une ombre BASSE discrète qui
+	simule le relief d'une vraie touche (le bas plus épais, comme si on la voyait de
+	trois quarts). Coins un peu arrondis. Purement décoratif — aucun état d'interaction.
+
+	  · FORME COURTE — <z-kbd>Ctrl</z-kbd> : le CSS peint l'hôte.
+	  · FORME EN CALQUES — <z-kbd><z-layer part="background">…</z-kbd> : le capuchon est
+	    une pièce à part (rare pour une touche, mais la parité reste offerte).
+
+	Choix de forme par `:has(z-layer)` / `:not(:has(z-layer))`, comme z-badge. Pièces en
+	enfant DIRECT (`> [part=…]`). Requiert : une peau (tokens) + core/z-layer.
+	Styleguide 17.1
+	============================================================
+*/
+
+z-kbd {
+
+	/* Le SUJET — commun aux deux formes : la boîte et la typo monospace. */
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;   /* ancre les calques (absolute) */
+
+	/* Monospace : une touche s'écrit toujours en chasse fixe (convention clavier). */
+	font-family: ui-monospace, "SFMono-Regular", "Menlo", "Consolas", monospace;
+	font-size: var(--z-font-size-sm, .875em);
+	font-weight: var(--z-font-weight, 500);
+	line-height: 1;
+
+	/* Un capuchon un peu plus large que haut, jamais plus étroit qu'un carré (touche seule). */
+	padding: .35em .5em;
+	min-width: 1.6em;
+	border-radius: calc(var(--z-radius, .3em) * .6);
+
+	color: var(--z-ink, currentColor);
+	white-space: nowrap;
+	vertical-align: middle;
+	user-select: none;
+
+	/* ═══ FORME COURTE — le CSS peint l'hôte ═══ Styleguide 17.1.1 */
+	&:not(:has(z-layer)) {
+		background: var(--z-kbd--background__color, var(--z-surface-raised, var(--z-surface)));
+		border: var(--z-border-width, 1px) solid var(--z-kbd--background__border, var(--z-line));
+		/* Le relief : une ombre basse (bord inférieur épaissi) + un liseré interne clair
+		   en haut. C'est ce double trait qui donne l'illusion d'une touche physique. */
+		box-shadow:
+			0 .12em 0 var(--z-line),
+			inset 0 .08em 0 var(--z-surface-raised, rgba(255, 255, 255, .35));
+	}
+
+	/* ═══ FORME EN CALQUES — le capuchon est une PIÈCE ═══ Styleguide 17.1.2 */
+	> [part=background] {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		border-radius: inherit;
+		background: var(--z-kbd--background__color, var(--z-surface-raised, var(--z-surface)));
+		border: var(--z-border-width, 1px) solid var(--z-kbd--background__border, var(--z-line));
+		box-shadow:
+			0 .12em 0 var(--z-line),
+			inset 0 .08em 0 var(--z-surface-raised, rgba(255, 255, 255, .35));
+	}
+	> [part=infos] { position: relative; z-index: 1; }
+
+	/* ═══ COMMUN — apparition douce (loi Zoé : rien ne pope sec) ═══ Styleguide 17.1.3 */
+	&:state(enter) {
+		animation: pop var(--z-dur-enter, .3s) var(--z-ease-spring, ease-out);
+	}
+}

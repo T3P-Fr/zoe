@@ -1,0 +1,73 @@
+/*
+	============================================================
+	z-divider.css — le rendu de z-divider
+	------------------------------------------------------------
+	Un séparateur. Les deux filets sont peints en pseudo-éléments (::before/::after) :
+	chacun POUSSE (flex: 1) de part et d'autre du contenu. La bascule se fait sans une
+	ligne de JS, uniquement sur ce que l'auteur a écrit (ADR-0018) :
+
+	  · VIDE (<z-divider></z-divider>) — gap nul → les deux filets se rejoignent en une
+	    seule ligne continue ;
+	  · AVEC LABEL (<z-divider>ou</z-divider>) — gap ouvert → un filet de chaque côté du
+	    texte centré ;
+	  · VERTICAL (orientation="vertical") — l'hôte DEVIENT le filet, haut d'1em.
+
+	Requiert : une peau (tokens). Pas de calque : les filets ne sont pas des pièces.
+	Styleguide 16.1
+	============================================================
+*/
+
+z-divider {
+
+	/* Deux filets qui poussent autour d'un centre. gap nul par défaut → ligne continue
+	   quand il n'y a rien au milieu. Styleguide 16.1 */
+	display: flex;
+	align-items: center;
+	gap: 0;
+	width: 100%;
+
+	font-family: var(--z-font);
+	font-size: var(--z-font-size-sm, .875em);
+	color: var(--z-ink-soft, var(--z-ink));
+	line-height: 1;
+	text-align: center;
+
+	/* Les deux filets — la ligne elle-même. Styleguide 16.1.1 */
+	&::before,
+	&::after {
+		content: "";
+		flex: 1 1 auto;
+		height: var(--z-border-width, 1px);
+		background: var(--z-divider__color, var(--z-line));
+	}
+
+	/* ═══ AVEC LABEL — un texte au centre ouvre le gap, les filets l'encadrent ═══ Styleguide 16.1.2 */
+	&:not(:empty) {
+		gap: .75em;
+	}
+
+	/* Le label centré, quand il est balisé comme pièce (sinon le texte brut suffit). */
+	> [part=label] {
+		flex: 0 0 auto;
+		white-space: nowrap;
+	}
+
+	/* ═══ VERTICAL — l'hôte devient un court filet debout ═══ Styleguide 16.1.3 */
+	&[orientation=vertical] {
+		display: inline-block;
+		width: var(--z-border-width, 1px);
+		height: 1em;
+		background: var(--z-divider__color, var(--z-line));
+		vertical-align: middle;
+	}
+	/* À la verticale, pas de pseudo-filets : c'est l'hôte lui-même qui est la ligne. */
+	&[orientation=vertical]::before,
+	&[orientation=vertical]::after {
+		content: none;
+	}
+
+	/* ═══ COMMUN — apparition douce (loi Zoé : rien ne pope sec) ═══ Styleguide 16.1.4 */
+	&:state(enter) {
+		animation: pop var(--z-dur-enter, .3s) var(--z-ease-spring, ease-out);
+	}
+}

@@ -1,0 +1,120 @@
+/*
+	============================================================
+	z-rating.css — le rendu de z-rating, en deux couches d'étoiles
+	------------------------------------------------------------
+	Une note = une rangée d'étoiles VIDES, et par-dessus la MÊME rangée en PLEIN, clippée
+	au pourcentage de la note. Tout découle d'UN nombre posé par le JS : `--z-rating__value`
+	(en %). Aucune étoile n'est un nœud injecté (ADR-0018) : le JS publie la chaîne des
+	glyphes dans `--z-rating__stars`, le CSS l'écrit deux fois via content:.
+
+	  · FORME COURTE — <z-rating value="3"> : ::before = les étoiles vides, ::after = les
+	    pleines, clippées.
+	  · FORME EN CALQUES — la rangée est `marker` : mêmes deux couches, animable seule.
+
+	Requiert : une peau (tokens) + core/z-layer.
+	Styleguide 24.1
+	============================================================
+*/
+
+/*
+	Le pourcentage plein, DÉCLARÉ (pas juste posé) pour qu'il s'INTERPOLE : une note
+	changée au clavier ou par API glisse au lieu de sauter.
+	Styleguide 24.1
+*/
+@property --z-rating__value { syntax: "<percentage>"; inherits: true; initial-value: 0%; }
+
+/*
+	z-rating — le sujet (commun aux deux formes)
+	Styleguide 24.2
+*/
+z-rating {
+	display: inline-flex;
+	align-items: center;
+	position: relative;
+	font-family: var(--z-font);
+	font-size: var(--z-rating__size, 1.4em);
+	line-height: 1;
+	color: var(--z-ink);
+	cursor: pointer;
+	user-select: none;
+	vertical-align: middle;
+	touch-action: none;                     /* sinon un glissé fait défiler la page */
+	outline: none;
+	-webkit-tap-highlight-color: transparent;
+	/* La montée du remplissage s'anime, pas le geste. */
+	transition: --z-rating__value var(--z-dur-select, .18s) var(--z-ease-spring, ease-out);
+
+	/*
+		═══ FORME COURTE — ::before = étoiles vides, ::after = pleines ═══
+		Le ::before pose la largeur (les glyphes en flux) ; le ::after se superpose,
+		exactement aligné, et se clippe à la note.
+		Styleguide 24.2.1
+	*/
+	&:not(:has(z-layer))::before {
+		content: var(--z-rating__stars, "★★★★★");
+		letter-spacing: var(--z-rating__gap, .1em);
+		color: var(--z-rating--empty__color, var(--z-line));
+	}
+	&:not(:has(z-layer))::after {
+		content: var(--z-rating__stars, "★★★★★");
+		letter-spacing: var(--z-rating__gap, .1em);
+		color: var(--z-rating--full__color, var(--z-accent));
+		position: absolute;
+		inset: 0;
+		width: var(--z-rating__value, 0%);
+		overflow: hidden;
+		white-space: nowrap;
+		pointer-events: none;
+	}
+
+	/*
+		═══ FORME EN CALQUES — la rangée est `marker` ═══
+		Styleguide 24.2.2
+	*/
+	> [part=marker] {
+		position: relative;
+		display: inline-block;
+	}
+	> [part=marker]::before {
+		content: var(--z-rating__stars, "★★★★★");
+		letter-spacing: var(--z-rating__gap, .1em);
+		color: var(--z-rating--empty__color, var(--z-line));
+	}
+	> [part=marker]::after {
+		content: var(--z-rating__stars, "★★★★★");
+		letter-spacing: var(--z-rating__gap, .1em);
+		color: var(--z-rating--full__color, var(--z-accent));
+		position: absolute;
+		inset: 0;
+		width: var(--z-rating__value, 0%);
+		overflow: hidden;
+		white-space: nowrap;
+	}
+
+	/*
+		═══ COMMUN AUX DEUX FORMES ═══
+		Styleguide 24.2.3
+	*/
+
+	/* Focus clavier : le halo se pose sur toute la rangée (jamais l'outline natif). */
+	&:state(focus) {
+		border-radius: var(--z-radius, .3em);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-state__color, var(--z-accent)) 40%, transparent);
+	}
+
+	/* Le geste répond avant l'effet : la rangée s'enfonce un poil sous le doigt. */
+	&:state(press):not(:state(disabled)) { filter: brightness(.97); }
+
+	/* Lecture seule : plus de curseur main (on montre, on ne modifie pas). */
+	&[readonly] { cursor: default; }
+
+	/* Mort : tout s'éteint, plus de curseur main, plus de halo. */
+	&:state(disabled) {
+		color: var(--z-disabled);
+		cursor: not-allowed;
+		opacity: .55;
+	}
+
+	/* Apparition douce (loi Zoé). */
+	&:state(enter) { animation: pop var(--z-dur-enter, .3s) var(--z-ease-spring, ease-out); }
+}

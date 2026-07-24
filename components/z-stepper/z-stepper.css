@@ -1,0 +1,130 @@
+/*
+	============================================================
+	z-stepper.css — le rendu de z-stepper autour d'un <input> natif
+	------------------------------------------------------------
+	Un cadre qui tient un input au centre, un « − » à gauche (::before) et un « + » à
+	droite (::after). Les deux boutons sont PEINTS, jamais injectés (ADR-0018) ; leur
+	zone cliquable est détectée en JS, accordée à `--z-stepper__button-width`
+	(↔ BUTTON_ZONE_EM). Aux bornes, l'hôte porte `at-min` / `at-max` et le CSS grise le
+	bouton correspondant.
+
+	Requiert : une peau (tokens).
+	Styleguide 25.1
+	============================================================
+*/
+
+z-stepper {
+	--z-stepper__button-width: 2.2em;
+
+	display: inline-flex;
+	align-items: center;
+	position: relative;
+	font-family: var(--z-font);
+	font-size: var(--z-font-size, 1em);
+	color: var(--z-ink);
+	background: var(--z-stepper--background__color, var(--z-surface-raised, var(--z-surface)));
+	border: var(--z-border-width, 1px) solid var(--z-line);
+	border-radius: var(--z-radius, .4em);
+	user-select: none;
+	vertical-align: middle;
+	-webkit-tap-highlight-color: transparent;
+
+	/*
+		L'input natif au centre : on efface son cadre (le cadre est celui de l'hôte) et
+		ses propres flèches (on met les nôtres), on réserve la place des deux boutons.
+		Styleguide 25.1.1
+	*/
+	> input {
+		width: var(--z-stepper__field-width, 3.5em);
+		box-sizing: border-box;
+		margin: 0;
+		padding: .5em 0;
+		border: 0;
+		background: transparent;
+		color: inherit;
+		font: inherit;
+		text-align: center;
+		/* Le geste vise l'input pour la frappe, mais les zones − / + sont hors de lui. */
+		-moz-appearance: textfield;
+	}
+	> input::-webkit-outer-spin-button,
+	> input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+	> input:focus-visible {
+		outline: none;
+		box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--z-accent) 45%, transparent);
+		border-radius: inherit;
+	}
+
+	/*
+		Les deux boutons − / +, peints en pseudo-éléments. Même largeur que la zone JS.
+		Styleguide 25.1.2
+	*/
+	&::before,
+	&::after {
+		flex: none;
+		width: var(--z-stepper__button-width);
+		align-self: stretch;
+		display: grid;
+		place-items: center;
+		font-size: 1.2em;
+		line-height: 1;
+		color: var(--z-stepper--button__color, var(--z-ink));
+		cursor: pointer;
+		transition: color var(--z-dur, .18s), background var(--z-dur, .18s), opacity var(--z-dur, .18s);
+	}
+	&::before {
+		content: "−";
+		border-right: var(--z-border-width, 1px) solid var(--z-line);
+		border-radius: var(--z-radius, .4em) 0 0 var(--z-radius, .4em);
+	}
+	&::after {
+		content: "+";
+		border-left: var(--z-border-width, 1px) solid var(--z-line);
+		border-radius: 0 var(--z-radius, .4em) var(--z-radius, .4em) 0;
+	}
+
+	/* Le survol de la zone allume son bouton — feedback DANS la zone, là où l'œil est. */
+	&:hover::before,
+	&:hover::after {
+		background: color-mix(in srgb, var(--z-accent) 12%, transparent);
+		color: var(--z-accent);
+	}
+
+	/*
+		═══ BORNES — le bouton mort se grise et ne réagit plus ═══
+		Styleguide 25.1.3
+	*/
+	&[at-min]::before {
+		color: var(--z-disabled);
+		opacity: .5;
+		cursor: not-allowed;
+		background: none;
+	}
+	&[at-max]::after {
+		color: var(--z-disabled);
+		opacity: .5;
+		cursor: not-allowed;
+		background: none;
+	}
+
+	/*
+		═══ COMMUN ═══
+		Styleguide 25.1.4
+	*/
+
+	/* Le geste répond avant l'effet. */
+	&:state(press):not(:state(disabled)) { filter: brightness(.98); }
+
+	/* Mort : tout s'éteint. */
+	&:state(disabled) {
+		color: var(--z-disabled);
+		opacity: .55;
+		cursor: not-allowed;
+	}
+
+	/* Apparition douce (loi Zoé). */
+	&:state(enter) { animation: pop var(--z-dur-enter, .3s) var(--z-ease-spring, ease-out); }
+}

@@ -103,3 +103,93 @@ A hint bubble shown on hover and keyboard focus — accessible via a [part=tip] 
 Attributes: tip (string), placement ("top" | "bottom")
 Events: z-state
 States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-card> (components)
+A surface card holding free content — inherits tone & size; optionally interactive (hover + clickable, role=button).
+Attributes: interactive (boolean), tone ("main" | "complement" | "soft" | "success" | "danger"), size ("xs" | "s" | "m" | "l" | "xl")
+Events: z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-skeleton> (components)
+A shimmering loading placeholder (skeleton). Purely visual and aria-hidden — a decoy holding the space until real content arrives.
+Attributes: w (string), h (string), radius ("pill" | "circle")
+Events: z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-code> (components)
+Displays code as written — a block by default (pre-like, scrolls horizontally) or inline with `inline` (a monospace chip). No syntax highlighting, nothing injected.
+Attributes: inline (boolean)
+Events: z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-divider> (components)
+A separator — a plain rule, or two rules framing a centred label. role=separator + aria-orientation.
+Attributes: orientation ("horizontal" | "vertical"), size ("xs" | "s" | "m" | "l" | "xl")
+Events: z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-breadcrumb> (components)
+A breadcrumb trail — you write the links, Zoé adds the meaning (nav + label) and the « › » separators in CSS. Nothing injected.
+Attributes: label (string)
+Events: z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-meter> (components)
+A gauge (role=meter): a scalar measurement within a range, coloured by low/high/optimum thresholds. Not a progress bar — it shows a state, not an advance.
+Attributes: value (number), min (number), max (number), low (number), high (number), optimum (number)
+Events: z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success, low, high, optimum
+
+## <z-kbd> (components)
+A keyboard key cap — pure display, monospace, bordered with a subtle key relief. Inherits size.
+Attributes: size ("xs" | "s" | "m" | "l" | "xl")
+Events: z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-stat> (components)
+A KPI tile — a label, a big number, an optional delta. `trend` colours the delta (success/danger) and gives it an arrow, in pure CSS.
+Attributes: trend ("up" | "down"), tone ("main" | "complement" | "soft" | "success" | "danger"), size ("xs" | "s" | "m" | "l" | "xl")
+Events: z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-rating> (components)
+A star rating — a slider from 0 to max, set by click or keyboard, painted by the skin.
+Attributes: value (number), max (number), readonly (boolean), disabled (boolean), name (string), required (boolean)
+Events: input, change, z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-avatar-group> (components)
+A stack of overlapping z-avatar, each ringed in the page colour to stand out. On hover, the avatar lifts and comes to the front. Nothing injected.
+Attributes: max (number)
+Events: z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-accordion> (components)
+A group of z-disclosure — when `exclusive`, opening one closes the others. Coordination only.
+Attributes: exclusive (boolean)
+Events: toggle, z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-stepper> (components)
+A number stepper wrapping a native <input>: paints − / + zones, the input stays the source of truth.
+Attributes: aria-label (string), disabled (boolean)
+Events: input, change, z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-tabs> (components)
+Tabs — author writes tabs + panels, z-tabs gives roles, keyboard, and a sliding indicator. Nestable.
+Attributes: value (string)
+Events: change, z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-segmented> (components)
+A segmented control: single choice among 2–5 options, with an indicator that slides under the current one.
+Attributes: value (string), disabled (boolean)
+Events: change, z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-toast> (components)
+An ephemeral notification — tone drives colour, auto-closes after `duration` (paused on hover/focus), animated in and out.
+Attributes: tone ("main" | "complement" | "soft" | "success" | "danger"), duration (number), dismissible (boolean)
+Events: zoe:dismiss, z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success

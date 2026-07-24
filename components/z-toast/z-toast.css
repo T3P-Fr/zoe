@@ -1,0 +1,101 @@
+/*
+	============================================================
+	z-toast.css — le rendu de z-toast
+	------------------------------------------------------------
+	Une carte flottante, teintée par le ton, qui GLISSE en entrant et en sortant — jamais
+	un pop sec (loi Zoé). L'entrée est jouée sur `:state(enter)` (posé par le socle au
+	montage), la sortie sur `:state(exit)` (posé par dismiss() AVANT de retirer le nœud) :
+	c'est ce qui rend la disparition visible au lieu d'un arrachage.
+
+	Le ton : z-toast n'est pas dans la liste `[tone]` partagée du socle, alors on pose ses
+	propres --z-tone__fill/line ici — la carte reste lisible sur clair comme sur sombre
+	(color-mix avec le fond de la peau). Elle ne gère PAS son placement : un conteneur/pile
+	viendra positionner l'ensemble.
+
+	Requiert : une peau (tokens) + core/z-layer.
+	Styleguide 29.1
+	============================================================
+*/
+
+/* ═══ LE TON — posé localement (z-toast hors de la liste [tone] du socle) ═══ 29.1.0 */
+z-toast { --z-tone__fill: var(--z-line); --z-tone__line: var(--z-line); }
+z-toast[tone="main"]       { --z-tone__fill: var(--z-accent);  --z-tone__line: var(--z-accent); }
+z-toast[tone="complement"] { --z-tone__fill: var(--z-surface); --z-tone__line: var(--z-line); }
+z-toast[tone="soft"]       { --z-tone__fill: transparent;      --z-tone__line: transparent; }
+z-toast[tone="success"]    { --z-tone__fill: var(--z-success); --z-tone__line: var(--z-success); }
+z-toast[tone="danger"]     { --z-tone__fill: var(--z-danger);  --z-tone__line: var(--z-danger); }
+
+z-toast {
+
+	/* Le SUJET — commun aux deux formes (courte / en calques). */
+	display: flex;
+	align-items: flex-start;
+	gap: .6em;
+	position: relative;
+	padding: .8em 1em;
+	min-width: 15em;
+	max-width: 28em;
+	border-radius: var(--z-radius, 8px);
+	font-family: var(--z-font);
+	font-size: var(--z-font-size, 1rem);
+	line-height: 1.5;
+	color: var(--z-ink);
+	outline: none;
+	/* Elle flotte : une ombre douce la décolle du fond (une pile la posera où il faut). */
+	box-shadow: 0 .5em 1.5em -0.5em color-mix(in srgb, var(--z-ink) 35%, transparent);
+
+	/* La surface : le ton mélangé au fond + un filet d'accent à gauche pour l'ancrer. */
+	&:not(:has(z-layer)) {
+		background: color-mix(in srgb, var(--z-tone__fill) 12%, var(--z-surface-raised, var(--z-surface)));
+		border: var(--z-border-width, 1px) solid color-mix(in srgb, var(--z-tone__line) 40%, var(--z-surface));
+		border-left: 3px solid var(--z-tone__line);
+	}
+
+	/* ═══ FORME EN CALQUES ═══ Styleguide 29.1.1 */
+	> [part=background] {
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background: color-mix(in srgb, var(--z-tone__fill) 12%, var(--z-surface-raised, var(--z-surface)));
+		border: var(--z-border-width, 1px) solid color-mix(in srgb, var(--z-tone__line) 40%, var(--z-surface));
+		border-left: 3px solid var(--z-tone__line);
+	}
+	> [part=infos] { position: relative; }
+	> [part=infos] > [part=icon] { color: var(--z-tone__line, currentColor); }
+
+	/* ═══ DISMISSIBLE — la croix et sa zone (accordée à CLOSE_ZONE_EM côté JS) ═══ 29.1.2 */
+	&[dismissible] { padding-right: 2.4em; }
+	&[dismissible]::after {
+		content: "×";
+		position: absolute;
+		top: .6em;
+		right: .6em;
+		width: 1.3em;
+		height: 1.3em;
+		display: grid;
+		place-items: center;
+		border-radius: 50%;
+		font-size: 1.15em;
+		line-height: 1;
+		color: currentColor;
+		opacity: .55;
+		transition: opacity var(--z-dur, .2s), background var(--z-dur, .2s);
+	}
+	&[dismissible]:hover::after { opacity: 1; background: color-mix(in srgb, currentColor 16%, transparent); }
+	&[dismissible]:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-tone__line, var(--z-accent)) 40%, transparent); }
+
+	/* ═══ ENTRÉE / SORTIE — glisse + fondu ═══ Styleguide 29.1.3
+	   L'entrée : posée par le socle au montage. La sortie : posée par dismiss() qui ATTEND
+	   la fin (--z-dur-exit) avant de retirer le nœud — sans quoi elle serait invisible. */
+	&:state(enter) { animation: z-toast-in var(--z-dur-enter, .3s) var(--z-ease-spring, ease-out); }
+	&:state(exit)  { animation: z-toast-out var(--z-dur-exit, .24s) var(--z-ease, ease-in) forwards; }
+}
+
+@keyframes z-toast-in {
+	from { opacity: 0; transform: translateX(1.5em) scale(.98); }
+	to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes z-toast-out {
+	from { opacity: 1; transform: translateX(0) scale(1); }
+	to   { opacity: 0; transform: translateX(1.5em) scale(.98); }
+}

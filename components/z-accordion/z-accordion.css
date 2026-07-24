@@ -1,0 +1,39 @@
+/*
+	============================================================
+	z-accordion.css — le rendu de z-accordion
+	------------------------------------------------------------
+	Presque rien à peindre : chaque z-disclosure porte déjà son filet du bas. L'accordéon
+	ne fait qu'EMPILER ses déplis et lisser les bords — un cadre discret autour du groupe,
+	et le dernier filet effacé pour ne pas doubler le bord du cadre.
+
+	Requiert : une peau (tokens) + core/z-layer + z-disclosure.
+	Styleguide 27.1
+	============================================================
+*/
+
+z-accordion {
+	display: block;
+	/* Le groupe posé comme une carte sobre : un cadre, des coins, et les déplis dedans. */
+	border: var(--z-border-width, 1px) solid var(--z-line);
+	border-radius: var(--z-radius, 8px);
+	overflow: hidden;
+	background: var(--z-surface);
+	font-family: var(--z-font);
+}
+
+/* Les déplis s'empilent ; on laisse à z-disclosure son propre filet du bas SAUF le
+   dernier, dont le filet doublonnerait le bord du cadre. */
+z-accordion > z-disclosure {
+	border-radius: 0;
+}
+z-accordion > z-disclosure:last-child {
+	border-bottom: none;
+}
+
+/* Le label respire un peu à l'intérieur du cadre (le dépli seul colle aux bords). */
+z-accordion > z-disclosure > [part=label] {
+	padding-inline: .9em;
+}
+z-accordion > z-disclosure > [part=panel] {
+	padding-inline: .9em;
+}

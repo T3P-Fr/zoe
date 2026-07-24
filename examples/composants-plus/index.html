@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zoé — quinze composants de plus</title>
+
+<script>
+	if (location.protocol === "file:") document.write('<div style="padding:1rem;background:#7a1d0c;color:#fff">Lance node scripts/serve.mjs 5173</div>');
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../page.css">
+
+<style>
+	.grid { display: grid; gap: 1.4rem; margin-top: 1rem; }
+	.card { padding: 1.1rem 1.3rem; border: 1px solid var(--z-line); border-radius: var(--z-radius, 10px); background: var(--z-surface); }
+	.card > h2 { margin: 0 0 .2rem; font-size: 1em; }
+	.card > .note { margin: 0 0 .9rem; color: var(--z-ink-soft); font-size: .9em; }
+	.row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+</style>
+
+<h1>Quinze composants de plus</h1>
+<p class="lead">Fabriqués en parallèle, intégrés d'un bloc. Bascule la peau — tout suit.</p>
+
+<div class="grid">
+
+	<div class="card"><h2>z-card</h2><p class="note">Surface qui contient. <code>interactive</code> = focusable/cliquable.</p>
+		<div class="row">
+			<z-card style="width:14rem"><strong>Une carte</strong><p style="margin:.4rem 0 0;color:var(--z-ink-soft)">Contenu libre, surface de la peau.</p></z-card>
+			<z-card interactive style="width:14rem"><strong>Interactive</strong><p style="margin:.4rem 0 0;color:var(--z-ink-soft)">Survole / Tab / Entrée.</p></z-card>
+		</div>
+	</div>
+
+	<div class="card"><h2>z-divider</h2><p class="note">Séparateur, avec label optionnel.</p>
+		<p>Au-dessus</p>
+		<z-divider></z-divider>
+		<z-divider>ou bien</z-divider>
+		<div class="row" style="height:2rem">Gauche <z-divider orientation="vertical"></z-divider> Droite</div>
+	</div>
+
+	<div class="card"><h2>z-kbd</h2><p class="note">Une touche de clavier.</p>
+		<div class="row"><span>Copier :</span> <z-kbd>Ctrl</z-kbd> + <z-kbd>C</z-kbd> &nbsp;·&nbsp; <z-kbd>⌘</z-kbd> <z-kbd>K</z-kbd></div>
+	</div>
+
+	<div class="card"><h2>z-skeleton</h2><p class="note">Leurre de chargement qui scintille.</p>
+		<div class="row">
+			<z-skeleton radius="circle" w="3rem" h="3rem"></z-skeleton>
+			<div style="display:grid;gap:.5rem">
+				<z-skeleton w="14rem" h=".8rem"></z-skeleton>
+				<z-skeleton w="9rem" h=".8rem"></z-skeleton>
+			</div>
+		</div>
+	</div>
+
+	<div class="card"><h2>z-code</h2><p class="note">Code inline ou bloc.</p>
+		<p>En ligne : <z-code inline>const zoe = true</z-code>.</p>
+		<z-code>&lt;z-button&gt;Envoyer&lt;/z-button&gt;
+z-button:state(over) { background: orange; }</z-code>
+	</div>
+
+	<div class="card"><h2>z-meter</h2><p class="note">Jauge à seuils (mesure, pas progression).</p>
+		<div style="display:grid;gap:.8rem;max-width:26rem">
+			<z-meter value="82" low="20" high="80"></z-meter>
+			<z-meter value="15" low="20" high="80"></z-meter>
+			<z-meter value="50" min="0" max="100"></z-meter>
+		</div>
+	</div>
+
+	<div class="card"><h2>z-breadcrumb</h2><p class="note">Fil d'Ariane (séparateur en CSS).</p>
+		<z-breadcrumb><a href="#">Accueil</a><a href="#">Composants</a><span aria-current="page">z-breadcrumb</span></z-breadcrumb>
+	</div>
+
+	<div class="card"><h2>z-stat</h2><p class="note">Tuile de KPI.</p>
+		<div class="row" style="gap:2rem">
+			<z-stat trend="up"><span part="label">Chiffre d'affaires</span><span part="value">184 320 €</span><span part="delta">+12,4 %</span></z-stat>
+			<z-stat trend="down"><span part="label">Paniers abandonnés</span><span part="value">312</span><span part="delta">−3,1 %</span></z-stat>
+		</div>
+	</div>
+
+	<div class="card"><h2>z-avatar-group</h2><p class="note">Pile d'avatars chevauchants.</p>
+		<z-avatar-group>
+			<z-avatar name="A" tone="main">A</z-avatar>
+			<z-avatar name="B" tone="success">B</z-avatar>
+			<z-avatar name="C" tone="danger">C</z-avatar>
+			<z-avatar name="D">+5</z-avatar>
+		</z-avatar-group>
+	</div>
+
+	<div class="card"><h2>z-rating</h2><p class="note">Note en étoiles (clic + flèches).</p>
+		<div class="row"><z-rating value="3" max="5"></z-rating> <z-rating value="4" max="5" readonly></z-rating></div>
+	</div>
+
+	<div class="card"><h2>z-stepper</h2><p class="note">Incrémenteur autour d'un input natif.</p>
+		<z-stepper><input type="number" value="3" min="0" max="9" step="1"></z-stepper>
+	</div>
+
+	<div class="card"><h2>z-segmented</h2><p class="note">Contrôle segmenté (indicateur glissant).</p>
+		<z-segmented value="mois">
+			<button part="segment" value="jour">Jour</button>
+			<button part="segment" value="mois">Mois</button>
+			<button part="segment" value="an">Année</button>
+		</z-segmented>
+	</div>
+
+	<div class="card"><h2>z-accordion</h2><p class="note">Groupe de déplis (<code>exclusive</code>).</p>
+		<z-accordion exclusive style="max-width:34rem">
+			<z-disclosure open><z-layer part="label">Premier</z-layer><z-layer part="panel">Ouvrir un autre ferme celui-ci.</z-layer></z-disclosure>
+			<z-disclosure><z-layer part="label">Deuxième</z-layer><z-layer part="panel">Un seul ouvert à la fois.</z-layer></z-disclosure>
+			<z-disclosure><z-layer part="label">Troisième</z-layer><z-layer part="panel">Coordonné par z-accordion.</z-layer></z-disclosure>
+		</z-accordion>
+	</div>
+
+	<div class="card"><h2>z-tabs</h2><p class="note">Onglets (flèches, roving tabindex).</p>
+		<z-tabs value="a" style="max-width:34rem">
+			<div part="tablist">
+				<button part="tab" value="a">Aperçu</button>
+				<button part="tab" value="b">Détails</button>
+				<button part="tab" value="c">Avis</button>
+			</div>
+			<div part="panel" value="a">Le panneau Aperçu.</div>
+			<div part="panel" value="b">Le panneau Détails.</div>
+			<div part="panel" value="c">Le panneau Avis.</div>
+		</z-tabs>
+	</div>
+
+	<div class="card"><h2>z-toast</h2><p class="note">Notification (ici <code>duration="0"</code> pour la voir).</p>
+		<div style="display:grid;gap:.6rem;max-width:30rem">
+			<z-toast tone="success" duration="0">Enregistré avec succès.</z-toast>
+			<z-toast tone="danger" dismissible duration="0">Erreur — clique la croix.</z-toast>
+		</div>
+	</div>
+
+</div>
+
+<script type="module">
+	import "../skin-switch.js";
+	const mods = ["z-button","z-avatar","z-disclosure","z-card","z-divider","z-kbd","z-skeleton","z-code","z-meter","z-breadcrumb","z-stat","z-avatar-group","z-rating","z-stepper","z-segmented","z-accordion","z-tabs","z-toast"];
+	for (const m of mods) await import(`../../components/${m}/${m}.js`);
+</script>
+</html>

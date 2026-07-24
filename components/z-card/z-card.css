@@ -1,0 +1,108 @@
+/*
+	============================================================
+	z-card.css — le rendu de z-card
+	------------------------------------------------------------
+	Une carte : une surface surélevée, un filet fin, du radius, un padding confortable.
+	Elle ne fait que CONSOMMER ce que le socle lui donne — le ton (`--z-tone__*`) et la
+	taille (facteur `em`). Sans `interactive`, c'est un cadre inerte ; avec, elle
+	s'élève au survol et prend le filet accent (feedback près du geste : le retour naît
+	SUR la carte survolée, jamais ailleurs).
+
+	  · FORME COURTE — <z-card>…</z-card> : le CSS peint l'hôte (la surface EST la carte).
+	  · FORME EN CALQUES — <z-card><z-layer part="background">…</z-card> : le fond bouge
+	    seul (il peut s'élever, changer de teinte) sans emmener le contenu.
+
+	Choix de forme par `:has(z-layer)` / `:not(:has(z-layer))`, comme z-badge — le CSS
+	regarde ce que l'auteur a écrit, Zoé n'injecte rien (ADR-0018). Pièces en enfant
+	DIRECT (`> [part=…]`) : une carte dans une carte ne se fait pas repeindre.
+	Requiert : une peau (tokens) + core/z-layer.
+	Styleguide 15.1
+	============================================================
+*/
+
+z-card {
+
+	/* Le SUJET — commun aux deux formes : la boîte, la typo, le rythme vertical. */
+	display: block;
+	position: relative;   /* ancre les calques (absolute) */
+	box-sizing: border-box;
+
+	font-family: var(--z-font);
+	font-size: var(--z-font-size, 1em);
+	color: var(--z-tone__ink, var(--z-ink));
+	line-height: 1.5;
+
+	/* Radius généreux (la carte est une grande surface, pas une pastille). */
+	border-radius: var(--z-radius, .5em);
+	padding: 1.25em;
+
+	/* Transition douce pour l'élévation/le filet au survol (rien ne saute). */
+	transition:
+		box-shadow var(--z-dur, .2s) var(--z-ease, ease),
+		border-color var(--z-dur, .2s) var(--z-ease, ease),
+		transform var(--z-dur, .2s) var(--z-ease, ease);
+
+	/* ═══ FORME COURTE — le CSS peint l'hôte ═══ Styleguide 15.1.1 */
+	&:not(:has(z-layer)) {
+		background: var(--z-card--background__color, var(--z-tone__fill, var(--z-surface-raised, var(--z-surface))));
+		border: var(--z-border-width, 1px) solid var(--z-card--background__border, var(--z-tone__line, var(--z-line)));
+	}
+
+	/* ═══ FORME EN CALQUES — le fond est une PIÈCE ═══ Styleguide 15.1.2 */
+	> [part=background] {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		border-radius: inherit;
+		background: var(--z-card--background__color, var(--z-tone__fill, var(--z-surface-raised, var(--z-surface))));
+		border: var(--z-border-width, 1px) solid var(--z-card--background__border, var(--z-tone__line, var(--z-line)));
+	}
+	/* Le contenu passe AU-DESSUS du calque de fond. */
+	> [part=media],
+	> [part=infos] { position: relative; z-index: 1; }
+
+	/* ═══ MEDIA — un visuel en tête, collé aux bords, coins hauts arrondis ═══ Styleguide 15.1.3 */
+	> [part=media] {
+		display: block;
+		/* Le media déborde le padding pour toucher les bords de la carte. */
+		margin: -1.25em -1.25em 1em;
+		border-radius: var(--z-radius, .5em) var(--z-radius, .5em) 0 0;
+		overflow: hidden;
+	}
+	> [part=media] img,
+	> [part=media] picture,
+	> [part=media] video {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+
+	/* ═══ INTERACTIVE — la carte devient cliquable, elle réagit au geste ═══ Styleguide 15.1.4 */
+	&[interactive] { cursor: pointer; }
+
+	/* Survol : élévation + filet accent, tout PRÈS du geste (loi de la vue). Forme courte. */
+	&[interactive]:not(:has(z-layer)):state(over) {
+		border-color: var(--z-accent);
+		box-shadow: 0 .5em 1.25em -0.5em var(--z-ink-soft, rgba(0, 0, 0, .25));
+		transform: translateY(-2px);
+	}
+	/* Idem quand le fond est un calque : c'est LUI qu'on élève. */
+	&[interactive]:state(over) > [part=background] {
+		border-color: var(--z-accent);
+		box-shadow: 0 .5em 1.25em -0.5em var(--z-ink-soft, rgba(0, 0, 0, .25));
+	}
+
+	/* Appui : la carte s'enfonce légèrement (retour tactile). */
+	&[interactive]:state(press) { transform: translateY(0); }
+
+	/* Focus clavier : anneau accent net (l'assistance doit voir où elle est). */
+	&[interactive]:state(focus) {
+		outline: var(--z-border-width, 2px) solid var(--z-accent);
+		outline-offset: 2px;
+	}
+
+	/* ═══ COMMUN — apparition douce (loi Zoé : rien ne pope sec) ═══ Styleguide 15.1.5 */
+	&:state(enter) {
+		animation: pop var(--z-dur-enter, .3s) var(--z-ease-spring, ease-out);
+	}
+}

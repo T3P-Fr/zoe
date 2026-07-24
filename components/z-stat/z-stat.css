@@ -1,0 +1,104 @@
+/*
+	============================================================
+	z-stat.css — le rendu d'une tuile de KPI
+	------------------------------------------------------------
+	Une tuile verticale : l'intitulé en haut (petit, atténué, capitales espacées), le
+	grand nombre au milieu, la variation en bas. Le fond est peint sur l'hôte (pas de
+	forme en calques ici : une tuile de chiffre n'a pas de pièce d'état qui bouge seule).
+
+	`trend` est lu DIRECTEMENT dans l'attribut par le CSS : `[trend=up]` colore la
+	variation en succès et lui pose un ↑ ; `[trend=down]`, en danger avec un ↓. Aucune
+	balise injectée (ADR-0018) : la flèche est un ::before décoratif. Pièces en enfant
+	DIRECT (`> [part=…]`) : une tuile dans une tuile ne se fait pas repeindre.
+
+	⚠ tone/size : pour que les variants `tone`/`size` du socle PEIGNENT z-stat, la balise
+	`z-stat` doit figurer dans la liste `:is(…)` de core/z-element/z-element.css (non
+	modifiée ici). Sans ça, la grammaire d'états marche, mais tone reste sans effet.
+	Requiert : une peau (tokens).
+	Styleguide 22.1
+	============================================================
+*/
+
+/*
+	z-stat — le sujet (la tuile)
+	Une colonne compacte, posée sur une surface surélevée avec un filet et un rayon.
+	Tout est en em → la taille suit le facteur `size` du socle.
+	Styleguide 22.1.1
+*/
+z-stat {
+	display: inline-flex;
+	flex-direction: column;
+	gap: .35em;
+	min-width: 8em;
+	padding: 1em 1.2em;
+
+	background: var(--z-stat--background__color, var(--z-tone__fill, var(--z-surface-raised, var(--z-surface))));
+	border: var(--z-border-width, 1px) solid var(--z-tone__line, var(--z-line));
+	border-radius: var(--z-radius, .5em);
+	color: var(--z-tone__ink, var(--z-ink));
+
+	font-family: var(--z-font);
+	line-height: 1.1;
+	vertical-align: middle;
+}
+
+/*
+	z-stat — l'intitulé
+	Petit, atténué, en capitales espacées : il nomme sans voler la vedette au nombre.
+	Styleguide 22.1.2
+*/
+z-stat > [part=label] {
+	font-size: var(--z-font-size-sm, .82em);
+	font-weight: var(--z-font-weight-strong, 700);
+	letter-spacing: .08em;
+	text-transform: uppercase;
+	color: var(--z-ink-soft);
+}
+
+/*
+	z-stat — le grand nombre
+	La vedette : gros, dense, en police de titre. Fallback em pour --z-font-size-2xl,
+	absent chez certaines peaux (ex. Claude).
+	Styleguide 22.1.3
+*/
+z-stat > [part=value] {
+	font-family: var(--z-font-title, var(--z-font));
+	font-size: var(--z-font-size-2xl, 2.2em);
+	font-weight: var(--z-font-weight-strong, 700);
+	line-height: 1;
+	color: var(--z-tone__ink, var(--z-ink));
+}
+
+/*
+	z-stat — la variation
+	Neutre par défaut (ink atténué, pas de flèche). `trend` la colore et lui pose une
+	flèche en ::before : le sens se voit AVANT même de lire le signe.
+	Styleguide 22.1.4
+*/
+z-stat > [part=delta] {
+	display: inline-flex;
+	align-items: center;
+	gap: .25em;
+	font-size: var(--z-font-size-sm, .9em);
+	font-weight: var(--z-font-weight-strong, 700);
+	color: var(--z-ink-soft);
+}
+z-stat > [part=delta]::before {
+	font-size: .9em;
+	line-height: 1;
+}
+z-stat[trend="up"] > [part=delta] {
+	color: var(--z-success, #2f8a54);
+}
+z-stat[trend="up"] > [part=delta]::before {
+	content: "\2191";   /* ↑ */
+}
+z-stat[trend="down"] > [part=delta] {
+	color: var(--z-danger, #c0362f);
+}
+z-stat[trend="down"] > [part=delta]::before {
+	content: "\2193";   /* ↓ */
+}
+
+/* Apparition douce (loi Zoé : rien ne pope sec). Styleguide 22.1.5 */
+z-stat:state(enter) { animation: pop var(--z-dur-enter, .3s) var(--z-ease-spring, ease-out); }
