@@ -292,7 +292,11 @@ function entrySection(d, group) {
 	   existe, porte déjà le pitch et les exemples → on ne le double pas. */
 	if (!isContact && !d.attributeTool && !d.narrative) sec.append(usageBlock(d));
 
-	if (group === "core") sec.append(visualizer(d));
+	/* Le visualiseur draggable « Testez-moi » n'a de sens que pour z-element (la base
+	   VIVANTE, qui porte les états). z-layer est core aussi, mais c'est une PIÈCE
+	   (position:absolute) : le rendre draggable ne veut rien dire → il se contente de son
+	   narratif (son anatomie y est expliquée). */
+	if (d.tagName === "z-element") sec.append(visualizer(d));
 	else if (isContact) sec.append(contactDemo(d));
 	else if (d.example) sec.append(liveExample(d));   /* l'essai incrusté, comme l'accueil */
 	else if (group === "components") sec.append(preview(d));
@@ -323,7 +327,12 @@ function renderMarkdown(md) {
 	const inline = (s) => esc(s)
 		.replace(/`([^`]+)`/g, "<code>$1</code>")
 		.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-		.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+		.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+		/* Les touches : la doc écrit <kbd>…</kbd> (échappé par esc), on le RÉTABLIT en
+		   <z-kbd> — le composant maison. La doc se peint donc avec Zoé (dogfooding), et
+		   les raccourcis clavier ne s'affichent plus en toutes lettres. Contenu de
+		   confiance (nos .doc.md) → réinjection sûre. */
+		.replace(/&lt;kbd&gt;([^]*?)&lt;\/kbd&gt;/g, "<z-kbd>$1</z-kbd>");
 
 	const lines = md.replace(/\r/g, "").split("\n");
 	const out = [];
