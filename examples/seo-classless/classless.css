@@ -1,0 +1,182 @@
+/*
+	============================================================
+	classless.css — ESSAI de la couche « classless » de Zoé
+	------------------------------------------------------------
+	La preuve du contrat SEO (docs/contrat-seo.md) : on habille le HTML NATIF par son
+	nom de balise — `h1`, `p`, `a`… — SANS une seule classe, SANS une seule balise `z-*`.
+	L'auteur écrit un article sémantique pur ; il charge une peau ; ça s'habille. Le
+	`<h1>` reste un `<h1>` (Google content), et il est beau (l'auteur content).
+
+	CE FICHIER EST UN ESSAI, pas encore la peau. Il vit dans examples/ pour prouver le
+	geste sans toucher aux peaux gravées (loi des peaux : on ne les réécrit pas de
+	mémoire). Une fois validé, ces règles se portent DANS chaque peau — c'est là leur
+	maison (chaque peau habille le natif à SA voix). Ici : rien qu'une démonstration.
+
+	POURQUOI DES SÉLECTEURS NUS (`h1`, pas `.prose h1`) : c'est ÇA, « classless ». La
+	force de Relookr niveau 1 (« relooke sans rien renommer ») est justement de n'exiger
+	aucune classe. On scope quand même à l'article via `article :where(h1)` — spécificité
+	zéro, donc l'auteur reprend la main d'un rien — pour ne pas repeindre le chrome de la
+	page de démo. Dans une vraie peau, la peau possède toute la page : plus besoin, même ça.
+
+	Il ne lit QUE les tokens de la peau (--z-accent, --z-ink…) : change de peau en haut
+	à droite, tout suit. La différence avec Pico & cie : ce n'est pas figé, ça VIT (le
+	lien se souligne d'un trait qui grandit, le titre porte un accent qui se pose).
+	Styleguide classless.0
+	============================================================
+*/
+
+/*
+	Le corps du texte — la lecture d'abord
+	Styleguide classless.1
+
+	Une colonne étroite (le confort de lecture se joue autour de 65-75 caractères), la
+	couleur d'encre et la police de la peau. On ne touche pas au fond de la page : c'est
+	le rôle du décor / de la peau, pas d'une couche de texte.
+*/
+article {
+	max-width: 42rem;
+	margin: 0 auto;
+	color: var(--z-ink);
+	font-family: var(--z-font);
+	font-size: var(--z-font-size, 16px);
+	line-height: 1.65;
+}
+
+/*
+	Les titres — la hiérarchie que Google lit, rendue VISIBLE
+	Styleguide classless.2
+
+	Chaque niveau a sa taille (tokens d'échelle de la peau) et sa police de titre. Le h2
+	porte un petit accent qui « se pose » : la barre part de rien et s'ouvre — le vivant,
+	là où Pico laisserait un trait mort. L'animation ne joue qu'une fois, à l'affichage.
+*/
+article :where(h1, h2, h3, h4) {
+	font-family: var(--z-font-title, var(--z-font));
+	font-weight: var(--z-font-weight-strong, 700);
+	line-height: 1.15;
+	color: var(--z-ink);
+	margin: 2.4rem 0 0.6rem;
+}
+article :where(h1) { font-size: var(--z-font-size-2xl, 2.1em); margin-top: 0; letter-spacing: -0.01em; }
+article :where(h2) { font-size: var(--z-font-size-xl, 1.5em); position: relative; padding-bottom: 0.35rem; }
+article :where(h3) { font-size: var(--z-font-size-lg, 1.2em); }
+article :where(h4) { font-size: 1em; text-transform: uppercase; letter-spacing: 0.06em; color: var(--z-ink-soft); }
+
+/* L'accent qui SE POSE sous le h2 — la barre s'ouvre de 0 à sa largeur, une fois. */
+article h2::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	height: 3px;
+	width: 2.4rem;
+	background: var(--z-accent);
+	border-radius: var(--z-radius-pill, 2px);
+	transform-origin: left;
+	animation: classless-accent var(--z-dur, 0.4s) var(--z-ease, ease-out) both;
+}
+@keyframes classless-accent {
+	from { transform: scaleX(0); opacity: 0; }
+	to   { transform: scaleX(1); opacity: 1; }
+}
+
+/*
+	Le paragraphe et le fil du texte
+	Styleguide classless.3
+*/
+article :where(p) { margin: 0 0 1.1rem; }
+article :where(strong) { font-weight: var(--z-font-weight-strong, 700); color: var(--z-ink); }
+article :where(em) { font-style: italic; }
+article :where(small) { color: var(--z-ink-soft); font-size: 0.86em; }
+
+/*
+	Le lien — NATIF, jamais un z-button, et VIVANT
+	Styleguide classless.4
+
+	Un `<a href>` reste crawlable (tout le maillage SEO en dépend). On ne le remplace
+	jamais par un widget. Le vivant : le soulignement est un trait qui GRANDIT de la
+	gauche au survol, au lieu d'un `text-decoration` qui claque. La couleur suit l'accent.
+*/
+article :where(a) {
+	color: var(--z-accent);
+	text-decoration: none;
+	background-image: linear-gradient(var(--z-accent), var(--z-accent));
+	background-repeat: no-repeat;
+	background-position: 0 100%;
+	background-size: 0% 2px;
+	transition: background-size var(--z-dur, 0.35s) var(--z-ease, ease-out);
+	border-radius: 2px;
+}
+article a:hover,
+article a:focus-visible { background-size: 100% 2px; }
+article a:focus-visible {
+	outline: 2px solid var(--z-accent-line, var(--z-accent));
+	outline-offset: 3px;
+}
+
+/*
+	Les listes
+	Styleguide classless.5
+*/
+article :where(ul, ol) { margin: 0 0 1.1rem; padding-left: 1.4rem; }
+article :where(li) { margin: 0.3rem 0; }
+article li::marker { color: var(--z-accent); }
+
+/*
+	La citation — l'accent porté à gauche
+	Styleguide classless.6
+*/
+article :where(blockquote) {
+	margin: 1.5rem 0;
+	padding: 0.6rem 1.2rem;
+	border-left: 3px solid var(--z-accent);
+	background: var(--z-surface-raised, var(--z-surface));
+	border-radius: 0 var(--z-radius, 8px) var(--z-radius, 8px) 0;
+	color: var(--z-ink-soft);
+	font-style: italic;
+}
+article blockquote p:last-child { margin-bottom: 0; }
+article :where(cite) { display: block; margin-top: 0.4rem; font-style: normal; font-size: 0.86em; color: var(--z-ink-soft); }
+
+/*
+	Le technique — code en ligne et bloc
+	Styleguide classless.7
+*/
+article :where(code) {
+	font-family: ui-monospace, "SF Mono", Menlo, monospace;
+	font-size: 0.88em;
+	padding: 0.12em 0.4em;
+	border-radius: 5px;
+	background: var(--z-surface-sunken, var(--z-surface));
+	/* --z-ink (pas --z-accent-ink) : l'accent-ink est fait pour aller SUR l'accent
+	   (souvent clair) — sur une surface claire il disparaît. Le hairline donne le relief. */
+	color: var(--z-ink);
+	border: 1px solid var(--z-line);
+}
+article :where(pre) {
+	margin: 1.2rem 0;
+	padding: 1rem 1.2rem;
+	overflow-x: auto;
+	border-radius: var(--z-radius, 10px);
+	background: var(--z-surface-sunken, var(--z-surface));
+	border: 1px solid var(--z-line);
+}
+article pre code { padding: 0; background: none; color: var(--z-ink); }
+
+/*
+	Les données — figure et tableau
+	Styleguide classless.8
+*/
+article :where(figure) { margin: 1.6rem 0; }
+article figure img { display: block; width: 100%; height: auto; border-radius: var(--z-radius, 10px); }
+article :where(figcaption) { margin-top: 0.5rem; text-align: center; font-size: 0.86em; color: var(--z-ink-soft); }
+
+article :where(table) { width: 100%; border-collapse: collapse; margin: 1.4rem 0; }
+article :where(th, td) { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--z-line); text-align: left; vertical-align: top; }
+article thead th { border-bottom-width: 2px; color: var(--z-ink); font-weight: var(--z-font-weight-strong, 700); }
+
+/*
+	Le trait de séparation
+	Styleguide classless.9
+*/
+article :where(hr) { border: none; height: 1px; background: var(--z-line); margin: 2.2rem 0; }

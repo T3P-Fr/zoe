@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zoé — SEO : le natif habillé</title>
+<meta name="description" content="La couche classless de Zoé : un article 100 % HTML natif que Google lit, habillé par la peau. Preuve du contrat SEO.">
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE (jamais type="module") : le seul qui s'exécute
+	hors serveur, donc le seul capable de prévenir que les modules ES sont bloqués.
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Lance <code>node scripts/serve.mjs 5173</code> puis ouvre ' +
+		'<code>http://localhost:5173/examples/seo-classless/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">           <!-- le socle -->
+<link rel="stylesheet" href="../../skins/hightech/hightech.css">  <!-- une peau : les tokens -->
+<link rel="stylesheet" href="./classless.css">          <!-- l'ESSAI : habille le natif -->
+
+<style>
+	/* Le décor MINIMAL de cette page d'essai (fond + centrage), inline pour ne rien
+	   emprunter à la couche classless — on veut voir CE qu'elle fait, elle seule. */
+	body { margin: 0; padding: 3rem 1.5rem 5rem; background: var(--z-page); }
+
+	/* Le bandeau « ce que voit Google » — styles inline/scopés `.meta`, immunisés de
+	   la couche classless (il ne doit PAS être habillé, il EXPLIQUE). */
+	.meta {
+		max-width: 42rem; margin: 0 auto 2.5rem; padding: 1rem 1.2rem;
+		border: 1px dashed var(--z-line); border-radius: 12px;
+		background: var(--z-surface-raised, #fff);
+		font: 14px/1.55 ui-sans-serif, system-ui, sans-serif; color: var(--z-ink-soft);
+	}
+	.meta b { color: var(--z-ink); }
+	.meta pre {
+		margin: .7rem 0 0; padding: .7rem .9rem; overflow-x: auto;
+		background: #1b1712; color: #e9dcc8; border-radius: 8px;
+		font: 12.5px/1.5 ui-monospace, monospace;
+	}
+	.meta .tag { color: #f2b56b; }
+	.meta .z { color: #ff7a7a; }
+</style>
+
+<!-- Le bandeau explicatif — PAS un article, il ne doit rien à la couche classless. -->
+<aside class="meta">
+	<b>Ce que voit Google, ici, sans exécuter une ligne de JS ↓</b>
+	Le HTML sous ce bandeau est 100 % natif : des <code>&lt;h1&gt; &lt;h2&gt; &lt;p&gt; &lt;a&gt; &lt;ul&gt; &lt;blockquote&gt;</code>.
+	Aucune balise <code>z-*</code>. La peau (en haut à droite) ne fait que l'<b>habiller</b> — change-la, tout suit.
+	<pre><span class="tag">&lt;article&gt;</span>
+  <span class="tag">&lt;h1&gt;</span>Le natif habillé<span class="tag">&lt;/h1&gt;</span>
+  <span class="tag">&lt;p&gt;</span>… <span class="tag">&lt;a href=</span>"…"<span class="tag">&gt;</span>un vrai lien<span class="tag">&lt;/a&gt;</span> …<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/article&gt;</span>   <span style="color:#8a8">← zéro <span class="z">&lt;z-*&gt;</span>, la sémantique est dans le source</span></pre>
+</aside>
+
+<!-- ================= L'ARTICLE — 100 % NATIF, habillé par classless.css ================= -->
+<article>
+	<h1>Le natif habillé</h1>
+	<p>
+		Cet article est écrit en <strong>HTML pur</strong>. Pas un composant, pas une classe.
+		Pourtant il est mis en forme, et il <em>bouge</em> : survole un lien, il se souligne d'un
+		trait qui grandit ; regarde les titres, leur accent se pose. C'est la couche
+		<strong>classless</strong> de Zoé — le niveau 1 de Relookr : <em>relooke sans rien renommer</em>.
+	</p>
+
+	<h2>Pourquoi le SEO est un acquis</h2>
+	<p>
+		Zoé vit en <a href="../../docs/contrat-seo.md">Light DOM</a> : le contenu est dans le
+		source. Un moteur de recherche lit ce <code>&lt;h1&gt;</code> immédiatement, sans attendre
+		le JavaScript. La règle tient en une phrase :
+	</p>
+	<blockquote>
+		<p>Lu par Google → natif, habillé par la peau. Cliqué → <code>z-*</code>.</p>
+		<cite>Le contrat SEO de Zoé</cite>
+	</blockquote>
+
+	<h3>Ce qui reste natif</h3>
+	<p>Tout ce qui porte du sens et se lit :</p>
+	<ul>
+		<li>Les titres <code>h1</code>…<code>h6</code> — la hiérarchie que Google suit.</li>
+		<li>Les <a href="#">liens</a> <code>a[href]</code> — le maillage interne, jamais un widget.</li>
+		<li>Le corps : <code>p</code>, listes, <code>blockquote</code>, <code>table</code>, <code>figure</code>.</li>
+		<li>Les repères : <code>main</code>, <code>article</code>, <code>nav</code>, <code>header</code>, <code>footer</code>.</li>
+	</ul>
+
+	<h3>Ce qui devient un widget</h3>
+	<p>
+		Seulement ce qui n'a <em>aucune</em> valeur pour l'index parce que c'est une action, pas
+		un contenu : boutons, champs, onglets, curseurs. Là, et là seulement, on écrit
+		<code>z-*</code>.
+	</p>
+
+	<h4>La bascule à retenir</h4>
+	<table>
+		<thead>
+			<tr><th>La balise…</th><th>…et ce que Zoé en fait</th></tr>
+		</thead>
+		<tbody>
+			<tr><td><code>h1</code>, <code>p</code>, <code>a</code></td><td>Habille (reste natif, indexé)</td></tr>
+			<tr><td><code>button</code>, <code>input</code></td><td>Remplace par un <code>z-*</code></td></tr>
+		</tbody>
+	</table>
+
+	<hr>
+
+	<h2>Et si je veux l'animer ?</h2>
+	<p>
+		Habiller n'est pas animer. Pour qu'un titre <em>apparaisse</em> en mouvement, tu
+		l'<strong>encapsules</strong> — sans jamais le faire disparaître du source :
+	</p>
+	<pre><code>&lt;z-reveal&gt;
+  &lt;h1&gt;mon titre&lt;/h1&gt;   &lt;!-- TOI tu l'écris, en vrai --&gt;
+&lt;/z-reveal&gt;</code></pre>
+	<p>
+		Le <code>&lt;h1&gt;</code> reste écrit par toi, donc indexé ; <code>z-reveal</code> ne
+		fait que l'animer. Deux couches, jamais confondues.
+	</p>
+</article>
+
+<!-- Le pacte : le sélecteur de peau en haut à droite, sur toute page d'essai. -->
+<script type="module" src="../skin-switch.js"></script>
+</html>
