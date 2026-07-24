@@ -85,3 +85,21 @@ An identity chip — an image if given, otherwise the initials. role=img with an
 Attributes: src (url), name (string), size ("xs" | "s" | "m" | "l" | "xl")
 Events: z-state
 States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-disclosure> (components)
+A disclosure (title → collapsible content) — inherits z-element states, accessible (aria-expanded/controls, inert when closed), animatable.
+Attributes: open (boolean)
+Events: toggle, z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success, open
+
+## <z-alert> (components)
+A contextual message — tone drives the colour, role=status (or alert for danger). Optionally dismissible.
+Attributes: tone ("main" | "complement" | "soft" | "success" | "danger"), dismissible (boolean)
+Events: zoe:dismiss, z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-tooltip> (components)
+A hint bubble shown on hover and keyboard focus — accessible via a [part=tip] piece wired with aria-describedby.
+Attributes: tip (string), placement ("top" | "bottom")
+Events: z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success

@@ -1,0 +1,69 @@
+/*
+	============================================================
+	z-disclosure.css — le rendu de z-disclosure
+	------------------------------------------------------------
+	Un titre + un panneau qui s'ouvre en GLISSANT (pas de saut). L'astuce de hauteur
+	animable : la grille passe la rangée du panneau de `0fr` à `1fr`, le panneau garde
+	`overflow: hidden` + `min-height: 0` pour se laisser tailler. Aucun px magique, aucun
+	max-height à deviner — ça marche quelle que soit la hauteur du contenu.
+
+	Le chevron du label tourne à l'ouverture. Le look reste sobre — on l'affinera ensemble.
+	Requiert : une peau (tokens) + core/z-layer.
+	Styleguide 12.1
+	============================================================
+*/
+
+z-disclosure {
+	display: grid;
+	/* rangée 1 = le label (auto), rangée 2 = le panneau (0fr fermé → 1fr ouvert). */
+	grid-template-rows: auto 0fr;
+	transition: grid-template-rows var(--z-dur-open, .32s) var(--z-ease, ease);
+	border-bottom: 1px solid var(--z-line);
+}
+
+z-disclosure:state(open) {
+	grid-template-rows: auto 1fr;
+}
+
+/* Le déclencheur : une ligne cliquable, avec un chevron qui pivote. */
+z-disclosure > [part=label] {
+	display: flex;
+	align-items: center;
+	gap: .5em;
+	padding: .7em 0;
+	font-family: var(--z-font);
+	font-weight: var(--z-font-weight-strong, 700);
+	color: var(--z-ink);
+	cursor: pointer;
+	user-select: none;
+	outline: none;
+}
+z-disclosure > [part=label]::before {
+	content: "";
+	width: .5em;
+	height: .5em;
+	border-right: 2px solid currentColor;
+	border-bottom: 2px solid currentColor;
+	rotate: -45deg;   /* chevron vers la droite (fermé) */
+	transition: rotate var(--z-dur, .24s) var(--z-ease-spring, ease-out);
+	margin-inline: .1em .2em;
+}
+z-disclosure:state(open) > [part=label]::before {
+	rotate: 45deg;   /* vers le bas (ouvert) */
+}
+z-disclosure > [part=label]:focus-visible {
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 40%, transparent);
+	border-radius: 4px;
+}
+
+/* Le panneau : il se laisse tailler par la grille (min-height 0 + overflow hidden). */
+z-disclosure > [part=panel] {
+	overflow: hidden;
+	min-height: 0;
+	color: var(--z-ink-soft);
+	line-height: 1.6;
+}
+/* Le contenu respire quand c'est ouvert — le padding est SUR le contenu, pas la boîte
+   taillée, sinon il empêcherait la rangée d'atteindre 0. */
+z-disclosure > [part=panel] { padding-bottom: 0; transition: padding-bottom var(--z-dur-open, .32s) var(--z-ease, ease); }
+z-disclosure:state(open) > [part=panel] { padding-bottom: .9em; }

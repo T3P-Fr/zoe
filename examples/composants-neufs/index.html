@@ -22,7 +22,7 @@
 	.card p.note { margin: 0 0 1rem; color: var(--z-ink-soft); }
 </style>
 
-<h1>Six composants, presque gratuits</h1>
+<h1>Neuf composants, presque gratuits</h1>
 <p class="lead">
 	Bâtis SUR z-element : ils héritent états, tons et tailles du socle figé. Change de peau
 	en haut à droite — tout suit. C'est ça, la vitesse de Zoé.
@@ -97,6 +97,43 @@
 		</div>
 	</div>
 
+	<div class="card">
+		<h2>&lt;z-disclosure&gt;</h2>
+		<p class="note">Un dépli. Le panneau glisse (hauteur animée), <code>inert</code> quand fermé.</p>
+		<z-disclosure open style="max-width:34rem">
+			<z-layer part="label">Ce que Zoé garde natif</z-layer>
+			<z-layer part="panel">Titres, paragraphes, liens : lus par Google, habillés par la peau. On n'y touche pas.</z-layer>
+		</z-disclosure>
+		<z-disclosure style="max-width:34rem">
+			<z-layer part="label">Ce qui devient un widget</z-layer>
+			<z-layer part="panel">Boutons, champs, onglets : aucune valeur SEO, on écrit z-*.</z-layer>
+		</z-disclosure>
+	</div>
+
+	<div class="card">
+		<h2>&lt;z-alert&gt;</h2>
+		<p class="note">Un message. Le ton donne la couleur ; <code>dismissible</code> ajoute une croix.</p>
+		<div style="display:grid; gap:.7rem; max-width:34rem">
+			<z-alert>Enregistré. Rien à signaler.</z-alert>
+			<z-alert tone="success">Tout est à jour.</z-alert>
+			<z-alert tone="danger" dismissible>Le paiement a échoué — réessaie.</z-alert>
+		</div>
+	</div>
+
+	<div class="card">
+		<h2>&lt;z-tooltip&gt;</h2>
+		<p class="note">Une bulle au survol ET au focus clavier. La pièce <code>[part=tip]</code> est reliée en aria-describedby.</p>
+		<div class="row" style="gap:1.4rem; padding-top:1.5rem">
+			<z-tooltip>
+				<z-button size="s">Survole-moi</z-button>
+				<z-layer part="tip">On habille le natif, on ne le remplace pas.</z-layer>
+			</z-tooltip>
+			<z-tooltip tip="Forme courte : le texte en attribut." placement="bottom">
+				<z-button size="s" tone="complement">…ou moi (dessous)</z-button>
+			</z-tooltip>
+		</div>
+	</div>
+
 </div>
 
 <script type="module">
@@ -107,5 +144,9 @@
 	import "../../components/z-avatar/z-avatar.js";
 	import "../../components/z-progress/z-progress.js";
 	import "../../components/z-spinner/z-spinner.js";
+	import "../../components/z-disclosure/z-disclosure.js";
+	import "../../components/z-alert/z-alert.js";
+	import "../../components/z-tooltip/z-tooltip.js";
+	import "../../components/z-button/z-button.js";
 </script>
 </html>

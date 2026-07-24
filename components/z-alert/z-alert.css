@@ -1,0 +1,74 @@
+/*
+	============================================================
+	z-alert.css — le rendu de z-alert
+	------------------------------------------------------------
+	Une bannière lisible : une surface teintée par le ton (douce, pas criarde), un filet
+	d'accent à gauche pour l'ancrer, le message, et — si `dismissible` — une croix à droite.
+	Le ton donne la couleur via --z-tone__fill/line ; on la mélange au fond de la peau
+	pour rester lisible sur clair comme sur sombre (color-mix).
+
+	  · FORME COURTE — <z-alert>…</z-alert> : le CSS peint l'hôte.
+	  · FORME EN CALQUES — background = la surface (elle peut pulser sur une alerte).
+	Requiert : une peau (tokens) + core/z-layer.
+	Styleguide 13.1
+	============================================================
+*/
+
+z-alert {
+
+	/* Le SUJET — commun aux deux formes. */
+	display: flex;
+	align-items: flex-start;
+	gap: .6em;
+	position: relative;
+	padding: .8em 1em;
+	border-radius: var(--z-radius, 8px);
+	font-family: var(--z-font);
+	line-height: 1.5;
+	color: var(--z-ink);
+	outline: none;
+
+	/* La surface : le ton mélangé au fond, plus un filet d'accent à gauche. Sans `tone`,
+	   c'est neutre (surface + filet de la peau) — un message d'information discret. */
+	&:not(:has(z-layer)) {
+		background: color-mix(in srgb, var(--z-tone__fill, var(--z-line)) 12%, var(--z-surface));
+		border: var(--z-border-width, 1px) solid color-mix(in srgb, var(--z-tone__line, var(--z-line)) 40%, var(--z-surface));
+		border-left: 3px solid var(--z-tone__line, var(--z-line));
+	}
+
+	/* ═══ FORME EN CALQUES ═══ Styleguide 13.1.1 */
+	> [part=background] {
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background: color-mix(in srgb, var(--z-tone__fill, var(--z-line)) 12%, var(--z-surface));
+		border: var(--z-border-width, 1px) solid color-mix(in srgb, var(--z-tone__line, var(--z-line)) 40%, var(--z-surface));
+		border-left: 3px solid var(--z-tone__line, var(--z-line));
+	}
+	> [part=infos] { position: relative; }
+	> [part=infos] > [part=icon] { color: var(--z-tone__line, currentColor); }
+
+	/* ═══ DISMISSIBLE — la croix et sa zone (accordée à CLOSE_ZONE_EM côté JS) ═══ 13.1.2 */
+	&[dismissible] { padding-right: 2.4em; }
+	&[dismissible]::after {
+		content: "×";
+		position: absolute;
+		top: .6em;
+		right: .6em;
+		width: 1.3em;
+		height: 1.3em;
+		display: grid;
+		place-items: center;
+		border-radius: 50%;
+		font-size: 1.15em;
+		line-height: 1;
+		color: currentColor;
+		opacity: .55;
+		transition: opacity var(--z-dur, .2s), background var(--z-dur, .2s);
+	}
+	&[dismissible]:hover::after { opacity: 1; background: color-mix(in srgb, currentColor 16%, transparent); }
+	&[dismissible]:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-tone__line, var(--z-accent)) 40%, transparent); }
+
+	/* Apparition douce (loi Zoé). */
+	&:state(enter) { animation: pop var(--z-dur-enter, .3s) var(--z-ease-spring, ease-out); }
+}

@@ -1,0 +1,66 @@
+/*
+	============================================================
+	z-tooltip.css — le rendu de z-tooltip
+	------------------------------------------------------------
+	Le déclencheur est en place (inline), la bulle flotte au-dessus (ou dessous) et
+	apparaît au survol OU au focus clavier (:hover / :focus-within) — jamais seulement
+	à la souris, sinon le clavier est exclu. Elle part invisible et remonte d'un cheveu :
+	rien ne pope sec (loi Zoé).
+
+	Deux sources de bulle : la pièce `[part=tip]` (accessible) ou l'attribut `tip` (::after,
+	`content: attr(tip)`). Le positionnement reste simple (centré au-dessus) — on affinera
+	les débordements de bord ensemble plus tard.
+	Requiert : une peau (tokens).
+	Styleguide 14.1
+	============================================================
+*/
+
+z-tooltip {
+	position: relative;
+	display: inline-flex;
+	vertical-align: middle;
+	--z-tooltip__offset: .5em;
+
+	/* La bulle — commune aux deux sources. On stylise la pièce [part=tip] ET le ::after
+	   (forme attribut) d'un même geste. Styleguide 14.1.1 */
+	> [part=tip],
+	&[tip]::after {
+		position: absolute;
+		left: 50%;
+		bottom: calc(100% + var(--z-tooltip__offset));
+		translate: -50% .3em;
+		z-index: 20;
+		max-width: 16em;
+		width: max-content;
+		padding: .4em .6em;
+		border-radius: var(--z-radius, 6px);
+		background: var(--z-ink, #222);
+		color: var(--z-page, #fff);
+		font-family: var(--z-font);
+		font-size: .82em;
+		line-height: 1.4;
+		text-align: center;
+		white-space: normal;
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity var(--z-dur, .2s) var(--z-ease, ease), translate var(--z-dur, .2s) var(--z-ease-spring, ease-out);
+	}
+	&[tip]::after { content: attr(tip); }
+
+	/* Placement dessous, si demandé. */
+	&[placement="bottom"] > [part=tip],
+	&[placement="bottom"][tip]::after {
+		bottom: auto;
+		top: calc(100% + var(--z-tooltip__offset));
+		translate: -50% -.3em;
+	}
+
+	/* Révélée au survol OU au focus clavier — les deux, jamais l'un sans l'autre. */
+	&:hover > [part=tip],
+	&:focus-within > [part=tip],
+	&:hover[tip]::after,
+	&:focus-within[tip]::after {
+		opacity: 1;
+		translate: -50% 0;
+	}
+}

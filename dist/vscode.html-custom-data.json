@@ -391,6 +391,46 @@
           "description": "Size factor, from the socle variant."
         }
       ]
+    },
+    {
+      "name": "z-disclosure",
+      "description": "A disclosure (title → collapsible content) — inherits z-element states, accessible (aria-expanded/controls, inert when closed), animatable.",
+      "attributes": [
+        {
+          "name": "open",
+          "description": "Open: reveals the panel.",
+          "values": []
+        }
+      ]
+    },
+    {
+      "name": "z-alert",
+      "description": "A contextual message — tone drives the colour, role=status (or alert for danger). Optionally dismissible.",
+      "attributes": [
+        {
+          "name": "tone",
+          "description": "The kind of message — drives colour and, for danger, the live politeness."
+        },
+        {
+          "name": "dismissible",
+          "description": "Adds a × ; closes on click (on the ×) or Delete/Backspace when focused.",
+          "values": []
+        }
+      ]
+    },
+    {
+      "name": "z-tooltip",
+      "description": "A hint bubble shown on hover and keyboard focus — accessible via a [part=tip] piece wired with aria-describedby.",
+      "attributes": [
+        {
+          "name": "tip",
+          "description": "Short form: the bubble text as an attribute (visual; prefer a [part=tip] piece for full a11y)."
+        },
+        {
+          "name": "placement",
+          "description": "Where the bubble sits (default top)."
+        }
+      ]
     }
   ]
 }

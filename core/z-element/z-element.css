@@ -52,7 +52,7 @@
    peau (`z-button { font-size: … }`) et c'est l'ORDRE DE CHARGEMENT qui tranche : la
    même page rend deux tailles différentes selon qu'elle importe la peau avant ou après.
    Un défaut doit toujours perdre contre ce que quelqu'un a écrit exprès. */
-:where(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner) {
+:where(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner, z-disclosure, z-alert, z-tooltip) {
 	font-size: calc(1em * var(--z-scale-base, 1));
 
 	/*
@@ -66,11 +66,11 @@
 
 /* Les crans multiplient la base : régler l'ensemble et régler un cran restent deux
    gestes indépendants. */
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner)[size="xs"] { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-xs, .8)); }
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner)[size="s"]  { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-s, .9)); }
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner)[size="m"]  { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-m, 1)); }
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner)[size="l"]  { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-l, 1.2)); }
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner)[size="xl"] { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-xl, 1.6)); }
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner, z-disclosure, z-alert, z-tooltip)[size="xs"] { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-xs, .8)); }
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner, z-disclosure, z-alert, z-tooltip)[size="s"]  { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-s, .9)); }
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner, z-disclosure, z-alert, z-tooltip)[size="m"]  { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-m, 1)); }
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner, z-disclosure, z-alert, z-tooltip)[size="l"]  { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-l, 1.2)); }
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner, z-disclosure, z-alert, z-tooltip)[size="xl"] { font-size: calc(1em * var(--z-scale-base, 1) * var(--z-scale-xl, 1.6)); }
 
 /*
 	TONE — l'importance, pas l'apparence
@@ -87,14 +87,14 @@
 	`main` est le défaut et n'a donc pas de règle : un composant sans `tone` doit se
 	peindre comme avant. Écrire `tone="main"` explicitement donne le même résultat.
 */
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner)[tone="main"] {
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner, z-disclosure, z-alert, z-tooltip)[tone="main"] {
 	--z-tone__fill: var(--z-accent);
 	--z-tone__ink: var(--z-accent-ink, #fff);
 	--z-tone__line: var(--z-accent);
 }
 
 /* complement — le second rôle : présent, lisible, mais il ne prend pas la lumière. */
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner)[tone="complement"] {
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner, z-disclosure, z-alert, z-tooltip)[tone="complement"] {
 	--z-tone__fill: var(--z-surface);
 	--z-tone__ink: var(--z-ink);
 	--z-tone__line: var(--z-line);
@@ -102,7 +102,7 @@
 
 /* soft — estompé : il n'existe que quand on le cherche. Pas de surface, pas de filet ;
    sur une peau à filets (HighTech) c'est le seul ton qui n'a AUCUN trait. */
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner)[tone="soft"] {
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner, z-disclosure, z-alert, z-tooltip)[tone="soft"] {
 	--z-tone__fill: transparent;
 	--z-tone__ink: var(--z-ink-soft);
 	--z-tone__line: transparent;
@@ -111,12 +111,12 @@
 /* success / danger — le STATUT, pas juste une couleur : ils puisent les tokens de sens
    de la peau (--z-success / --z-danger). Universels (un bouton, un badge, une case les
    consomment pareil), d'où leur place au socle et non dans un seul composant. */
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner)[tone="success"] {
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner, z-disclosure, z-alert, z-tooltip)[tone="success"] {
 	--z-tone__fill: var(--z-success);
 	--z-tone__ink: #fff;
 	--z-tone__line: var(--z-success);
 }
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner)[tone="danger"] {
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner, z-disclosure, z-alert, z-tooltip)[tone="danger"] {
 	--z-tone__fill: var(--z-danger);
 	--z-tone__ink: #fff;
 	--z-tone__line: var(--z-danger);
@@ -133,7 +133,7 @@
 	Nos composants sont en `inline-flex` : il faut passer en `flex` pour qu'ils prennent
 	la ligne, sinon `width: 100%` s'applique à une boîte qui reste dans le flux du texte.
 */
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner)[width="full"] {
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner, z-disclosure, z-alert, z-tooltip)[width="full"] {
 	display: flex;
 	width: 100%;
 }
@@ -154,16 +154,16 @@
 	L'override est LOCAL : il descend dans le composant et son dedans, il ne remonte pas,
 	il ne fuit pas aux voisins.
 */
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner) {
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner, z-disclosure, z-alert, z-tooltip) {
 	--z-state__color: var(--z-accent);
 }
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner):state(error) {
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner, z-disclosure, z-alert, z-tooltip):state(error) {
 	--z-state__color: var(--z-danger);
 }
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner):state(success) {
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner, z-disclosure, z-alert, z-tooltip):state(success) {
 	--z-state__color: var(--z-success);
 }
 /* désactivé : plus d'humeur du tout — un élément mort ne clignote pas en rouge. */
-:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner):state(disabled) {
+:is(z-element, z-button, z-checkbox, z-radio, z-radio-group, z-cursor, z-badge, z-tag, z-switch, z-avatar, z-progress, z-spinner, z-disclosure, z-alert, z-tooltip):state(disabled) {
 	--z-state__color: var(--z-disabled);
 }

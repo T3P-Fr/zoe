@@ -40,10 +40,12 @@
 @import url("./tools/z-contact/z-contact.css");
 
 /* 3 · LES COMPOSANTS — par ordre alphabétique : aucun ne dépend d'un autre */
+@import url("./components/z-alert/z-alert.css");
 @import url("./components/z-avatar/z-avatar.css");
 @import url("./components/z-badge/z-badge.css");
 @import url("./components/z-button/z-button.css");
 @import url("./components/z-checkbox/z-checkbox.css");
+@import url("./components/z-disclosure/z-disclosure.css");
 @import url("./components/z-progress/z-progress.css");
 @import url("./components/z-radio/z-radio.css");
 @import url("./components/z-radio-group/z-radio-group.css");
@@ -51,3 +53,4 @@
 @import url("./components/z-spinner/z-spinner.css");
 @import url("./components/z-switch/z-switch.css");
 @import url("./components/z-tag/z-tag.css");
+@import url("./components/z-tooltip/z-tooltip.css");

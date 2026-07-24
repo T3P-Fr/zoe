@@ -1732,6 +1732,292 @@
           }
         }
       ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-disclosure/z-disclosure.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZDisclosure",
+          "tagName": "z-disclosure",
+          "summary": "A disclosure (title → collapsible content) — inherits z-element states, accessible (aria-expanded/controls, inert when closed), animatable.",
+          "attributes": [
+            {
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Open: reveals the panel."
+            }
+          ],
+          "events": [
+            {
+              "name": "toggle",
+              "description": "Emitted when it opens or closes. Read `.open`."
+            },
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "open"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-disclosure",
+          "declaration": {
+            "name": "ZDisclosure"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-alert/z-alert.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZAlert",
+          "tagName": "z-alert",
+          "summary": "A contextual message — tone drives the colour, role=status (or alert for danger). Optionally dismissible.",
+          "attributes": [
+            {
+              "name": "tone",
+              "type": {
+                "text": "\"main\" | \"complement\" | \"soft\" | \"success\" | \"danger\""
+              },
+              "description": "The kind of message — drives colour and, for danger, the live politeness."
+            },
+            {
+              "name": "dismissible",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Adds a × ; closes on click (on the ×) or Delete/Backspace when focused."
+            }
+          ],
+          "events": [
+            {
+              "name": "zoe:dismiss",
+              "description": "Cancelable — fired before closing. preventDefault() to handle it yourself."
+            },
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-alert",
+          "declaration": {
+            "name": "ZAlert"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-tooltip/z-tooltip.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZTooltip",
+          "tagName": "z-tooltip",
+          "summary": "A hint bubble shown on hover and keyboard focus — accessible via a [part=tip] piece wired with aria-describedby.",
+          "attributes": [
+            {
+              "name": "tip",
+              "type": {
+                "text": "string"
+              },
+              "description": "Short form: the bubble text as an attribute (visual; prefer a [part=tip] piece for full a11y)."
+            },
+            {
+              "name": "placement",
+              "type": {
+                "text": "\"top\" | \"bottom\""
+              },
+              "description": "Where the bubble sits (default top)."
+            }
+          ],
+          "events": [
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-tooltip",
+          "declaration": {
+            "name": "ZTooltip"
+          }
+        }
+      ]
     }
   ]
 }
