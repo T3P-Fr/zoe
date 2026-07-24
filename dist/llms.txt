@@ -68,3 +68,20 @@ An on/off switch — inherits all z-element states, form-bound, painted by the s
 Attributes: current (boolean), name (string), value (string), disabled (boolean)
 Events: change, z-state
 States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-progress> (components)
+A progress bar — inherits z-element states + tone/size, painted by the skin. value/max → a percentage the CSS draws.
+Attributes: value (number), max (number), indeterminate (boolean), tone ("main" | "complement" | "soft" | "success" | "danger"), size ("xs" | "s" | "m" | "l" | "xl")
+Events: z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success, indeterminate
+
+## <z-spinner> (components)
+A loading spinner — inherits tone/size, role=status with an accessible label. The ring spins in CSS.
+Attributes: label (string), tone ("main" | "complement" | "soft" | "success" | "danger"), size ("xs" | "s" | "m" | "l" | "xl")
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-avatar> (components)
+An identity chip — an image if given, otherwise the initials. role=img with an alt from name. Inherits tone/size.
+Attributes: src (url), name (string), size ("xs" | "s" | "m" | "l" | "xl")
+Events: z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success

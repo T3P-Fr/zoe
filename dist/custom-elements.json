@@ -1417,6 +1417,321 @@
           }
         }
       ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-progress/z-progress.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZProgress",
+          "tagName": "z-progress",
+          "summary": "A progress bar — inherits z-element states + tone/size, painted by the skin. value/max → a percentage the CSS draws.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "description": "Current amount (0…max)."
+            },
+            {
+              "name": "max",
+              "type": {
+                "text": "number"
+              },
+              "description": "The total (default 100)."
+            },
+            {
+              "name": "indeterminate",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Unknown amount — a sweep animates, aria-valuenow is dropped."
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "\"main\" | \"complement\" | \"soft\" | \"success\" | \"danger\""
+              },
+              "description": "Fill colour, from the socle variant."
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "\"xs\" | \"s\" | \"m\" | \"l\" | \"xl\""
+              },
+              "description": "Size factor, from the socle variant."
+            }
+          ],
+          "events": [
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "indeterminate"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-progress",
+          "declaration": {
+            "name": "ZProgress"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-spinner/z-spinner.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZSpinner",
+          "tagName": "z-spinner",
+          "summary": "A loading spinner — inherits tone/size, role=status with an accessible label. The ring spins in CSS.",
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Accessible text read by screen readers (default: \"Chargement…\")."
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "\"main\" | \"complement\" | \"soft\" | \"success\" | \"danger\""
+              },
+              "description": "Colour, from the socle variant."
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "\"xs\" | \"s\" | \"m\" | \"l\" | \"xl\""
+              },
+              "description": "Size factor, from the socle variant."
+            }
+          ],
+          "events": [],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-spinner",
+          "declaration": {
+            "name": "ZSpinner"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-avatar/z-avatar.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZAvatar",
+          "tagName": "z-avatar",
+          "summary": "An identity chip — an image if given, otherwise the initials. role=img with an alt from name. Inherits tone/size.",
+          "attributes": [
+            {
+              "name": "src",
+              "type": {
+                "text": "url"
+              },
+              "description": "Image URL — set as the host's background (no injected <img>)."
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "The person/thing shown — becomes the accessible alt (role=img + aria-label)."
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "\"xs\" | \"s\" | \"m\" | \"l\" | \"xl\""
+              },
+              "description": "Size factor, from the socle variant."
+            }
+          ],
+          "events": [
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-avatar",
+          "declaration": {
+            "name": "ZAvatar"
+          }
+        }
+      ]
     }
   ]
 }

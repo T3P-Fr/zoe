@@ -1,0 +1,46 @@
+/*
+	============================================================
+	z-spinner.css — le rendu de z-spinner
+	------------------------------------------------------------
+	Un anneau qui tourne. La couleur suit le ton (--z-tone__fill, sinon l'accent) ; la
+	taille suit le socle (tout est en em). Un seul mouvement : une rotation continue —
+	le LOOK définitif (vitesse, forme de la traîne) viendra plus tard, avec Christophe.
+
+	  · FORME COURTE — <z-spinner> : ::before = l'anneau.
+	  · FORME EN CALQUES — marker = l'anneau (si l'auteur veut le viser seul).
+	Requiert : une peau (tokens). Respecte prefers-reduced-motion (il ralentit, ne ment pas).
+	Styleguide 10.1
+	============================================================
+*/
+
+z-spinner {
+	display: inline-block;
+	vertical-align: middle;
+	width: 1.4em;
+	height: 1.4em;
+	color: var(--z-tone__fill, var(--z-accent));
+
+	/* L'anneau : un cercle bordé dont UN quart est transparent → la rotation se voit.
+	   `currentColor` pour trois quarts, transparent pour le dernier. Styleguide 10.1.1 */
+	&:not(:has(z-layer))::before,
+	> [part=marker] {
+		content: "";
+		display: block;
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+		border: var(--z-spinner--ring__width, .16em) solid currentColor;
+		border-right-color: transparent;
+		animation: z-spinner-spin var(--z-spinner__speed, .7s) linear infinite;
+	}
+}
+
+@keyframes z-spinner-spin {
+	to { rotate: 360deg; }
+}
+
+/* On ne cache pas l'attente pour qui réduit le mouvement : on la RALENTIT (elle reste
+   lisible comme « ça travaille », sans tourner vite). */
+@media (prefers-reduced-motion: reduce) {
+	z-spinner { --z-spinner__speed: 2s; }
+}

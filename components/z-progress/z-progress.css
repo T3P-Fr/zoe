@@ -1,0 +1,70 @@
+/*
+	============================================================
+	z-progress.css — le rendu de z-progress, en CALQUES
+	------------------------------------------------------------
+	Une PISTE + un REMPLISSAGE dont la largeur est la progression. La largeur vient du
+	token `--z-progress__value` (posé par le JS depuis value/max) : le CSS ne calcule
+	rien, il lit un pourcentage. La couleur du remplissage suit le ton (--z-tone__fill).
+
+	  · FORME COURTE — <z-progress value="60"> : host = piste, ::before = remplissage.
+	  · FORME EN CALQUES — background = piste, marker = remplissage (animable seul).
+
+	`indeterminate` : la largeur ne veut plus rien dire → un segment BALAYE la piste.
+	Requiert : une peau (tokens) + core/z-layer.
+	Styleguide 9.1
+	============================================================
+*/
+
+z-progress {
+
+	/* Le SUJET — commun : une barre qui prend la largeur qu'on lui donne. */
+	display: block;
+	position: relative;
+	width: 100%;
+	height: var(--z-progress--track__height, .5em);
+	border-radius: var(--z-radius-pill, 999px);
+	overflow: hidden;
+	--z-progress__value: 0%;   /* défaut ; le JS l'écrase */
+
+	/* ═══ FORME COURTE — host = piste, ::before = remplissage ═══ Styleguide 9.1.1 */
+	&:not(:has(z-layer)) {
+		background: var(--z-progress--track__color, var(--z-surface-sunken, var(--z-line)));
+	}
+	&:not(:has(z-layer))::before {
+		content: "";
+		position: absolute;
+		inset: 0 auto 0 0;
+		width: var(--z-progress__value);
+		border-radius: inherit;
+		background: var(--z-progress--fill__color, var(--z-tone__fill, var(--z-accent)));
+		transition: width var(--z-dur, .24s) var(--z-ease, ease);
+	}
+
+	/* ═══ FORME EN CALQUES — background = piste, marker = remplissage ═══ Styleguide 9.1.2 */
+	> [part=background] {
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background: var(--z-progress--track__color, var(--z-surface-sunken, var(--z-line)));
+	}
+	> [part=marker] {
+		position: absolute;
+		inset: 0 auto 0 0;
+		width: var(--z-progress__value);
+		border-radius: inherit;
+		background: var(--z-progress--fill__color, var(--z-tone__fill, var(--z-accent)));
+		transition: width var(--z-dur, .24s) var(--z-ease, ease);
+	}
+
+	/* ═══ INDÉTERMINÉ — un segment balaye, la largeur ne dit plus rien ═══ Styleguide 9.1.3 */
+	&:state(indeterminate)::before,
+	&:state(indeterminate) > [part=marker] {
+		width: 35%;
+		animation: z-progress-sweep 1.1s var(--z-ease, ease-in-out) infinite;
+	}
+}
+
+@keyframes z-progress-sweep {
+	from { left: -35%; }
+	to   { left: 100%; }
+}

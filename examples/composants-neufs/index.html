@@ -22,7 +22,7 @@
 	.card p.note { margin: 0 0 1rem; color: var(--z-ink-soft); }
 </style>
 
-<h1>Trois composants, presque gratuits</h1>
+<h1>Six composants, presque gratuits</h1>
 <p class="lead">
 	Bâtis SUR z-element : ils héritent états, tons et tailles du socle figé. Change de peau
 	en haut à droite — tout suit. C'est ça, la vitesse de Zoé.
@@ -65,6 +65,38 @@
 		</div>
 	</div>
 
+	<div class="card">
+		<h2>&lt;z-avatar&gt;</h2>
+		<p class="note">Image OU initiales. <code>name</code> = l'alternative accessible. Aucun <code>&lt;img&gt;</code> injecté.</p>
+		<div class="row">
+			<z-avatar name="Christophe Rousseau">CR</z-avatar>
+			<z-avatar name="Zoé" tone="main">Z</z-avatar>
+			<z-avatar name="Succès" tone="success" size="l">✓</z-avatar>
+			<z-avatar name="Inconnu" tone="soft">?</z-avatar>
+		</div>
+	</div>
+
+	<div class="card">
+		<h2>&lt;z-progress&gt;</h2>
+		<p class="note">Une barre. <code>value</code>/<code>max</code> → un pourcentage ; <code>indeterminate</code> balaye.</p>
+		<div style="display:grid; gap:1rem; max-width:26rem">
+			<z-progress value="30"></z-progress>
+			<z-progress value="70" tone="success"></z-progress>
+			<z-progress value="90" tone="danger"></z-progress>
+			<z-progress indeterminate></z-progress>
+		</div>
+	</div>
+
+	<div class="card">
+		<h2>&lt;z-spinner&gt;</h2>
+		<p class="note">Un anneau qui tourne. <code>role="status"</code> + libellé lu par les lecteurs d'écran.</p>
+		<div class="row" style="gap:1.6rem">
+			<z-spinner></z-spinner>
+			<z-spinner tone="main" size="l"></z-spinner>
+			<z-spinner tone="success" size="xl"></z-spinner>
+		</div>
+	</div>
+
 </div>
 
 <script type="module">
@@ -72,5 +104,8 @@
 	import "../../components/z-badge/z-badge.js";
 	import "../../components/z-tag/z-tag.js";
 	import "../../components/z-switch/z-switch.js";
+	import "../../components/z-avatar/z-avatar.js";
+	import "../../components/z-progress/z-progress.js";
+	import "../../components/z-spinner/z-spinner.js";
 </script>
 </html>
