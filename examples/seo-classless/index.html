@@ -19,9 +19,9 @@
 </script>
 
 <link rel="stylesheet" href="../../zoe.css">           <!-- le socle -->
-<link rel="stylesheet" href="../../skins/hightech/hightech.css">  <!-- la peau : tokens ET classless -->
-<!-- Plus de classless.css locale : la couche vit DANS la peau maintenant.
-     Change de peau (haut-droite) → l'habillage du natif change avec elle. -->
+<!-- LA PEAU est chargée par skin-switch (une SEULE à la fois), pas en dur : deux peaux
+     à la fois feraient « baver » les propriétés que l'une ne redéfinit pas sur l'autre.
+     En vrai, une page ne charge qu'une peau — la classless vient avec, et TOUT suit. -->
 
 <style>
 	/* Le décor MINIMAL de cette page d'essai (fond + centrage), inline pour ne rien
@@ -104,6 +104,19 @@
 			<tr><td><code>button</code>, <code>input</code></td><td>Remplace par un <code>z-*</code></td></tr>
 		</tbody>
 	</table>
+
+	<h5>Le reste du vocabulaire</h5>
+	<p>
+		Tout le natif est habillé : appuie sur <kbd>Ctrl</kbd> + <kbd>U</kbd> pour voir le
+		source, et note que <mark>rien n'est caché à l'index</mark>. <small>(La couche couvre
+		aussi <code>h6</code>, <code>dl</code>, <code>abbr</code>…)</small>
+	</p>
+	<dl>
+		<dt>Habiller</dt>
+		<dd>La peau style la balise native. Elle reste ce qu'elle est.</dd>
+		<dt>Remplacer</dt>
+		<dd>Un widget <code>z-*</code> prend la place — réservé à ce qui n'a aucune valeur SEO.</dd>
+	</dl>
 
 	<hr>
 

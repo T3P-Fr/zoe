@@ -545,3 +545,16 @@ article figure img { display: block; width: 100%; height: auto; }
 article :where(figcaption) { margin-top: 0.5rem; font-size: var(--z-font-size-sm); color: var(--z-ink-soft); }
 
 article :where(hr) { border: none; height: 1px; background: var(--z-line); margin: 2.2rem 0; }
+
+/* Classless — compléments : la hiérarchie COMPLÈTE (h5/h6) et le vocabulaire de
+   texte restant. h5/h6 descendent l'appareil mono ; le reste au filet (loi 2). */
+article :where(h5) { font-family: var(--z-font); font-size: var(--z-font-size); font-weight: var(--z-font-weight-strong); letter-spacing: 0.06em; text-transform: uppercase; color: var(--z-ink-soft); margin: 1.6rem 0 0.4rem; }
+article :where(h6) { font-family: var(--z-font); font-size: var(--z-font-size-sm); font-weight: var(--z-font-weight-strong); letter-spacing: 0.08em; text-transform: uppercase; color: var(--z-ink-soft); margin: 1.4rem 0 0.4rem; }
+article :where(dl) { margin: 0 0 1.1rem; }
+article :where(dt) { font-weight: var(--z-font-weight-strong); margin-top: 0.7rem; }
+article :where(dd) { margin: 0.15rem 0 0 1.2rem; color: var(--z-ink-soft); }
+article :where(mark) { background: none; color: var(--z-accent); border-bottom: 2px solid var(--z-accent); } /* le cobalt SIGNALE (loi 5), il ne surligne pas en aplat */
+article :where(kbd) { font-family: var(--z-font); font-size: 0.88em; padding: 0.05em 0.4em; border: 1px solid var(--z-line); border-bottom-width: 2px; border-radius: 2px; }
+article :where(small) { font-size: var(--z-font-size-sm); color: var(--z-ink-soft); }
+article :where(sub, sup) { font-size: 0.72em; }
+article :where(abbr) { text-decoration: underline dotted; text-underline-offset: 2px; cursor: help; }
