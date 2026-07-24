@@ -62,5 +62,5 @@ l'exact opposé du `<z-text h1>` : l'un *enrobe* un `<h1>` présent (vivant), l'
 
 Livrer la **couche classless** : écrire dans les peaux les règles qui habillent le
 natif — `h1`…`h6`, `p`, `a`, listes, `table`… Aujourd'hui les peaux ne stylent que
-les composants `z-*`, pas les balises natives. C'est le niveau 1 de Relookr
-(« relooke sans rien renommer »), et c'est ce qui rend le SEO indolore.
+les composants `z-*`, pas les balises natives. C'est ce qui rend le SEO indolore :
+on habille sans rien renommer.

@@ -561,9 +561,9 @@ article :where(abbr) { text-decoration: underline dotted; text-underline-offset:
 
 /*
 	============================================================
-	CLASSLESS · FORMULAIRE — le natif interactif habillé (niveau 1 Relookr)
+	CLASSLESS · FORMULAIRE — le natif interactif habillé
 	------------------------------------------------------------
-	L'autre moitié de « relooke sans rien renommer » : un <form> natif (button, input,
+	L'autre moitié : un <form> natif (button, input,
 	select, textarea, label) habillé par la peau, SANS z-*. Pour qui ne veut pas des
 	composants Zoé et pose son HTML de formulaire nu — Pico, mais à la charte HighTech.
 
