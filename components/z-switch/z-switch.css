@@ -1,0 +1,139 @@
+/*
+	============================================================
+	z-switch.css — le rendu de z-switch, en CALQUES
+	------------------------------------------------------------
+	Un interrupteur = une PISTE + une PASTILLE qui glisse, et un label à côté. Comme la
+	case, il s'écrit de deux façons et les deux lisent les MÊMES tokens ; le composant ne
+	sait même pas laquelle il porte.
+
+	  · FORME COURTE — <z-switch>Notifications</z-switch> : ::before = la piste, ::after =
+	    la pastille (Zoé n'injecte rien, ADR-0018 — la piste est peinte, pas ajoutée).
+	  · FORME EN CALQUES — la piste est `marker`, la pastille `dot` : chacune animable seule.
+
+	L'état ALLUMÉ = `:state(current)` : la pastille glisse à droite, la piste prend
+	l'accent. Le déplacement est en `translate` (composé, pas de reflow) et rebondit
+	(--z-ease-spring) — le mouvement dit QUAND ça a basculé, là où la couleur ne suffit pas.
+	Requiert : une peau (tokens) + core/z-layer + tools/z-motion.
+	Styleguide 8.1
+	============================================================
+*/
+
+z-switch {
+
+	/* Le SUJET — commun aux deux formes : la ligne piste + label. */
+	display: inline-flex;
+	align-items: center;
+	gap: .6em;
+	position: relative;   /* ancre la pastille ::after et les calques */
+	font: inherit;
+	font-family: var(--z-font);
+	color: var(--z-ink);
+	cursor: pointer;
+	user-select: none;
+	vertical-align: middle;
+	touch-action: manipulation;
+	outline: none;
+
+	/* Réglages de la géométrie, en em (tout suit la taille du socle). */
+	--z-switch--track__width: 2.2em;
+	--z-switch--track__height: 1.25em;
+	--z-switch--thumb__size: .95em;
+	--z-switch--thumb__inset: .2em;
+
+	/*
+		═══ FORME COURTE — ::before = la piste, ::after = la pastille ═══
+		Styleguide 8.1.1
+	*/
+	&:not(:has(z-layer))::before {
+		content: "";
+		flex: none;
+		width: var(--z-switch--track__width);
+		height: var(--z-switch--track__height);
+		border-radius: var(--z-radius-pill, 999px);
+		background: var(--z-switch--track__off, var(--z-surface-sunken, var(--z-line)));
+		border: var(--z-border-width, 1px) solid var(--z-line);
+		transition: background var(--z-dur, .24s) var(--z-ease, ease);
+	}
+	&:not(:has(z-layer))::after {
+		content: "";
+		position: absolute;
+		left: var(--z-switch--thumb__inset);
+		top: 50%;
+		width: var(--z-switch--thumb__size);
+		height: var(--z-switch--thumb__size);
+		border-radius: 50%;
+		background: var(--z-switch--thumb__color, #fff);
+		box-shadow: 0 1px 2px rgba(0, 0, 0, .28);
+		translate: 0 -50%;
+		transition: translate var(--z-dur, .24s) var(--z-ease-spring, ease-out);
+	}
+
+	/* Allumé : la pastille glisse (piste − pastille − 2×marge), la piste prend l'accent. */
+	&:not(:has(z-layer)):state(current)::before {
+		background: var(--z-switch--track__on, var(--z-accent));
+		border-color: var(--z-switch--track__on, var(--z-accent));
+	}
+	&:not(:has(z-layer)):state(current)::after {
+		translate: calc(var(--z-switch--track__width) - var(--z-switch--thumb__size) - 2 * var(--z-switch--thumb__inset)) -50%;
+	}
+
+	/* Focus clavier : le halo se pose sur la piste (::before) via un box-shadow. */
+	&:not(:has(z-layer)):state(focus)::before {
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-state__color, var(--z-accent)) 40%, transparent);
+	}
+
+	/*
+		═══ FORME EN CALQUES — marker = piste, dot = pastille ═══
+		Styleguide 8.1.2
+	*/
+	> [part=marker] {
+		flex: none;
+		width: var(--z-switch--track__width);
+		height: var(--z-switch--track__height);
+		border-radius: var(--z-radius-pill, 999px);
+		background: var(--z-switch--track__off, var(--z-surface-sunken, var(--z-line)));
+		border: var(--z-border-width, 1px) solid var(--z-line);
+		position: relative;
+		transition: background var(--z-dur, .24s) var(--z-ease, ease);
+	}
+	> [part=marker] > [part=dot] {
+		position: absolute;
+		left: var(--z-switch--thumb__inset);
+		top: 50%;
+		width: var(--z-switch--thumb__size);
+		height: var(--z-switch--thumb__size);
+		border-radius: 50%;
+		background: var(--z-switch--thumb__color, #fff);
+		box-shadow: 0 1px 2px rgba(0, 0, 0, .28);
+		translate: 0 -50%;
+		transition: translate var(--z-dur, .24s) var(--z-ease-spring, ease-out);
+	}
+	&:has(z-layer):state(current) > [part=marker] {
+		background: var(--z-switch--track__on, var(--z-accent));
+		border-color: var(--z-switch--track__on, var(--z-accent));
+	}
+	&:has(z-layer):state(current) > [part=marker] > [part=dot] {
+		translate: calc(var(--z-switch--track__width) - var(--z-switch--thumb__size) - 2 * var(--z-switch--thumb__inset)) -50%;
+	}
+	&:has(z-layer):state(focus) > [part=marker] {
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-state__color, var(--z-accent)) 40%, transparent);
+	}
+
+	/*
+		═══ COMMUN AUX DEUX FORMES ═══
+		Styleguide 8.1.3
+	*/
+
+	/* Le geste répond avant l'effet : la pastille s'enfonce un peu sous le doigt. */
+	&:state(press):not(:state(disabled)) { filter: brightness(.98); }
+
+	/* Mort : tout s'éteint, plus de curseur main, plus de halo. */
+	&:state(disabled) {
+		color: var(--z-disabled);
+		cursor: not-allowed;
+		opacity: .55;
+	}
+
+	/* Apparition douce (loi Zoé). */
+	&:state(enter) { animation: pop var(--z-dur-enter, .3s) var(--z-ease-spring, ease-out); }
+}

@@ -1,0 +1,87 @@
+/*
+	============================================================
+	z-tag.css — le rendu de z-tag, en CALQUES
+	------------------------------------------------------------
+	Une étiquette : une gélule qui porte un mot. Comme le badge, elle CONSOMME le ton et
+	la taille du socle ; elle ajoute la CROIX de retrait (::after), affichée seulement
+	quand `removable` est là. La croix est peinte, jamais injectée (ADR-0018) ; sa zone
+	cliquable est gérée en JS, accordée au padding-right ci-dessous (REMOVE_ZONE_EM).
+
+	  · FORME COURTE — <z-tag>design</z-tag> : le CSS peint l'hôte.
+	  · FORME EN CALQUES — le fond bouge seul.
+	Requiert : une peau (tokens) + core/z-layer.
+	Styleguide 7.1
+	============================================================
+*/
+
+z-tag {
+
+	/* Le SUJET — commun aux deux formes. */
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	gap: .4em;
+
+	font-size: .85em;
+	font-family: var(--z-font);
+	font-weight: var(--z-font-weight, 500);
+	line-height: 1;
+
+	padding: .4em .8em;
+	border-radius: var(--z-radius-pill, 999px);
+	color: var(--z-tone__ink, var(--z-ink));
+	white-space: nowrap;
+	vertical-align: middle;
+	user-select: none;
+	outline: none;
+
+	/* ═══ FORME COURTE — le CSS peint l'hôte ═══ Styleguide 7.1.1 */
+	&:not(:has(z-layer)) {
+		background: var(--z-tag--background__color, var(--z-tone__fill, var(--z-surface)));
+		border: var(--z-border-width, 1px) solid var(--z-tone__line, var(--z-line));
+	}
+
+	/* ═══ FORME EN CALQUES — le fond est une PIÈCE ═══ Styleguide 7.1.2 */
+	> [part=background] {
+		border: var(--z-border-width, 1px) solid var(--z-tag--background__border, var(--z-tone__line, var(--z-line)));
+		border-radius: inherit;
+		background: var(--z-tag--background__color, var(--z-tone__fill, var(--z-surface)));
+	}
+	> [part=infos] > [part=icon] { color: var(--z-tag--icon__color, currentColor); }
+
+	/* ═══ RETIRABLE — la croix, et sa zone ═══ Styleguide 7.1.3 */
+
+	/* On réserve la place de la croix à droite (accordé à REMOVE_ZONE_EM côté JS). */
+	&[removable] { padding-right: 1.7em; cursor: default; }
+
+	/* La croix elle-même : un « × » posé au bord droit, qui s'allume au survol de la zone.
+	   `content: "×"` — un vrai signe, pas une image ; il suit la couleur du texte. */
+	&[removable]::after {
+		content: "×";
+		position: absolute;
+		right: .55em;
+		top: 50%;
+		translate: 0 -50%;
+		width: 1.15em;
+		height: 1.15em;
+		display: grid;
+		place-items: center;
+		border-radius: 50%;
+		font-size: 1.1em;
+		line-height: 1;
+		color: var(--z-tag--remove__color, currentColor);
+		opacity: .6;
+		transition: opacity var(--z-dur, .2s), background var(--z-dur, .2s);
+	}
+	&[removable]:hover::after { opacity: 1; background: color-mix(in srgb, currentColor 16%, transparent); }
+
+	/* Le focus clavier : le halo se pose sur toute l'étiquette (elle est focusable si
+	   retirable) — le clavier doit voir laquelle il s'apprête à supprimer. */
+	&[removable]:focus-visible {
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 40%, transparent);
+	}
+
+	/* ═══ COMMUN — apparition douce. Styleguide 7.1.4 */
+	&:state(enter) { animation: pop var(--z-dur-enter, .3s) var(--z-ease-spring, ease-out); }
+}

@@ -1106,6 +1106,317 @@
           }
         }
       ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-badge/z-badge.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZBadge",
+          "tagName": "z-badge",
+          "summary": "A status/count pill — inherits z-element's tone & size variants, painted by the skin. Almost zero code: the frozen socle does the work.",
+          "attributes": [
+            {
+              "name": "tone",
+              "type": {
+                "text": "\"main\" | \"complement\" | \"soft\" | \"success\" | \"danger\""
+              },
+              "description": "Importance/colour, from the socle variant."
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "\"xs\" | \"s\" | \"m\" | \"l\" | \"xl\""
+              },
+              "description": "Size factor, from the socle variant (everything follows in em)."
+            }
+          ],
+          "events": [
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-badge",
+          "declaration": {
+            "name": "ZBadge"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-tag/z-tag.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZTag",
+          "tagName": "z-tag",
+          "summary": "A tag/chip for keywords, filters, categories — inherits tone & size; optionally removable.",
+          "attributes": [
+            {
+              "name": "removable",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Shows a × ; removes on click (on the ×) or Delete/Backspace when focused."
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "\"main\" | \"complement\" | \"soft\" | \"success\" | \"danger\""
+              },
+              "description": "Importance/colour, from the socle variant."
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "\"xs\" | \"s\" | \"m\" | \"l\" | \"xl\""
+              },
+              "description": "Size factor, from the socle variant."
+            }
+          ],
+          "events": [
+            {
+              "name": "zoe:remove",
+              "description": "Cancelable — fired before removal. preventDefault() to handle it yourself."
+            },
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-tag",
+          "declaration": {
+            "name": "ZTag"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/z-switch/z-switch.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZSwitch",
+          "tagName": "z-switch",
+          "summary": "An on/off switch — inherits all z-element states, form-bound, painted by the skin. Immediate effect, unlike a checkbox you'll validate later.",
+          "attributes": [
+            {
+              "name": "current",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "On: a durable state set by the component (click / Space)."
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Form field name."
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "What is submitted when on (default: \"on\")."
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disabled: blocks interaction."
+            }
+          ],
+          "events": [
+            {
+              "name": "change",
+              "description": "Emitted when it toggles. Read `.checked`."
+            },
+            {
+              "name": "z-state",
+              "description": "Emitted on every state change. detail: { states, changed, on }."
+            }
+          ],
+          "cssProperties": [],
+          "cssStates": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "over"
+            },
+            {
+              "name": "press"
+            },
+            {
+              "name": "release"
+            },
+            {
+              "name": "releaseOut"
+            },
+            {
+              "name": "drag"
+            },
+            {
+              "name": "focus"
+            },
+            {
+              "name": "enter"
+            },
+            {
+              "name": "exit"
+            },
+            {
+              "name": "current"
+            },
+            {
+              "name": "select"
+            },
+            {
+              "name": "unselect"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "success"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-switch",
+          "declaration": {
+            "name": "ZSwitch"
+          }
+        }
+      ]
     }
   ]
 }

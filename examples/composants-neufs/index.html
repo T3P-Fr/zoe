@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zoé — trois nouveaux composants</title>
+
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — modules ES bloqués.</b> Lance <code>node scripts/serve.mjs 5173</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../page.css">
+
+<style>
+	.grid { display: grid; gap: 1.6rem; margin-top: 1.2rem; }
+	.row { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; }
+	.card { padding: 1.2rem 1.4rem; border: 1px solid var(--z-line); border-radius: var(--z-radius, 10px); background: var(--z-surface); }
+	.card h2 { margin: 0 0 .3rem; }
+	.card p.note { margin: 0 0 1rem; color: var(--z-ink-soft); }
+</style>
+
+<h1>Trois composants, presque gratuits</h1>
+<p class="lead">
+	Bâtis SUR z-element : ils héritent états, tons et tailles du socle figé. Change de peau
+	en haut à droite — tout suit. C'est ça, la vitesse de Zoé.
+</p>
+
+<div class="grid">
+
+	<div class="card">
+		<h2>&lt;z-badge&gt;</h2>
+		<p class="note">Une pastille de statut/compteur. Le ton vient du socle, zéro JS de plus.</p>
+		<div class="row">
+			<z-badge>Nouveau</z-badge>
+			<z-badge tone="main">3</z-badge>
+			<z-badge tone="success">payé</z-badge>
+			<z-badge tone="danger">12</z-badge>
+			<z-badge tone="soft">brouillon</z-badge>
+			<z-badge size="s">petit</z-badge>
+		</div>
+	</div>
+
+	<div class="card">
+		<h2>&lt;z-tag&gt;</h2>
+		<p class="note">Une étiquette. <code>removable</code> ajoute une croix (clic sur la ×, ou Suppr au focus).</p>
+		<div class="row">
+			<z-tag>design</z-tag>
+			<z-tag tone="main">urgent</z-tag>
+			<z-tag tone="complement">v2</z-tag>
+			<z-tag removable>à retirer</z-tag>
+			<z-tag removable tone="success">validé</z-tag>
+		</div>
+	</div>
+
+	<div class="card">
+		<h2>&lt;z-switch&gt;</h2>
+		<p class="note">Un interrupteur. <code>current</code> = allumé ; clic ou Espace bascule ; part au formulaire.</p>
+		<div class="row" style="gap:1.4rem">
+			<z-switch>Notifications</z-switch>
+			<z-switch current>Déjà activé</z-switch>
+			<z-switch disabled>Indisponible</z-switch>
+		</div>
+	</div>
+
+</div>
+
+<script type="module">
+	import "../skin-switch.js";
+	import "../../components/z-badge/z-badge.js";
+	import "../../components/z-tag/z-tag.js";
+	import "../../components/z-switch/z-switch.js";
+</script>
+</html>

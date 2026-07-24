@@ -50,3 +50,21 @@ A value slider — poses progress (0→1) in the cascade, the skin paints everyt
 Attributes: value (number), min (number), max (number), step (number), orientation ('horizontal' | 'vertical'), markers (boolean | number), label ('over' | 'under' | 'none'), disabled (boolean)
 Events: input, change, z-state
 States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-badge> (components)
+A status/count pill — inherits z-element's tone & size variants, painted by the skin. Almost zero code: the frozen socle does the work.
+Attributes: tone ("main" | "complement" | "soft" | "success" | "danger"), size ("xs" | "s" | "m" | "l" | "xl")
+Events: z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-tag> (components)
+A tag/chip for keywords, filters, categories — inherits tone & size; optionally removable.
+Attributes: removable (boolean), tone ("main" | "complement" | "soft" | "success" | "danger"), size ("xs" | "s" | "m" | "l" | "xl")
+Events: zoe:remove, z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
+
+## <z-switch> (components)
+An on/off switch — inherits all z-element states, form-bound, painted by the skin. Immediate effect, unlike a checkbox you'll validate later.
+Attributes: current (boolean), name (string), value (string), disabled (boolean)
+Events: change, z-state
+States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success

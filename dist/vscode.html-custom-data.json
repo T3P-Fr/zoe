@@ -271,6 +271,63 @@
           "values": []
         }
       ]
+    },
+    {
+      "name": "z-badge",
+      "description": "A status/count pill — inherits z-element's tone & size variants, painted by the skin. Almost zero code: the frozen socle does the work.",
+      "attributes": [
+        {
+          "name": "tone",
+          "description": "Importance/colour, from the socle variant."
+        },
+        {
+          "name": "size",
+          "description": "Size factor, from the socle variant (everything follows in em)."
+        }
+      ]
+    },
+    {
+      "name": "z-tag",
+      "description": "A tag/chip for keywords, filters, categories — inherits tone & size; optionally removable.",
+      "attributes": [
+        {
+          "name": "removable",
+          "description": "Shows a × ; removes on click (on the ×) or Delete/Backspace when focused.",
+          "values": []
+        },
+        {
+          "name": "tone",
+          "description": "Importance/colour, from the socle variant."
+        },
+        {
+          "name": "size",
+          "description": "Size factor, from the socle variant."
+        }
+      ]
+    },
+    {
+      "name": "z-switch",
+      "description": "An on/off switch — inherits all z-element states, form-bound, painted by the skin. Immediate effect, unlike a checkbox you'll validate later.",
+      "attributes": [
+        {
+          "name": "current",
+          "description": "On: a durable state set by the component (click / Space).",
+          "values": []
+        },
+        {
+          "name": "name",
+          "description": "Form field name."
+        },
+        {
+          "name": "value",
+          "description": "What is submitted when on (default: \"on\")."
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled: blocks interaction.",
+          "values": []
+        }
+      ]
     }
   ]
 }

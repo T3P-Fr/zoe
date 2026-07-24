@@ -40,8 +40,11 @@
 @import url("./tools/z-contact/z-contact.css");
 
 /* 3 · LES COMPOSANTS — par ordre alphabétique : aucun ne dépend d'un autre */
+@import url("./components/z-badge/z-badge.css");
 @import url("./components/z-button/z-button.css");
 @import url("./components/z-checkbox/z-checkbox.css");
 @import url("./components/z-radio/z-radio.css");
 @import url("./components/z-radio-group/z-radio-group.css");
 @import url("./components/z-slider/z-slider.css");
+@import url("./components/z-switch/z-switch.css");
+@import url("./components/z-tag/z-tag.css");
