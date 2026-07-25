@@ -113,6 +113,15 @@
 	.type-row { display:grid; gap:.55rem; }
 	.type-row label { display:flex; align-items:center; justify-content:space-between; gap:.6rem; font-size:.72rem; color:var(--console-ink-soft); }
 	.font-select { font:inherit; font-size:.72rem; background:var(--console-bg); color:var(--console-ink); border:1px solid var(--console-stroke); border-radius:7px; padding:.3em .5em; }
+	/* la GRANDE réglette d'échelle — poignée blanche, triangles, valeur lisible */
+	.scale-control { display:flex; align-items:center; gap:.5rem; margin-top:.85rem; }
+	.scale-tri { color:#fff; font-size:.9rem; opacity:.75; }
+	.scale-rail { flex:1; height:16px; border-radius:999px; background:var(--console-bg); box-shadow:inset 0 0 0 1px var(--console-stroke); position:relative; cursor:ew-resize; }
+	.scale-fill { position:absolute; inset:0 auto 0 0; width:50%; border-radius:999px; background:linear-gradient(90deg,var(--accent),var(--complement)); opacity:.45; }
+	.scale-thumb { position:absolute; top:50%; left:50%; width:28px; height:28px; border-radius:50%; translate:-50% -50%;
+		background:radial-gradient(circle at 50% 32%,#fff,#c9cbdb); box-shadow:0 3px 12px #000b, inset 0 0 0 1px #fff; cursor:grab; touch-action:none; }
+	.scale-value { font-size:1rem; font-weight:800; color:var(--console-ink); min-width:3.3em; text-align:right; font-variant-numeric:tabular-nums; }
+	.scale-caption { font-size:.64rem; color:var(--console-ink-faint); margin-top:.45rem; text-align:center; }
 
 	/* ═══════════ L'APERÇU (droite) : DES DIZAINES D'ÉLÉMENTS ═══════════ */
 	.canvas { position:relative; overflow:auto; background:var(--fond); color:var(--encre);
@@ -120,12 +129,17 @@
 	.app { max-width:64rem; margin:0 auto; padding:2rem clamp(1rem,3vw,2.5rem) 5rem; display:grid; gap:1.6rem; }
 
 	/* la barre d'app */
-	.app-bar { display:flex; align-items:center; gap:1rem; padding:var(--pad-haut) var(--pad-droite) var(--pad-bas) var(--pad-gauche);
+	.app-bar { display:flex; align-items:center; gap:1.1rem; font-size:1.15em;
+		padding:calc(var(--pad-haut) + 4px) var(--pad-droite) calc(var(--pad-bas) + 4px) var(--pad-gauche);
 		background:var(--surface); border:1px solid var(--filet);
 		border-radius:var(--radius-tl) var(--radius-tr) var(--radius-br) var(--radius-bl); }
-	.app-logo { width:1.6em;height:1.6em;border-radius:.4em;background:var(--accent); }
-	.app-bar nav { display:flex; gap:1rem; font-size:.85em; color:var(--encre-douce); }
+	.app-bar > b { font-size:1.15em; }
+	.app-logo { width:2em;height:2em;border-radius:.45em;background:var(--accent); box-shadow:0 4px 14px -4px var(--accent); }
+	.app-bar nav { display:flex; gap:1.4rem; font-size:.92em; color:var(--encre-douce); }
+	.app-bar nav span { cursor:pointer; padding:.15em 0; position:relative; transition:color .2s, transform .2s cubic-bezier(.34,1.7,.5,1); }
+	.app-bar nav span:hover { color:var(--accent); transform:translateY(-2px); }
 	.app-bar nav .is-current { color:var(--accent); font-weight:700; }
+	.app-bar nav .is-current::after { content:""; position:absolute; left:0; right:0; bottom:-.35em; height:3px; border-radius:2px; background:var(--accent); box-shadow:0 0 8px var(--accent); }
 	.app-bar .spacer { flex:1; }
 
 	/* LE HÉROS — c'est LUI qu'on sculpte (radius par coin + padding par côté) ; tout le reste suit */
@@ -193,13 +207,37 @@
 	table.data th, table.data td { text-align:left; padding:calc(var(--pad-haut)*.55) var(--pad-droite); border-top:1px solid var(--filet); font-size:.86em; }
 	table.data th { color:var(--encre-douce); font-size:.72em; letter-spacing:.08em; text-transform:uppercase; border-top:none; }
 
-	/* les POIGNÉES sur la matière (héros) */
-	.grip { position:absolute; z-index:5; background:#fff; border:2px solid #111; box-shadow:0 2px 8px #000a; }
+	/* les POIGNÉES sur la matière — INVISIBLES au repos, elles SURGISSENT au survol du héros
+	   (ou quand « tout voir » est activé). L'éditeur ne montre que ce qu'on s'apprête à toucher. */
+	.grip { position:absolute; z-index:5; background:#fff; border:2px solid #111; box-shadow:0 2px 8px #000a;
+		opacity:0; scale:.6; pointer-events:none; transition:opacity .16s, scale .16s cubic-bezier(.34,1.7,.5,1); }
 	.grip--corner { width:16px;height:16px;border-radius:50%;margin:-8px;cursor:grab; }
 	.grip--edge { background:var(--accent);border-color:#fff; }
 	.grip--edge.axis-h{ width:36px;height:8px;border-radius:6px;margin:-4px -18px;cursor:ns-resize; }
 	.grip--edge.axis-v{ width:8px;height:36px;border-radius:6px;margin:-18px -4px;cursor:ew-resize; }
+	.canvas.is-revealed .grip, .grip.is-active, body.show-all .grip { opacity:1; scale:1; pointer-events:auto; }
 	.grip.is-active { outline:2px dashed #fff; outline-offset:4px; scale:1.45; z-index:9; }
+
+	/* LA BOÎTE POINTILLÉE du padding : on VOIT l'espace intérieur se creuser quand on tire un bord */
+	.padding-guide { position:absolute; pointer-events:none; border:1px dashed var(--accent); border-radius:8px;
+		inset:var(--pad-haut) var(--pad-droite) var(--pad-bas) var(--pad-gauche);
+		opacity:0; transition:opacity .16s, inset .12s; }
+	.hero.is-revealed .padding-guide, .hero.is-editing .padding-guide, body.show-all .padding-guide { opacity:.65; }
+
+	/* les DÉGRADÉS du schème (linear-swatch) — revenus du theme-builder d'origine */
+	.gradient-swatches { display:grid; grid-template-columns:repeat(3,1fr); gap:.34rem; margin-top:.4rem; }
+	.gradient-swatch { height:20px; border-radius:5px; cursor:grab; touch-action:none; box-shadow:inset 0 0 0 1px #ffffff1a; }
+
+	/* le bouton « tout voir » + le bouton « composer » */
+	.reveal-toggle { margin-left:auto; font:inherit; font-size:.66rem; cursor:pointer; color:var(--console-ink-soft);
+		background:#0000; border:1px solid var(--console-stroke); border-radius:999px; padding:.3em .7em; }
+	.reveal-toggle.is-on { color:var(--console-ink); border-color:var(--accent); box-shadow:0 0 10px -3px var(--accent); }
+	.compose-btn { font:inherit; font-size:.72rem; font-weight:600; cursor:pointer; color:var(--console-ink);
+		background:linear-gradient(90deg,var(--accent),var(--complement)); border:none; border-radius:8px; padding:.5em 1em; }
+	.bg-stops { display:none; gap:.5rem; margin-top:.7rem; align-items:center; }
+	.bg-stops.is-open { display:flex; }
+	.bg-stop { flex:1; height:34px; border-radius:8px; border:1px dashed var(--console-stroke); display:grid; place-items:center;
+		color:var(--console-ink-faint); font-size:.6rem; }
 </style>
 
 <body>
@@ -208,7 +246,23 @@
 
 		<!-- ═══════════ LE BANC ═══════════ -->
 		<aside class="console">
-			<div class="brand"><span class="brand-led"></span><span class="brand-name">Zoé</span><span class="brand-sub">· l'établi</span></div>
+			<div class="brand"><span class="brand-led"></span><span class="brand-name">Zoé</span><span class="brand-sub">· l'établi</span>
+				<button class="reveal-toggle" id="reveal-all">tout voir</button></div>
+
+			<section class="module">
+				<h2 class="module-title">Fonte &amp; échelle</h2>
+				<div class="type-row">
+					<label>Fonte titre <select class="font-select" id="font-titre"><option value="ui-sans-serif,system-ui,sans-serif">Sans</option><option value="Georgia,'Times New Roman',serif">Serif</option><option value="ui-monospace,Menlo,monospace">Mono</option><option value="'Trebuchet MS',sans-serif">Grotesk</option></select></label>
+					<label>Fonte texte <select class="font-select" id="font-texte"><option value="ui-sans-serif,system-ui,sans-serif">Sans</option><option value="Georgia,'Times New Roman',serif">Serif</option><option value="ui-monospace,Menlo,monospace">Mono</option></select></label>
+				</div>
+				<div class="scale-control">
+					<span class="scale-tri">◀</span>
+					<div class="scale-rail" id="scale-rail"><div class="scale-fill" id="scale-fill"></div><div class="scale-thumb" id="scale-thumb"></div></div>
+					<span class="scale-tri">▶</span>
+					<span class="scale-value" id="val-echelle">100%</span>
+				</div>
+				<div class="scale-caption">Échelle globale — tout l'aperçu grandit d'un bloc</div>
+			</section>
 
 			<section class="module">
 				<h2 class="module-title">Schème — braque la source, tire les rayons</h2>
@@ -227,6 +281,14 @@
 						<div class="swatch" data-paint="var(--surface-2)" style="background:var(--surface-2)"><span class="swatch-label">surface</span></div>
 						<div class="swatch" data-paint="var(--encre)" style="background:var(--encre)"><span class="swatch-label">encre</span></div>
 					</div>
+				</div>
+				<div class="gradient-swatches" id="scheme-gradients">
+					<div class="gradient-swatch" data-paint="linear-gradient(90deg,var(--accent),var(--complement))"></div>
+					<div class="gradient-swatch" data-paint="linear-gradient(90deg,var(--accent),var(--tierce))"></div>
+					<div class="gradient-swatch" data-paint="linear-gradient(90deg,var(--complement),var(--accent),var(--tierce))"></div>
+					<div class="gradient-swatch" data-paint="linear-gradient(180deg,var(--surface-2),var(--surface))"></div>
+					<div class="gradient-swatch" data-paint="linear-gradient(90deg,var(--accent) 60%,var(--complement) 30%,var(--tierce) 10%)"></div>
+					<div class="gradient-swatch" data-paint="conic-gradient(from 90deg,var(--accent),var(--complement),var(--tierce),var(--accent))"></div>
 				</div>
 				<div class="knob-row" style="margin-top:.9rem">
 					<div class="knob"><div class="knob-dial" id="knob-neutre"></div><span class="knob-name">Neutres</span><span class="knob-value" id="val-neutre">10</span></div>
@@ -255,6 +317,17 @@
 			</section>
 
 			<section class="module">
+				<h2 class="module-title">Fond de page</h2>
+				<button class="compose-btn" id="compose">Composer un dégradé</button>
+				<div class="bg-stops" id="bg-stops">
+					<div class="bg-stop paintable" style="background:var(--surface)">1</div>
+					<div class="bg-stop paintable" style="background:var(--accent)">2</div>
+					<div class="bg-stop paintable" style="background:var(--complement)">3</div>
+				</div>
+				<p class="hint">Clique <b>Composer</b>, puis <b>lâche des couleurs</b> (ou des dégradés) sur les cases pour bâtir ton fond de page.</p>
+			</section>
+
+			<section class="module">
 				<h2 class="module-title">Matière — jette une couleur sur le héros</h2>
 				<div class="palette-chips" id="pellets">
 					<span class="palette-chip pellet" data-paint="var(--accent)" style="background:var(--accent)"></span>
@@ -264,16 +337,6 @@
 				<p class="hint"><b>Lance</b> une pastille sur le héros → éclaboussure + dégradé. Ou empoigne ses <b>coins</b> (radius par coin) et ses <b>bords</b> (padding par côté). <kbd>Shift</kbd> = le haut · <kbd>Alt</kbd> = le bas · <kbd>Shift+Alt</kbd> = les 4. Le survol montre ce que tu touches. Le héros sculpté <b>reforme toute l'app</b>.</p>
 			</section>
 
-			<section class="module">
-				<h2 class="module-title">Typo &amp; échelle</h2>
-				<div class="type-row">
-					<label>Fonte titre <select class="font-select" id="font-titre"><option value="ui-sans-serif,system-ui,sans-serif">Sans</option><option value="Georgia,'Times New Roman',serif">Serif</option><option value="ui-monospace,Menlo,monospace">Mono</option><option value="'Trebuchet MS',sans-serif">Grotesk</option></select></label>
-					<label>Fonte texte <select class="font-select" id="font-texte"><option value="ui-sans-serif,system-ui,sans-serif">Sans</option><option value="Georgia,'Times New Roman',serif">Serif</option><option value="ui-monospace,Menlo,monospace">Mono</option></select></label>
-				</div>
-				<div class="knob-row" style="margin-top:.9rem; justify-content:center">
-					<div class="knob"><div class="knob-dial" id="knob-echelle" style="width:84px;height:84px"></div><span class="knob-name">Échelle globale</span><span class="knob-value" id="val-echelle">100 %</span></div>
-				</div>
-			</section>
 		</aside>
 
 		<!-- ═══════════ L'APERÇU ═══════════ -->
@@ -287,6 +350,7 @@
 				</div>
 
 				<div class="hero paintable" id="hero">
+					<div class="padding-guide" id="padding-guide"></div>
 					<span class="eyebrow">L'établi</span>
 					<h1>On ne règle pas.<br>On sculpte.</h1>
 					<p>Braque la lumière, tire les rayons, jette une couleur, empoigne les coins. Tout ce que tu vois — couleurs, dégradés, bordures, ombres, l'app entière — descend de tes gestes. Le héros que tu sculptes reforme chaque carte, chaque bouton.</p>
@@ -346,7 +410,8 @@
 	const rootS = document.documentElement.style, $ = i => document.getElementById(i);
 	const set = (k,v) => rootS.setProperty('--z-channel-'+k, v);
 	const cs = getComputedStyle(document.documentElement);
-	const resolve = v => { const m=String(v).match(/--[\w-]+/); return m ? cs.getPropertyValue(m[0]).trim() : v; };
+	/* résout TOUTES les var() d'une valeur — pour les dégradés multi-couleurs aussi */
+	const resolve = v => String(v).replace(/var\((--[\w-]+)\)/g, (_,n)=> cs.getPropertyValue(n).trim() || 'transparent');
 
 	/* ═══ LE RESSORT (volé à PÂTE) : rien n'arrive sec ═══ */
 	const springs = {};
@@ -389,7 +454,12 @@
 	knob('knob-neutre','val-neutre','neutre',0,30,10);
 	knob('knob-contraste','val-contraste','contraste',0,80,56);
 	knob('knob-sombre','val-sombre','sombre',0,100,88);
-	knob('knob-echelle','val-echelle','echelle',70,140,100,' %');
+	/* la GRANDE réglette d'échelle globale (poignée blanche visible, triangles) */
+	(function(){ const rail=$('scale-rail'), thumb=$('scale-thumb'), fill=$('scale-fill'), out=$('val-echelle'); const lo=70,hi=140; let v=100;
+		const paint=()=>{ const p=(v-lo)/(hi-lo)*100; thumb.style.left=p+'%'; fill.style.width=p+'%'; out.textContent=Math.round(v)+'%'; spring('echelle',v); };
+		const fromX=e=>{ const r=rail.getBoundingClientRect(); v=lo+Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*(hi-lo); paint(); };
+		grab(rail,fromX); grab(thumb,fromX); paint();
+	})();
 
 	/* ═══ LES SELECTS DE FONTE ═══ */
 	$('font-titre').addEventListener('change',e=>rootS.setProperty('--font-titre',e.target.value));
@@ -406,7 +476,9 @@
 		if(sh&&al)return EDGES.map(e=>e[0]); if(sh)return['pad-haut']; if(al)return['pad-bas']; return[tok];
 	}
 	const cur = tok => parseFloat(cs.getPropertyValue('--z-channel-'+tok))||0;
-	function placeGrip(g,gx,gy){ const r=hero.getBoundingClientRect(), s=canvas.getBoundingClientRect();
+	const pguide = $('padding-guide');
+	/* la poignée SUIT la ligne : coins sur le héros, bords sur la boîte pointillée du padding */
+	function placeGrip(g,gx,gy,ref){ const r=(ref||hero).getBoundingClientRect(), s=canvas.getBoundingClientRect();
 		g.style.left=(r.left-s.left+canvas.scrollLeft+gx*r.width)+'px'; g.style.top=(r.top-s.top+canvas.scrollTop+gy*r.height)+'px'; }
 	function highlight(toks){ for(const t in gripEls) gripEls[t].classList.toggle('is-active', toks.includes(t)); hero.classList.toggle('is-editing', toks.length>0); }
 	let dragTok=null, hovTok=null, SH=false, AL=false;
@@ -429,12 +501,20 @@
 	}
 	function mkGrip(cls){ const g=document.createElement('div'); g.className='grip '+cls; canvas.appendChild(g); return g; }
 	CORNERS.forEach(([tok,gx,gy])=>{ const g=mkGrip('grip--corner'); gripPos.push(()=>placeGrip(g,gx,gy)); wireGrip(g,tok,'y', gy?-1:1, 90); });
-	EDGES.forEach(([tok,ax,gx,gy,dir])=>{ const g=mkGrip('grip--edge '+(ax==='y'?'axis-h':'axis-v')); gripPos.push(()=>placeGrip(g,gx,gy)); wireGrip(g,tok,ax,dir,80); });
+	EDGES.forEach(([tok,ax,gx,gy,dir])=>{ const g=mkGrip('grip--edge '+(ax==='y'?'axis-h':'axis-v')); gripPos.push(()=>placeGrip(g,gx,gy,pguide)); wireGrip(g,tok,ax,dir,80); });
 	const placeAll = ()=> gripPos.forEach(f=>f());
+
+	/* les poignées SURGISSENT au survol du héros — l'éditeur ne montre que ce qu'on va toucher */
+	const reveal = on => { canvas.classList.toggle('is-revealed',on); hero.classList.toggle('is-revealed',on); };
+	hero.addEventListener('pointerenter',()=>reveal(true));
+	hero.addEventListener('pointerleave',()=>{ if(!dragTok) reveal(false); });
+	/* le switch « tout voir » : montre toutes les poignées et guides d'un coup */
+	$('reveal-all').addEventListener('click',function(){ document.body.classList.toggle('show-all'); this.classList.toggle('is-on'); });
 
 	/* ═══ LA PALETTE — attrape, DÉPOSE n'importe où (.paintable) ═══ */
 	let gradA='var(--accent)', gradB='var(--complement)', gradAngle=90;
-	const gradStr = ()=>`linear-gradient(${gradAngle}deg, ${resolve(gradA)}, ${resolve(gradB)})`;
+	/* on garde les var() : une couleur/un dégradé déposé reste LIÉ au thème (interconnexion) */
+	const gradStr = ()=>`linear-gradient(${gradAngle}deg, ${gradA}, ${gradB})`;
 	function paintDrag(el, payload){
 		el.addEventListener('pointerdown', e=>{ e.preventDefault();
 			const ghost=document.createElement('div');
@@ -443,17 +523,26 @@
 			const move=ev=>{ ghost.style.left=ev.clientX+'px'; ghost.style.top=ev.clientY+'px'; };
 			const up=ev=>{ removeEventListener('pointermove',move); removeEventListener('pointerup',up); ghost.remove();
 				const t=document.elementFromPoint(ev.clientX,ev.clientY)?.closest('.paintable');
-				if(t){ t.style.background=payload(); t.classList.remove('has-gradient'); } };
+				if(t){ t.style.background=payload(); t.classList.remove('has-gradient'); if(t.classList.contains('bg-stop')) recomposeBg(); } };
 			addEventListener('pointermove',move); addEventListener('pointerup',up); move(e);
 		});
 	}
-	document.querySelectorAll('#palette .palette-chip, .scheme-swatches .swatch').forEach(c=> paintDrag(c, ()=>resolve(c.dataset.paint)));
+	document.querySelectorAll('#palette .palette-chip, .scheme-swatches .swatch, .gradient-swatch').forEach(c=>{
+		if(c.classList.contains('gradient-swatch')) c.style.background = c.dataset.paint;   /* affiche le dégradé, live */
+		paintDrag(c, ()=>c.dataset.paint);
+	});
 	paintDrag($('gradient-bar'), gradStr);
-	function paintGradUI(){ $('gradient-bar').style.background=gradStr(); $('stop-a').style.background=resolve(gradA); $('stop-b').style.background=resolve(gradB); }
+	function paintGradUI(){ $('gradient-bar').style.background=gradStr(); $('stop-a').style.background=gradA; $('stop-b').style.background=gradB; }
 	const CYCLE=['var(--accent)','var(--complement)','var(--tierce)','var(--encre)','var(--fond)'];
 	$('stop-a').addEventListener('click',()=>{ gradA=CYCLE[(CYCLE.indexOf(gradA)+1)%CYCLE.length]; paintGradUI(); });
 	$('stop-b').addEventListener('click',()=>{ gradB=CYCLE[(CYCLE.indexOf(gradB)+1)%CYCLE.length]; paintGradUI(); });
 	$('gradient-angle').addEventListener('input',e=>{ gradAngle=+e.target.value; paintGradUI(); });
+
+	/* ═══ FOND DE PAGE composable : lâche des couleurs sur les cases → dégradé de page ═══ */
+	function recomposeBg(){ if(!$('bg-stops').classList.contains('is-open')){ canvas.style.background=''; return; }
+		const cols=[...document.querySelectorAll('#bg-stops .bg-stop')].map(s=>s.style.background||'var(--fond)');
+		canvas.style.background=`linear-gradient(140deg, ${cols.join(', ')})`; }
+	$('compose').addEventListener('click',()=>{ $('bg-stops').classList.toggle('is-open'); recomposeBg(); });
 
 	/* ═══ JETER une couleur → éclaboussure + dégradé sur le héros (volé à PÂTE) ═══ */
 	const cv=$('splash'), ctx=cv.getContext('2d'); const size=()=>{cv.width=innerWidth;cv.height=innerHeight;}; size();
