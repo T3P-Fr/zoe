@@ -16,6 +16,11 @@
 		une couleur qui éclabousse) · POSSÉDÉ (les valeurs sont des poignées). Le ressort
 		volé anime tout. Zoé : chaque geste ne pose que des --z-channel-*, le CSS déduit.
 		Noms de classe explicites : tout se lit.
+
+		LE SOCLE (relookr) — LA CASCADE : global → type → élément. Chaque famille lit SON
+		slot (--z-channel-{card|btn}-*) d'abord, sinon retombe sur le global. La « portée »
+		du geste choisit le niveau où il écrit. Régler « Cartes » surécrit le global pour
+		elles seules. Voir relookr/CONCEPT.md.
 	*/
 	:root {
 		/* nombres bruts posés par les gestes */
@@ -54,6 +59,33 @@
 		--radius-br: calc(var(--z-channel-radius-br,22)*1px); --radius-bl: calc(var(--z-channel-radius-bl,8)*1px);
 		--pad-haut: calc(var(--z-channel-pad-haut,22)*1px); --pad-droite: calc(var(--z-channel-pad-droite,30)*1px);
 		--pad-bas: calc(var(--z-channel-pad-bas,22)*1px); --pad-gauche: calc(var(--z-channel-pad-gauche,30)*1px);
+	}
+
+	/* ═══ LA CASCADE — global → type → élément (le socle de relookr) ═══
+	   La carte et le bouton lisent d'ABORD leur slot de type (--z-channel-card-*/btn-*) ;
+	   s'il n'est pas posé, ils retombent sur le global (le canal de :root). Un geste
+	   « portée: Cartes » pose --z-channel-card-* → seules les cartes bougent et surécrivent
+	   le global, sans le toucher. Les consommateurs ne changent pas : ils lisent --radius-tl.
+	   Styleguide 0.1 */
+	.card {
+		--radius-tl: calc(var(--z-channel-card-radius-tl, var(--z-channel-radius-tl,22))*1px);
+		--radius-tr: calc(var(--z-channel-card-radius-tr, var(--z-channel-radius-tr,8))*1px);
+		--radius-br: calc(var(--z-channel-card-radius-br, var(--z-channel-radius-br,22))*1px);
+		--radius-bl: calc(var(--z-channel-card-radius-bl, var(--z-channel-radius-bl,8))*1px);
+		--pad-haut:   calc(var(--z-channel-card-pad-haut,   var(--z-channel-pad-haut,22))*1px);
+		--pad-droite: calc(var(--z-channel-card-pad-droite, var(--z-channel-pad-droite,30))*1px);
+		--pad-bas:    calc(var(--z-channel-card-pad-bas,    var(--z-channel-pad-bas,22))*1px);
+		--pad-gauche: calc(var(--z-channel-card-pad-gauche, var(--z-channel-pad-gauche,30))*1px);
+	}
+	.btn {
+		--radius-tl: calc(var(--z-channel-btn-radius-tl, var(--z-channel-radius-tl,22))*1px);
+		--radius-tr: calc(var(--z-channel-btn-radius-tr, var(--z-channel-radius-tr,8))*1px);
+		--radius-br: calc(var(--z-channel-btn-radius-br, var(--z-channel-radius-br,22))*1px);
+		--radius-bl: calc(var(--z-channel-btn-radius-bl, var(--z-channel-radius-bl,8))*1px);
+		--pad-haut:   calc(var(--z-channel-btn-pad-haut,   var(--z-channel-pad-haut,22))*1px);
+		--pad-droite: calc(var(--z-channel-btn-pad-droite, var(--z-channel-pad-droite,30))*1px);
+		--pad-bas:    calc(var(--z-channel-btn-pad-bas,    var(--z-channel-pad-bas,22))*1px);
+		--pad-gauche: calc(var(--z-channel-btn-pad-gauche, var(--z-channel-pad-gauche,30))*1px);
 	}
 	* { box-sizing: border-box; }
 	body { margin:0; min-height:100vh; background:radial-gradient(1200px 700px at 25% -10%, #14141f, var(--console-bg));
@@ -245,6 +277,13 @@
 	.bg-stops.is-open { display:flex; }
 	.bg-stop { flex:1; height:34px; border-radius:8px; border:1px dashed var(--console-stroke); display:grid; place-items:center;
 		color:var(--console-ink-faint); font-size:.6rem; }
+
+	/* — LA PORTÉE (tabs=scope) : à quel niveau le geste écrit — global, cartes, boutons — */
+	.scope-row { display:flex; align-items:center; gap:.4rem; margin:.7rem 0 0; }
+	.scope-lead { font-size:.6rem; letter-spacing:.12em; text-transform:uppercase; color:var(--console-ink-faint); margin-right:.15rem; }
+	.scope-chip { font:inherit; font-size:.66rem; cursor:pointer; color:var(--console-ink-soft); background:#0000;
+		border:1px solid var(--console-stroke); border-radius:999px; padding:.32em .75em; transition:color .15s, border-color .15s, box-shadow .15s; }
+	.scope-chip.is-on { color:var(--console-ink); border-color:var(--accent); box-shadow:0 0 10px -3px var(--accent); }
 </style>
 
 <body>
@@ -353,7 +392,13 @@
 					<span class="palette-chip pellet" data-hue="205" style="background:hsl(205 80% 55%)"></span>
 					<span class="palette-chip pellet" data-hue="300" style="background:hsl(300 65% 55%)"></span>
 				</div>
-				<p class="hint"><b>Lance</b> une couleur sur le héros : il l'avale, elle éclabousse, et <b>tout le schème se re-dérive</b> depuis elle (accent, complément, tierce, neutres, cartes, boutons). Puis empoigne ses <b>coins</b> (radius par coin) et ses <b>bords</b> (padding par côté). <kbd>Shift</kbd> = le haut · <kbd>Alt</kbd> = le bas · <kbd>Shift+Alt</kbd> = les 4.</p>
+				<div class="scope-row" id="scope-row">
+					<span class="scope-lead">Portée</span>
+					<button class="scope-chip is-on" data-scope="global">Global</button>
+					<button class="scope-chip" data-scope="card">Cartes</button>
+					<button class="scope-chip" data-scope="btn">Boutons</button>
+				</div>
+				<p class="hint"><b>Lance</b> une couleur sur le héros : il l'avale, elle éclabousse, et <b>tout le schème se re-dérive</b> depuis elle (accent, complément, tierce, neutres, cartes, boutons). Puis empoigne ses <b>coins</b> (radius par coin) et ses <b>bords</b> (padding par côté). <kbd>Shift</kbd> = le haut · <kbd>Alt</kbd> = le bas · <kbd>Shift+Alt</kbd> = les 4. Choisis la <b>portée</b> : <b>Global</b> sculpte tout · <b>Cartes</b> ou <b>Boutons</b> ne resculptent QU'eux et <b>surécrivent</b> le global.</p>
 			</section>
 
 		</aside>
@@ -489,6 +534,13 @@
 
 	/* ═══ LA MATIÈRE — coins & bords, HIGHLIGHT + modificateurs (le concept de Christophe) ═══ */
 	const hero=$('hero'), canvas=$('canvas');
+	/* LA PORTÉE (tabs=scope) — le geste écrit au niveau choisi ; les poignées surgissent
+	   sur la cible représentative (le héros en global, la 1re carte/le 1er bouton sinon). */
+	let scope='global';
+	const SCOPE_TARGET={ global:hero, card:document.querySelector('.card'), btn:document.querySelector('.btn') };
+	const currentTarget=()=> SCOPE_TARGET[scope] || hero;
+	/* la clé du canal : global = --z-channel-radius-tl · type = --z-channel-card-radius-tl */
+	const skey = tok => scope==='global' ? tok : scope+'-'+tok;
 	const CORNERS=[['radius-tl',0,0],['radius-tr',1,0],['radius-br',1,1],['radius-bl',0,1]];
 	const EDGES=[['pad-haut','y',.5,0,-1],['pad-bas','y',.5,1,1],['pad-gauche','x',0,.5,-1],['pad-droite','x',1,.5,1]];
 	const gripEls={}, gripPos=[];
@@ -517,21 +569,34 @@
 			const pos = axis==='y'? e.clientY : e.clientX;
 			if(start==null){ start=pos; base={}; }
 			const gr=group(tok,SH,AL); highlight(gr);
-			gr.forEach(t=>{ if(base[t]==null) base[t]=cur(t); spring(t, Math.max(0,Math.min(hi, base[t]+(pos-start)*dir*0.6))); });
+			/* on écrit la clé SCOPÉE : global → --z-channel-radius-tl · cartes → --z-channel-card-radius-tl */
+			gr.forEach(t=>{ const k=skey(t); if(base[k]==null) base[k]=cur(k); spring(k, Math.max(0,Math.min(hi, base[k]+(pos-start)*dir*0.6))); });
 		});
 		g.addEventListener('pointerup',()=>{ start=null; dragTok=null; hovTok=null; highlight([]); });
 	}
 	function mkGrip(cls){ const g=document.createElement('div'); g.className='grip '+cls; canvas.appendChild(g); return g; }
-	CORNERS.forEach(([tok,gx,gy])=>{ const g=mkGrip('grip--corner'); gripPos.push(()=>placeGrip(g,gx,gy)); wireGrip(g,tok,'y', gy?-1:1, 90); });
-	EDGES.forEach(([tok,ax,gx,gy,dir])=>{ const g=mkGrip('grip--edge '+(ax==='y'?'axis-h':'axis-v')); gripPos.push(()=>placeGrip(g,gx,gy,pguide)); wireGrip(g,tok,ax,dir,80); });
+	CORNERS.forEach(([tok,gx,gy])=>{ const g=mkGrip('grip--corner'); gripPos.push(()=>placeGrip(g,gx,gy,currentTarget())); wireGrip(g,tok,'y', gy?-1:1, 90); });
+	EDGES.forEach(([tok,ax,gx,gy,dir])=>{ const g=mkGrip('grip--edge '+(ax==='y'?'axis-h':'axis-v')); gripPos.push(()=>placeGrip(g,gx,gy, scope==='global'?pguide:currentTarget())); wireGrip(g,tok,ax,dir,80); });
 	const placeAll = ()=> gripPos.forEach(f=>f());
 
 	/* les poignées SURGISSENT au survol du héros — l'éditeur ne montre que ce qu'on va toucher */
 	const reveal = on => { canvas.classList.toggle('is-revealed',on); hero.classList.toggle('is-revealed',on); };
 	hero.addEventListener('pointerenter',()=>reveal(true));
-	hero.addEventListener('pointerleave',()=>{ if(!dragTok) reveal(false); });
+	hero.addEventListener('pointerleave',()=>{ if(!dragTok && scope==='global') reveal(false); });
 	/* le switch « tout voir » : montre toutes les poignées et guides d'un coup */
 	$('reveal-all').addEventListener('click',function(){ document.body.classList.toggle('show-all'); this.classList.toggle('is-on'); });
+
+	/* ═══ LA PORTÉE — choisir le niveau du geste (le socle de la cascade rendu visible) ═══
+	   Hors global, on garde les poignées sur la cible du type : tu sculptes une carte,
+	   TOUTES les cartes suivent, et elles surécrivent le global. */
+	document.querySelectorAll('#scope-row .scope-chip').forEach(chip=>{
+		chip.addEventListener('click',()=>{
+			scope=chip.dataset.scope;
+			document.querySelectorAll('#scope-row .scope-chip').forEach(c=>c.classList.toggle('is-on', c===chip));
+			canvas.classList.toggle('is-revealed', scope!=='global');
+			requestAnimationFrame(placeAll);
+		});
+	});
 
 	/* ═══ LA PALETTE — attrape, DÉPOSE n'importe où (.paintable) ═══ */
 	let gradA='var(--accent)', gradB='var(--complement)', gradAngle=90;
