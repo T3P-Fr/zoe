@@ -220,6 +220,10 @@ function render() {
 	/* L'atelier de thème — un thème entier déduit de curseurs (z-channel + CSS). L'essai
 	   routier : bouge un curseur, toute l'interface se ré-harmonise. */
 	menu.append(el("a", { href: "../examples/theme-builder.html", text: LANG === "en" ? "the theme lab" : LANG === "es" ? "el taller de tema" : "l'atelier de thème" }));
+	/* L'éditeur — la version « fou/Zoé » : on règle en TIRANT sur la roue et la courbe. */
+	const ed = el("a", { href: "../examples/zoe-editor.html", text: LANG === "en" ? "the editor" : LANG === "es" ? "el editor" : "l'éditeur" });
+	ed.style.color = "var(--z-accent, #e0318f)";
+	menu.append(ed);
 	main.append(homeSection());
 
 	const groups = { core: [], tools: [], components: [] };

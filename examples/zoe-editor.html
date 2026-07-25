@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zoé — l'éditeur</title>
+
+<script>
+	if (location.protocol === "file:") document.write('<div style="padding:1rem;background:#7a1d0c;color:#fff">Lance node scripts/serve.mjs 5173</div>');
+</script>
+
+<style>
+	/*
+		============================================================
+		ZOÉ EDITOR — on règle le thème EN TIRANT sur les choses, pas à côté.
+		------------------------------------------------------------
+		La couleur se pose en glissant deux poignées SUR une roue (A = accent, B =
+		complément ; l'écart se lit au drag). L'échelle typo se plie en tirant une COURBE
+		entre deux tailles ; les six titres montent dessus en arc-en-ciel. L'espace se règle
+		par côté. La graisse titre↔texte se creuse comme de la lumière.
+
+		Le canvas est noir, éditorial. L'aperçu, lui, montre le thème sur du VRAI : titres
+		noirs sur blanc, façon échiquier. Chaque poignée pose un --z-channel-* sur :root ;
+		le CSS de l'aperçu en déduit tout. Le JS ne fait QUE traduire un geste en nombre.
+		============================================================
+	*/
+
+	:root {
+		/* défauts (les poignées les écrasent) */
+		--z-channel-teinte: 265; --z-channel-satur: 66; --z-channel-comp: 165;
+		--z-channel-sombre: 4; --z-channel-contraste: 52;
+		--z-channel-hmax: 60; --z-channel-hmin: 15; --z-channel-typo: 55;
+		--z-channel-mt: 20; --z-channel-mr: 26; --z-channel-mb: 20; --z-channel-ml: 26;
+
+		color-scheme: dark;
+		--edge: #16161a; --ink0: #f4f2ee; --ink1: #a9a6a0; --ink2: #67645f;
+		--mag: #e0318f; --panel: #101014; --panel2: #17171d; --stroke: #26262e;
+		--mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	}
+
+	* { box-sizing: border-box; }
+	body {
+		margin: 0; min-height: 100vh; background: var(--edge); color: var(--ink0);
+		font-family: var(--mono); font-size: 13px;
+		display: grid; grid-template-columns: 380px 1fr;
+	}
+	@media (max-width: 900px) { body { grid-template-columns: 1fr; } }
+
+	/* ————— LA COLONNE D'OUTILS (le canvas noir) ————— */
+	.tools { padding: 1.3rem 1.2rem; display: grid; gap: 1rem; align-content: start;
+		background: var(--edge); border-right: 1px solid var(--stroke); }
+	.brand { display: flex; align-items: baseline; gap: .6rem; margin: .2rem 0 .4rem; }
+	.brand b { font-size: 1.05rem; letter-spacing: .02em; }
+	.brand span { color: var(--ink2); font-size: .72rem; }
+
+	.panel { background: var(--panel); border: 1px solid var(--stroke); border-radius: 14px; padding: .95rem 1rem 1.1rem; }
+	.panel > h2 { margin: 0 0 .9rem; font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--ink1);
+		display: flex; align-items: center; gap: .5rem; }
+	.panel > h2::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--mag); }
+
+	/* — LA ROUE — */
+	.wheel-wrap { display: grid; grid-template-columns: 180px 1fr; gap: 1rem; align-items: center; }
+	.wheel { position: relative; width: 180px; height: 180px; border-radius: 50%; touch-action: none; cursor: crosshair;
+		background:
+			radial-gradient(circle, #fff 0%, transparent 66%),
+			conic-gradient(from 90deg, hsl(0 90% 55%), hsl(60 90% 55%), hsl(120 90% 55%), hsl(180 90% 55%), hsl(240 90% 55%), hsl(300 90% 55%), hsl(360 90% 55%));
+		box-shadow: inset 0 0 0 1px var(--stroke); }
+	.handle { position: absolute; width: 26px; height: 26px; border-radius: 50%; translate: -50% -50%;
+		border: 3px solid #fff; box-shadow: 0 0 0 1.5px #000, 0 3px 10px rgba(0,0,0,.6); cursor: grab; }
+	.handle.b { width: 20px; height: 20px; border-style: dashed; }
+	.handle b { position: absolute; inset: 0; display: grid; place-items: center; font: 700 10px/1 var(--mono); color: #000; mix-blend-mode: difference; }
+	.readouts { display: grid; gap: .5rem; font-size: .72rem; color: var(--ink1); }
+	.readouts .r { display: flex; justify-content: space-between; }
+	.readouts .r span:last-child { color: var(--ink0); }
+	.chip { width: 100%; height: 26px; border-radius: 7px; border: 1px solid var(--stroke); }
+
+	/* — LA COURBE TYPO — */
+	.type { position: relative; height: 120px; margin-bottom: .8rem; touch-action: none; }
+	.type svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+	.type .anchor { position: absolute; width: 16px; height: 16px; border-radius: 50%; translate: -50% -50%;
+		background: #fff; border: 2px solid #000; cursor: ns-resize; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
+	.type .heads { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: space-between; gap: 2px; pointer-events: none; }
+	.type .heads span { font-weight: 800; line-height: .9; }
+	.type-note { font-size: .68rem; color: var(--ink2); display: flex; justify-content: space-between; }
+
+	/* — L'ESPACE PAR CÔTÉ — */
+	.box-edit { display: grid; grid-template-columns: 34px 1fr 34px; grid-template-rows: 22px 1fr 22px; gap: .4rem; align-items: center; justify-items: center; }
+	.box-edit .core { grid-column: 2; grid-row: 2; width: 100%; height: 46px; border: 1px dashed var(--mag); border-radius: 8px;
+		display: grid; place-items: center; color: var(--ink2); font-size: .62rem; }
+	.box-edit input { width: 100%; }
+	.box-edit .t { grid-column: 2; grid-row: 1; } .box-edit .b { grid-column: 2; grid-row: 3; }
+	.box-edit .l { grid-row: 2; grid-column: 1; writing-mode: vertical-lr; height: 46px; } .box-edit .r { grid-row: 2; grid-column: 3; writing-mode: vertical-lr; height: 46px; }
+
+	.sliders { display: grid; gap: .7rem; }
+	.sliders label { display: grid; gap: .3rem; font-size: .72rem; color: var(--ink1); }
+	.sliders label .v { float: right; color: var(--ink0); }
+	input[type=range] { width: 100%; accent-color: var(--mag); }
+
+	/* ————— L'APERÇU (le thème sur du vrai) ————— */
+	.stage {
+		/* le MOTEUR : les tokens du thème, déduits des --z-channel-* posés par les poignées */
+		--H: var(--z-channel-teinte,265); --Snum: var(--z-channel-satur,66); --comp: var(--z-channel-comp,165);
+		--flip: var(--z-channel-sombre,4); --ctr: var(--z-channel-contraste,52);
+		--typo: var(--z-channel-typo,55);
+		--dir: calc(-1 + var(--flip)/50);
+		--Lpage: calc(96 - var(--flip)*0.9); --Link: calc(20 + var(--flip)*0.66);
+		--Lacc: calc(var(--Lpage) + var(--dir)*var(--ctr));
+		--Hb: calc(var(--H) + var(--comp));
+		--page:    hsl(var(--H) calc(var(--Snum)*0.10*1%) calc(var(--Lpage)*1%));
+		--ink:     hsl(var(--H) calc(var(--Snum)*0.30*1%) calc(var(--Link)*1%));
+		--ink-sf:  hsl(var(--H) calc(var(--Snum)*0.20*1%) calc((var(--Link)+30)*1%));
+		--surf:    hsl(var(--H) calc(var(--Snum)*0.14*1%) calc((var(--Lpage) + var(--dir)*3)*1%));
+		--line:    hsl(var(--H) calc(var(--Snum)*0.18*1%) calc((var(--Lpage)+var(--dir)*12)*1%));
+		--accent:  hsl(var(--H) calc(var(--Snum)*1%) calc(var(--Lacc)*1%));
+		--accent2: hsl(var(--Hb) calc(var(--Snum)*1%) calc(var(--Lacc)*1%));
+		--acc-ink: hsl(var(--H) 12% calc(var(--Lpage)*1%));
+		/* graisse : la « lumière » typo — titre lourd, texte léger, l'écart = --typo */
+		--w-title: calc(360 + var(--typo)*4.4);
+		--w-text:  calc(440 - var(--typo)*1.8);
+		/* espace par côté (px) */
+		--mt: calc(var(--z-channel-mt,20)*1px); --mr: calc(var(--z-channel-mr,26)*1px);
+		--mb: calc(var(--z-channel-mb,20)*1px); --ml: calc(var(--z-channel-ml,26)*1px);
+
+		background: var(--page); color: var(--ink);
+		font-family: ui-sans-serif, system-ui, sans-serif;
+		padding: clamp(1.5rem, 4vw, 3.2rem);
+		transition: background-color .3s, color .3s;
+		min-height: 100vh; overflow: auto;
+	}
+	.stage .sheet { max-width: 48rem; margin: 0 auto; display: grid; gap: 2rem; }
+
+	/* le titre « échiquier » : noir sur blanc, une pièce d'accent qui le barre */
+	.masthead { border-bottom: 3px solid var(--ink); padding-bottom: 1rem; }
+	.masthead .kick { display: inline-block; background: var(--accent); color: var(--acc-ink); font-weight: 700;
+		font-size: .72em; letter-spacing: .18em; text-transform: uppercase; padding: .3em .7em; }
+	/* le titre de l'aperçu prend la GROSSE taille de la courbe typo (l'ancre du haut) */
+	.masthead h1 { margin: .5rem 0 0; font-weight: var(--w-title); font-size: calc(var(--z-channel-hmax, 60) * 1px + .4rem); line-height: .98; letter-spacing: -.02em; }
+	.masthead h2.sub { margin: .3rem 0 0; font-weight: var(--w-text); font-size: calc(var(--z-channel-hmin, 15) * 1px + .3rem); color: var(--ink-sf); }
+	.stage p { font-weight: var(--w-text); color: var(--ink-sf); line-height: 1.6; margin: 0; max-width: 34em; }
+
+	.scale-demo { display: flex; align-items: baseline; gap: .7rem; flex-wrap: wrap; font-weight: var(--w-title); }
+	.scale-demo b { line-height: .9; }
+
+	.actions { display: flex; gap: .8rem; flex-wrap: wrap; }
+	.btn { font: inherit; font-weight: 600; cursor: pointer; border: 1.5px solid var(--ink);
+		padding: var(--mt) var(--mr) var(--mb) var(--ml); border-radius: 0; background: var(--ink); color: var(--page);
+		transition: transform .2s cubic-bezier(.34,1.56,.64,1), background-color .3s, color .3s, border-color .3s; }
+	.btn:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--accent); }
+	.btn.accent { background: var(--accent); border-color: var(--accent); color: var(--acc-ink); }
+	.btn.ghost { background: transparent; color: var(--ink); }
+
+	.grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(11rem,1fr)); gap: 1rem; }
+	.tile { border: 1.5px solid var(--ink); background: var(--surf); padding: var(--mt) var(--mr) var(--mb) var(--ml);
+		transition: background-color .3s, border-color .3s; }
+	.tile.fill { background: var(--accent); color: var(--acc-ink); border-color: var(--accent); }
+	.tile.fill2 { background: var(--accent2); color: var(--acc-ink); border-color: var(--accent2); }
+	.tile h3 { margin: 0 0 .3rem; font-weight: var(--w-title); font-size: 1.1em; }
+	.tile p { font-size: .86em; }
+	.ribbon { height: 26px; display: flex; }
+	.ribbon i { flex: 1; }
+</style>
+
+<body>
+
+	<!-- ═══════════ LES OUTILS ═══════════ -->
+	<aside class="tools">
+		<div class="brand"><b>Zoé</b><span>· éditeur de thème</span></div>
+
+		<section class="panel">
+			<h2>Couleur — tire A et B sur la roue</h2>
+			<div class="wheel-wrap">
+				<div class="wheel" id="wheel">
+					<div class="handle a" id="hA"><b>A</b></div>
+					<div class="handle b" id="hB"><b>B</b></div>
+				</div>
+				<div class="readouts">
+					<div class="r"><span>Teinte A</span><span id="rTeinte">—</span></div>
+					<div class="r"><span>Saturation</span><span id="rSatur">—</span></div>
+					<div class="r"><span>Écart A→B</span><span id="rComp">—</span></div>
+					<div class="chip" id="chipA"></div>
+					<div class="chip" id="chipB"></div>
+				</div>
+			</div>
+		</section>
+
+		<section class="panel">
+			<h2>Typographie — plie la courbe</h2>
+			<div class="type" id="type">
+				<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path id="curve" fill="none" stroke="var(--mag)" stroke-width="1.2" vector-effect="non-scaling-stroke"/></svg>
+				<div class="anchor" id="aMax"></div>
+				<div class="anchor" id="aMin"></div>
+				<div class="heads" id="heads"><span>H1</span><span>H2</span><span>H3</span><span>H4</span><span>H5</span><span>H6</span></div>
+			</div>
+			<div class="type-note"><span id="rMax">—</span><span>H1 … H6</span><span id="rMin">—</span></div>
+			<div class="sliders" style="margin-top:.7rem">
+				<label>Lumière typo — titre lourd ↔ texte léger <span class="v" id="rTypo"></span>
+					<input type="range" id="typo" min="0" max="100" value="55"></label>
+			</div>
+		</section>
+
+		<section class="panel">
+			<h2>Espace — par côté</h2>
+			<div class="box-edit">
+				<input type="range" class="t" id="mt" min="0" max="48" value="20">
+				<input type="range" class="l" id="ml" min="0" max="48" value="26">
+				<div class="core">boîte</div>
+				<input type="range" class="r" id="mr" min="0" max="48" value="26">
+				<input type="range" class="b" id="mb" min="0" max="48" value="20">
+			</div>
+		</section>
+
+		<section class="panel">
+			<h2>Lumière</h2>
+			<div class="sliders">
+				<label>Clair ↔ sombre <span class="v" id="rSombre"></span><input type="range" id="sombre" min="0" max="100" value="4"></label>
+				<label>Contraste de l'accent <span class="v" id="rCtr"></span><input type="range" id="contraste" min="0" max="80" value="52"></label>
+			</div>
+		</section>
+	</aside>
+
+	<!-- ═══════════ L'APERÇU ═══════════ -->
+	<main class="stage" id="stage">
+		<div class="sheet">
+			<header class="masthead">
+				<span class="kick">Aperçu vivant</span>
+				<h1>Le thème se règle<br>en tirant, pas à côté.</h1>
+				<h2 class="sub">Le titre prend la grande taille de la courbe · ce sous-titre, la petite.</h2>
+			</header>
+
+			<p>Tire les poignées <b>A</b> et <b>B</b> sur la roue : l'accent et son complément suivent, l'écart se lit tout seul. Plie la courbe pour donner sa voix à l'échelle des titres. Rien ici n'a de couleur ni de taille écrite — tout descend de tes gestes.</p>
+
+			<div class="ribbon" id="ribbon"></div>
+
+			<div class="scale-demo" id="scaleDemo">
+				<b style="color:var(--accent)">Aa</b><b>Titres</b><b style="color:var(--accent2)">&amp;</b><b class="soft" style="color:var(--ink-sf)">texte</b>
+			</div>
+
+			<div class="actions">
+				<button class="btn">Défaut</button>
+				<button class="btn accent">Action</button>
+				<button class="btn ghost">Discret</button>
+			</div>
+
+			<div class="grid">
+				<div class="tile"><h3>Surface</h3><p>Filet et fond suivent le thème. Le padding vient de la boîte, par côté.</p></div>
+				<div class="tile fill"><h3>Accent</h3><p>La pièce A, pleine.</p></div>
+				<div class="tile fill2"><h3>Complément</h3><p>La pièce B — l'écart que tu as posé.</p></div>
+			</div>
+		</div>
+	</main>
+
+<script type="module">
+	const root = document.documentElement.style;
+	const set = (k, v) => root.setProperty('--z-channel-' + k, v);
+	const $ = (id) => document.getElementById(id);
+
+	/* ————— LA ROUE : deux poignées SUR le cercle ————— */
+	const wheel = $('wheel'), hA = $('hA'), hB = $('hB');
+	const state = { A: { hue: 265, sat: 66 }, B: { hue: 70 } };   /* B.hue relatif → écart */
+	const R = 90;   /* rayon en px (la roue fait 180) */
+
+	function placeHandle(el, hue, r) {
+		const a = (hue - 90) * Math.PI / 180;   /* -90 : 0° en haut, comme le conic-gradient */
+		el.style.left = (90 + r * Math.cos(a)) + 'px';
+		el.style.top  = (90 + r * Math.sin(a)) + 'px';
+	}
+	function paint() {
+		const A = state.A, Bhue = (A.hue + state.B.hue) % 360;
+		placeHandle(hA, A.hue, A.sat / 100 * R);
+		placeHandle(hB, Bhue, A.sat / 100 * R * 0.82);
+		const cA = `hsl(${A.hue} ${A.sat}% 55%)`, cB = `hsl(${Bhue} ${A.sat}% 55%)`;
+		hA.style.background = cA; hB.style.background = cB;
+		$('chipA').style.background = cA; $('chipB').style.background = cB;
+		$('rTeinte').textContent = Math.round(A.hue) + '°';
+		$('rSatur').textContent = Math.round(A.sat) + '%';
+		$('rComp').textContent = Math.round(state.B.hue) + '°';
+		set('teinte', Math.round(A.hue));
+		set('satur', Math.round(A.sat));
+		set('comp', Math.round(state.B.hue));
+	}
+	function fromPointer(e, which) {
+		const box = wheel.getBoundingClientRect();
+		const dx = e.clientX - (box.left + 90), dy = e.clientY - (box.top + 90);
+		let hue = (Math.atan2(dy, dx) * 180 / Math.PI + 90 + 360) % 360;
+		const r = Math.min(Math.hypot(dx, dy), R);
+		if (which === 'A') { state.A.hue = hue; state.A.sat = r / R * 100; }
+		else { state.B.hue = (hue - state.A.hue + 360) % 360; }
+		paint();
+	}
+	function drag(handle, which) {
+		const down = (e) => {
+			e.preventDefault(); handle.setPointerCapture(e.pointerId);
+			const move = (ev) => fromPointer(ev, which);
+			const up = () => { handle.removeEventListener('pointermove', move); handle.removeEventListener('pointerup', up); };
+			handle.addEventListener('pointermove', move); handle.addEventListener('pointerup', up);
+			fromPointer(e, which);
+		};
+		handle.addEventListener('pointerdown', down);
+	}
+	drag(hA, 'A'); drag(hB, 'B');
+
+	/* ————— LA COURBE TYPO : deux ancres qu'on tire en hauteur ————— */
+	const typeBox = $('type'), aMax = $('aMax'), aMin = $('aMin'), curve = $('curve'), heads = $('heads').children;
+	const typ = { max: 60, min: 15 };   /* px : H1 et H6 */
+    const H = 120;   /* hauteur de la zone en px */
+	function yFor(px) { return H - (px / 72) * H; }   /* 0..72px → bas..haut */
+	function pxFor(y) { return Math.max(8, Math.min(72, (1 - y / H) * 72)); }
+	function paintType() {
+		aMax.style.left = '4%'; aMax.style.top = yFor(typ.max) + 'px';
+		aMin.style.left = '96%'; aMin.style.top = yFor(typ.min) + 'px';
+		/* courbe : une Bézier douce entre les deux ancres */
+		const y1 = yFor(typ.max), y2 = yFor(typ.min);
+		curve.setAttribute('d', `M 4 ${y1/H*100} C 45 ${y1/H*100}, 55 ${y2/H*100}, 96 ${y2/H*100}`);
+		for (let i = 0; i < 6; i++) {
+			const t = i / 5, e = t * t * (3 - 2 * t);           /* smoothstep : la « voix » de l'échelle */
+			const px = typ.max + (typ.min - typ.max) * e;
+			const hue = 8 + t * 130;                              /* rouge → vert, comme la maquette */
+			heads[i].style.fontSize = px + 'px';
+			heads[i].style.color = `hsl(${hue} 85% 55%)`;
+		}
+		$('rMax').textContent = Math.round(typ.max) + 'px';
+		$('rMin').textContent = Math.round(typ.min) + 'px';
+		set('hmax', Math.round(typ.max)); set('hmin', Math.round(typ.min));
+	}
+	function dragAnchor(el, key) {
+		el.addEventListener('pointerdown', (e) => {
+			e.preventDefault(); el.setPointerCapture(e.pointerId);
+			const move = (ev) => {
+				const box = typeBox.getBoundingClientRect();
+				typ[key] = pxFor(ev.clientY - box.top); paintType();
+			};
+			const up = () => { el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', up); };
+			el.addEventListener('pointermove', move); el.addEventListener('pointerup', up);
+		});
+	}
+	dragAnchor(aMax, 'max'); dragAnchor(aMin, 'min');
+
+	/* ————— les curseurs simples (espace par côté, lumière, graisse) ————— */
+	const wire = (id, chan, unit, out) => {
+		const inp = $(id);
+		const go = () => { set(chan, inp.value); if (out) $(out).textContent = inp.value + (unit || ''); };
+		inp.addEventListener('input', go); go();
+	};
+	wire('mt', 'mt'); wire('mr', 'mr'); wire('mb', 'mb'); wire('ml', 'ml');
+	wire('sombre', 'sombre', '', 'rSombre'); wire('contraste', 'contraste', '', 'rCtr'); wire('typo', 'typo', '', 'rTypo');
+
+	/* le ruban d'accent (petit clin d'œil vivant) */
+	const rib = $('ribbon');
+	for (let i = 0; i < 24; i++) { const s = document.createElement('i'); rib.appendChild(s); }
+	function paintRibbon() {
+		const cs = getComputedStyle($('stage'));
+		const a = cs.getPropertyValue('--accent'), b = cs.getPropertyValue('--accent2'), ink = cs.getPropertyValue('--ink');
+		[...rib.children].forEach((s, i) => s.style.background = i % 3 === 0 ? a : i % 3 === 1 ? ink : b);
+	}
+
+	paint(); paintType();
+	requestAnimationFrame(paintRibbon);
+	/* le ruban se rafraîchit quand la couleur bouge */
+	new MutationObserver(() => requestAnimationFrame(paintRibbon)).observe(document.documentElement, { attributes: true, attributeFilter: ['style'] });
+</script>
+</body>
+</html>
