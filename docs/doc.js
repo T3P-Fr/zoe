@@ -213,6 +213,10 @@ function render() {
 	const homeLink = el("a", { href: "#home", text: home.menu });
 	homeLink.style.fontWeight = "600";
 	menu.append(homeLink);
+	/* L'INTRO — la page « le socle » (docs/intro.html) : la synthèse du modèle, écrite en
+	   HTML natif habillé par la peau. Un lien de navigation (on quitte le viewer, on revient
+	   par « ← la doc »). Placé juste sous l'essai : c'est la porte conceptuelle. */
+	menu.append(el("a", { href: "./intro.html", text: LANG === "en" ? "the base" : LANG === "es" ? "el zócalo" : "le socle" }));
 	main.append(homeSection());
 
 	const groups = { core: [], tools: [], components: [] };
