@@ -96,6 +96,16 @@
 	.ctl { display: grid; gap: .35rem; margin-bottom: .8rem; }
 	.ctl label { font-size: .8rem; display: flex; justify-content: space-between; }
 	.ctl output { color: var(--accent); font-variant-numeric: tabular-nums; }
+
+	/* les presets : un clic → toute l'interface morphe (en douceur, grâce aux transitions) */
+	.presets { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1.5rem; }
+	.preset {
+		font: inherit; font-size: .74rem; font-weight: 600; cursor: pointer;
+		padding: .38em .75em; border-radius: 999px;
+		border: 1px solid var(--line); background: var(--surface-2); color: var(--ink);
+		transition: border-color .2s ease, color .2s ease, transform .2s cubic-bezier(.34,1.56,.64,1);
+	}
+	.preset:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
 	input[type=range] {
 		width: 100%; accent-color: var(--accent); cursor: pointer;
 	}
@@ -170,6 +180,14 @@
 	<aside class="panel">
 		<h1>Atelier de thème</h1>
 		<p class="sub">Tout l'aperçu est déduit de ces curseurs. Bouge-en un : l'interface entière se ré-harmonise.</p>
+
+		<div class="presets">
+			<button class="preset" data-preset="defaut">Défaut</button>
+			<button class="preset" data-preset="pastel">Pastel</button>
+			<button class="preset" data-preset="gothic">Gothic</button>
+			<button class="preset" data-preset="neon">Néon</button>
+			<button class="preset" data-preset="mono">Monochrome</button>
+		</div>
 
 		<div class="group">
 			<h2>Couleur</h2>
@@ -280,6 +298,25 @@
 		const show = () => out.textContent = inp.value;
 		inp.addEventListener('input', show); show();
 	}
+
+	/* Les PRESETS : ils ne font que POUSSER les curseurs (puis le canal + le CSS font
+	   tout le reste, comme si tu les avais tirés à la main). D'un clic, l'interface morphe. */
+	const PRESETS = {
+		defaut: { teinte: 255, satur: 60, comp: 150, sombre: 6,  contraste: 48, surface: 7,  police: 1, graisse: 420, echelle: 100, espace: 100, disabled: 38, muted: 60 },
+		pastel: { teinte: 338, satur: 74, comp: 40,  sombre: 4,  contraste: 18, surface: 5,  police: 1, graisse: 380, echelle: 100, espace: 116, disabled: 40, muted: 62 },
+		gothic: { teinte: 280, satur: 46, comp: 162, sombre: 92, contraste: 34, surface: 8,  police: 0, graisse: 520, echelle: 100, espace: 94,  disabled: 34, muted: 54 },
+		neon:   { teinte: 190, satur: 96, comp: 135, sombre: 90, contraste: 66, surface: 11, police: 2, graisse: 620, echelle: 100, espace: 100, disabled: 42, muted: 62 },
+		mono:   { teinte: 220, satur: 0,  comp: 150, sombre: 8,  contraste: 52, surface: 7,  police: 1, graisse: 440, echelle: 100, espace: 100, disabled: 38, muted: 60 }
+	};
+	function applyPreset(name) {
+		const p = PRESETS[name]; if (!p) return;
+		for (const [id, val] of Object.entries(p)) {
+			const inp = document.getElementById(id); if (!inp) continue;
+			inp.value = val;
+			inp.dispatchEvent(new Event('input', { bubbles: true }));   /* → le canal met à jour ses tokens */
+		}
+	}
+	for (const b of document.querySelectorAll('.preset')) b.addEventListener('click', () => applyPreset(b.dataset.preset));
 </script>
 </body>
 </html>
