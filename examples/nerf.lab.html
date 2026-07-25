@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zoé — le nerf : le CSS réclame, Zoé pose</title>
+
+<script>
+	if (location.protocol === "file:") document.write('<div style="padding:1rem;background:#7a1d0c;color:#fff">Lance node scripts/serve.mjs 5173</div>');
+</script>
+
+<!-- la peau : juste pour les tokens (--z-accent, --z-ink…) -->
+<link rel="stylesheet" href="../skins/hightech/hightech.css">
+
+<style>
+	body { padding: 3rem; background: var(--z-page); font-family: var(--z-font); color: var(--z-ink); }
+	h1 { font-size: 1.3em; }
+	.hint { color: var(--z-ink-soft); max-width: 40rem; line-height: 1.6; }
+	code { background: var(--z-surface-sunken); padding: .1em .35em; border-radius: 4px; }
+
+	/* L'hôte : juste une boîte. AUCUNE couche écrite ici. */
+	z-element {
+		display: inline-flex;
+		padding: .7em 1.4em;
+		font-weight: 600;
+		border-radius: 8px;
+	}
+
+	/* ————————————————————————————————————————————————————————————
+	   CE QUE LE CSS RÉCLAME — une couche « background ».
+	   Zoé doit la LIRE et poser un <div class="z-background"> AU FOND.
+	   (Ici on ne fait que la PEINDRE ; le placement, c'est Zoé.)
+	   ———————————————————————————————————————————————————————————— */
+	z-element > .z-background {
+		background: var(--z-accent);
+		border-radius: inherit;
+	}
+</style>
+
+<h1>Le nerf — le CSS réclame, Zoé pose</h1>
+<p class="hint">
+	Le HTML ci-dessous ne contient <strong>que le sens</strong> : <code>&lt;z-element&gt;Envoyer&lt;/z-element&gt;</code>.
+	Pourtant un carré apparaît derrière le texte. Ouvre l'inspecteur : Zoé a lu le CSS
+	<code>z-element &gt; .z-background</code>, et posé un <code>&lt;div class="z-background" data-z-layer&gt;</code>
+	au fond — un vrai nœud, inspectable. Tu n'as jamais écrit la couche.
+</p>
+
+<p style="margin-top:2rem">
+	<z-element>Envoyer</z-element>
+</p>
+
+<p class="hint" style="margin-top:2rem">
+	Essaie : ajoute dans le CSS <code>z-element &gt; .z-cacahuete { … }</code> et regarde la
+	console — Zoé la pose en neutre et te dit de lui donner sa place. Pas de plafond, juste un filet.
+</p>
+
+<script type="module">
+	import "../core/z-element/z-element.js";   /* la balise <z-element> */
+	import "../Zoe.js";                         /* LE CŒUR : lit le CSS, pose les couches */
+</script>
+</html>
