@@ -2,7 +2,7 @@
 <html lang="fr">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Zoé — l'éditeur</title>
+<title>Zoé — la console</title>
 
 <script>
 	if (location.protocol === "file:") document.write('<div style="padding:1rem;background:#7a1d0c;color:#fff">Lance node scripts/serve.mjs 5173</div>');
@@ -11,351 +11,370 @@
 <style>
 	/*
 		============================================================
-		ZOÉ EDITOR — on règle le thème EN TIRANT sur les choses, pas à côté.
+		LA CONSOLE ZOÉ — un thème n'est pas une liste de réglages, c'est un ORGANISME.
 		------------------------------------------------------------
-		La couleur se pose en glissant deux poignées SUR une roue (A = accent, B =
-		complément ; l'écart se lit au drag). L'échelle typo se plie en tirant une COURBE
-		entre deux tailles ; les six titres montent dessus en arc-en-ciel. L'espace se règle
-		par côté. La graisse titre↔texte se creuse comme de la lumière.
+		Chaque module (couleur, typo, espace, lumière) est un ORGANE. Des CÂBLES les
+		relient à l'écran de sortie : on voit le signal passer, teinté de ce qu'il porte.
+		La roue est le cœur — A au centre, B et C les deux ailes ; tout le schéma
+		(accent, complément, tierce, neutres) en descend. Le ruban est le spectre vivant.
 
-		Le canvas est noir, éditorial. L'aperçu, lui, montre le thème sur du VRAI : titres
-		noirs sur blanc, façon échiquier. Chaque poignée pose un --z-channel-* sur :root ;
-		le CSS de l'aperçu en déduit tout. Le JS ne fait QUE traduire un geste en nombre.
+		Rien dans l'aperçu n'a de valeur écrite : chaque geste pose des --z-channel-* sur
+		:root, un moteur de tokens en déduit TOUT, et l'aperçu ne fait que lire. Le JS ne
+		traduit qu'un geste en nombre — jamais une couleur. Câblé de bout en bout.
+		Fait par Claude & Christophe. Zoé.
 		============================================================
 	*/
 
 	:root {
-		/* défauts (les poignées les écrasent) */
-		--z-channel-teinte: 265; --z-channel-satur: 66; --z-channel-comp: 165;
-		--z-channel-sombre: 4; --z-channel-contraste: 52;
-		--z-channel-hmax: 60; --z-channel-hmin: 15; --z-channel-typo: 55;
-		--z-channel-mt: 20; --z-channel-mr: 26; --z-channel-mb: 20; --z-channel-ml: 26;
+		/* les nombres bruts — les organes les écrasent */
+		--z-channel-teinte: 262; --z-channel-satur: 70; --z-channel-eb: 150; --z-channel-ec: 40;
+		--z-channel-biais: 0; --z-channel-sombre: 6; --z-channel-contraste: 54;
+		--z-channel-hmax: 58; --z-channel-hmin: 16; --z-channel-typo: 58;
+		--z-channel-mt: 18; --z-channel-mr: 24; --z-channel-mb: 18; --z-channel-ml: 24; --z-channel-radius: 4;
 
 		color-scheme: dark;
-		--edge: #16161a; --ink0: #f4f2ee; --ink1: #a9a6a0; --ink2: #67645f;
-		--mag: #e0318f; --panel: #101014; --panel2: #17171d; --stroke: #26262e;
-		--mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-	}
+		--rack: #0b0b0f; --rack2: #101017; --stroke: #22232c; --mono: ui-monospace, "SF Mono", Menlo, monospace;
+		--ink0: #f3f1ec; --ink1: #9b98a4; --ink2: #56545e; --mag: #ff2d87;
 
-	* { box-sizing: border-box; }
-	body {
-		margin: 0; min-height: 100vh; background: var(--edge); color: var(--ink0);
-		font-family: var(--mono); font-size: 13px;
-		display: grid; grid-template-columns: 380px 1fr;
-	}
-	@media (max-width: 900px) { body { grid-template-columns: 1fr; } }
-
-	/* ————— LA COLONNE D'OUTILS (le canvas noir) ————— */
-	.tools { padding: 1.3rem 1.2rem; display: grid; gap: 1rem; align-content: start;
-		background: var(--edge); border-right: 1px solid var(--stroke); }
-	.brand { display: flex; align-items: baseline; gap: .6rem; margin: .2rem 0 .4rem; }
-	.brand b { font-size: 1.05rem; letter-spacing: .02em; }
-	.brand span { color: var(--ink2); font-size: .72rem; }
-
-	.panel { background: var(--panel); border: 1px solid var(--stroke); border-radius: 14px; padding: .95rem 1rem 1.1rem; }
-	.panel > h2 { margin: 0 0 .9rem; font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--ink1);
-		display: flex; align-items: center; gap: .5rem; }
-	.panel > h2::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--mag); }
-
-	/* — LA ROUE — */
-	.wheel-wrap { display: grid; grid-template-columns: 180px 1fr; gap: 1rem; align-items: center; }
-	.wheel { position: relative; width: 180px; height: 180px; border-radius: 50%; touch-action: none; cursor: crosshair;
-		background:
-			radial-gradient(circle, #fff 0%, transparent 66%),
-			conic-gradient(from 90deg, hsl(0 90% 55%), hsl(60 90% 55%), hsl(120 90% 55%), hsl(180 90% 55%), hsl(240 90% 55%), hsl(300 90% 55%), hsl(360 90% 55%));
-		box-shadow: inset 0 0 0 1px var(--stroke); }
-	.handle { position: absolute; width: 26px; height: 26px; border-radius: 50%; translate: -50% -50%;
-		border: 3px solid #fff; box-shadow: 0 0 0 1.5px #000, 0 3px 10px rgba(0,0,0,.6); cursor: grab; }
-	.handle.b { width: 20px; height: 20px; border-style: dashed; }
-	.handle b { position: absolute; inset: 0; display: grid; place-items: center; font: 700 10px/1 var(--mono); color: #000; mix-blend-mode: difference; }
-	.readouts { display: grid; gap: .5rem; font-size: .72rem; color: var(--ink1); }
-	.readouts .r { display: flex; justify-content: space-between; }
-	.readouts .r span:last-child { color: var(--ink0); }
-	.chip { width: 100%; height: 26px; border-radius: 7px; border: 1px solid var(--stroke); }
-
-	/* — LA COURBE TYPO — */
-	.type { position: relative; height: 120px; margin-bottom: .8rem; touch-action: none; }
-	.type svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-	.type .anchor { position: absolute; width: 16px; height: 16px; border-radius: 50%; translate: -50% -50%;
-		background: #fff; border: 2px solid #000; cursor: ns-resize; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
-	.type .heads { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: space-between; gap: 2px; pointer-events: none; }
-	.type .heads span { font-weight: 800; line-height: .9; }
-	.type-note { font-size: .68rem; color: var(--ink2); display: flex; justify-content: space-between; }
-
-	/* — L'ESPACE PAR CÔTÉ — */
-	.box-edit { display: grid; grid-template-columns: 34px 1fr 34px; grid-template-rows: 22px 1fr 22px; gap: .4rem; align-items: center; justify-items: center; }
-	.box-edit .core { grid-column: 2; grid-row: 2; width: 100%; height: 46px; border: 1px dashed var(--mag); border-radius: 8px;
-		display: grid; place-items: center; color: var(--ink2); font-size: .62rem; }
-	.box-edit input { width: 100%; }
-	.box-edit .t { grid-column: 2; grid-row: 1; } .box-edit .b { grid-column: 2; grid-row: 3; }
-	.box-edit .l { grid-row: 2; grid-column: 1; writing-mode: vertical-lr; height: 46px; } .box-edit .r { grid-row: 2; grid-column: 3; writing-mode: vertical-lr; height: 46px; }
-
-	.sliders { display: grid; gap: .7rem; }
-	.sliders label { display: grid; gap: .3rem; font-size: .72rem; color: var(--ink1); }
-	.sliders label .v { float: right; color: var(--ink0); }
-	input[type=range] { width: 100%; accent-color: var(--mag); }
-
-	/* ————— L'APERÇU (le thème sur du vrai) ————— */
-	.stage {
-		/* le MOTEUR : les tokens du thème, déduits des --z-channel-* posés par les poignées */
-		--H: var(--z-channel-teinte,265); --Snum: var(--z-channel-satur,66); --comp: var(--z-channel-comp,165);
-		--flip: var(--z-channel-sombre,4); --ctr: var(--z-channel-contraste,52);
-		--typo: var(--z-channel-typo,55);
+		/* ═══ LE MOTEUR — tout le schéma déduit des organes ═══ */
+		--H: var(--z-channel-teinte,262); --S: var(--z-channel-satur,70);
+		--Hb: calc(var(--H) + var(--z-channel-eb,150)); --Hc: calc(var(--H) - var(--z-channel-ec,40));
+		--flip: var(--z-channel-sombre,6); --ctr: var(--z-channel-contraste,54); --biais: var(--z-channel-biais,0);
 		--dir: calc(-1 + var(--flip)/50);
 		--Lpage: calc(96 - var(--flip)*0.9); --Link: calc(20 + var(--flip)*0.66);
 		--Lacc: calc(var(--Lpage) + var(--dir)*var(--ctr));
-		--Hb: calc(var(--H) + var(--comp));
-		--page:    hsl(var(--H) calc(var(--Snum)*0.10*1%) calc(var(--Lpage)*1%));
-		--ink:     hsl(var(--H) calc(var(--Snum)*0.30*1%) calc(var(--Link)*1%));
-		--ink-sf:  hsl(var(--H) calc(var(--Snum)*0.20*1%) calc((var(--Link)+30)*1%));
-		--surf:    hsl(var(--H) calc(var(--Snum)*0.14*1%) calc((var(--Lpage) + var(--dir)*3)*1%));
-		--line:    hsl(var(--H) calc(var(--Snum)*0.18*1%) calc((var(--Lpage)+var(--dir)*12)*1%));
-		--accent:  hsl(var(--H) calc(var(--Snum)*1%) calc(var(--Lacc)*1%));
-		--accent2: hsl(var(--Hb) calc(var(--Snum)*1%) calc(var(--Lacc)*1%));
+
+		--accent:  hsl(var(--H)  calc(var(--S)*1%) calc(var(--Lacc)*1%));
+		--comp:    hsl(var(--Hb) calc(var(--S)*1%) calc(var(--Lacc)*1%));
+		--tierce:  hsl(var(--Hc) calc(var(--S)*1%) calc(var(--Lacc)*1%));
+		/* le BIAIS pousse la couleur « active » vers B (négatif) ou C (positif) */
+		--active:  hsl(calc(var(--H) + var(--biais)*0.6) calc(var(--S)*1%) calc(var(--Lacc)*1%));
+
+		/* les NEUTRES — la teinte s'y glisse en sourdine (jamais un gris mort) */
+		--page:    hsl(var(--H) calc(var(--S)*0.08*1%) calc(var(--Lpage)*1%));
+		--surf1:   hsl(var(--H) calc(var(--S)*0.12*1%) calc((var(--Lpage)+var(--dir)*3)*1%));
+		--surf2:   hsl(var(--H) calc(var(--S)*0.16*1%) calc((var(--Lpage)+var(--dir)*7)*1%));
+		--ink:     hsl(var(--H) calc(var(--S)*0.30*1%) calc(var(--Link)*1%));
+		--ink-sf:  hsl(var(--H) calc(var(--S)*0.20*1%) calc((var(--Link)+var(--dir)*-26)*1%));
+		--line:    hsl(var(--H) calc(var(--S)*0.18*1%) calc((var(--Lpage)+var(--dir)*13)*1%));
 		--acc-ink: hsl(var(--H) 12% calc(var(--Lpage)*1%));
-		/* graisse : la « lumière » typo — titre lourd, texte léger, l'écart = --typo */
-		--w-title: calc(360 + var(--typo)*4.4);
-		--w-text:  calc(440 - var(--typo)*1.8);
-		/* espace par côté (px) */
-		--mt: calc(var(--z-channel-mt,20)*1px); --mr: calc(var(--z-channel-mr,26)*1px);
-		--mb: calc(var(--z-channel-mb,20)*1px); --ml: calc(var(--z-channel-ml,26)*1px);
 
-		background: var(--page); color: var(--ink);
-		font-family: ui-sans-serif, system-ui, sans-serif;
-		padding: clamp(1.5rem, 4vw, 3.2rem);
-		transition: background-color .3s, color .3s;
-		min-height: 100vh; overflow: auto;
+		/* typo CÂBLÉE à la couleur : la « chaleur » (teinte proche de l'orange) alourdit
+		   le titre — un câble réel entre l'organe couleur et l'organe typo */
+		--warm: clamp(0, calc((90 - abs(var(--H) - 35)) / 90), 1);
+		--w-title: calc(340 + var(--z-channel-typo,58)*4 + var(--warm)*140);
+		--w-text:  calc(430 - var(--z-channel-typo,58)*1.6);
+		--radius:  calc(var(--z-channel-radius,4)*1px);
+		--mt: calc(var(--z-channel-mt,18)*1px); --mr: calc(var(--z-channel-mr,24)*1px);
+		--mb: calc(var(--z-channel-mb,18)*1px); --ml: calc(var(--z-channel-ml,24)*1px);
 	}
-	.stage .sheet { max-width: 48rem; margin: 0 auto; display: grid; gap: 2rem; }
 
-	/* le titre « échiquier » : noir sur blanc, une pièce d'accent qui le barre */
-	.masthead { border-bottom: 3px solid var(--ink); padding-bottom: 1rem; }
-	.masthead .kick { display: inline-block; background: var(--accent); color: var(--acc-ink); font-weight: 700;
-		font-size: .72em; letter-spacing: .18em; text-transform: uppercase; padding: .3em .7em; }
-	/* le titre de l'aperçu prend la GROSSE taille de la courbe typo (l'ancre du haut) */
-	.masthead h1 { margin: .5rem 0 0; font-weight: var(--w-title); font-size: calc(var(--z-channel-hmax, 60) * 1px + .4rem); line-height: .98; letter-spacing: -.02em; }
-	.masthead h2.sub { margin: .3rem 0 0; font-weight: var(--w-text); font-size: calc(var(--z-channel-hmin, 15) * 1px + .3rem); color: var(--ink-sf); }
+	* { box-sizing: border-box; }
+	body { margin: 0; min-height: 100vh; background: var(--rack); color: var(--ink0);
+		font-family: var(--mono); font-size: 13px; overflow-x: hidden; }
+
+	/* les CÂBLES — une nappe SVG derrière tout ; les organes s'y branchent */
+	#cables { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+	#cables path { fill: none; stroke-width: 2.5; opacity: .8; filter: drop-shadow(0 0 4px currentColor); }
+
+	.rack { position: relative; z-index: 2; display: grid; grid-template-columns: 396px 1fr; min-height: 100vh; }
+	@media (max-width: 940px) { .rack { grid-template-columns: 1fr; } }
+
+	/* ————— LE COFFRE : la colonne des organes ————— */
+	.organs { padding: 1.2rem 1.15rem; display: grid; gap: .95rem; align-content: start;
+		background: linear-gradient(180deg, var(--rack2), var(--rack)); border-right: 1px solid var(--stroke); }
+	.head { display: flex; align-items: center; gap: .5rem; margin: .1rem 0 .3rem; }
+	.head b { font-size: 1.05rem; letter-spacing: .04em; }
+	.head .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--active); box-shadow: 0 0 8px var(--active); }
+	.head span { color: var(--ink2); font-size: .7rem; }
+
+	.presets { display: flex; flex-wrap: wrap; gap: .35rem; }
+	.preset { font: inherit; font-size: .7rem; font-weight: 600; cursor: pointer; color: var(--ink1);
+		padding: .35em .7em; border-radius: 999px; border: 1px solid var(--stroke); background: #0000;
+		transition: border-color .2s, color .2s, transform .2s cubic-bezier(.34,1.56,.64,1); }
+	.preset:hover { border-color: var(--active); color: var(--ink0); transform: translateY(-1px); }
+
+	.organ { position: relative; background: var(--rack2); border: 1px solid var(--stroke); border-radius: 16px; padding: .95rem 1rem 1.05rem; }
+	.organ > h2 { margin: 0 0 .85rem; font-size: .66rem; letter-spacing: .2em; text-transform: uppercase; color: var(--ink1);
+		display: flex; align-items: center; gap: .5rem; }
+	.jack { position: absolute; right: -7px; top: 50%; width: 14px; height: 14px; border-radius: 50%;
+		background: var(--rack); border: 2px solid var(--jc, var(--active)); box-shadow: 0 0 8px var(--jc, var(--active)); }
+
+	/* la ROUE — cœur du schéma, 3 poignées */
+	.wheel-row { display: grid; grid-template-columns: 168px 1fr; gap: .9rem; align-items: center; }
+	.wheel { position: relative; width: 168px; height: 168px; border-radius: 50%; touch-action: none; cursor: crosshair;
+		background: radial-gradient(circle,#fff 0%,transparent 64%),
+			conic-gradient(from 90deg, hsl(0 90% 55%),hsl(60 90% 55%),hsl(120 90% 55%),hsl(180 90% 55%),hsl(240 90% 55%),hsl(300 90% 55%),hsl(360 90% 55%));
+		box-shadow: inset 0 0 0 1px var(--stroke), 0 8px 30px -12px #000; }
+	.h { position: absolute; border-radius: 50%; translate: -50% -50%; cursor: grab; box-shadow: 0 0 0 1.5px #000, 0 3px 9px rgba(0,0,0,.6); }
+	.h.A { width: 28px; height: 28px; border: 3px solid #fff; }
+	.h.B, .h.C { width: 19px; height: 19px; border: 2.5px solid #fff; }
+	.h b { position: absolute; inset: 0; display: grid; place-items: center; font: 700 10px/1 var(--mono); color: #fff; mix-blend-mode: difference; }
+	.wheel svg.link { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+	.wheel svg.link line { stroke: #fff8; stroke-width: 1; stroke-dasharray: 3 3; }
+	.readout { display: grid; gap: .45rem; font-size: .7rem; color: var(--ink1); }
+	.readout .r { display: flex; justify-content: space-between; } .readout .r b { color: var(--ink0); }
+	.scheme { display: grid; grid-template-columns: repeat(6,1fr); gap: 4px; margin-top: .2rem; }
+	.scheme i { height: 22px; border-radius: 5px; border: 1px solid #fff2; }
+
+	/* le biais : une réglette qui pousse vers B ou C */
+	.biais { margin-top: .8rem; display: grid; gap: .3rem; font-size: .68rem; color: var(--ink1); }
+	.biais .lab { display: flex; justify-content: space-between; }
+	input[type=range] { width: 100%; accent-color: var(--active); }
+
+	/* la COURBE typo */
+	.type { position: relative; height: 108px; touch-action: none; margin-bottom: .5rem; }
+	.type svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+	.type .anchor { position: absolute; width: 15px; height: 15px; border-radius: 50%; translate: -50% -50%;
+		background: #fff; border: 2px solid #000; cursor: ns-resize; box-shadow: 0 2px 8px #000a; }
+	.type .heads { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: space-between; pointer-events: none; }
+	.type .heads span { font-weight: 800; line-height: .85; }
+
+	.sliders { display: grid; gap: .65rem; }
+	.sliders label { display: grid; gap: .28rem; font-size: .7rem; color: var(--ink1); }
+	.sliders label .v { float: right; color: var(--ink0); }
+
+	.box-edit { display: grid; grid-template-columns: 30px 1fr 30px; grid-template-rows: 20px 1fr 20px; gap: .35rem; align-items: center; justify-items: center; }
+	.box-edit .core { grid-column: 2; grid-row: 2; width: 100%; height: 40px; border: 1px dashed var(--active); border-radius: var(--radius);
+		display: grid; place-items: center; color: var(--ink2); font-size: .58rem; }
+	.box-edit input { width: 100%; }
+	.box-edit .t { grid-column: 2; grid-row: 1; } .box-edit .b { grid-column: 2; grid-row: 3; }
+	.box-edit .l, .box-edit .r { grid-row: 2; writing-mode: vertical-lr; height: 40px; } .box-edit .l { grid-column: 1; } .box-edit .r { grid-column: 3; }
+
+	/* ————— L'ÉCRAN DE SORTIE ————— */
+	.screen { position: relative; padding: 1.1rem; }
+	.screen .bezel { position: relative; border: 1px solid var(--stroke); border-radius: 20px; overflow: hidden;
+		box-shadow: 0 30px 80px -30px #000, inset 0 0 0 1px #ffffff08; min-height: calc(100vh - 2.2rem); }
+	.screen .jack-in { position: absolute; left: -7px; top: 90px; width: 16px; height: 16px; border-radius: 50%; z-index: 3;
+		background: var(--rack); border: 2px solid var(--active); box-shadow: 0 0 10px var(--active); }
+
+	.stage { background: var(--page); color: var(--ink); min-height: 100%;
+		padding: clamp(1.4rem,4vw,3rem); transition: background-color .3s, color .3s; font-family: ui-sans-serif, system-ui, sans-serif; }
+	.sheet { max-width: 46rem; margin: 0 auto; display: grid; gap: 1.8rem; }
+
+	.spectrum { height: 30px; border-radius: 999px;
+		background: linear-gradient(90deg, var(--comp), var(--accent) 32%, var(--active) 50%, var(--tierce) 72%, var(--comp));
+		background-size: 200% 100%; animation: drift 14s linear infinite; box-shadow: inset 0 0 0 1px #0002; }
+	@keyframes drift { to { background-position: 200% 0; } }
+
+	.mast { border-bottom: 3px solid var(--ink); padding-bottom: .9rem; }
+	.kick { display: inline-block; background: var(--active); color: var(--acc-ink); font-weight: 700; font-size: .7em;
+		letter-spacing: .18em; text-transform: uppercase; padding: .3em .7em; border-radius: var(--radius); }
+	.mast h1 { margin: .5rem 0 0; font-weight: var(--w-title); font-size: calc(var(--z-channel-hmax,58)*1px + .4rem); line-height: .98; letter-spacing: -.02em; }
+	.mast h2 { margin: .3rem 0 0; font-weight: var(--w-text); font-size: calc(var(--z-channel-hmin,16)*1px + .3rem); color: var(--ink-sf); }
 	.stage p { font-weight: var(--w-text); color: var(--ink-sf); line-height: 1.6; margin: 0; max-width: 34em; }
 
-	.scale-demo { display: flex; align-items: baseline; gap: .7rem; flex-wrap: wrap; font-weight: var(--w-title); }
-	.scale-demo b { line-height: .9; }
-
-	.actions { display: flex; gap: .8rem; flex-wrap: wrap; }
+	.actions { display: flex; gap: .7rem; flex-wrap: wrap; }
 	.btn { font: inherit; font-weight: 600; cursor: pointer; border: 1.5px solid var(--ink);
-		padding: var(--mt) var(--mr) var(--mb) var(--ml); border-radius: 0; background: var(--ink); color: var(--page);
-		transition: transform .2s cubic-bezier(.34,1.56,.64,1), background-color .3s, color .3s, border-color .3s; }
-	.btn:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--accent); }
-	.btn.accent { background: var(--accent); border-color: var(--accent); color: var(--acc-ink); }
-	.btn.ghost { background: transparent; color: var(--ink); }
+		padding: var(--mt) var(--mr) var(--mb) var(--ml); border-radius: var(--radius); background: var(--ink); color: var(--page);
+		transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s, background-color .3s, color .3s, border-color .3s; }
+	.btn:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--active); }
+	.btn.a { background: var(--accent); border-color: var(--accent); color: var(--acc-ink); }
+	.btn.b { background: var(--comp); border-color: var(--comp); color: var(--acc-ink); }
+	.btn.g { background: transparent; color: var(--ink); }
 
-	.grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(11rem,1fr)); gap: 1rem; }
-	.tile { border: 1.5px solid var(--ink); background: var(--surf); padding: var(--mt) var(--mr) var(--mb) var(--ml);
+	.grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(10.5rem,1fr)); gap: 1rem; }
+	.tile { border: 1.5px solid var(--ink); background: var(--surf1); padding: var(--mt) var(--mr) var(--mb) var(--ml); border-radius: var(--radius);
 		transition: background-color .3s, border-color .3s; }
-	.tile.fill { background: var(--accent); color: var(--acc-ink); border-color: var(--accent); }
-	.tile.fill2 { background: var(--accent2); color: var(--acc-ink); border-color: var(--accent2); }
-	.tile h3 { margin: 0 0 .3rem; font-weight: var(--w-title); font-size: 1.1em; }
-	.tile p { font-size: .86em; }
-	.ribbon { height: 26px; display: flex; }
-	.ribbon i { flex: 1; }
+	.tile.s2 { background: var(--surf2); }
+	.tile.acc { background: var(--accent); color: var(--acc-ink); border-color: var(--accent); }
+	.tile.cmp { background: var(--comp); color: var(--acc-ink); border-color: var(--comp); }
+	.tile.trc { background: var(--tierce); color: var(--acc-ink); border-color: var(--tierce); }
+	.tile h3 { margin: 0 0 .25rem; font-weight: var(--w-title); font-size: 1.05em; }
+	.tile p { font-size: .84em; }
+	.field { width: 100%; font: inherit; padding: var(--mt) var(--mr) var(--mb) var(--ml); border-radius: var(--radius);
+		background: var(--surf2); color: var(--ink); border: 1.5px solid var(--line); }
+	.field:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+	.badges { display: flex; gap: .5rem; flex-wrap: wrap; }
+	.badge { font-size: .76em; font-weight: 700; padding: .3em .7em; border-radius: 999px; }
+	.badge.a { background: var(--accent); color: var(--acc-ink); } .badge.b { background: var(--comp); color: var(--acc-ink); }
+	.badge.c { background: var(--tierce); color: var(--acc-ink); }
 </style>
 
 <body>
+	<svg id="cables"></svg>
+	<div class="rack">
 
-	<!-- ═══════════ LES OUTILS ═══════════ -->
-	<aside class="tools">
-		<div class="brand"><b>Zoé</b><span>· éditeur de thème</span></div>
+		<!-- ═══════ LES ORGANES ═══════ -->
+		<aside class="organs">
+			<div class="head"><span class="dot"></span><b>Zoé</b><span>· la console</span></div>
+			<div class="presets" id="presets">
+				<button class="preset" data-p="nuit">Nuit électrique</button>
+				<button class="preset" data-p="argile">Argile</button>
+				<button class="preset" data-p="acide">Acide</button>
+				<button class="preset" data-p="encre">Encre</button>
+				<button class="preset" data-p="brume">Brume</button>
+			</div>
 
-		<section class="panel">
-			<h2>Couleur — tire A et B sur la roue</h2>
-			<div class="wheel-wrap">
-				<div class="wheel" id="wheel">
-					<div class="handle a" id="hA"><b>A</b></div>
-					<div class="handle b" id="hB"><b>B</b></div>
+			<section class="organ" id="oColor" style="--jc:var(--accent)">
+				<span class="jack" data-jack="color"></span>
+				<h2>Couleur — le cœur du schéma</h2>
+				<div class="wheel-row">
+					<div class="wheel" id="wheel">
+						<svg class="link"><line id="lAB"/><line id="lAC"/></svg>
+						<div class="h A" id="hA"><b>A</b></div>
+						<div class="h B" id="hB"><b>B</b></div>
+						<div class="h C" id="hC"><b>C</b></div>
+					</div>
+					<div class="readout">
+						<div class="r"><span>Teinte A</span><b id="rA">—</b></div>
+						<div class="r"><span>Saturation</span><b id="rS">—</b></div>
+						<div class="r"><span>Écart B</span><b id="rB">—</b></div>
+						<div class="r"><span>Écart C</span><b id="rC">—</b></div>
+						<div class="scheme"><i style="background:var(--comp)"></i><i style="background:var(--accent)"></i><i style="background:var(--active)"></i><i style="background:var(--tierce)"></i><i style="background:var(--surf2)"></i><i style="background:var(--ink)"></i></div>
+					</div>
 				</div>
-				<div class="readouts">
-					<div class="r"><span>Teinte A</span><span id="rTeinte">—</span></div>
-					<div class="r"><span>Saturation</span><span id="rSatur">—</span></div>
-					<div class="r"><span>Écart A→B</span><span id="rComp">—</span></div>
-					<div class="chip" id="chipA"></div>
-					<div class="chip" id="chipB"></div>
+				<div class="biais">
+					<div class="lab"><span>◀ pousse vers B</span><span>pousse vers C ▶</span></div>
+					<input type="range" id="biais" min="-100" max="100" value="0">
+				</div>
+			</section>
+
+			<section class="organ" id="oType" style="--jc:var(--ink)">
+				<span class="jack" data-jack="type"></span>
+				<h2>Typo — plie la courbe (câblée à la couleur)</h2>
+				<div class="type" id="type">
+					<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path id="curve" fill="none" stroke="var(--active)" stroke-width="1.3" vector-effect="non-scaling-stroke"/></svg>
+					<div class="anchor" id="aMax"></div><div class="anchor" id="aMin"></div>
+					<div class="heads" id="heads"><span>H1</span><span>H2</span><span>H3</span><span>H4</span><span>H5</span><span>H6</span></div>
+				</div>
+				<div class="sliders"><label>Lumière typo — titre lourd ↔ texte léger <span class="v" id="vTypo"></span><input type="range" id="typo" min="0" max="100" value="58"></label></div>
+			</section>
+
+			<section class="organ" id="oSpace" style="--jc:var(--tierce)">
+				<span class="jack" data-jack="space"></span>
+				<h2>Espace — par côté &amp; rayon</h2>
+				<div class="box-edit">
+					<input type="range" class="t" id="mt" min="0" max="44" value="18">
+					<input type="range" class="l" id="ml" min="0" max="44" value="24">
+					<div class="core">boîte</div>
+					<input type="range" class="r" id="mr" min="0" max="44" value="24">
+					<input type="range" class="b" id="mb" min="0" max="44" value="18">
+				</div>
+				<div class="sliders" style="margin-top:.7rem"><label>Rayon des angles <span class="v" id="vRad"></span><input type="range" id="radius" min="0" max="26" value="4"></label></div>
+			</section>
+
+			<section class="organ" id="oLight" style="--jc:var(--comp)">
+				<span class="jack" data-jack="light"></span>
+				<h2>Lumière</h2>
+				<div class="sliders">
+					<label>Clair ↔ sombre <span class="v" id="vSombre"></span><input type="range" id="sombre" min="0" max="100" value="6"></label>
+					<label>Contraste de l'accent <span class="v" id="vCtr"></span><input type="range" id="contraste" min="0" max="80" value="54"></label>
+				</div>
+			</section>
+		</aside>
+
+		<!-- ═══════ L'ÉCRAN ═══════ -->
+		<main class="screen">
+			<div class="bezel">
+				<span class="jack-in" id="jackIn"></span>
+				<div class="stage" id="stage">
+					<div class="sheet">
+						<header class="mast">
+							<span class="kick">Sortie</span>
+							<h1>Un thème, câblé<br>comme un instrument.</h1>
+							<h2>La roue au cœur · les câbles portent le signal · l'écran le rend.</h2>
+						</header>
+						<div class="spectrum"></div>
+						<p>Tire <b>A</b> au centre pour la teinte, <b>B</b> et <b>C</b> pour les deux ailes du schéma. Le biais pousse la couleur active vers B ou C. Plie la courbe des titres — elle est câblée à la chaleur de la couleur. Rien ici n'a de valeur écrite : tout descend de la console.</p>
+						<div class="actions">
+							<button class="btn">Neutre</button>
+							<button class="btn a">Accent</button>
+							<button class="btn b">Complément</button>
+							<button class="btn g">Discret</button>
+						</div>
+						<div class="grid">
+							<div class="tile"><h3>Surface</h3><p>Fond et filet suivent le schéma. Padding par côté.</p></div>
+							<div class="tile s2"><h3>Surface 2</h3><p>Un cran plus haute. <input class="field" placeholder="Un champ…" style="margin-top:.5rem"></p></div>
+							<div class="tile acc"><h3>Accent · A</h3><p>Le cœur, plein.</p></div>
+							<div class="tile cmp"><h3>Complément · B</h3><p>L'aile B.</p></div>
+							<div class="tile trc"><h3>Tierce · C</h3><p>L'aile C.</p></div>
+						</div>
+						<div class="badges"><span class="badge a">A</span><span class="badge b">B</span><span class="badge c">C</span></div>
+					</div>
 				</div>
 			</div>
-		</section>
-
-		<section class="panel">
-			<h2>Typographie — plie la courbe</h2>
-			<div class="type" id="type">
-				<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path id="curve" fill="none" stroke="var(--mag)" stroke-width="1.2" vector-effect="non-scaling-stroke"/></svg>
-				<div class="anchor" id="aMax"></div>
-				<div class="anchor" id="aMin"></div>
-				<div class="heads" id="heads"><span>H1</span><span>H2</span><span>H3</span><span>H4</span><span>H5</span><span>H6</span></div>
-			</div>
-			<div class="type-note"><span id="rMax">—</span><span>H1 … H6</span><span id="rMin">—</span></div>
-			<div class="sliders" style="margin-top:.7rem">
-				<label>Lumière typo — titre lourd ↔ texte léger <span class="v" id="rTypo"></span>
-					<input type="range" id="typo" min="0" max="100" value="55"></label>
-			</div>
-		</section>
-
-		<section class="panel">
-			<h2>Espace — par côté</h2>
-			<div class="box-edit">
-				<input type="range" class="t" id="mt" min="0" max="48" value="20">
-				<input type="range" class="l" id="ml" min="0" max="48" value="26">
-				<div class="core">boîte</div>
-				<input type="range" class="r" id="mr" min="0" max="48" value="26">
-				<input type="range" class="b" id="mb" min="0" max="48" value="20">
-			</div>
-		</section>
-
-		<section class="panel">
-			<h2>Lumière</h2>
-			<div class="sliders">
-				<label>Clair ↔ sombre <span class="v" id="rSombre"></span><input type="range" id="sombre" min="0" max="100" value="4"></label>
-				<label>Contraste de l'accent <span class="v" id="rCtr"></span><input type="range" id="contraste" min="0" max="80" value="52"></label>
-			</div>
-		</section>
-	</aside>
-
-	<!-- ═══════════ L'APERÇU ═══════════ -->
-	<main class="stage" id="stage">
-		<div class="sheet">
-			<header class="masthead">
-				<span class="kick">Aperçu vivant</span>
-				<h1>Le thème se règle<br>en tirant, pas à côté.</h1>
-				<h2 class="sub">Le titre prend la grande taille de la courbe · ce sous-titre, la petite.</h2>
-			</header>
-
-			<p>Tire les poignées <b>A</b> et <b>B</b> sur la roue : l'accent et son complément suivent, l'écart se lit tout seul. Plie la courbe pour donner sa voix à l'échelle des titres. Rien ici n'a de couleur ni de taille écrite — tout descend de tes gestes.</p>
-
-			<div class="ribbon" id="ribbon"></div>
-
-			<div class="scale-demo" id="scaleDemo">
-				<b style="color:var(--accent)">Aa</b><b>Titres</b><b style="color:var(--accent2)">&amp;</b><b class="soft" style="color:var(--ink-sf)">texte</b>
-			</div>
-
-			<div class="actions">
-				<button class="btn">Défaut</button>
-				<button class="btn accent">Action</button>
-				<button class="btn ghost">Discret</button>
-			</div>
-
-			<div class="grid">
-				<div class="tile"><h3>Surface</h3><p>Filet et fond suivent le thème. Le padding vient de la boîte, par côté.</p></div>
-				<div class="tile fill"><h3>Accent</h3><p>La pièce A, pleine.</p></div>
-				<div class="tile fill2"><h3>Complément</h3><p>La pièce B — l'écart que tu as posé.</p></div>
-			</div>
-		</div>
-	</main>
+		</main>
+	</div>
 
 <script type="module">
-	const root = document.documentElement.style;
-	const set = (k, v) => root.setProperty('--z-channel-' + k, v);
-	const $ = (id) => document.getElementById(id);
+	const rootS = document.documentElement.style, $ = (i) => document.getElementById(i);
+	const set = (k,v) => rootS.setProperty('--z-channel-'+k, v);
 
-	/* ————— LA ROUE : deux poignées SUR le cercle ————— */
-	const wheel = $('wheel'), hA = $('hA'), hB = $('hB');
-	const state = { A: { hue: 265, sat: 66 }, B: { hue: 70 } };   /* B.hue relatif → écart */
-	const R = 90;   /* rayon en px (la roue fait 180) */
+	/* ═══ LA ROUE — A (cœur), B & C (ailes) ═══ */
+	const wheel = $('wheel'); const R = 84;
+	const st = { A:{h:262,s:70}, eb:150, ec:40 };   /* eb/ec = écarts de B et C par rapport à A */
+	function place(el, hue, r){ const a=(hue-90)*Math.PI/180; el.style.left=(84+r*Math.cos(a))+'px'; el.style.top=(84+r*Math.sin(a))+'px'; return [84+r*Math.cos(a),84+r*Math.sin(a)]; }
+	function paintWheel(){
+		const A=st.A, hb=(A.h+st.eb)%360, hc=(A.h-st.ec+360)%360, rr=A.s/100*R;
+		const pA=place($('hA'),A.h,rr), pB=place($('hB'),hb,rr*0.8), pC=place($('hC'),hc,rr*0.8);
+		$('hA').style.background=`hsl(${A.h} ${A.s}% 55%)`; $('hB').style.background=`hsl(${hb} ${A.s}% 55%)`; $('hC').style.background=`hsl(${hc} ${A.s}% 55%)`;
+		$('lAB').setAttribute('x1',pA[0]); $('lAB').setAttribute('y1',pA[1]); $('lAB').setAttribute('x2',pB[0]); $('lAB').setAttribute('y2',pB[1]);
+		$('lAC').setAttribute('x1',pA[0]); $('lAC').setAttribute('y1',pA[1]); $('lAC').setAttribute('x2',pC[0]); $('lAC').setAttribute('y2',pC[1]);
+		$('rA').textContent=Math.round(A.h)+'°'; $('rS').textContent=Math.round(A.s)+'%'; $('rB').textContent='+'+Math.round(st.eb)+'°'; $('rC').textContent='−'+Math.round(st.ec)+'°';
+		set('teinte',Math.round(A.h)); set('satur',Math.round(A.s)); set('eb',Math.round(st.eb)); set('ec',Math.round(st.ec));
+	}
+	function grab(el, fn){ el.addEventListener('pointerdown', e=>{ e.preventDefault(); el.setPointerCapture(e.pointerId);
+		const m=ev=>fn(ev); const u=()=>{el.removeEventListener('pointermove',m); el.removeEventListener('pointerup',u);};
+		el.addEventListener('pointermove',m); el.addEventListener('pointerup',u); fn(e); }); }
+	function polar(e){ const b=wheel.getBoundingClientRect(); const dx=e.clientX-(b.left+84), dy=e.clientY-(b.top+84);
+		return { hue:(Math.atan2(dy,dx)*180/Math.PI+90+360)%360, r:Math.min(Math.hypot(dx,dy),R) }; }
+	grab($('hA'), e=>{ const p=polar(e); st.A.h=p.hue; st.A.s=p.r/R*100; paintWheel(); });
+	grab($('hB'), e=>{ const p=polar(e); st.eb=(p.hue-st.A.h+360)%360; paintWheel(); });
+	grab($('hC'), e=>{ const p=polar(e); st.ec=(st.A.h-p.hue+360)%360; paintWheel(); });
 
-	function placeHandle(el, hue, r) {
-		const a = (hue - 90) * Math.PI / 180;   /* -90 : 0° en haut, comme le conic-gradient */
-		el.style.left = (90 + r * Math.cos(a)) + 'px';
-		el.style.top  = (90 + r * Math.sin(a)) + 'px';
+	/* ═══ COURBE TYPO ═══ */
+	const typeBox=$('type'), heads=$('heads').children; const tp={max:58,min:16}, TH=108;
+	const yF=px=>TH-(px/72)*TH, pxF=y=>Math.max(8,Math.min(72,(1-y/TH)*72));
+	function paintType(){
+		$('aMax').style.left='4%'; $('aMax').style.top=yF(tp.max)+'px'; $('aMin').style.left='96%'; $('aMin').style.top=yF(tp.min)+'px';
+		const y1=yF(tp.max)/TH*100, y2=yF(tp.min)/TH*100; $('curve').setAttribute('d',`M4 ${y1} C45 ${y1},55 ${y2},96 ${y2}`);
+		for(let i=0;i<6;i++){ const t=i/5,e=t*t*(3-2*t); heads[i].style.fontSize=(tp.max+(tp.min-tp.max)*e)+'px'; heads[i].style.color=`hsl(${8+t*130} 85% 55%)`; }
+		set('hmax',Math.round(tp.max)); set('hmin',Math.round(tp.min));
 	}
-	function paint() {
-		const A = state.A, Bhue = (A.hue + state.B.hue) % 360;
-		placeHandle(hA, A.hue, A.sat / 100 * R);
-		placeHandle(hB, Bhue, A.sat / 100 * R * 0.82);
-		const cA = `hsl(${A.hue} ${A.sat}% 55%)`, cB = `hsl(${Bhue} ${A.sat}% 55%)`;
-		hA.style.background = cA; hB.style.background = cB;
-		$('chipA').style.background = cA; $('chipB').style.background = cB;
-		$('rTeinte').textContent = Math.round(A.hue) + '°';
-		$('rSatur').textContent = Math.round(A.sat) + '%';
-		$('rComp').textContent = Math.round(state.B.hue) + '°';
-		set('teinte', Math.round(A.hue));
-		set('satur', Math.round(A.sat));
-		set('comp', Math.round(state.B.hue));
-	}
-	function fromPointer(e, which) {
-		const box = wheel.getBoundingClientRect();
-		const dx = e.clientX - (box.left + 90), dy = e.clientY - (box.top + 90);
-		let hue = (Math.atan2(dy, dx) * 180 / Math.PI + 90 + 360) % 360;
-		const r = Math.min(Math.hypot(dx, dy), R);
-		if (which === 'A') { state.A.hue = hue; state.A.sat = r / R * 100; }
-		else { state.B.hue = (hue - state.A.hue + 360) % 360; }
-		paint();
-	}
-	function drag(handle, which) {
-		const down = (e) => {
-			e.preventDefault(); handle.setPointerCapture(e.pointerId);
-			const move = (ev) => fromPointer(ev, which);
-			const up = () => { handle.removeEventListener('pointermove', move); handle.removeEventListener('pointerup', up); };
-			handle.addEventListener('pointermove', move); handle.addEventListener('pointerup', up);
-			fromPointer(e, which);
-		};
-		handle.addEventListener('pointerdown', down);
-	}
-	drag(hA, 'A'); drag(hB, 'B');
+	function dragA(el,k){ el.addEventListener('pointerdown',e=>{ e.preventDefault(); el.setPointerCapture(e.pointerId);
+		const m=ev=>{ tp[k]=pxF(ev.clientY-typeBox.getBoundingClientRect().top); paintType(); };
+		const u=()=>{el.removeEventListener('pointermove',m);el.removeEventListener('pointerup',u);}; el.addEventListener('pointermove',m); el.addEventListener('pointerup',u); }); }
+	dragA($('aMax'),'max'); dragA($('aMin'),'min');
 
-	/* ————— LA COURBE TYPO : deux ancres qu'on tire en hauteur ————— */
-	const typeBox = $('type'), aMax = $('aMax'), aMin = $('aMin'), curve = $('curve'), heads = $('heads').children;
-	const typ = { max: 60, min: 15 };   /* px : H1 et H6 */
-    const H = 120;   /* hauteur de la zone en px */
-	function yFor(px) { return H - (px / 72) * H; }   /* 0..72px → bas..haut */
-	function pxFor(y) { return Math.max(8, Math.min(72, (1 - y / H) * 72)); }
-	function paintType() {
-		aMax.style.left = '4%'; aMax.style.top = yFor(typ.max) + 'px';
-		aMin.style.left = '96%'; aMin.style.top = yFor(typ.min) + 'px';
-		/* courbe : une Bézier douce entre les deux ancres */
-		const y1 = yFor(typ.max), y2 = yFor(typ.min);
-		curve.setAttribute('d', `M 4 ${y1/H*100} C 45 ${y1/H*100}, 55 ${y2/H*100}, 96 ${y2/H*100}`);
-		for (let i = 0; i < 6; i++) {
-			const t = i / 5, e = t * t * (3 - 2 * t);           /* smoothstep : la « voix » de l'échelle */
-			const px = typ.max + (typ.min - typ.max) * e;
-			const hue = 8 + t * 130;                              /* rouge → vert, comme la maquette */
-			heads[i].style.fontSize = px + 'px';
-			heads[i].style.color = `hsl(${hue} 85% 55%)`;
-		}
-		$('rMax').textContent = Math.round(typ.max) + 'px';
-		$('rMin').textContent = Math.round(typ.min) + 'px';
-		set('hmax', Math.round(typ.max)); set('hmin', Math.round(typ.min));
-	}
-	function dragAnchor(el, key) {
-		el.addEventListener('pointerdown', (e) => {
-			e.preventDefault(); el.setPointerCapture(e.pointerId);
-			const move = (ev) => {
-				const box = typeBox.getBoundingClientRect();
-				typ[key] = pxFor(ev.clientY - box.top); paintType();
-			};
-			const up = () => { el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', up); };
-			el.addEventListener('pointermove', move); el.addEventListener('pointerup', up);
-		});
-	}
-	dragAnchor(aMax, 'max'); dragAnchor(aMin, 'min');
+	/* ═══ curseurs simples ═══ */
+	const wire=(id,chan,out,suf)=>{ const el=$(id); const g=()=>{ set(chan,el.value); if(out)$(out).textContent=el.value+(suf||''); }; el.addEventListener('input',g); g(); };
+	['mt','mr','mb','ml'].forEach(id=>wire(id,id)); wire('radius','radius','vRad','px');
+	wire('sombre','sombre','vSombre'); wire('contraste','contraste','vCtr'); wire('typo','typo','vTypo'); wire('biais','biais');
 
-	/* ————— les curseurs simples (espace par côté, lumière, graisse) ————— */
-	const wire = (id, chan, unit, out) => {
-		const inp = $(id);
-		const go = () => { set(chan, inp.value); if (out) $(out).textContent = inp.value + (unit || ''); };
-		inp.addEventListener('input', go); go();
+	/* ═══ PRESETS — couleur ET typo ET espace, une ambiance complète ═══ */
+	const P = {
+		nuit:   { A:{h:262,s:78}, eb:150, ec:40, sombre:90, contraste:60, typo:64, radius:3,  mt:18, mr:24, mb:18, ml:24, max:60, min:16 },
+		argile: { A:{h:24, s:58}, eb:170, ec:30, sombre:8,  contraste:40, typo:52, radius:14, mt:22, mr:28, mb:22, ml:28, max:54, min:18 },
+		acide:  { A:{h:150,s:92}, eb:120, ec:60, sombre:88, contraste:70, typo:70, radius:2,  mt:14, mr:20, mb:14, ml:20, max:64, min:15 },
+		encre:  { A:{h:220,s:20}, eb:180, ec:20, sombre:4,  contraste:66, typo:80, radius:0,  mt:20, mr:26, mb:20, ml:26, max:66, min:16 },
+		brume:  { A:{h:290,s:34}, eb:60,  ec:50, sombre:20, contraste:26, typo:44, radius:20, mt:24, mr:30, mb:24, ml:30, max:50, min:20 }
 	};
-	wire('mt', 'mt'); wire('mr', 'mr'); wire('mb', 'mb'); wire('ml', 'ml');
-	wire('sombre', 'sombre', '', 'rSombre'); wire('contraste', 'contraste', '', 'rCtr'); wire('typo', 'typo', '', 'rTypo');
-
-	/* le ruban d'accent (petit clin d'œil vivant) */
-	const rib = $('ribbon');
-	for (let i = 0; i < 24; i++) { const s = document.createElement('i'); rib.appendChild(s); }
-	function paintRibbon() {
-		const cs = getComputedStyle($('stage'));
-		const a = cs.getPropertyValue('--accent'), b = cs.getPropertyValue('--accent2'), ink = cs.getPropertyValue('--ink');
-		[...rib.children].forEach((s, i) => s.style.background = i % 3 === 0 ? a : i % 3 === 1 ? ink : b);
+	function apply(name){ const p=P[name]; if(!p) return;
+		st.A={...p.A}; st.eb=p.eb; st.ec=p.ec; tp.max=p.max; tp.min=p.min; paintWheel(); paintType();
+		for(const [id,ch] of [['sombre','sombre'],['contraste','contraste'],['typo','typo'],['radius','radius'],['mt','mt'],['mr','mr'],['mb','mb'],['ml','ml']]){
+			const el=$(id); el.value=p[id]; el.dispatchEvent(new Event('input')); }
 	}
+	for(const b of document.querySelectorAll('.preset')) b.addEventListener('click',()=>apply(b.dataset.p));
 
-	paint(); paintType();
-	requestAnimationFrame(paintRibbon);
-	/* le ruban se rafraîchit quand la couleur bouge */
-	new MutationObserver(() => requestAnimationFrame(paintRibbon)).observe(document.documentElement, { attributes: true, attributeFilter: ['style'] });
+	/* ═══ LES CÂBLES — chaque organe branché à l'écran, teinté de son signal ═══ */
+	const svg=$('cables'); const NS='http://www.w3.org/2000/svg';
+	const JACKS=[['color','--accent'],['type','--ink'],['space','--tierce'],['light','--comp']];
+	const paths=JACKS.map(([j,tok])=>{ const p=document.createElementNS(NS,'path'); p.dataset.tok=tok; svg.appendChild(p); return {p,j,tok}; });
+	function drawCables(){
+		const inR=$('jackIn').getBoundingClientRect(); const ix=inR.left+inR.width/2, iy=inR.top+inR.height/2;
+		const cs=getComputedStyle(document.documentElement);
+		for(const {p,j,tok} of paths){
+			const el=document.querySelector(`[data-jack="${j}"]`); if(!el) continue;
+			const r=el.getBoundingClientRect(); const x=r.left+r.width/2, y=r.top+r.height/2;
+			const mx=(x+ix)/2; p.setAttribute('d',`M${x} ${y} C${mx} ${y}, ${mx} ${iy}, ${ix} ${iy}`);
+			const c=cs.getPropertyValue(tok).trim(); p.style.stroke=c; p.style.color=c;
+		}
+	}
+	paintWheel(); paintType();
+	requestAnimationFrame(drawCables);
+	addEventListener('resize',drawCables); addEventListener('scroll',drawCables,{passive:true});
+	new MutationObserver(()=>requestAnimationFrame(drawCables)).observe(document.documentElement,{attributes:true,attributeFilter:['style']});
 </script>
 </body>
 </html>
