@@ -447,9 +447,12 @@
 	function knob(dialId, valId, chan, lo, hi, init, suffix){
 		const dial=$(dialId), out=$(valId); let v=init;
 		const paint=()=>{ dial.style.setProperty('--knob-rot', (((v-lo)/(hi-lo))*280-140)+'deg'); out.textContent = Math.round(v)+(suffix||''); spring(chan, v); };
-		let sy=null, sv;
-		grab(dial,e=>{ if(sy==null){sy=e.clientY;sv=v;} v=Math.max(lo,Math.min(hi, sv-(e.clientY-sy)*(hi-lo)/180)); paint(); });
-		dial.addEventListener('pointerup',()=>sy=null); paint();
+		/* ANGLE ABSOLU (human-friendly) : l'aiguille pointe vers le doigt. Tu tournes → ça tourne,
+		   à gauche → ça descend, en haut → au milieu. Zone morte en bas (comme un vrai bouton). */
+		grab(dial,e=>{ const r=dial.getBoundingClientRect(), cx=r.left+r.width/2, cy=r.top+r.height/2;
+			let a=Math.atan2(e.clientY-cy, e.clientX-cx)*180/Math.PI + 90; if(a>180) a-=360;
+			a=Math.max(-140,Math.min(140,a)); v=lo+(a+140)/280*(hi-lo); paint(); });
+		paint();
 	}
 	knob('knob-neutre','val-neutre','neutre',0,30,10);
 	knob('knob-contraste','val-contraste','contraste',0,80,56);
