@@ -217,6 +217,9 @@ function render() {
 	   HTML natif habillé par la peau. Un lien de navigation (on quitte le viewer, on revient
 	   par « ← la doc »). Placé juste sous l'essai : c'est la porte conceptuelle. */
 	menu.append(el("a", { href: "./intro.html", text: LANG === "en" ? "the base" : LANG === "es" ? "el zócalo" : "le socle" }));
+	/* L'atelier de thème — un thème entier déduit de curseurs (z-channel + CSS). L'essai
+	   routier : bouge un curseur, toute l'interface se ré-harmonise. */
+	menu.append(el("a", { href: "../examples/theme-builder.html", text: LANG === "en" ? "the theme lab" : LANG === "es" ? "el taller de tema" : "l'atelier de thème" }));
 	main.append(homeSection());
 
 	const groups = { core: [], tools: [], components: [] };
