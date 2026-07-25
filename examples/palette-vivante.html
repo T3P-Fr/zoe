@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zoé — la palette vivante</title>
+
+<script>
+	if (location.protocol === "file:") document.write('<div style="padding:1rem;background:#7a1d0c;color:#fff">Lance node scripts/serve.mjs 5173</div>');
+</script>
+
+<style>
+	/*
+		Aucune couleur n'est écrite en dur. Chaque pastille calcule la SIENNE à partir de
+		DEUX nombres — la teinte de base et l'écart — que le canal pose sur la page. Bouge
+		un curseur : les douze se ré-harmonisent ENSEMBLE, sans une ligne de JavaScript.
+	*/
+	body {
+		/* Le canal pose --z-channel-teinte SUR body (membre) ; on en dérive --teinte ICI,
+		   sur body, pour que ça descende sur les pastilles ET se recalcule à chaque drag.
+		   (Anchré sur :root, le token du body ne remonterait pas → le live serait mort.) */
+		--teinte: var(--z-channel-teinte, 250);   /* le canal l'écrase quand on tire le curseur */
+		--ecart:  var(--z-channel-ecart, 18);
+
+		margin: 0;
+		min-height: 100vh;
+		padding: 3rem 1.5rem;
+		box-sizing: border-box;
+		font-family: ui-sans-serif, system-ui, sans-serif;
+		/* le fond de la page respire lui aussi avec la teinte */
+		background: hsl(calc(var(--teinte) * 1deg) 30% 96%);
+		color: hsl(calc(var(--teinte) * 1deg) 25% 25%);
+		transition: background .25s ease, color .25s ease;
+	}
+	.wrap { max-width: 46rem; margin: 0 auto; }
+	h1 { margin: 0 0 .3rem; font-size: 1.6rem; }
+	p.lead { margin: 0 0 2rem; opacity: .8; line-height: 1.5; }
+
+	/* les commandes : deux vrais <input> natifs, membres du canal */
+	.controls { display: grid; gap: 1rem; margin-bottom: 2.5rem; }
+	label { display: grid; gap: .4rem; font-size: .85rem; font-weight: 600; }
+	input[type=range] { width: 100%; accent-color: hsl(calc(var(--teinte) * 1deg) 60% 55%); }
+
+	/* la palette : douze pastilles, chacune sa couleur DÉDUITE des deux nombres */
+	.palette { display: grid; grid-template-columns: repeat(6, 1fr); gap: .9rem; }
+	.tile {
+		aspect-ratio: 1;
+		border-radius: 18px;
+		background: hsl(calc((var(--teinte) + var(--i) * var(--ecart)) * 1deg) 68% 60%);
+		box-shadow: 0 6px 18px -8px hsl(calc((var(--teinte) + var(--i) * var(--ecart)) * 1deg) 60% 45%);
+		transition: background .25s ease, box-shadow .25s ease, transform .25s cubic-bezier(.34,1.56,.64,1);
+	}
+	.tile:hover { transform: translateY(-6px) scale(1.04); }
+</style>
+
+<!-- LE CANAL — la page entière est membre de « teinte » et « ecart » : ses deux tokens
+     descendent par héritage sur tout ce qui suit. -->
+<body channel="teinte ecart">
+<div class="wrap">
+
+	<h1>La palette vivante</h1>
+	<p class="lead">
+		Aucune couleur n'est écrite. Chaque pastille déduit la sienne de <strong>deux nombres</strong>.
+		<strong>Bouge un curseur</strong> — les douze se ré-harmonisent ensemble, et le fond avec.
+		Zéro JavaScript : juste le canal, et du CSS.
+	</p>
+
+	<div class="controls">
+		<label>Teinte de base
+			<input type="range" channel="teinte" min="0" max="360" value="250">
+		</label>
+		<label>Écart entre les tons
+			<input type="range" channel="ecart" min="0" max="40" value="18">
+		</label>
+	</div>
+
+	<div class="palette">
+		<div class="tile" style="--i:0"></div>
+		<div class="tile" style="--i:1"></div>
+		<div class="tile" style="--i:2"></div>
+		<div class="tile" style="--i:3"></div>
+		<div class="tile" style="--i:4"></div>
+		<div class="tile" style="--i:5"></div>
+		<div class="tile" style="--i:6"></div>
+		<div class="tile" style="--i:7"></div>
+		<div class="tile" style="--i:8"></div>
+		<div class="tile" style="--i:9"></div>
+		<div class="tile" style="--i:10"></div>
+		<div class="tile" style="--i:11"></div>
+	</div>
+
+</div>
+
+<script type="module" src="../tools/z-channel/z-channel.js"></script>
+</body>
+</html>
