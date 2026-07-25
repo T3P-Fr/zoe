@@ -2,7 +2,7 @@
 <html lang="fr">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Zoé — la console</title>
+<title>Zoé — l'établi</title>
 
 <script>
 	if (location.protocol === "file:") document.write('<div style="padding:1rem;background:#7a1d0c;color:#fff">Lance node scripts/serve.mjs 5173</div>');
@@ -11,286 +11,187 @@
 <style>
 	/*
 		============================================================
-		LA CONSOLE ZOÉ — un thème n'est pas une liste de réglages, c'est un ORGANISME.
+		L'ÉTABLI ZOÉ — on ne règle pas le thème, on le SCULPTE.
 		------------------------------------------------------------
-		Chaque module (couleur, typo, espace, lumière) est un ORGANE. Des CÂBLES les
-		relient à l'écran de sortie : on voit le signal passer, teinté de ce qu'il porte.
-		La roue est le cœur — A au centre, B et C les deux ailes ; tout le schéma
-		(accent, complément, tierce, neutres) en descend. Le ruban est le spectre vivant.
+		Fusion de trois cerveaux lâchés sans règles, ramenés dans Zoé :
+		· PRISME  — une source de lumière au centre d'un disque RÉFRACTE en tout le schéma.
+		            On empoigne la lumière (les rayons B et C) — la connexion se manipule.
+		· PÂTE    — l'aperçu est de la matière : on tire les COINS (radius par coin), les
+		            BORDS (padding par côté), on JETTE une couleur qui éclabousse un dégradé.
+		· POSSÉDÉ — les nombres sont des poignées qu'on scrube en place.
+		Le secret volé à Pâte : le RESSORT `(cible−val)*k`, amorti — aucune valeur n'arrive
+		sèche, tout claque et rebondit vers sa cible. Une boucle sous TOUT.
 
-		Rien dans l'aperçu n'a de valeur écrite : chaque geste pose des --z-channel-* sur
-		:root, un moteur de tokens en déduit TOUT, et l'aperçu ne fait que lire. Le JS ne
-		traduit qu'un geste en nombre — jamais une couleur. Câblé de bout en bout.
-		Fait par Claude & Christophe. Zoé.
+		Zoé par-dessus : chaque geste ne pose que des nombres (--z-channel-*) ; le CSS déduit
+		couleurs, dégradés, bordures, ombres. Le JS ne peint jamais. Fait par Claude & Christophe.
 		============================================================
 	*/
-
 	:root {
-		/* les nombres bruts — les organes les écrasent */
-		--z-channel-teinte: 262; --z-channel-satur: 70; --z-channel-eb: 150; --z-channel-ec: 40;
-		--z-channel-biais: 0; --z-channel-sombre: 6; --z-channel-contraste: 54;
-		--z-channel-hmax: 58; --z-channel-hmin: 16; --z-channel-typo: 58;
-		--z-channel-mt: 18; --z-channel-mr: 24; --z-channel-mb: 18; --z-channel-ml: 24; --z-channel-radius: 4;
+		--z-channel-teinte: 265; --z-channel-satur: 72; --z-channel-eb: 150; --z-channel-ec: 40;
+		--z-channel-sombre: 90; --z-channel-contraste: 56; --z-channel-scale: 100;
+		--z-channel-rtl: 26; --z-channel-rtr: 8; --z-channel-rbr: 26; --z-channel-rbl: 8;
+		--z-channel-pt: 26; --z-channel-pr: 34; --z-channel-pb: 26; --z-channel-pl: 34;
+		--z-channel-gx: 50; --z-channel-gon: 0;
 
-		color-scheme: dark;
-		--rack: #0b0b0f; --rack2: #101017; --stroke: #22232c; --mono: ui-monospace, "SF Mono", Menlo, monospace;
-		--ink0: #f3f1ec; --ink1: #9b98a4; --ink2: #56545e; --mag: #ff2d87;
+		--bg:#08080c; --bg2:#0e0e15; --stroke:#232430; --ink0:#f3f1ec; --ink1:#8f8c99; --ink2:#4d4b57;
+		--mono: ui-monospace,"SF Mono",Menlo,monospace;
 
-		/* ═══ LE MOTEUR — tout le schéma déduit des organes ═══ */
-		--H: var(--z-channel-teinte,262); --S: var(--z-channel-satur,70);
+		/* ═══ le MOTEUR : tout le schéma réfracté depuis la source ═══ */
+		--H: var(--z-channel-teinte,265); --S: var(--z-channel-satur,72);
 		--Hb: calc(var(--H) + var(--z-channel-eb,150)); --Hc: calc(var(--H) - var(--z-channel-ec,40));
-		--flip: var(--z-channel-sombre,6); --ctr: var(--z-channel-contraste,54); --biais: var(--z-channel-biais,0);
+		--flip: var(--z-channel-sombre,90); --ctr: var(--z-channel-contraste,56);
 		--dir: calc(-1 + var(--flip)/50);
 		--Lpage: calc(96 - var(--flip)*0.9); --Link: calc(20 + var(--flip)*0.66);
 		--Lacc: calc(var(--Lpage) + var(--dir)*var(--ctr));
-
-		--accent:  hsl(var(--H)  calc(var(--S)*1%) calc(var(--Lacc)*1%));
-		--comp:    hsl(var(--Hb) calc(var(--S)*1%) calc(var(--Lacc)*1%));
-		--tierce:  hsl(var(--Hc) calc(var(--S)*1%) calc(var(--Lacc)*1%));
-		/* le BIAIS pousse la couleur « active » vers B (négatif) ou C (positif) */
-		--active:  hsl(calc(var(--H) + var(--biais)*0.6) calc(var(--S)*1%) calc(var(--Lacc)*1%));
-
-		/* les NEUTRES — la teinte s'y glisse en sourdine (jamais un gris mort) */
-		--page:    hsl(var(--H) calc(var(--S)*0.08*1%) calc(var(--Lpage)*1%));
-		--surf1:   hsl(var(--H) calc(var(--S)*0.12*1%) calc((var(--Lpage)+var(--dir)*3)*1%));
-		--surf2:   hsl(var(--H) calc(var(--S)*0.16*1%) calc((var(--Lpage)+var(--dir)*7)*1%));
-		--ink:     hsl(var(--H) calc(var(--S)*0.30*1%) calc(var(--Link)*1%));
-		--ink-sf:  hsl(var(--H) calc(var(--S)*0.20*1%) calc((var(--Link)+var(--dir)*-26)*1%));
-		--line:    hsl(var(--H) calc(var(--S)*0.18*1%) calc((var(--Lpage)+var(--dir)*13)*1%));
-		--acc-ink: hsl(var(--H) 12% calc(var(--Lpage)*1%));
-
-		/* typo CÂBLÉE à la couleur : la « chaleur » (teinte proche de l'orange) alourdit
-		   le titre — un câble réel entre l'organe couleur et l'organe typo */
-		--warm: clamp(0, calc((90 - abs(var(--H) - 35)) / 90), 1);
-		--w-title: calc(340 + var(--z-channel-typo,58)*4 + var(--warm)*140);
-		--w-text:  calc(430 - var(--z-channel-typo,58)*1.6);
-		--radius:  calc(var(--z-channel-radius,4)*1px);
-		--mt: calc(var(--z-channel-mt,18)*1px); --mr: calc(var(--z-channel-mr,24)*1px);
-		--mb: calc(var(--z-channel-mb,18)*1px); --ml: calc(var(--z-channel-ml,24)*1px);
+		--accent: hsl(var(--H)  calc(var(--S)*1%) calc(var(--Lacc)*1%));
+		--comp:   hsl(var(--Hb) calc(var(--S)*1%) calc(var(--Lacc)*1%));
+		--tierce: hsl(var(--Hc) calc(var(--S)*1%) calc(var(--Lacc)*1%));
+		--page:   hsl(var(--H) calc(var(--S)*0.09*1%) calc(var(--Lpage)*1%));
+		--surf:   hsl(var(--H) calc(var(--S)*0.14*1%) calc((var(--Lpage)+var(--dir)*5)*1%));
+		--ink:    hsl(var(--H) calc(var(--S)*0.30*1%) calc(var(--Link)*1%));
+		--ink-sf: hsl(var(--H) calc(var(--S)*0.20*1%) calc((var(--Link)+var(--dir)*-26)*1%));
+		--line:   hsl(var(--H) calc(var(--S)*0.18*1%) calc((var(--Lpage)+var(--dir)*13)*1%));
+		--acc-ink:hsl(var(--H) 12% calc(var(--Lpage)*1%));
+		--scale: calc(var(--z-channel-scale,100)/100);
+		/* le dégradé JETÉ : de l'accent vers le complément, allumé par --gon (0/1) */
+		--grad: linear-gradient(calc(var(--z-channel-gx,50)*3.6deg), var(--accent), var(--comp));
 	}
-
 	* { box-sizing: border-box; }
-	body { margin: 0; min-height: 100vh; background: var(--rack); color: var(--ink0);
-		font-family: var(--mono); font-size: 13px; overflow-x: hidden; }
+	body { margin:0; min-height:100vh; background:radial-gradient(1200px 800px at 30% -10%, #14141f, var(--bg));
+		color:var(--ink0); font-family:var(--mono); font-size:13px; overflow:hidden; user-select:none; }
+	#splash { position:fixed; inset:0; pointer-events:none; z-index:40; }
 
-	/* les CÂBLES — une nappe SVG derrière tout ; les organes s'y branchent */
-	#cables { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-	#cables path { fill: none; stroke-width: 2.5; opacity: .8; filter: drop-shadow(0 0 4px currentColor); }
+	.wrap { display:grid; grid-template-columns:420px 1fr; height:100vh; }
+	@media (max-width:940px){ .wrap{ grid-template-columns:1fr; } }
 
-	.rack { position: relative; z-index: 2; display: grid; grid-template-columns: 396px 1fr; min-height: 100vh; }
-	@media (max-width: 940px) { .rack { grid-template-columns: 1fr; } }
+	/* ————— LE BANC (gauche) ————— */
+	.bench { padding:1.1rem 1.1rem 2rem; overflow:auto; border-right:1px solid var(--stroke);
+		background:linear-gradient(180deg,var(--bg2),var(--bg)); display:grid; gap:1.1rem; align-content:start; }
+	.title { display:flex; align-items:center; gap:.5rem; }
+	.title b{ font-size:1.05rem; letter-spacing:.03em; } .title span{ color:var(--ink2); font-size:.7rem; }
+	.title .live{ width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent); }
 
-	/* ————— LE COFFRE : la colonne des organes ————— */
-	.organs { padding: 1.2rem 1.15rem; display: grid; gap: .95rem; align-content: start;
-		background: linear-gradient(180deg, var(--rack2), var(--rack)); border-right: 1px solid var(--stroke); }
-	.head { display: flex; align-items: center; gap: .5rem; margin: .1rem 0 .3rem; }
-	.head b { font-size: 1.05rem; letter-spacing: .04em; }
-	.head .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--active); box-shadow: 0 0 8px var(--active); }
-	.head span { color: var(--ink2); font-size: .7rem; }
+	/* LE PRISME — disque + source + 2 rayons qu'on empoigne */
+	.prism-box { display:grid; grid-template-columns:230px 1fr; gap:.8rem; align-items:center; }
+	.prism { position:relative; width:230px; height:230px; touch-action:none; }
+	.prism .disc { position:absolute; inset:18px; border-radius:50%;
+		background: radial-gradient(circle,#fff 0,transparent 60%),
+			conic-gradient(from 90deg,hsl(0 90% 55%),hsl(60 90% 55%),hsl(120 90% 55%),hsl(180 90% 55%),hsl(240 90% 55%),hsl(300 90% 55%),hsl(360 90% 55%));
+		box-shadow: inset 0 0 0 1px var(--stroke), 0 0 60px -18px var(--accent); }
+	.prism svg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; overflow:visible; }
+	.ray { stroke-width:2.5; fill:none; filter:drop-shadow(0 0 5px currentColor); }
+	.node { position:absolute; border-radius:50%; translate:-50% -50%; cursor:grab; box-shadow:0 0 0 1.5px #000,0 3px 10px #000a; }
+	.node.src{ width:26px;height:26px;border:3px solid #fff; }
+	.node.b,.node.c{ width:18px;height:18px;border:2.5px solid #fff; }
+	.node small{ position:absolute;inset:0;display:grid;place-items:center;font:700 9px/1 var(--mono);color:#fff;mix-blend-mode:difference; }
+	.scheme{ display:grid;gap:.42rem;font-size:.7rem;color:var(--ink1); }
+	.scheme .sw{ height:20px;border-radius:5px;border:1px solid #ffffff18; cursor:grab; touch-action:none; position:relative; }
+	.scheme .sw::after{ content:attr(data-l);position:absolute;left:6px;top:50%;translate:0 -50%;color:#0009;font:700 9px/1 var(--mono);mix-blend-mode:overlay; }
 
-	.presets { display: flex; flex-wrap: wrap; gap: .35rem; }
-	.preset { font: inherit; font-size: .7rem; font-weight: 600; cursor: pointer; color: var(--ink1);
-		padding: .35em .7em; border-radius: 999px; border: 1px solid var(--stroke); background: #0000;
-		transition: border-color .2s, color .2s, transform .2s cubic-bezier(.34,1.56,.64,1); }
-	.preset:hover { border-color: var(--active); color: var(--ink0); transform: translateY(-1px); }
+	.card { background:var(--bg2); border:1px solid var(--stroke); border-radius:14px; padding:.85rem .9rem 1rem; }
+	.card h2{ margin:0 0 .7rem; font-size:.64rem; letter-spacing:.2em; text-transform:uppercase; color:var(--ink1); }
+	.scrub{ color:var(--ink0); cursor:ew-resize; border-bottom:1px dashed var(--ink2); padding:0 1px; }
+	.row{ display:flex; gap:.8rem; flex-wrap:wrap; align-items:center; font-size:.72rem; color:var(--ink1); }
+	select{ font:inherit; font-size:.72rem; background:var(--bg); color:var(--ink0); border:1px solid var(--stroke); border-radius:7px; padding:.3em .5em; }
+	.hint{ color:var(--ink2); font-size:.66rem; line-height:1.5; }
+	.pellets{ display:flex; gap:.5rem; }
+	.pellet{ width:30px;height:30px;border-radius:50%;cursor:grab;touch-action:none;box-shadow:0 3px 10px #000a, inset 0 0 0 2px #fff3; }
 
-	.organ { position: relative; background: var(--rack2); border: 1px solid var(--stroke); border-radius: 16px; padding: .95rem 1rem 1.05rem; }
-	.organ > h2 { margin: 0 0 .85rem; font-size: .66rem; letter-spacing: .2em; text-transform: uppercase; color: var(--ink1);
-		display: flex; align-items: center; gap: .5rem; }
-	.jack { position: absolute; right: -7px; top: 50%; width: 14px; height: 14px; border-radius: 50%;
-		background: var(--rack); border: 2px solid var(--jc, var(--active)); box-shadow: 0 0 8px var(--jc, var(--active)); }
+	/* ————— L'APERÇU (droite) : la MATIÈRE qu'on sculpte ————— */
+	.stage { position:relative; background:var(--page); color:var(--ink); overflow:hidden;
+		font-family:ui-sans-serif,system-ui,sans-serif; font-size:calc(15px*var(--scale)); transition:background-color .3s; }
+	.stagePad { position:absolute; inset:0; display:grid; place-items:center; padding:3rem; }
 
-	/* la ROUE — cœur du schéma, 3 poignées */
-	.wheel-row { display: grid; grid-template-columns: 168px 1fr; gap: .9rem; align-items: center; }
-	.wheel { position: relative; width: 168px; height: 168px; border-radius: 50%; touch-action: none; cursor: crosshair;
-		background: radial-gradient(circle,#fff 0%,transparent 64%),
-			conic-gradient(from 90deg, hsl(0 90% 55%),hsl(60 90% 55%),hsl(120 90% 55%),hsl(180 90% 55%),hsl(240 90% 55%),hsl(300 90% 55%),hsl(360 90% 55%));
-		box-shadow: inset 0 0 0 1px var(--stroke), 0 8px 30px -12px #000; }
-	.h { position: absolute; border-radius: 50%; translate: -50% -50%; cursor: grab; box-shadow: 0 0 0 1.5px #000, 0 3px 9px rgba(0,0,0,.6); }
-	.h.A { width: 28px; height: 28px; border: 3px solid #fff; }
-	.h.B, .h.C { width: 19px; height: 19px; border: 2.5px solid #fff; }
-	.h b { position: absolute; inset: 0; display: grid; place-items: center; font: 700 10px/1 var(--mono); color: #fff; mix-blend-mode: difference; }
-	.wheel svg.link { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-	.wheel svg.link line { stroke: #fff8; stroke-width: 1; stroke-dasharray: 3 3; }
-	.readout { display: grid; gap: .45rem; font-size: .7rem; color: var(--ink1); }
-	.readout .r { display: flex; justify-content: space-between; } .readout .r b { color: var(--ink0); }
-	.scheme { display: grid; grid-template-columns: repeat(6,1fr); gap: 4px; margin-top: .2rem; }
-	.scheme i { height: 22px; border-radius: 5px; border: 1px solid #fff2; }
+	/* la boîte-matière : radius PAR COIN + padding PAR CÔTÉ, tout piloté par tokens */
+	.clay { position:relative; width:min(560px,74%); background:var(--surf); color:var(--ink);
+		border:1.5px solid var(--line);
+		border-top-left-radius:calc(var(--z-channel-rtl,26)*1px); border-top-right-radius:calc(var(--z-channel-rtr,8)*1px);
+		border-bottom-right-radius:calc(var(--z-channel-rbr,26)*1px); border-bottom-left-radius:calc(var(--z-channel-rbl,8)*1px);
+		padding:calc(var(--z-channel-pt,26)*1px) calc(var(--z-channel-pr,34)*1px) calc(var(--z-channel-pb,26)*1px) calc(var(--z-channel-pl,34)*1px);
+		box-shadow:0 30px 80px -30px #0009; }
+	.clay.grad{ background:var(--grad); color:var(--acc-ink); border-color:transparent; }
+	.clay .kick{ display:inline-block;background:var(--accent);color:var(--acc-ink);font-weight:700;font-size:.68em;letter-spacing:.16em;text-transform:uppercase;padding:.3em .7em;border-radius:6px; }
+	.clay h1{ margin:.5rem 0 .2rem; font-family:var(--fTitle,inherit); font-weight:var(--wTitle,800); font-size:2.3em; line-height:1; letter-spacing:-.02em; }
+	.clay p{ margin:.4rem 0 0; font-family:var(--fText,inherit); color:var(--ink-sf); line-height:1.55; }
+	.clay.grad p{ color:#ffffffcc; }
+	.clay .btns{ display:flex; gap:.6rem; margin-top:1rem; flex-wrap:wrap; }
+	.b{ font:inherit; font-weight:600; cursor:pointer; border:1.5px solid var(--ink); background:var(--ink); color:var(--page);
+		padding:.55em 1.1em; border-radius:calc(var(--z-channel-rtr,8)*1px + 2px); transition:transform .16s cubic-bezier(.34,1.7,.5,1); }
+	.b:hover{ transform:translateY(-2px); }
+	.b.a{ background:var(--accent);border-color:var(--accent);color:var(--acc-ink); }
+	.b.c{ background:var(--comp);border-color:var(--comp);color:var(--acc-ink); }
+	.b.g{ background:transparent;color:var(--ink); }
 
-	/* le biais : une réglette qui pousse vers B ou C */
-	.biais { margin-top: .8rem; display: grid; gap: .3rem; font-size: .68rem; color: var(--ink1); }
-	.biais .lab { display: flex; justify-content: space-between; }
-	input[type=range] { width: 100%; accent-color: var(--active); }
-
-	/* la COURBE typo */
-	.type { position: relative; height: 108px; touch-action: none; margin-bottom: .5rem; }
-	.type svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-	.type .anchor { position: absolute; width: 15px; height: 15px; border-radius: 50%; translate: -50% -50%;
-		background: #fff; border: 2px solid #000; cursor: ns-resize; box-shadow: 0 2px 8px #000a; }
-	.type .heads { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: space-between; pointer-events: none; }
-	.type .heads span { font-weight: 800; line-height: .85; }
-
-	.sliders { display: grid; gap: .65rem; }
-	.sliders label { display: grid; gap: .28rem; font-size: .7rem; color: var(--ink1); }
-	.sliders label .v { float: right; color: var(--ink0); }
-
-	.box-edit { display: grid; grid-template-columns: 30px 1fr 30px; grid-template-rows: 20px 1fr 20px; gap: .35rem; align-items: center; justify-items: center; }
-	.box-edit .core { grid-column: 2; grid-row: 2; width: 100%; height: 40px; border: 1px dashed var(--active); border-radius: var(--radius);
-		display: grid; place-items: center; color: var(--ink2); font-size: .58rem; }
-	.box-edit input { width: 100%; }
-	.box-edit .t { grid-column: 2; grid-row: 1; } .box-edit .b { grid-column: 2; grid-row: 3; }
-	.box-edit .l, .box-edit .r { grid-row: 2; writing-mode: vertical-lr; height: 40px; } .box-edit .l { grid-column: 1; } .box-edit .r { grid-column: 3; }
-
-	/* ————— L'ÉCRAN DE SORTIE ————— */
-	.screen { position: relative; padding: 1.1rem; }
-	.screen .bezel { position: relative; border: 1px solid var(--stroke); border-radius: 20px; overflow: hidden;
-		box-shadow: 0 30px 80px -30px #000, inset 0 0 0 1px #ffffff08; min-height: calc(100vh - 2.2rem); }
-	.screen .jack-in { position: absolute; left: -7px; top: 90px; width: 16px; height: 16px; border-radius: 50%; z-index: 3;
-		background: var(--rack); border: 2px solid var(--active); box-shadow: 0 0 10px var(--active); }
-
-	.stage { background: var(--page); color: var(--ink); min-height: 100%;
-		padding: clamp(1.4rem,4vw,3rem); transition: background-color .3s, color .3s; font-family: ui-sans-serif, system-ui, sans-serif; }
-	.sheet { max-width: 46rem; margin: 0 auto; display: grid; gap: 1.8rem; }
-
-	.spectrum { height: 30px; border-radius: 999px;
-		background: linear-gradient(90deg, var(--comp), var(--accent) 32%, var(--active) 50%, var(--tierce) 72%, var(--comp));
-		background-size: 200% 100%; animation: drift 14s linear infinite; box-shadow: inset 0 0 0 1px #0002; }
-	@keyframes drift { to { background-position: 200% 0; } }
-
-	.mast { border-bottom: 3px solid var(--ink); padding-bottom: .9rem; }
-	.kick { display: inline-block; background: var(--active); color: var(--acc-ink); font-weight: 700; font-size: .7em;
-		letter-spacing: .18em; text-transform: uppercase; padding: .3em .7em; border-radius: var(--radius); }
-	.mast h1 { margin: .5rem 0 0; font-weight: var(--w-title); font-size: calc(var(--z-channel-hmax,58)*1px + .4rem); line-height: .98; letter-spacing: -.02em; }
-	.mast h2 { margin: .3rem 0 0; font-weight: var(--w-text); font-size: calc(var(--z-channel-hmin,16)*1px + .3rem); color: var(--ink-sf); }
-	.stage p { font-weight: var(--w-text); color: var(--ink-sf); line-height: 1.6; margin: 0; max-width: 34em; }
-
-	.actions { display: flex; gap: .7rem; flex-wrap: wrap; }
-	.btn { font: inherit; font-weight: 600; cursor: pointer; border: 1.5px solid var(--ink);
-		padding: var(--mt) var(--mr) var(--mb) var(--ml); border-radius: var(--radius); background: var(--ink); color: var(--page);
-		transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s, background-color .3s, color .3s, border-color .3s; }
-	.btn:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--active); }
-	.btn.a { background: var(--accent); border-color: var(--accent); color: var(--acc-ink); }
-	.btn.b { background: var(--comp); border-color: var(--comp); color: var(--acc-ink); }
-	.btn.g { background: transparent; color: var(--ink); }
-
-	.grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(10.5rem,1fr)); gap: 1rem; }
-	.tile { border: 1.5px solid var(--ink); background: var(--surf1); padding: var(--mt) var(--mr) var(--mb) var(--ml); border-radius: var(--radius);
-		transition: background-color .3s, border-color .3s; }
-	.tile.s2 { background: var(--surf2); }
-	.tile.acc { background: var(--accent); color: var(--acc-ink); border-color: var(--accent); }
-	.tile.cmp { background: var(--comp); color: var(--acc-ink); border-color: var(--comp); }
-	.tile.trc { background: var(--tierce); color: var(--acc-ink); border-color: var(--tierce); }
-	.tile h3 { margin: 0 0 .25rem; font-weight: var(--w-title); font-size: 1.05em; }
-	.tile p { font-size: .84em; }
-	.field { width: 100%; font: inherit; padding: var(--mt) var(--mr) var(--mb) var(--ml); border-radius: var(--radius);
-		background: var(--surf2); color: var(--ink); border: 1.5px solid var(--line); }
-	.field:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
-	.badges { display: flex; gap: .5rem; flex-wrap: wrap; }
-	.badge { font-size: .76em; font-weight: 700; padding: .3em .7em; border-radius: 999px; }
-	.badge.a { background: var(--accent); color: var(--acc-ink); } .badge.b { background: var(--comp); color: var(--acc-ink); }
-	.badge.c { background: var(--tierce); color: var(--acc-ink); }
+	/* les POIGNÉES sur la matière */
+	.grip{ position:absolute; z-index:5; background:#fff; border:2px solid #111; box-shadow:0 2px 8px #000a; }
+	.grip.corner{ width:16px;height:16px;border-radius:50%;margin:-8px;cursor:grab; }
+	.grip.edge{ background:var(--accent); border-color:#fff; }
+	.grip.edge.h{ width:34px;height:8px;border-radius:6px;margin:-4px -17px;cursor:ns-resize; }
+	.grip.edge.v{ width:8px;height:34px;border-radius:6px;margin:-17px -4px;cursor:ew-resize; }
+	.tag{ position:absolute; z-index:6; font:700 10px/1 var(--mono); color:#fff; background:#000a; padding:3px 5px; border-radius:5px; pointer-events:none; opacity:0; transition:opacity .15s; }
 </style>
 
 <body>
-	<svg id="cables"></svg>
-	<div class="rack">
+	<canvas id="splash"></canvas>
+	<div class="wrap">
 
-		<!-- ═══════ LES ORGANES ═══════ -->
-		<aside class="organs">
-			<div class="head"><span class="dot"></span><b>Zoé</b><span>· la console</span></div>
-			<div class="presets" id="presets">
-				<button class="preset" data-p="nuit">Nuit électrique</button>
-				<button class="preset" data-p="argile">Argile</button>
-				<button class="preset" data-p="acide">Acide</button>
-				<button class="preset" data-p="encre">Encre</button>
-				<button class="preset" data-p="brume">Brume</button>
-			</div>
+		<!-- ═══════ LE BANC ═══════ -->
+		<aside class="bench">
+			<div class="title"><span class="live"></span><b>Zoé</b><span>· l'établi</span></div>
 
-			<section class="organ" id="oColor" style="--jc:var(--accent)">
-				<span class="jack" data-jack="color"></span>
-				<h2>Couleur — le cœur du schéma</h2>
-				<div class="wheel-row">
-					<div class="wheel" id="wheel">
-						<svg class="link"><line id="lAB"/><line id="lAC"/></svg>
-						<div class="h A" id="hA"><b>A</b></div>
-						<div class="h B" id="hB"><b>B</b></div>
-						<div class="h C" id="hC"><b>C</b></div>
+			<section class="card">
+				<h2>Lumière — braque la source, tire les rayons</h2>
+				<div class="prism-box">
+					<div class="prism" id="prism">
+						<div class="disc"></div>
+						<svg><path class="ray" id="rayB"/><path class="ray" id="rayC"/></svg>
+						<div class="node src" id="nSrc"><small>◉</small></div>
+						<div class="node b" id="nB"><small>B</small></div>
+						<div class="node c" id="nC"><small>C</small></div>
 					</div>
-					<div class="readout">
-						<div class="r"><span>Teinte A</span><b id="rA">—</b></div>
-						<div class="r"><span>Saturation</span><b id="rS">—</b></div>
-						<div class="r"><span>Écart B</span><b id="rB">—</b></div>
-						<div class="r"><span>Écart C</span><b id="rC">—</b></div>
-						<div class="scheme"><i style="background:var(--comp)"></i><i style="background:var(--accent)"></i><i style="background:var(--active)"></i><i style="background:var(--tierce)"></i><i style="background:var(--surf2)"></i><i style="background:var(--ink)"></i></div>
+					<div class="scheme">
+						<div class="sw" data-tok="--accent" data-l="A" style="background:var(--accent)"></div>
+						<div class="sw" data-tok="--comp"   data-l="B" style="background:var(--comp)"></div>
+						<div class="sw" data-tok="--tierce" data-l="C" style="background:var(--tierce)"></div>
+						<div class="sw" data-tok="--surf"   data-l="surf" style="background:var(--surf)"></div>
+						<div class="sw" data-tok="--ink"    data-l="ink"  style="background:var(--ink)"></div>
 					</div>
 				</div>
-				<div class="biais">
-					<div class="lab"><span>◀ pousse vers B</span><span>pousse vers C ▶</span></div>
-					<input type="range" id="biais" min="-100" max="100" value="0">
-				</div>
+				<p class="hint" style="margin:.6rem 0 0">Tire <b>◉</b> (teinte + saturation), <b>B</b> et <b>C</b> (les deux ailes du schéma). Tout le reste — dégradés, bordures, ombres — se réfracte tout seul.</p>
 			</section>
 
-			<section class="organ" id="oType" style="--jc:var(--ink)">
-				<span class="jack" data-jack="type"></span>
-				<h2>Typo — plie la courbe (câblée à la couleur)</h2>
-				<div class="type" id="type">
-					<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path id="curve" fill="none" stroke="var(--active)" stroke-width="1.3" vector-effect="non-scaling-stroke"/></svg>
-					<div class="anchor" id="aMax"></div><div class="anchor" id="aMin"></div>
-					<div class="heads" id="heads"><span>H1</span><span>H2</span><span>H3</span><span>H4</span><span>H5</span><span>H6</span></div>
+			<section class="card">
+				<h2>Matière — jette une couleur sur l'aperçu</h2>
+				<div class="pellets" id="pellets">
+					<span class="pellet" data-hsl="var(--accent)" style="background:var(--accent)"></span>
+					<span class="pellet" data-hsl="var(--comp)"   style="background:var(--comp)"></span>
+					<span class="pellet" data-hsl="var(--tierce)" style="background:var(--tierce)"></span>
 				</div>
-				<div class="sliders"><label>Lumière typo — titre lourd ↔ texte léger <span class="v" id="vTypo"></span><input type="range" id="typo" min="0" max="100" value="58"></label></div>
+				<p class="hint" style="margin:.6rem 0 0">Attrape une pastille, <b>lance-la</b> sur la boîte : elle éclabousse un <b>dégradé</b> au point d'impact. Ou tire ses <b>coins</b> et ses <b>bords</b> pour la sculpter.</p>
 			</section>
 
-			<section class="organ" id="oSpace" style="--jc:var(--tierce)">
-				<span class="jack" data-jack="space"></span>
-				<h2>Espace — par côté &amp; rayon</h2>
-				<div class="box-edit">
-					<input type="range" class="t" id="mt" min="0" max="44" value="18">
-					<input type="range" class="l" id="ml" min="0" max="44" value="24">
-					<div class="core">boîte</div>
-					<input type="range" class="r" id="mr" min="0" max="44" value="24">
-					<input type="range" class="b" id="mb" min="0" max="44" value="18">
-				</div>
-				<div class="sliders" style="margin-top:.7rem"><label>Rayon des angles <span class="v" id="vRad"></span><input type="range" id="radius" min="0" max="26" value="4"></label></div>
-			</section>
-
-			<section class="organ" id="oLight" style="--jc:var(--comp)">
-				<span class="jack" data-jack="light"></span>
-				<h2>Lumière</h2>
-				<div class="sliders">
-					<label>Clair ↔ sombre <span class="v" id="vSombre"></span><input type="range" id="sombre" min="0" max="100" value="6"></label>
-					<label>Contraste de l'accent <span class="v" id="vCtr"></span><input type="range" id="contraste" min="0" max="80" value="54"></label>
+			<section class="card">
+				<h2>Typo &amp; échelle</h2>
+				<div class="row" style="display:grid;gap:.6rem">
+					<label class="row">Titre <select id="fTitle"><option value="ui-sans-serif,system-ui,sans-serif">Sans</option><option value="Georgia,'Times New Roman',serif">Serif</option><option value="ui-monospace,Menlo,monospace">Mono</option><option value="'Trebuchet MS',sans-serif">Grotesk</option></select></label>
+					<label class="row">Texte <select id="fText"><option value="ui-sans-serif,system-ui,sans-serif">Sans</option><option value="Georgia,'Times New Roman',serif">Serif</option><option value="ui-monospace,Menlo,monospace">Mono</option></select></label>
+					<div class="row">Échelle globale <b class="scrub" id="scScale" data-min="70" data-max="140">100</b> %<span class="hint"> (scrub ↔)</span></div>
+					<div class="row">Contraste <b class="scrub" id="scCtr" data-min="0" data-max="80">56</b><span class="hint"> · clair/sombre </span><b class="scrub" id="scFlip" data-min="0" data-max="100">90</b></div>
 				</div>
 			</section>
 		</aside>
 
-		<!-- ═══════ L'ÉCRAN ═══════ -->
-		<main class="screen">
-			<div class="bezel">
-				<span class="jack-in" id="jackIn"></span>
-				<div class="stage" id="stage">
-					<div class="sheet">
-						<header class="mast">
-							<span class="kick">Sortie</span>
-							<h1>Un thème, câblé<br>comme un instrument.</h1>
-							<h2>La roue au cœur · les câbles portent le signal · l'écran le rend.</h2>
-						</header>
-						<div class="spectrum"></div>
-						<p>Tire <b>A</b> au centre pour la teinte, <b>B</b> et <b>C</b> pour les deux ailes du schéma. Le biais pousse la couleur active vers B ou C. Plie la courbe des titres — elle est câblée à la chaleur de la couleur. Rien ici n'a de valeur écrite : tout descend de la console.</p>
-						<div class="actions">
-							<button class="btn">Neutre</button>
-							<button class="btn a">Accent</button>
-							<button class="btn b">Complément</button>
-							<button class="btn g">Discret</button>
-						</div>
-						<div class="grid">
-							<div class="tile"><h3>Surface</h3><p>Fond et filet suivent le schéma. Padding par côté.</p></div>
-							<div class="tile s2"><h3>Surface 2</h3><p>Un cran plus haute. <input class="field" placeholder="Un champ…" style="margin-top:.5rem"></p></div>
-							<div class="tile acc"><h3>Accent · A</h3><p>Le cœur, plein.</p></div>
-							<div class="tile cmp"><h3>Complément · B</h3><p>L'aile B.</p></div>
-							<div class="tile trc"><h3>Tierce · C</h3><p>L'aile C.</p></div>
-						</div>
-						<div class="badges"><span class="badge a">A</span><span class="badge b">B</span><span class="badge c">C</span></div>
+		<!-- ═══════ L'APERÇU ═══════ -->
+		<main class="stage" id="stage">
+			<div class="stagePad">
+				<div class="clay" id="clay">
+					<span class="kick">L'établi</span>
+					<h1>On ne règle pas.<br>On sculpte.</h1>
+					<p>Braque la lumière, tire les rayons, jette une couleur, empoigne les coins. Tout ce que tu vois — couleurs, dégradés, bordures, ombres, rayons — descend de tes gestes. Rien n'est écrit. Rien n'arrive sec : tout claque et rebondit.</p>
+					<div class="btns">
+						<button class="b a">Accent</button>
+						<button class="b c">Complément</button>
+						<button class="b g">Discret</button>
 					</div>
 				</div>
 			</div>
@@ -298,83 +199,109 @@
 	</div>
 
 <script type="module">
-	const rootS = document.documentElement.style, $ = (i) => document.getElementById(i);
+	const rootS = document.documentElement.style, $ = i => document.getElementById(i);
 	const set = (k,v) => rootS.setProperty('--z-channel-'+k, v);
+	const cs = getComputedStyle(document.documentElement);
 
-	/* ═══ LA ROUE — A (cœur), B & C (ailes) ═══ */
-	const wheel = $('wheel'); const R = 84;
-	const st = { A:{h:262,s:70}, eb:150, ec:40 };   /* eb/ec = écarts de B et C par rapport à A */
-	function place(el, hue, r){ const a=(hue-90)*Math.PI/180; el.style.left=(84+r*Math.cos(a))+'px'; el.style.top=(84+r*Math.sin(a))+'px'; return [84+r*Math.cos(a),84+r*Math.sin(a)]; }
-	function paintWheel(){
-		const A=st.A, hb=(A.h+st.eb)%360, hc=(A.h-st.ec+360)%360, rr=A.s/100*R;
-		const pA=place($('hA'),A.h,rr), pB=place($('hB'),hb,rr*0.8), pC=place($('hC'),hc,rr*0.8);
-		$('hA').style.background=`hsl(${A.h} ${A.s}% 55%)`; $('hB').style.background=`hsl(${hb} ${A.s}% 55%)`; $('hC').style.background=`hsl(${hc} ${A.s}% 55%)`;
-		$('lAB').setAttribute('x1',pA[0]); $('lAB').setAttribute('y1',pA[1]); $('lAB').setAttribute('x2',pB[0]); $('lAB').setAttribute('y2',pB[1]);
-		$('lAC').setAttribute('x1',pA[0]); $('lAC').setAttribute('y1',pA[1]); $('lAC').setAttribute('x2',pC[0]); $('lAC').setAttribute('y2',pC[1]);
-		$('rA').textContent=Math.round(A.h)+'°'; $('rS').textContent=Math.round(A.s)+'%'; $('rB').textContent='+'+Math.round(st.eb)+'°'; $('rC').textContent='−'+Math.round(st.ec)+'°';
-		set('teinte',Math.round(A.h)); set('satur',Math.round(A.s)); set('eb',Math.round(st.eb)); set('ec',Math.round(st.ec));
-	}
-	function grab(el, fn){ el.addEventListener('pointerdown', e=>{ e.preventDefault(); el.setPointerCapture(e.pointerId);
-		const m=ev=>fn(ev); const u=()=>{el.removeEventListener('pointermove',m); el.removeEventListener('pointerup',u);};
-		el.addEventListener('pointermove',m); el.addEventListener('pointerup',u); fn(e); }); }
-	function polar(e){ const b=wheel.getBoundingClientRect(); const dx=e.clientX-(b.left+84), dy=e.clientY-(b.top+84);
-		return { hue:(Math.atan2(dy,dx)*180/Math.PI+90+360)%360, r:Math.min(Math.hypot(dx,dy),R) }; }
-	grab($('hA'), e=>{ const p=polar(e); st.A.h=p.hue; st.A.s=p.r/R*100; paintWheel(); });
-	grab($('hB'), e=>{ const p=polar(e); st.eb=(p.hue-st.A.h+360)%360; paintWheel(); });
-	grab($('hC'), e=>{ const p=polar(e); st.ec=(st.A.h-p.hue+360)%360; paintWheel(); });
-
-	/* ═══ COURBE TYPO ═══ */
-	const typeBox=$('type'), heads=$('heads').children; const tp={max:58,min:16}, TH=108;
-	const yF=px=>TH-(px/72)*TH, pxF=y=>Math.max(8,Math.min(72,(1-y/TH)*72));
-	function paintType(){
-		$('aMax').style.left='4%'; $('aMax').style.top=yF(tp.max)+'px'; $('aMin').style.left='96%'; $('aMin').style.top=yF(tp.min)+'px';
-		const y1=yF(tp.max)/TH*100, y2=yF(tp.min)/TH*100; $('curve').setAttribute('d',`M4 ${y1} C45 ${y1},55 ${y2},96 ${y2}`);
-		for(let i=0;i<6;i++){ const t=i/5,e=t*t*(3-2*t); heads[i].style.fontSize=(tp.max+(tp.min-tp.max)*e)+'px'; heads[i].style.color=`hsl(${8+t*130} 85% 55%)`; }
-		set('hmax',Math.round(tp.max)); set('hmin',Math.round(tp.min));
-	}
-	function dragA(el,k){ el.addEventListener('pointerdown',e=>{ e.preventDefault(); el.setPointerCapture(e.pointerId);
-		const m=ev=>{ tp[k]=pxF(ev.clientY-typeBox.getBoundingClientRect().top); paintType(); };
-		const u=()=>{el.removeEventListener('pointermove',m);el.removeEventListener('pointerup',u);}; el.addEventListener('pointermove',m); el.addEventListener('pointerup',u); }); }
-	dragA($('aMax'),'max'); dragA($('aMin'),'min');
-
-	/* ═══ curseurs simples ═══ */
-	const wire=(id,chan,out,suf)=>{ const el=$(id); const g=()=>{ set(chan,el.value); if(out)$(out).textContent=el.value+(suf||''); }; el.addEventListener('input',g); g(); };
-	['mt','mr','mb','ml'].forEach(id=>wire(id,id)); wire('radius','radius','vRad','px');
-	wire('sombre','sombre','vSombre'); wire('contraste','contraste','vCtr'); wire('typo','typo','vTypo'); wire('biais','biais');
-
-	/* ═══ PRESETS — couleur ET typo ET espace, une ambiance complète ═══ */
-	const P = {
-		nuit:   { A:{h:262,s:78}, eb:150, ec:40, sombre:90, contraste:60, typo:64, radius:3,  mt:18, mr:24, mb:18, ml:24, max:60, min:16 },
-		argile: { A:{h:24, s:58}, eb:170, ec:30, sombre:8,  contraste:40, typo:52, radius:14, mt:22, mr:28, mb:22, ml:28, max:54, min:18 },
-		acide:  { A:{h:150,s:92}, eb:120, ec:60, sombre:88, contraste:70, typo:70, radius:2,  mt:14, mr:20, mb:14, ml:20, max:64, min:15 },
-		encre:  { A:{h:220,s:20}, eb:180, ec:20, sombre:4,  contraste:66, typo:80, radius:0,  mt:20, mr:26, mb:20, ml:26, max:66, min:16 },
-		brume:  { A:{h:290,s:34}, eb:60,  ec:50, sombre:20, contraste:26, typo:44, radius:20, mt:24, mr:30, mb:24, ml:30, max:50, min:20 }
-	};
-	function apply(name){ const p=P[name]; if(!p) return;
-		st.A={...p.A}; st.eb=p.eb; st.ec=p.ec; tp.max=p.max; tp.min=p.min; paintWheel(); paintType();
-		for(const [id,ch] of [['sombre','sombre'],['contraste','contraste'],['typo','typo'],['radius','radius'],['mt','mt'],['mr','mr'],['mb','mb'],['ml','ml']]){
-			const el=$(id); el.value=p[id]; el.dispatchEvent(new Event('input')); }
-	}
-	for(const b of document.querySelectorAll('.preset')) b.addEventListener('click',()=>apply(b.dataset.p));
-
-	/* ═══ LES CÂBLES — chaque organe branché à l'écran, teinté de son signal ═══ */
-	const svg=$('cables'); const NS='http://www.w3.org/2000/svg';
-	const JACKS=[['color','--accent'],['type','--ink'],['space','--tierce'],['light','--comp']];
-	const paths=JACKS.map(([j,tok])=>{ const p=document.createElementNS(NS,'path'); p.dataset.tok=tok; svg.appendChild(p); return {p,j,tok}; });
-	function drawCables(){
-		const inR=$('jackIn').getBoundingClientRect(); const ix=inR.left+inR.width/2, iy=inR.top+inR.height/2;
-		const cs=getComputedStyle(document.documentElement);
-		for(const {p,j,tok} of paths){
-			const el=document.querySelector(`[data-jack="${j}"]`); if(!el) continue;
-			const r=el.getBoundingClientRect(); const x=r.left+r.width/2, y=r.top+r.height/2;
-			const mx=(x+ix)/2; p.setAttribute('d',`M${x} ${y} C${mx} ${y}, ${mx} ${iy}, ${ix} ${iy}`);
-			const c=cs.getPropertyValue(tok).trim(); p.style.stroke=c; p.style.color=c;
+	/* ═══ LE RESSORT (volé à PÂTE) : une valeur ne va jamais sèche à sa cible ═══
+	   chaque token animé est un {val, tgt, vel} ; la boucle les pousse en overshoot. */
+	const springs = {};
+	function spring(key, tgt){ const s = springs[key] || (springs[key]={val:tgt,tgt,vel:0}); s.tgt=tgt; }
+	function tick(){
+		for(const k in springs){ const s=springs[k];
+			s.vel=(s.vel+(s.tgt-s.val)*0.22)*0.62; s.val+=s.vel;
+			if(Math.abs(s.tgt-s.val)<0.05 && Math.abs(s.vel)<0.05) s.val=s.tgt;
+			set(k, Math.round(s.val*100)/100);
 		}
+		requestAnimationFrame(tick);
 	}
-	paintWheel(); paintType();
-	requestAnimationFrame(drawCables);
-	addEventListener('resize',drawCables); addEventListener('scroll',drawCables,{passive:true});
-	new MutationObserver(()=>requestAnimationFrame(drawCables)).observe(document.documentElement,{attributes:true,attributeFilter:['style']});
+	requestAnimationFrame(tick);
+
+	/* ═══ LE PRISME : source + rayons B/C réfractent le schéma ═══ */
+	const prism=$('prism'), R=97, C=115;
+	const P={ src:{h:265,s:72}, eb:150, ec:40 };
+	function node(el,hue,r){ const a=(hue-90)*Math.PI/180, x=C+r*Math.cos(a), y=C+r*Math.sin(a); el.style.left=x+'px'; el.style.top=y+'px'; return [x,y]; }
+	function paintPrism(){
+		const hb=(P.src.h+P.eb)%360, hc=(P.src.h-P.ec+360)%360, rr=P.src.s/100*R;
+		const s=node($('nSrc'),P.src.h,rr), b=node($('nB'),hb,rr*0.82), c=node($('nC'),hc,rr*0.82);
+		$('nSrc').style.background=`hsl(${P.src.h} ${P.src.s}% 55%)`; $('nB').style.background=`hsl(${hb} ${P.src.s}% 55%)`; $('nC').style.background=`hsl(${hc} ${P.src.s}% 55%)`;
+		$('rayB').setAttribute('d',`M${s[0]} ${s[1]} L${b[0]} ${b[1]}`); $('rayB').style.color=`hsl(${hb} ${P.src.s}% 60%)`; $('rayB').style.stroke=$('rayB').style.color;
+		$('rayC').setAttribute('d',`M${s[0]} ${s[1]} L${c[0]} ${c[1]}`); $('rayC').style.color=`hsl(${hc} ${P.src.s}% 60%)`; $('rayC').style.stroke=$('rayC').style.color;
+		spring('teinte',P.src.h); spring('satur',P.src.s); spring('eb',P.eb); spring('ec',P.ec);
+	}
+	function polar(e){ const r=prism.getBoundingClientRect(); const dx=e.clientX-(r.left+C), dy=e.clientY-(r.top+C);
+		return { hue:(Math.atan2(dy,dx)*180/Math.PI+90+360)%360, r:Math.min(Math.hypot(dx,dy),R) }; }
+	function grab(el,fn){ el.addEventListener('pointerdown',e=>{ e.preventDefault(); el.setPointerCapture(e.pointerId);
+		const m=ev=>fn(ev), u=()=>{el.removeEventListener('pointermove',m);el.removeEventListener('pointerup',u);};
+		el.addEventListener('pointermove',m); el.addEventListener('pointerup',u); fn(e); }); }
+	grab($('nSrc'),e=>{const p=polar(e);P.src.h=p.hue;P.src.s=p.r/R*100;paintPrism();});
+	grab($('nB'),  e=>{const p=polar(e);P.eb=(p.hue-P.src.h+360)%360;paintPrism();});
+	grab($('nC'),  e=>{const p=polar(e);P.ec=(P.src.h-p.hue+360)%360;paintPrism();});
+
+	/* ═══ LA MATIÈRE : coins (radius par coin) + bords (padding par côté), avec ressort ═══ */
+	const clay=$('clay'), stage=$('stage');
+	const CORNERS=[['rtl',0,0],['rtr',1,0],['rbr',1,1],['rbl',0,1]];
+	const EDGES=[['pt','h',.5,0],['pb','h',.5,1],['pl','v',0,.5],['pr','v',1,.5]];
+	const grips=[];
+	function mkGrip(cls){ const g=document.createElement('div'); g.className='grip '+cls; stage.appendChild(g); return g; }
+	CORNERS.forEach(([tok,gx,gy])=>{ const g=mkGrip('corner'); grips.push(()=>place(g,gx,gy));
+		let sy,sr; grab(g,e=>{ if(sy==null){sy=e.clientY;sr=cur(tok);} const dir=gy?-1:1;
+			spring(tok, Math.max(0,Math.min(90, sr+(e.clientY-sy)*dir*0.6))); });
+		g.addEventListener('pointerup',()=>sy=null);
+	});
+	EDGES.forEach(([tok,ax,gx,gy])=>{ const g=mkGrip('edge '+ax); grips.push(()=>place(g,gx,gy));
+		let s0,sv; grab(g,e=>{ if(s0==null){s0=(ax==='h'?e.clientY:e.clientX);sv=cur(tok);}
+			const cur2=(ax==='h'?e.clientY:e.clientX); const dir=(gy===1||gx===1)?1:-1;
+			spring(tok, Math.max(0,Math.min(80, sv+(cur2-s0)*dir*0.5))); });
+		g.addEventListener('pointerup',()=>s0=null);
+	});
+	function cur(tok){ return parseFloat(cs.getPropertyValue('--z-channel-'+tok))||0; }
+	function place(g,gx,gy){ const r=clay.getBoundingClientRect(), s=stage.getBoundingClientRect();
+		g.style.left=(r.left-s.left+gx*r.width)+'px'; g.style.top=(r.top-s.top+gy*r.height)+'px'; }
+	function placeAll(){ grips.forEach(f=>f()); }
+
+	/* ═══ JETER une couleur → éclaboussure + dégradé au point d'impact (volé à PÂTE) ═══ */
+	const cv=$('splash'), ctx=cv.getContext('2d'); function size(){cv.width=innerWidth;cv.height=innerHeight;} size(); addEventListener('resize',()=>{size();placeAll();});
+	let fly=[];
+	document.querySelectorAll('.pellet').forEach(p=>{
+		let lx,ly,vx=0,vy=0,px,py,drag=false;
+		p.addEventListener('pointerdown',e=>{drag=true;p.setPointerCapture(e.pointerId);lx=e.clientX;ly=e.clientY;p.style.position='fixed';p.style.zIndex=50;});
+		p.addEventListener('pointermove',e=>{if(!drag)return;vx=e.clientX-lx;vy=e.clientY-ly;lx=e.clientX;ly=e.clientY;px=e.clientX;py=e.clientY;p.style.left=(px-15)+'px';p.style.top=(py-15)+'px';});
+		p.addEventListener('pointerup',()=>{drag=false;const col=cs.getPropertyValue(p.dataset.hsl.match(/--[\w-]+/)[0]).trim();
+			fly.push({x:px,y:py,vx:vx*1.5,vy:vy*1.5,col,r:15}); p.style.position=''; p.style.left=''; p.style.top=''; p.style.zIndex=''; });
+	});
+	function rgbaFrom(){ return true; }
+	function splashLoop(){ ctx.clearRect(0,0,cv.width,cv.height); const sr=stage.getBoundingClientRect(); const cr=clay.getBoundingClientRect();
+		fly=fly.filter(b=>{ b.vy+=0.6; b.x+=b.vx; b.y+=b.vy; b.vx*=.99;
+			if(b.r>=15){ if(b.x>cr.left&&b.x<cr.right&&b.y>cr.top&&b.y<cr.bottom){ // impact
+				const gx=Math.round((b.x-cr.left)/cr.width*100); set('gx',gx); set('gon',1);
+				clay.classList.add('grad');
+				for(let i=0;i<22;i++){const a=Math.random()*6.28,s=2+Math.random()*7; fly.push({x:b.x,y:b.y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-3,col:b.col,r:3+Math.random()*4,life:1});}
+				return false; }
+				if(b.y>cv.height+40) return false; }
+			if(b.life!=null){ b.life-=.02; if(b.life<=0) return false; }
+			ctx.globalAlpha=b.life??1; ctx.fillStyle=b.col; ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,6.28); ctx.fill(); return true;
+		}); ctx.globalAlpha=1; requestAnimationFrame(splashLoop);
+	}
+	requestAnimationFrame(splashLoop);
+
+	/* ═══ SCRUB : le nombre EST la poignée (volé à POSSÉDÉ) ═══ */
+	document.querySelectorAll('.scrub').forEach(el=>{
+		const min=+el.dataset.min, max=+el.dataset.max, map={scScale:'scale',scCtr:'contraste',scFlip:'sombre'};
+		let sx,sv; grab(el,e=>{ if(sx==null){sx=e.clientX;sv=+el.textContent;} const v=Math.max(min,Math.min(max,Math.round(sv+(e.clientX-sx)*0.4)));
+			el.textContent=v; spring(map[el.id]||el.id, v); });
+		el.addEventListener('pointerup',()=>sx=null);
+	});
+	$('fTitle').addEventListener('change',e=>rootS.setProperty('--fTitle',e.target.value));
+	$('fText').addEventListener('change',e=>rootS.setProperty('--fText',e.target.value));
+
+	/* double-clic sur la boîte : on efface le dégradé jeté */
+	clay.addEventListener('dblclick',()=>{ set('gon',0); clay.classList.remove('grad'); });
+
+	/* rafraîchit les poignées quand la matière change de taille */
+	new ResizeObserver(placeAll).observe(clay);
+	paintPrism(); requestAnimationFrame(placeAll);
+	new MutationObserver(()=>requestAnimationFrame(placeAll)).observe(document.documentElement,{attributes:true,attributeFilter:['style']});
 </script>
 </body>
 </html>
