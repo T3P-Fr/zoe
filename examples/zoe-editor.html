@@ -122,6 +122,13 @@
 		background:radial-gradient(circle at 50% 32%,#fff,#c9cbdb); box-shadow:0 3px 12px #000b, inset 0 0 0 1px #fff; cursor:grab; touch-action:none; }
 	.scale-value { font-size:1rem; font-weight:800; color:var(--console-ink); min-width:3.3em; text-align:right; font-variant-numeric:tabular-nums; }
 	.scale-caption { font-size:.64rem; color:var(--console-ink-faint); margin-top:.45rem; text-align:center; }
+	/* MORPHOSE — deux thèmes, une réglette qui morphe de l'un à l'autre */
+	.morph-row { display:flex; align-items:center; gap:.5rem; }
+	.morph-cap { font:inherit; font-size:.64rem; cursor:pointer; color:var(--console-ink-soft); background:#0000; border:1px solid var(--console-stroke); border-radius:8px; padding:.45em .6em; white-space:nowrap; }
+	.morph-cap.is-set { color:var(--console-ink); border-color:var(--accent); box-shadow:0 0 8px -3px var(--accent); }
+	.morph-rail { flex:1; height:14px; border-radius:999px; background:var(--console-bg); box-shadow:inset 0 0 0 1px var(--console-stroke); position:relative; cursor:ew-resize; }
+	.morph-fill { position:absolute; inset:0 auto 0 0; width:0%; border-radius:999px; background:linear-gradient(90deg,var(--accent),var(--complement)); opacity:.5; }
+	.morph-thumb { position:absolute; top:50%; left:0%; width:22px; height:22px; border-radius:50%; translate:-50% -50%; background:radial-gradient(circle at 50% 32%,#fff,#c9cbdb); box-shadow:0 2px 8px #000a; cursor:grab; touch-action:none; }
 
 	/* ═══════════ L'APERÇU (droite) : DES DIZAINES D'ÉLÉMENTS ═══════════ */
 	.canvas { position:relative; overflow:auto; background:var(--fond); color:var(--encre);
@@ -299,6 +306,16 @@
 			</section>
 
 			<section class="module">
+				<h2 class="module-title">Morphose — deux thèmes, une réglette</h2>
+				<div class="morph-row">
+					<button class="morph-cap" id="cap-a">Capturer A</button>
+					<div class="morph-rail" id="morph-rail"><span class="morph-fill" id="morph-fill"></span><span class="morph-thumb" id="morph-thumb"></span></div>
+					<button class="morph-cap" id="cap-b">Capturer B</button>
+				</div>
+				<p class="hint">Règle un thème, <b>Capturer A</b>. Change tout, <b>Capturer B</b>. Puis tire la réglette : le thème <b>morphe</b> de A vers B — teinte, écarts, lumière, radius, padding, tout interpolé d'un coup.</p>
+			</section>
+
+			<section class="module">
 				<h2 class="module-title">Palette — attrape, dépose n'importe où</h2>
 				<div class="palette-chips" id="palette">
 					<span class="palette-chip" data-paint="var(--accent)" style="background:var(--accent)"></span>
@@ -328,13 +345,15 @@
 			</section>
 
 			<section class="module">
-				<h2 class="module-title">Matière — jette une couleur sur le héros</h2>
+				<h2 class="module-title">Gavage — jette une couleur, le thème la DIGÈRE</h2>
 				<div class="palette-chips" id="pellets">
-					<span class="palette-chip pellet" data-paint="var(--accent)" style="background:var(--accent)"></span>
-					<span class="palette-chip pellet" data-paint="var(--complement)" style="background:var(--complement)"></span>
-					<span class="palette-chip pellet" data-paint="var(--tierce)" style="background:var(--tierce)"></span>
+					<span class="palette-chip pellet" data-hue="8"   style="background:hsl(8 85% 55%)"></span>
+					<span class="palette-chip pellet" data-hue="45"  style="background:hsl(45 90% 55%)"></span>
+					<span class="palette-chip pellet" data-hue="160" style="background:hsl(160 70% 50%)"></span>
+					<span class="palette-chip pellet" data-hue="205" style="background:hsl(205 80% 55%)"></span>
+					<span class="palette-chip pellet" data-hue="300" style="background:hsl(300 65% 55%)"></span>
 				</div>
-				<p class="hint"><b>Lance</b> une pastille sur le héros → éclaboussure + dégradé. Ou empoigne ses <b>coins</b> (radius par coin) et ses <b>bords</b> (padding par côté). <kbd>Shift</kbd> = le haut · <kbd>Alt</kbd> = le bas · <kbd>Shift+Alt</kbd> = les 4. Le survol montre ce que tu touches. Le héros sculpté <b>reforme toute l'app</b>.</p>
+				<p class="hint"><b>Lance</b> une couleur sur le héros : il l'avale, elle éclabousse, et <b>tout le schème se re-dérive</b> depuis elle (accent, complément, tierce, neutres, cartes, boutons). Puis empoigne ses <b>coins</b> (radius par coin) et ses <b>bords</b> (padding par côté). <kbd>Shift</kbd> = le haut · <kbd>Alt</kbd> = le bas · <kbd>Shift+Alt</kbd> = les 4.</p>
 			</section>
 
 		</aside>
@@ -547,6 +566,19 @@
 		canvas.style.background=`linear-gradient(140deg, ${cols.join(', ')})`; }
 	$('compose').addEventListener('click',()=>{ $('bg-stops').classList.toggle('is-open'); recomposeBg(); });
 
+	/* ═══ MORPHOSE (volé au round-2) — capture deux thèmes, la réglette MORPHE entre eux ═══ */
+	const MCHANS=['teinte','satur','ecart-b','ecart-c','neutre','sombre','contraste','echelle','radius-tl','radius-tr','radius-br','radius-bl','pad-haut','pad-droite','pad-bas','pad-gauche'];
+	let snapA=null, snapB=null;
+	const snap = ()=>{ const o={}; MCHANS.forEach(c=>o[c]=cur(c)); return o; };
+	$('cap-a').addEventListener('click',function(){ snapA=snap(); this.classList.add('is-set'); });
+	$('cap-b').addEventListener('click',function(){ snapB=snap(); this.classList.add('is-set'); });
+	(function(){ const rail=$('morph-rail'), thumb=$('morph-thumb'), fill=$('morph-fill');
+		const go=e=>{ const r=rail.getBoundingClientRect(); const t=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
+			thumb.style.left=(t*100)+'%'; fill.style.width=(t*100)+'%';
+			if(snapA&&snapB) MCHANS.forEach(c=> spring(c, snapA[c]+(snapB[c]-snapA[c])*t)); };
+		grab(rail,go); grab(thumb,go);
+	})();
+
 	/* ═══ JETER une couleur → éclaboussure + dégradé sur le héros (volé à PÂTE) ═══ */
 	const cv=$('splash'), ctx=cv.getContext('2d'); const size=()=>{cv.width=innerWidth;cv.height=innerHeight;}; size();
 	addEventListener('resize',()=>{size();placeAll();});
@@ -555,13 +587,13 @@
 		let lx,ly,vx=0,vy=0,px,py,drag=false;
 		p.addEventListener('pointerdown',e=>{drag=true;p.setPointerCapture(e.pointerId);lx=e.clientX;ly=e.clientY;p.style.position='fixed';p.style.zIndex=50;});
 		p.addEventListener('pointermove',e=>{if(!drag)return;vx=e.clientX-lx;vy=e.clientY-ly;lx=e.clientX;ly=e.clientY;px=e.clientX;py=e.clientY;p.style.left=(px-15)+'px';p.style.top=(py-15)+'px';});
-		p.addEventListener('pointerup',()=>{drag=false; const col=resolve(p.dataset.paint);
-			fly.push({x:px,y:py,vx:vx*1.5,vy:vy*1.5,col,r:15}); p.style.cssText=p.style.cssText.replace(/position[^;]*;?|left[^;]*;?|top[^;]*;?|z-index[^;]*;?/g,''); });
+		p.addEventListener('pointerup',()=>{drag=false; const col=getComputedStyle(p).backgroundColor;
+			fly.push({x:px,y:py,vx:vx*1.5,vy:vy*1.5,col,hue:+p.dataset.hue,r:15}); p.style.cssText=p.style.cssText.replace(/position[^;]*;?|left[^;]*;?|top[^;]*;?|z-index[^;]*;?/g,''); });
 	});
 	(function splashLoop(){ ctx.clearRect(0,0,cv.width,cv.height); const hr=hero.getBoundingClientRect();
 		fly=fly.filter(b=>{ b.vy+=0.6; b.x+=b.vx; b.y+=b.vy; b.vx*=.99;
 			if(b.r>=15){ if(b.x>hr.left&&b.x<hr.right&&b.y>hr.top&&b.y<hr.bottom){
-				hero.style.setProperty('--grad-angle', Math.round((b.x-hr.left)/hr.width*180)+'deg'); hero.classList.add('has-gradient');
+				if(b.hue!=null){ P.h=b.hue; P.s=Math.max(55,P.s); paintPrism(); }   /* GAVAGE : le thème DIGÈRE la couleur → tout le schème se re-dérive */
 				for(let i=0;i<22;i++){const a=Math.random()*6.28,s=2+Math.random()*7; fly.push({x:b.x,y:b.y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-3,col:b.col,r:3+Math.random()*4,life:1});}
 				return false; }
 				if(b.y>cv.height+40) return false; }
