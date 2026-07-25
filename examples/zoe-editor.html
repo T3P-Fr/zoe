@@ -10,189 +10,333 @@
 
 <style>
 	/*
-		============================================================
 		L'ÉTABLI ZOÉ — on ne règle pas le thème, on le SCULPTE.
-		------------------------------------------------------------
-		Fusion de trois cerveaux lâchés sans règles, ramenés dans Zoé :
-		· PRISME  — une source de lumière au centre d'un disque RÉFRACTE en tout le schéma.
-		            On empoigne la lumière (les rayons B et C) — la connexion se manipule.
-		· PÂTE    — l'aperçu est de la matière : on tire les COINS (radius par coin), les
-		            BORDS (padding par côté), on JETTE une couleur qui éclabousse un dégradé.
-		· POSSÉDÉ — les nombres sont des poignées qu'on scrube en place.
-		Le secret volé à Pâte : le RESSORT `(cible−val)*k`, amorti — aucune valeur n'arrive
-		sèche, tout claque et rebondit vers sa cible. Une boucle sous TOUT.
-
-		Zoé par-dessus : chaque geste ne pose que des nombres (--z-channel-*) ; le CSS déduit
-		couleurs, dégradés, bordures, ombres. Le JS ne peint jamais. Fait par Claude & Christophe.
-		============================================================
+		Fusion de trois cerveaux : PRISME (la lumière réfracte le schéma, on empoigne les
+		rayons) · PÂTE (on sculpte la matière : coins par coin, padding par côté ; on jette
+		une couleur qui éclabousse) · POSSÉDÉ (les valeurs sont des poignées). Le ressort
+		volé anime tout. Zoé : chaque geste ne pose que des --z-channel-*, le CSS déduit.
+		Noms de classe explicites : tout se lit.
 	*/
 	:root {
-		--z-channel-teinte: 265; --z-channel-satur: 72; --z-channel-eb: 150; --z-channel-ec: 40;
-		--z-channel-sombre: 90; --z-channel-contraste: 56; --z-channel-scale: 100;
-		--z-channel-rtl: 26; --z-channel-rtr: 8; --z-channel-rbr: 26; --z-channel-rbl: 8;
-		--z-channel-pt: 26; --z-channel-pr: 34; --z-channel-pb: 26; --z-channel-pl: 34;
-		--z-channel-gx: 50; --z-channel-gon: 0;
+		/* nombres bruts posés par les gestes */
+		--z-channel-teinte: 265; --z-channel-satur: 74; --z-channel-ecart-b: 150; --z-channel-ecart-c: 40;
+		--z-channel-neutre: 10; --z-channel-sombre: 88; --z-channel-contraste: 56; --z-channel-echelle: 100;
+		--z-channel-radius-tl: 22; --z-channel-radius-tr: 8; --z-channel-radius-br: 22; --z-channel-radius-bl: 8;
+		--z-channel-pad-haut: 22; --z-channel-pad-droite: 30; --z-channel-pad-bas: 22; --z-channel-pad-gauche: 30;
 
-		--bg:#08080c; --bg2:#0e0e15; --stroke:#232430; --ink0:#f3f1ec; --ink1:#8f8c99; --ink2:#4d4b57;
-		--mono: ui-monospace,"SF Mono",Menlo,monospace;
+		--console-bg: #08080c; --console-panel: #101017; --console-stroke: #24252f;
+		--console-ink: #f2f0ec; --console-ink-soft: #8e8b98; --console-ink-faint: #4d4b57;
+		--console-font: ui-monospace, "SF Mono", Menlo, monospace;
 
-		/* ═══ le MOTEUR : tout le schéma réfracté depuis la source ═══ */
-		--H: var(--z-channel-teinte,265); --S: var(--z-channel-satur,72);
-		--Hb: calc(var(--H) + var(--z-channel-eb,150)); --Hc: calc(var(--H) - var(--z-channel-ec,40));
-		--flip: var(--z-channel-sombre,90); --ctr: var(--z-channel-contraste,56);
-		--dir: calc(-1 + var(--flip)/50);
-		--Lpage: calc(96 - var(--flip)*0.9); --Link: calc(20 + var(--flip)*0.66);
-		--Lacc: calc(var(--Lpage) + var(--dir)*var(--ctr));
-		--accent: hsl(var(--H)  calc(var(--S)*1%) calc(var(--Lacc)*1%));
-		--comp:   hsl(var(--Hb) calc(var(--S)*1%) calc(var(--Lacc)*1%));
-		--tierce: hsl(var(--Hc) calc(var(--S)*1%) calc(var(--Lacc)*1%));
-		--page:   hsl(var(--H) calc(var(--S)*0.09*1%) calc(var(--Lpage)*1%));
-		--surf:   hsl(var(--H) calc(var(--S)*0.14*1%) calc((var(--Lpage)+var(--dir)*5)*1%));
-		--ink:    hsl(var(--H) calc(var(--S)*0.30*1%) calc(var(--Link)*1%));
-		--ink-sf: hsl(var(--H) calc(var(--S)*0.20*1%) calc((var(--Link)+var(--dir)*-26)*1%));
-		--line:   hsl(var(--H) calc(var(--S)*0.18*1%) calc((var(--Lpage)+var(--dir)*13)*1%));
-		--acc-ink:hsl(var(--H) 12% calc(var(--Lpage)*1%));
-		--scale: calc(var(--z-channel-scale,100)/100);
-		/* le dégradé JETÉ : de l'accent vers le complément, allumé par --gon (0/1) */
-		--grad: linear-gradient(calc(var(--z-channel-gx,50)*3.6deg), var(--accent), var(--comp));
+		/* ═══ LE SCHÈME — réfracté depuis la source, NEUTRES compris ═══ */
+		--teinte: var(--z-channel-teinte,265); --satur: var(--z-channel-satur,74); --neutre: var(--z-channel-neutre,10);
+		--teinte-b: calc(var(--teinte) + var(--z-channel-ecart-b,150));
+		--teinte-c: calc(var(--teinte) - var(--z-channel-ecart-c,40));
+		--sombre: var(--z-channel-sombre,88); --contraste: var(--z-channel-contraste,56);
+		--sens: calc(-1 + var(--sombre)/50);
+		--clarte-fond: calc(96 - var(--sombre)*0.9);
+		--clarte-encre: calc(20 + var(--sombre)*0.66);
+		--clarte-accent: calc(var(--clarte-fond) + var(--sens)*var(--contraste));
+
+		--accent:      hsl(var(--teinte)   calc(var(--satur)*1%) calc(var(--clarte-accent)*1%));
+		--complement:  hsl(var(--teinte-b) calc(var(--satur)*1%) calc(var(--clarte-accent)*1%));
+		--tierce:      hsl(var(--teinte-c) calc(var(--satur)*1%) calc(var(--clarte-accent)*1%));
+		--fond:        hsl(var(--teinte) calc(var(--neutre)*1%) calc(var(--clarte-fond)*1%));
+		--surface:     hsl(var(--teinte) calc(var(--neutre)*1.4*1%) calc((var(--clarte-fond)+var(--sens)*5)*1%));
+		--surface-2:   hsl(var(--teinte) calc(var(--neutre)*1.8*1%) calc((var(--clarte-fond)+var(--sens)*9)*1%));
+		--encre:       hsl(var(--teinte) calc(var(--neutre)*2.4*1%) calc(var(--clarte-encre)*1%));
+		--encre-douce: hsl(var(--teinte) calc(var(--neutre)*1.6*1%) calc((var(--clarte-encre)+var(--sens)*-26)*1%));
+		--filet:       hsl(var(--teinte) calc(var(--neutre)*1.6*1%) calc((var(--clarte-fond)+var(--sens)*13)*1%));
+		--accent-encre:hsl(var(--teinte) 12% calc(var(--clarte-fond)*1%));
+
+		--echelle: calc(var(--z-channel-echelle,100)/100);
+		--radius-tl: calc(var(--z-channel-radius-tl,22)*1px); --radius-tr: calc(var(--z-channel-radius-tr,8)*1px);
+		--radius-br: calc(var(--z-channel-radius-br,22)*1px); --radius-bl: calc(var(--z-channel-radius-bl,8)*1px);
+		--pad-haut: calc(var(--z-channel-pad-haut,22)*1px); --pad-droite: calc(var(--z-channel-pad-droite,30)*1px);
+		--pad-bas: calc(var(--z-channel-pad-bas,22)*1px); --pad-gauche: calc(var(--z-channel-pad-gauche,30)*1px);
 	}
 	* { box-sizing: border-box; }
-	body { margin:0; min-height:100vh; background:radial-gradient(1200px 800px at 30% -10%, #14141f, var(--bg));
-		color:var(--ink0); font-family:var(--mono); font-size:13px; overflow:hidden; user-select:none; }
-	#splash { position:fixed; inset:0; pointer-events:none; z-index:40; }
+	body { margin:0; min-height:100vh; background:radial-gradient(1200px 700px at 25% -10%, #14141f, var(--console-bg));
+		color:var(--console-ink); font-family:var(--console-font); font-size:13px; overflow:hidden; user-select:none; }
+	.splash-canvas { position:fixed; inset:0; pointer-events:none; z-index:40; }
 
-	.wrap { display:grid; grid-template-columns:420px 1fr; height:100vh; }
-	@media (max-width:940px){ .wrap{ grid-template-columns:1fr; } }
+	.workbench { display:grid; grid-template-columns:404px 1fr; height:100vh; }
+	@media (max-width:960px){ .workbench{ grid-template-columns:1fr; } }
 
-	/* ————— LE BANC (gauche) ————— */
-	.bench { padding:1.1rem 1.1rem 2rem; overflow:auto; border-right:1px solid var(--stroke);
-		background:linear-gradient(180deg,var(--bg2),var(--bg)); display:grid; gap:1.1rem; align-content:start; }
-	.title { display:flex; align-items:center; gap:.5rem; }
-	.title b{ font-size:1.05rem; letter-spacing:.03em; } .title span{ color:var(--ink2); font-size:.7rem; }
-	.title .live{ width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent); }
+	/* ═══════════ LE BANC (gauche) ═══════════ */
+	.console { padding:1.1rem 1.05rem 3rem; overflow:auto; border-right:1px solid var(--console-stroke);
+		background:linear-gradient(180deg,var(--console-panel),var(--console-bg)); display:grid; gap:1rem; align-content:start; }
+	.brand { display:flex; align-items:center; gap:.5rem; }
+	.brand-led { width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent); }
+	.brand-name { font-size:1.05rem; letter-spacing:.03em; } .brand-sub { color:var(--console-ink-faint); font-size:.7rem; }
 
-	/* LE PRISME — disque + source + 2 rayons qu'on empoigne */
-	.prism-box { display:grid; grid-template-columns:230px 1fr; gap:.8rem; align-items:center; }
-	.prism { position:relative; width:230px; height:230px; touch-action:none; }
-	.prism .disc { position:absolute; inset:18px; border-radius:50%;
-		background: radial-gradient(circle,#fff 0,transparent 60%),
+	.module { background:var(--console-panel); border:1px solid var(--console-stroke); border-radius:14px; padding:.9rem .95rem 1rem; }
+	.module-title { margin:0 0 .8rem; font-size:.64rem; letter-spacing:.2em; text-transform:uppercase; color:var(--console-ink-soft); }
+	.hint { color:var(--console-ink-faint); font-size:.66rem; line-height:1.5; margin:.6rem 0 0; }
+	.hint kbd { background:#000; border:1px solid var(--console-stroke); border-radius:4px; padding:0 4px; color:var(--console-ink); font-size:.9em; }
+
+	/* — LE PRISME (roue) — */
+	.color-hub { display:grid; grid-template-columns:220px 1fr; gap:.8rem; align-items:center; }
+	.prism { position:relative; width:220px; height:220px; touch-action:none; }
+	.prism-disc { position:absolute; inset:16px; border-radius:50%;
+		background:radial-gradient(circle,#fff 0,transparent 62%),
 			conic-gradient(from 90deg,hsl(0 90% 55%),hsl(60 90% 55%),hsl(120 90% 55%),hsl(180 90% 55%),hsl(240 90% 55%),hsl(300 90% 55%),hsl(360 90% 55%));
-		box-shadow: inset 0 0 0 1px var(--stroke), 0 0 60px -18px var(--accent); }
-	.prism svg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; overflow:visible; }
-	.ray { stroke-width:2.5; fill:none; filter:drop-shadow(0 0 5px currentColor); }
-	.node { position:absolute; border-radius:50%; translate:-50% -50%; cursor:grab; box-shadow:0 0 0 1.5px #000,0 3px 10px #000a; }
-	.node.src{ width:26px;height:26px;border:3px solid #fff; }
-	.node.b,.node.c{ width:18px;height:18px;border:2.5px solid #fff; }
-	.node small{ position:absolute;inset:0;display:grid;place-items:center;font:700 9px/1 var(--mono);color:#fff;mix-blend-mode:difference; }
-	.scheme{ display:grid;gap:.42rem;font-size:.7rem;color:var(--ink1); }
-	.scheme .sw{ height:20px;border-radius:5px;border:1px solid #ffffff18; cursor:grab; touch-action:none; position:relative; }
-	.scheme .sw::after{ content:attr(data-l);position:absolute;left:6px;top:50%;translate:0 -50%;color:#0009;font:700 9px/1 var(--mono);mix-blend-mode:overlay; }
+		box-shadow:inset 0 0 0 1px var(--console-stroke), 0 0 55px -16px var(--accent); }
+	.prism-rays { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; overflow:visible; }
+	.prism-ray { stroke-width:2.5; fill:none; filter:drop-shadow(0 0 5px currentColor); }
+	.prism-node { position:absolute; border-radius:50%; translate:-50% -50%; cursor:grab; box-shadow:0 0 0 1.5px #000,0 3px 10px #000a; }
+	.prism-source { width:26px;height:26px;border:3px solid #fff; }
+	.prism-wing { width:18px;height:18px;border:2.5px solid #fff; }
+	.prism-node b { position:absolute;inset:0;display:grid;place-items:center;font:700 9px/1 var(--console-font);color:#fff;mix-blend-mode:difference; }
+	.scheme-swatches { display:grid; gap:.34rem; }
+	.swatch { height:20px; border-radius:5px; border:1px solid #ffffff18; position:relative; cursor:grab; touch-action:none; }
+	.swatch-label { position:absolute; left:6px; top:50%; translate:0 -50%; font:700 9px/1 var(--console-font); color:#0009; mix-blend-mode:overlay; }
 
-	.card { background:var(--bg2); border:1px solid var(--stroke); border-radius:14px; padding:.85rem .9rem 1rem; }
-	.card h2{ margin:0 0 .7rem; font-size:.64rem; letter-spacing:.2em; text-transform:uppercase; color:var(--ink1); }
-	.scrub{ color:var(--ink0); cursor:ew-resize; border-bottom:1px dashed var(--ink2); padding:0 1px; }
-	.row{ display:flex; gap:.8rem; flex-wrap:wrap; align-items:center; font-size:.72rem; color:var(--ink1); }
-	select{ font:inherit; font-size:.72rem; background:var(--bg); color:var(--ink0); border:1px solid var(--stroke); border-radius:7px; padding:.3em .5em; }
-	.hint{ color:var(--ink2); font-size:.66rem; line-height:1.5; }
-	.pellets{ display:flex; gap:.5rem; }
-	.pellet{ width:30px;height:30px;border-radius:50%;cursor:grab;touch-action:none;box-shadow:0 3px 10px #000a, inset 0 0 0 2px #fff3; }
+	/* — LA PALETTE (drop-partout) — */
+	.palette-chips { display:flex; gap:.5rem; flex-wrap:wrap; }
+	.palette-chip { width:30px;height:30px;border-radius:50%;cursor:grab;touch-action:none;box-shadow:0 3px 10px #000a, inset 0 0 0 2px #fff3; }
+	.gradient-bar { height:30px; border-radius:8px; margin-top:.7rem; cursor:grab; touch-action:none; box-shadow:inset 0 0 0 1px #ffffff22; }
+	.gradient-controls { display:flex; align-items:center; gap:.5rem; margin-top:.5rem; font-size:.7rem; color:var(--console-ink-soft); }
+	.gradient-stop { width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #fff; }
+	.angle-slider { flex:1; accent-color:var(--accent); }
 
-	/* ————— L'APERÇU (droite) : la MATIÈRE qu'on sculpte ————— */
-	.stage { position:relative; background:var(--page); color:var(--ink); overflow:hidden;
-		font-family:ui-sans-serif,system-ui,sans-serif; font-size:calc(15px*var(--scale)); transition:background-color .3s; }
-	.stagePad { position:absolute; inset:0; display:grid; place-items:center; padding:3rem; }
+	/* — LES BOUTONS ROTATIFS / poignées visibles — */
+	.knob-row { display:flex; gap:1.1rem; flex-wrap:wrap; }
+	.knob { display:grid; justify-items:center; gap:.35rem; }
+	.knob-dial { position:relative; width:64px; height:64px; border-radius:50%; background:radial-gradient(circle at 50% 35%,#20212b,#0c0c12);
+		box-shadow:inset 0 0 0 1px var(--console-stroke), 0 6px 16px -8px #000; cursor:grab; touch-action:none; }
+	.knob-dial::after { content:""; position:absolute; left:50%; top:8px; width:4px; height:16px; border-radius:2px; background:var(--accent);
+		translate:-50% 0; transform-origin:50% 24px; rotate:var(--knob-rot,0deg); box-shadow:0 0 8px var(--accent); }
+	.knob-name { font-size:.6rem; letter-spacing:.12em; text-transform:uppercase; color:var(--console-ink-soft); }
+	.knob-value { font-size:.72rem; color:var(--console-ink); }
 
-	/* la boîte-matière : radius PAR COIN + padding PAR CÔTÉ, tout piloté par tokens */
-	.clay { position:relative; width:min(560px,74%); background:var(--surf); color:var(--ink);
-		border:1.5px solid var(--line);
-		border-top-left-radius:calc(var(--z-channel-rtl,26)*1px); border-top-right-radius:calc(var(--z-channel-rtr,8)*1px);
-		border-bottom-right-radius:calc(var(--z-channel-rbr,26)*1px); border-bottom-left-radius:calc(var(--z-channel-rbl,8)*1px);
-		padding:calc(var(--z-channel-pt,26)*1px) calc(var(--z-channel-pr,34)*1px) calc(var(--z-channel-pb,26)*1px) calc(var(--z-channel-pl,34)*1px);
-		box-shadow:0 30px 80px -30px #0009; }
-	.clay.grad{ background:var(--grad); color:var(--acc-ink); border-color:transparent; }
-	.clay .kick{ display:inline-block;background:var(--accent);color:var(--acc-ink);font-weight:700;font-size:.68em;letter-spacing:.16em;text-transform:uppercase;padding:.3em .7em;border-radius:6px; }
-	.clay h1{ margin:.5rem 0 .2rem; font-family:var(--fTitle,inherit); font-weight:var(--wTitle,800); font-size:2.3em; line-height:1; letter-spacing:-.02em; }
-	.clay p{ margin:.4rem 0 0; font-family:var(--fText,inherit); color:var(--ink-sf); line-height:1.55; }
-	.clay.grad p{ color:#ffffffcc; }
-	.clay .btns{ display:flex; gap:.6rem; margin-top:1rem; flex-wrap:wrap; }
-	.b{ font:inherit; font-weight:600; cursor:pointer; border:1.5px solid var(--ink); background:var(--ink); color:var(--page);
-		padding:.55em 1.1em; border-radius:calc(var(--z-channel-rtr,8)*1px + 2px); transition:transform .16s cubic-bezier(.34,1.7,.5,1); }
-	.b:hover{ transform:translateY(-2px); }
-	.b.a{ background:var(--accent);border-color:var(--accent);color:var(--acc-ink); }
-	.b.c{ background:var(--comp);border-color:var(--comp);color:var(--acc-ink); }
-	.b.g{ background:transparent;color:var(--ink); }
+	.type-row { display:grid; gap:.55rem; }
+	.type-row label { display:flex; align-items:center; justify-content:space-between; gap:.6rem; font-size:.72rem; color:var(--console-ink-soft); }
+	.font-select { font:inherit; font-size:.72rem; background:var(--console-bg); color:var(--console-ink); border:1px solid var(--console-stroke); border-radius:7px; padding:.3em .5em; }
 
-	/* les POIGNÉES sur la matière */
-	.grip{ position:absolute; z-index:5; background:#fff; border:2px solid #111; box-shadow:0 2px 8px #000a; }
-	.grip.corner{ width:16px;height:16px;border-radius:50%;margin:-8px;cursor:grab; }
-	.grip.edge{ background:var(--accent); border-color:#fff; }
-	.grip.edge.h{ width:34px;height:8px;border-radius:6px;margin:-4px -17px;cursor:ns-resize; }
-	.grip.edge.v{ width:8px;height:34px;border-radius:6px;margin:-17px -4px;cursor:ew-resize; }
-	.tag{ position:absolute; z-index:6; font:700 10px/1 var(--mono); color:#fff; background:#000a; padding:3px 5px; border-radius:5px; pointer-events:none; opacity:0; transition:opacity .15s; }
+	/* ═══════════ L'APERÇU (droite) : DES DIZAINES D'ÉLÉMENTS ═══════════ */
+	.canvas { position:relative; overflow:auto; background:var(--fond); color:var(--encre);
+		font-family:ui-sans-serif,system-ui,sans-serif; font-size:calc(15px*var(--echelle)); transition:background-color .3s,color .3s; }
+	.app { max-width:64rem; margin:0 auto; padding:2rem clamp(1rem,3vw,2.5rem) 5rem; display:grid; gap:1.6rem; }
+
+	/* la barre d'app */
+	.app-bar { display:flex; align-items:center; gap:1rem; padding:var(--pad-haut) var(--pad-droite) var(--pad-bas) var(--pad-gauche);
+		background:var(--surface); border:1px solid var(--filet);
+		border-radius:var(--radius-tl) var(--radius-tr) var(--radius-br) var(--radius-bl); }
+	.app-logo { width:1.6em;height:1.6em;border-radius:.4em;background:var(--accent); }
+	.app-bar nav { display:flex; gap:1rem; font-size:.85em; color:var(--encre-douce); }
+	.app-bar nav .is-current { color:var(--accent); font-weight:700; }
+	.app-bar .spacer { flex:1; }
+
+	/* LE HÉROS — c'est LUI qu'on sculpte (radius par coin + padding par côté) ; tout le reste suit */
+	.hero { position:relative; background:var(--surface); border:1.5px solid var(--filet); color:var(--encre);
+		border-radius:var(--radius-tl) var(--radius-tr) var(--radius-br) var(--radius-bl);
+		padding:calc(var(--pad-haut) + 8px) calc(var(--pad-droite) + 12px) calc(var(--pad-bas) + 8px) calc(var(--pad-gauche) + 12px);
+		box-shadow:0 30px 70px -34px #0008; }
+	.hero.has-gradient { background:linear-gradient(var(--grad-angle,90deg), var(--accent), var(--complement)); color:var(--accent-encre); border-color:transparent; }
+	.hero.is-editing { outline:1px dashed var(--accent); outline-offset:7px; }
+	.eyebrow { display:inline-block; background:var(--accent); color:var(--accent-encre); font-weight:700; font-size:.68em;
+		letter-spacing:.16em; text-transform:uppercase; padding:.3em .7em; border-radius:6px; }
+	.hero h1 { margin:.5rem 0 .2rem; font-family:var(--font-titre,inherit); font-weight:var(--poids-titre,800); font-size:2.3em; line-height:1; letter-spacing:-.02em; }
+	.hero p { margin:.4rem 0 0; font-family:var(--font-texte,inherit); color:var(--encre-douce); line-height:1.55; max-width:38em; }
+	.hero.has-gradient p { color:#ffffffcc; }
+
+	.btn { font:inherit; font-weight:600; cursor:pointer; border:1.5px solid var(--encre); background:var(--encre); color:var(--fond);
+		padding:calc(var(--pad-haut)*.5) calc(var(--pad-droite)*.6);
+		border-radius:var(--radius-tl) var(--radius-tr) var(--radius-br) var(--radius-bl);
+		transition:transform .15s cubic-bezier(.34,1.7,.5,1); }
+	.btn:hover { transform:translateY(-2px); }
+	.btn--accent { background:var(--accent); border-color:var(--accent); color:var(--accent-encre); }
+	.btn--complement { background:var(--complement); border-color:var(--complement); color:var(--accent-encre); }
+	.btn--tierce { background:var(--tierce); border-color:var(--tierce); color:var(--accent-encre); }
+	.btn--ghost { background:transparent; color:var(--encre); }
+	.btn-row { display:flex; gap:.7rem; flex-wrap:wrap; margin-top:1rem; }
+
+	.card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(13rem,1fr)); gap:1rem; }
+	.card { background:var(--surface); border:1px solid var(--filet); color:var(--encre);
+		border-radius:var(--radius-tl) var(--radius-tr) var(--radius-br) var(--radius-bl);
+		padding:var(--pad-haut) var(--pad-droite) var(--pad-bas) var(--pad-gauche); }
+	.card--raised { background:var(--surface-2); }
+	.card h3 { margin:0 0 .3rem; font-family:var(--font-titre,inherit); font-weight:var(--poids-titre,800); font-size:1.05em; }
+	.card p { margin:0; color:var(--encre-douce); font-size:.86em; line-height:1.5; }
+
+	.stat-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(9rem,1fr)); gap:1rem; }
+	.stat { background:var(--surface); border:1px solid var(--filet); padding:var(--pad-haut) var(--pad-droite) var(--pad-bas) var(--pad-gauche);
+		border-radius:var(--radius-tl) var(--radius-tr) var(--radius-br) var(--radius-bl); }
+	.stat .stat-label { font-size:.7em; letter-spacing:.1em; text-transform:uppercase; color:var(--encre-douce); }
+	.stat .stat-value { font-weight:800; font-size:1.7em; }
+	.stat .stat-delta { color:var(--accent); font-size:.8em; font-weight:700; }
+
+	.list { background:var(--surface); border:1px solid var(--filet); border-radius:var(--radius-tl) var(--radius-tr) var(--radius-br) var(--radius-bl); overflow:hidden; }
+	.list-row { display:flex; align-items:center; gap:.8rem; padding:calc(var(--pad-haut)*.6) var(--pad-droite); border-top:1px solid var(--filet); }
+	.list-row:first-child { border-top:none; }
+	.avatar { width:2em;height:2em;border-radius:999px; display:grid; place-items:center; font-weight:800; font-size:.8em; }
+	.avatar--a{ background:var(--accent);color:var(--accent-encre); } .avatar--b{ background:var(--complement);color:var(--accent-encre); } .avatar--c{ background:var(--tierce);color:var(--accent-encre); }
+	.list-row .grow { flex:1; } .list-row .muted { color:var(--encre-douce); font-size:.85em; }
+
+	.form { display:grid; gap:.8rem; background:var(--surface); border:1px solid var(--filet);
+		border-radius:var(--radius-tl) var(--radius-tr) var(--radius-br) var(--radius-bl); padding:var(--pad-haut) var(--pad-droite) var(--pad-bas) var(--pad-gauche); }
+	.field { font:inherit; padding:.5em .7em; border-radius:calc(var(--radius-tr) + 2px); background:var(--surface-2); color:var(--encre); border:1.5px solid var(--filet); }
+	.field:focus { outline:2px solid var(--accent); outline-offset:1px; }
+	.switch { width:2.6em;height:1.4em;border-radius:999px;background:var(--filet);position:relative;cursor:pointer;flex:none; }
+	.switch::after{ content:"";position:absolute;top:2px;left:2px;width:calc(1.4em - 4px);height:calc(1.4em - 4px);border-radius:50%;background:#fff;transition:.2s cubic-bezier(.34,1.7,.5,1); }
+	.switch.is-on{ background:var(--accent); } .switch.is-on::after{ translate:1.2em 0; }
+	.form-line { display:flex; align-items:center; gap:.7rem; font-size:.9em; }
+
+	.badges { display:flex; gap:.5rem; flex-wrap:wrap; }
+	.badge { font-size:.76em; font-weight:700; padding:.3em .7em; border-radius:999px; }
+	.badge--accent{ background:var(--accent);color:var(--accent-encre); } .badge--complement{ background:var(--complement);color:var(--accent-encre); }
+	.badge--tierce{ background:var(--tierce);color:var(--accent-encre); } .badge--soft{ background:color-mix(in srgb,var(--accent) 16%,var(--surface));color:var(--accent); }
+
+	table.data { width:100%; border-collapse:collapse; background:var(--surface); border:1px solid var(--filet);
+		border-radius:var(--radius-tl) var(--radius-tr) var(--radius-br) var(--radius-bl); overflow:hidden; }
+	table.data th, table.data td { text-align:left; padding:calc(var(--pad-haut)*.55) var(--pad-droite); border-top:1px solid var(--filet); font-size:.86em; }
+	table.data th { color:var(--encre-douce); font-size:.72em; letter-spacing:.08em; text-transform:uppercase; border-top:none; }
+
+	/* les POIGNÉES sur la matière (héros) */
+	.grip { position:absolute; z-index:5; background:#fff; border:2px solid #111; box-shadow:0 2px 8px #000a; }
+	.grip--corner { width:16px;height:16px;border-radius:50%;margin:-8px;cursor:grab; }
+	.grip--edge { background:var(--accent);border-color:#fff; }
+	.grip--edge.axis-h{ width:36px;height:8px;border-radius:6px;margin:-4px -18px;cursor:ns-resize; }
+	.grip--edge.axis-v{ width:8px;height:36px;border-radius:6px;margin:-18px -4px;cursor:ew-resize; }
+	.grip.is-active { outline:2px dashed #fff; outline-offset:4px; scale:1.45; z-index:9; }
 </style>
 
 <body>
-	<canvas id="splash"></canvas>
-	<div class="wrap">
+	<canvas class="splash-canvas" id="splash"></canvas>
+	<div class="workbench">
 
-		<!-- ═══════ LE BANC ═══════ -->
-		<aside class="bench">
-			<div class="title"><span class="live"></span><b>Zoé</b><span>· l'établi</span></div>
+		<!-- ═══════════ LE BANC ═══════════ -->
+		<aside class="console">
+			<div class="brand"><span class="brand-led"></span><span class="brand-name">Zoé</span><span class="brand-sub">· l'établi</span></div>
 
-			<section class="card">
-				<h2>Lumière — braque la source, tire les rayons</h2>
-				<div class="prism-box">
+			<section class="module">
+				<h2 class="module-title">Schème — braque la source, tire les rayons</h2>
+				<div class="color-hub">
 					<div class="prism" id="prism">
-						<div class="disc"></div>
-						<svg><path class="ray" id="rayB"/><path class="ray" id="rayC"/></svg>
-						<div class="node src" id="nSrc"><small>◉</small></div>
-						<div class="node b" id="nB"><small>B</small></div>
-						<div class="node c" id="nC"><small>C</small></div>
+						<div class="prism-disc"></div>
+						<svg class="prism-rays"><path class="prism-ray" id="ray-b"/><path class="prism-ray" id="ray-c"/></svg>
+						<div class="prism-node prism-source" id="node-source"><b>◉</b></div>
+						<div class="prism-node prism-wing" id="node-b"><b>B</b></div>
+						<div class="prism-node prism-wing" id="node-c"><b>C</b></div>
 					</div>
-					<div class="scheme">
-						<div class="sw" data-tok="--accent" data-l="A" style="background:var(--accent)"></div>
-						<div class="sw" data-tok="--comp"   data-l="B" style="background:var(--comp)"></div>
-						<div class="sw" data-tok="--tierce" data-l="C" style="background:var(--tierce)"></div>
-						<div class="sw" data-tok="--surf"   data-l="surf" style="background:var(--surf)"></div>
-						<div class="sw" data-tok="--ink"    data-l="ink"  style="background:var(--ink)"></div>
+					<div class="scheme-swatches">
+						<div class="swatch" data-paint="var(--accent)" style="background:var(--accent)"><span class="swatch-label">accent</span></div>
+						<div class="swatch" data-paint="var(--complement)" style="background:var(--complement)"><span class="swatch-label">complément</span></div>
+						<div class="swatch" data-paint="var(--tierce)" style="background:var(--tierce)"><span class="swatch-label">tierce</span></div>
+						<div class="swatch" data-paint="var(--surface-2)" style="background:var(--surface-2)"><span class="swatch-label">surface</span></div>
+						<div class="swatch" data-paint="var(--encre)" style="background:var(--encre)"><span class="swatch-label">encre</span></div>
 					</div>
 				</div>
-				<p class="hint" style="margin:.6rem 0 0">Tire <b>◉</b> (teinte + saturation), <b>B</b> et <b>C</b> (les deux ailes du schéma). Tout le reste — dégradés, bordures, ombres — se réfracte tout seul.</p>
-			</section>
-
-			<section class="card">
-				<h2>Matière — jette une couleur sur l'aperçu</h2>
-				<div class="pellets" id="pellets">
-					<span class="pellet" data-hsl="var(--accent)" style="background:var(--accent)"></span>
-					<span class="pellet" data-hsl="var(--comp)"   style="background:var(--comp)"></span>
-					<span class="pellet" data-hsl="var(--tierce)" style="background:var(--tierce)"></span>
+				<div class="knob-row" style="margin-top:.9rem">
+					<div class="knob"><div class="knob-dial" id="knob-neutre"></div><span class="knob-name">Neutres</span><span class="knob-value" id="val-neutre">10</span></div>
+					<div class="knob"><div class="knob-dial" id="knob-contraste"></div><span class="knob-name">Contraste</span><span class="knob-value" id="val-contraste">56</span></div>
+					<div class="knob"><div class="knob-dial" id="knob-sombre"></div><span class="knob-name">Clair/Sombre</span><span class="knob-value" id="val-sombre">88</span></div>
 				</div>
-				<p class="hint" style="margin:.6rem 0 0">Attrape une pastille, <b>lance-la</b> sur la boîte : elle éclabousse un <b>dégradé</b> au point d'impact. Ou tire ses <b>coins</b> et ses <b>bords</b> pour la sculpter.</p>
+				<p class="hint">Tire <b>◉</b> (teinte + saturation), <b>B</b> et <b>C</b> (les ailes). Les <b>neutres</b> (fond, surfaces, encre) se créent tout seuls — leur teinte suit, le bouton « Neutres » dose leur couleur.</p>
 			</section>
 
-			<section class="card">
-				<h2>Typo &amp; échelle</h2>
-				<div class="row" style="display:grid;gap:.6rem">
-					<label class="row">Titre <select id="fTitle"><option value="ui-sans-serif,system-ui,sans-serif">Sans</option><option value="Georgia,'Times New Roman',serif">Serif</option><option value="ui-monospace,Menlo,monospace">Mono</option><option value="'Trebuchet MS',sans-serif">Grotesk</option></select></label>
-					<label class="row">Texte <select id="fText"><option value="ui-sans-serif,system-ui,sans-serif">Sans</option><option value="Georgia,'Times New Roman',serif">Serif</option><option value="ui-monospace,Menlo,monospace">Mono</option></select></label>
-					<div class="row">Échelle globale <b class="scrub" id="scScale" data-min="70" data-max="140">100</b> %<span class="hint"> (scrub ↔)</span></div>
-					<div class="row">Contraste <b class="scrub" id="scCtr" data-min="0" data-max="80">56</b><span class="hint"> · clair/sombre </span><b class="scrub" id="scFlip" data-min="0" data-max="100">90</b></div>
+			<section class="module">
+				<h2 class="module-title">Palette — attrape, dépose n'importe où</h2>
+				<div class="palette-chips" id="palette">
+					<span class="palette-chip" data-paint="var(--accent)" style="background:var(--accent)"></span>
+					<span class="palette-chip" data-paint="var(--complement)" style="background:var(--complement)"></span>
+					<span class="palette-chip" data-paint="var(--tierce)" style="background:var(--tierce)"></span>
+					<span class="palette-chip" data-paint="var(--surface-2)" style="background:var(--surface-2)"></span>
+					<span class="palette-chip" data-paint="var(--encre)" style="background:var(--encre)"></span>
+				</div>
+				<div class="gradient-bar" id="gradient-bar"></div>
+				<div class="gradient-controls">
+					<span class="gradient-stop" id="stop-a" title="clic pour changer"></span>
+					<input class="angle-slider" id="gradient-angle" type="range" min="0" max="360" value="90">
+					<span class="gradient-stop" id="stop-b" title="clic pour changer"></span>
+				</div>
+				<p class="hint">Attrape une pastille ou la barre de dégradé, <b>lâche-la sur n'importe quel élément</b> de l'aperçu. Clique les ronds pour changer les couleurs du dégradé, tire la réglette pour l'angle.</p>
+			</section>
+
+			<section class="module">
+				<h2 class="module-title">Matière — jette une couleur sur le héros</h2>
+				<div class="palette-chips" id="pellets">
+					<span class="palette-chip pellet" data-paint="var(--accent)" style="background:var(--accent)"></span>
+					<span class="palette-chip pellet" data-paint="var(--complement)" style="background:var(--complement)"></span>
+					<span class="palette-chip pellet" data-paint="var(--tierce)" style="background:var(--tierce)"></span>
+				</div>
+				<p class="hint"><b>Lance</b> une pastille sur le héros → éclaboussure + dégradé. Ou empoigne ses <b>coins</b> (radius par coin) et ses <b>bords</b> (padding par côté). <kbd>Shift</kbd> = le haut · <kbd>Alt</kbd> = le bas · <kbd>Shift+Alt</kbd> = les 4. Le survol montre ce que tu touches. Le héros sculpté <b>reforme toute l'app</b>.</p>
+			</section>
+
+			<section class="module">
+				<h2 class="module-title">Typo &amp; échelle</h2>
+				<div class="type-row">
+					<label>Fonte titre <select class="font-select" id="font-titre"><option value="ui-sans-serif,system-ui,sans-serif">Sans</option><option value="Georgia,'Times New Roman',serif">Serif</option><option value="ui-monospace,Menlo,monospace">Mono</option><option value="'Trebuchet MS',sans-serif">Grotesk</option></select></label>
+					<label>Fonte texte <select class="font-select" id="font-texte"><option value="ui-sans-serif,system-ui,sans-serif">Sans</option><option value="Georgia,'Times New Roman',serif">Serif</option><option value="ui-monospace,Menlo,monospace">Mono</option></select></label>
+				</div>
+				<div class="knob-row" style="margin-top:.9rem; justify-content:center">
+					<div class="knob"><div class="knob-dial" id="knob-echelle" style="width:84px;height:84px"></div><span class="knob-name">Échelle globale</span><span class="knob-value" id="val-echelle">100 %</span></div>
 				</div>
 			</section>
 		</aside>
 
-		<!-- ═══════ L'APERÇU ═══════ -->
-		<main class="stage" id="stage">
-			<div class="stagePad">
-				<div class="clay" id="clay">
-					<span class="kick">L'établi</span>
+		<!-- ═══════════ L'APERÇU ═══════════ -->
+		<main class="canvas" id="canvas">
+			<div class="app">
+				<div class="app-bar paintable">
+					<span class="app-logo"></span><b>Atelier</b>
+					<nav><span class="is-current">Vue</span><span>Projets</span><span>Équipe</span><span>Réglages</span></nav>
+					<span class="spacer"></span>
+					<button class="btn btn--accent paintable">Nouveau</button>
+				</div>
+
+				<div class="hero paintable" id="hero">
+					<span class="eyebrow">L'établi</span>
 					<h1>On ne règle pas.<br>On sculpte.</h1>
-					<p>Braque la lumière, tire les rayons, jette une couleur, empoigne les coins. Tout ce que tu vois — couleurs, dégradés, bordures, ombres, rayons — descend de tes gestes. Rien n'est écrit. Rien n'arrive sec : tout claque et rebondit.</p>
-					<div class="btns">
-						<button class="b a">Accent</button>
-						<button class="b c">Complément</button>
-						<button class="b g">Discret</button>
+					<p>Braque la lumière, tire les rayons, jette une couleur, empoigne les coins. Tout ce que tu vois — couleurs, dégradés, bordures, ombres, l'app entière — descend de tes gestes. Le héros que tu sculptes reforme chaque carte, chaque bouton.</p>
+					<div class="btn-row">
+						<button class="btn btn--accent paintable">Accent</button>
+						<button class="btn btn--complement paintable">Complément</button>
+						<button class="btn btn--tierce paintable">Tierce</button>
+						<button class="btn btn--ghost paintable">Discret</button>
 					</div>
+				</div>
+
+				<div class="stat-row">
+					<div class="stat paintable"><div class="stat-label">Revenu</div><div class="stat-value">184 320 €</div><div class="stat-delta">▲ 12,4 %</div></div>
+					<div class="stat paintable"><div class="stat-label">Sessions</div><div class="stat-value">9 812</div><div class="stat-delta">▲ 3,1 %</div></div>
+					<div class="stat paintable"><div class="stat-label">Conversion</div><div class="stat-value">4,7 %</div><div class="stat-delta">▲ 0,6 %</div></div>
+				</div>
+
+				<div class="card-grid">
+					<div class="card paintable"><h3>Surface</h3><p>Fond, filet et encre suivent le schème. Le radius et le padding viennent du héros.</p></div>
+					<div class="card card--raised paintable"><h3>Surface élevée</h3><p>Un cran plus détachée. <span class="badge badge--soft">doux</span></p></div>
+					<div class="card paintable"><h3>Neutres créés</h3><p>Les gris ne sont pas gris : la teinte s'y glisse, dosée par le bouton Neutres.</p></div>
+				</div>
+
+				<div class="list paintable">
+					<div class="list-row"><span class="avatar avatar--a">CR</span><b class="grow">Christophe Rousseau</b><span class="muted">lead</span><span class="badge badge--accent">A</span></div>
+					<div class="list-row"><span class="avatar avatar--b">ZM</span><b class="grow">Zoé Machine</b><span class="muted">design</span><span class="badge badge--complement">B</span></div>
+					<div class="list-row"><span class="avatar avatar--c">CL</span><b class="grow">Claude</b><span class="muted">forge</span><span class="badge badge--tierce">C</span></div>
+				</div>
+
+				<div class="card-grid">
+					<form class="form paintable">
+						<b>Un formulaire</b>
+						<input class="field" placeholder="ton@adresse.fr">
+						<input class="field" placeholder="Un mot…">
+						<div class="form-line"><span class="switch is-on" onclick="this.classList.toggle('is-on')"></span> Notifications</div>
+						<div class="btn-row" style="margin:0"><button class="btn btn--accent paintable" type="button">Envoyer</button><button class="btn btn--ghost paintable" type="button">Annuler</button></div>
+					</form>
+					<table class="data paintable">
+						<thead><tr><th>Élément</th><th>Rôle</th><th>État</th></tr></thead>
+						<tbody>
+							<tr><td>Bouton</td><td>action</td><td><span class="badge badge--accent">actif</span></td></tr>
+							<tr><td>Champ</td><td>saisie</td><td><span class="badge badge--soft">repos</span></td></tr>
+							<tr><td>Carte</td><td>surface</td><td><span class="badge badge--complement">élevée</span></td></tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="badges">
+					<span class="badge badge--accent">Accent</span><span class="badge badge--complement">Complément</span>
+					<span class="badge badge--tierce">Tierce</span><span class="badge badge--soft">Doux</span>
 				</div>
 			</div>
 		</main>
@@ -202,105 +346,143 @@
 	const rootS = document.documentElement.style, $ = i => document.getElementById(i);
 	const set = (k,v) => rootS.setProperty('--z-channel-'+k, v);
 	const cs = getComputedStyle(document.documentElement);
+	const resolve = v => { const m=String(v).match(/--[\w-]+/); return m ? cs.getPropertyValue(m[0]).trim() : v; };
 
-	/* ═══ LE RESSORT (volé à PÂTE) : une valeur ne va jamais sèche à sa cible ═══
-	   chaque token animé est un {val, tgt, vel} ; la boucle les pousse en overshoot. */
+	/* ═══ LE RESSORT (volé à PÂTE) : rien n'arrive sec ═══ */
 	const springs = {};
-	function spring(key, tgt){ const s = springs[key] || (springs[key]={val:tgt,tgt,vel:0}); s.tgt=tgt; }
-	function tick(){
-		for(const k in springs){ const s=springs[k];
-			s.vel=(s.vel+(s.tgt-s.val)*0.22)*0.62; s.val+=s.vel;
-			if(Math.abs(s.tgt-s.val)<0.05 && Math.abs(s.vel)<0.05) s.val=s.tgt;
-			set(k, Math.round(s.val*100)/100);
-		}
-		requestAnimationFrame(tick);
-	}
-	requestAnimationFrame(tick);
+	function spring(key, tgt){ (springs[key] || (springs[key]={val:tgt,tgt,vel:0})).tgt = tgt; }
+	(function tick(){ for(const k in springs){ const s=springs[k];
+		s.vel=(s.vel+(s.tgt-s.val)*0.22)*0.62; s.val+=s.vel;
+		if(Math.abs(s.tgt-s.val)<0.05 && Math.abs(s.vel)<0.05) s.val=s.tgt;
+		set(k, Math.round(s.val*100)/100); } requestAnimationFrame(tick); })();
 
-	/* ═══ LE PRISME : source + rayons B/C réfractent le schéma ═══ */
-	const prism=$('prism'), R=97, C=115;
-	const P={ src:{h:265,s:72}, eb:150, ec:40 };
-	function node(el,hue,r){ const a=(hue-90)*Math.PI/180, x=C+r*Math.cos(a), y=C+r*Math.sin(a); el.style.left=x+'px'; el.style.top=y+'px'; return [x,y]; }
-	function paintPrism(){
-		const hb=(P.src.h+P.eb)%360, hc=(P.src.h-P.ec+360)%360, rr=P.src.s/100*R;
-		const s=node($('nSrc'),P.src.h,rr), b=node($('nB'),hb,rr*0.82), c=node($('nC'),hc,rr*0.82);
-		$('nSrc').style.background=`hsl(${P.src.h} ${P.src.s}% 55%)`; $('nB').style.background=`hsl(${hb} ${P.src.s}% 55%)`; $('nC').style.background=`hsl(${hc} ${P.src.s}% 55%)`;
-		$('rayB').setAttribute('d',`M${s[0]} ${s[1]} L${b[0]} ${b[1]}`); $('rayB').style.color=`hsl(${hb} ${P.src.s}% 60%)`; $('rayB').style.stroke=$('rayB').style.color;
-		$('rayC').setAttribute('d',`M${s[0]} ${s[1]} L${c[0]} ${c[1]}`); $('rayC').style.color=`hsl(${hc} ${P.src.s}% 60%)`; $('rayC').style.stroke=$('rayC').style.color;
-		spring('teinte',P.src.h); spring('satur',P.src.s); spring('eb',P.eb); spring('ec',P.ec);
-	}
-	function polar(e){ const r=prism.getBoundingClientRect(); const dx=e.clientX-(r.left+C), dy=e.clientY-(r.top+C);
-		return { hue:(Math.atan2(dy,dx)*180/Math.PI+90+360)%360, r:Math.min(Math.hypot(dx,dy),R) }; }
 	function grab(el,fn){ el.addEventListener('pointerdown',e=>{ e.preventDefault(); el.setPointerCapture(e.pointerId);
 		const m=ev=>fn(ev), u=()=>{el.removeEventListener('pointermove',m);el.removeEventListener('pointerup',u);};
 		el.addEventListener('pointermove',m); el.addEventListener('pointerup',u); fn(e); }); }
-	grab($('nSrc'),e=>{const p=polar(e);P.src.h=p.hue;P.src.s=p.r/R*100;paintPrism();});
-	grab($('nB'),  e=>{const p=polar(e);P.eb=(p.hue-P.src.h+360)%360;paintPrism();});
-	grab($('nC'),  e=>{const p=polar(e);P.ec=(P.src.h-p.hue+360)%360;paintPrism();});
 
-	/* ═══ LA MATIÈRE : coins (radius par coin) + bords (padding par côté), avec ressort ═══ */
-	const clay=$('clay'), stage=$('stage');
-	const CORNERS=[['rtl',0,0],['rtr',1,0],['rbr',1,1],['rbl',0,1]];
-	const EDGES=[['pt','h',.5,0],['pb','h',.5,1],['pl','v',0,.5],['pr','v',1,.5]];
-	const grips=[];
-	function mkGrip(cls){ const g=document.createElement('div'); g.className='grip '+cls; stage.appendChild(g); return g; }
-	CORNERS.forEach(([tok,gx,gy])=>{ const g=mkGrip('corner'); grips.push(()=>place(g,gx,gy));
-		let sy,sr; grab(g,e=>{ if(sy==null){sy=e.clientY;sr=cur(tok);} const dir=gy?-1:1;
-			spring(tok, Math.max(0,Math.min(90, sr+(e.clientY-sy)*dir*0.6))); });
-		g.addEventListener('pointerup',()=>sy=null);
-	});
-	EDGES.forEach(([tok,ax,gx,gy])=>{ const g=mkGrip('edge '+ax); grips.push(()=>place(g,gx,gy));
-		let s0,sv; grab(g,e=>{ if(s0==null){s0=(ax==='h'?e.clientY:e.clientX);sv=cur(tok);}
-			const cur2=(ax==='h'?e.clientY:e.clientX); const dir=(gy===1||gx===1)?1:-1;
-			spring(tok, Math.max(0,Math.min(80, sv+(cur2-s0)*dir*0.5))); });
-		g.addEventListener('pointerup',()=>s0=null);
-	});
-	function cur(tok){ return parseFloat(cs.getPropertyValue('--z-channel-'+tok))||0; }
-	function place(g,gx,gy){ const r=clay.getBoundingClientRect(), s=stage.getBoundingClientRect();
-		g.style.left=(r.left-s.left+gx*r.width)+'px'; g.style.top=(r.top-s.top+gy*r.height)+'px'; }
-	function placeAll(){ grips.forEach(f=>f()); }
+	/* ═══ LE PRISME — source + ailes B/C réfractent le schème ═══ */
+	const prism=$('prism'), R=94, C=110;
+	const P={ h:265, s:74, eb:150, ec:40 };
+	const place = (el,hue,r)=>{ const a=(hue-90)*Math.PI/180, x=C+r*Math.cos(a), y=C+r*Math.sin(a); el.style.left=x+'px'; el.style.top=y+'px'; return [x,y]; };
+	function paintPrism(){
+		const hb=(P.h+P.eb)%360, hc=(P.h-P.ec+360)%360, rr=P.s/100*R;
+		const s=place($('node-source'),P.h,rr), b=place($('node-b'),hb,rr*.82), c=place($('node-c'),hc,rr*.82);
+		$('node-source').style.background=`hsl(${P.h} ${P.s}% 55%)`; $('node-b').style.background=`hsl(${hb} ${P.s}% 55%)`; $('node-c').style.background=`hsl(${hc} ${P.s}% 55%)`;
+		$('ray-b').setAttribute('d',`M${s[0]} ${s[1]} L${b[0]} ${b[1]}`); $('ray-b').style.stroke=`hsl(${hb} ${P.s}% 60%)`; $('ray-b').style.color=$('ray-b').style.stroke;
+		$('ray-c').setAttribute('d',`M${s[0]} ${s[1]} L${c[0]} ${c[1]}`); $('ray-c').style.stroke=`hsl(${hc} ${P.s}% 60%)`; $('ray-c').style.color=$('ray-c').style.stroke;
+		spring('teinte',P.h); spring('satur',P.s); spring('ecart-b',P.eb); spring('ecart-c',P.ec);
+	}
+	const polar = e=>{ const r=prism.getBoundingClientRect(), dx=e.clientX-(r.left+C), dy=e.clientY-(r.top+C);
+		return { hue:(Math.atan2(dy,dx)*180/Math.PI+90+360)%360, r:Math.min(Math.hypot(dx,dy),R) }; };
+	grab($('node-source'),e=>{const p=polar(e);P.h=p.hue;P.s=p.r/R*100;paintPrism();});
+	grab($('node-b'),e=>{P.eb=(polar(e).hue-P.h+360)%360;paintPrism();});
+	grab($('node-c'),e=>{P.ec=(P.h-polar(e).hue+360)%360;paintPrism();});
 
-	/* ═══ JETER une couleur → éclaboussure + dégradé au point d'impact (volé à PÂTE) ═══ */
-	const cv=$('splash'), ctx=cv.getContext('2d'); function size(){cv.width=innerWidth;cv.height=innerHeight;} size(); addEventListener('resize',()=>{size();placeAll();});
+	/* ═══ LES BOUTONS ROTATIFS — poignées VISIBLES pour les valeurs ═══ */
+	function knob(dialId, valId, chan, lo, hi, init, suffix){
+		const dial=$(dialId), out=$(valId); let v=init;
+		const paint=()=>{ dial.style.setProperty('--knob-rot', (((v-lo)/(hi-lo))*280-140)+'deg'); out.textContent = Math.round(v)+(suffix||''); spring(chan, v); };
+		let sy=null, sv;
+		grab(dial,e=>{ if(sy==null){sy=e.clientY;sv=v;} v=Math.max(lo,Math.min(hi, sv-(e.clientY-sy)*(hi-lo)/180)); paint(); });
+		dial.addEventListener('pointerup',()=>sy=null); paint();
+	}
+	knob('knob-neutre','val-neutre','neutre',0,30,10);
+	knob('knob-contraste','val-contraste','contraste',0,80,56);
+	knob('knob-sombre','val-sombre','sombre',0,100,88);
+	knob('knob-echelle','val-echelle','echelle',70,140,100,' %');
+
+	/* ═══ LES SELECTS DE FONTE ═══ */
+	$('font-titre').addEventListener('change',e=>rootS.setProperty('--font-titre',e.target.value));
+	$('font-texte').addEventListener('change',e=>rootS.setProperty('--font-texte',e.target.value));
+
+	/* ═══ LA MATIÈRE — coins & bords, HIGHLIGHT + modificateurs (le concept de Christophe) ═══ */
+	const hero=$('hero'), canvas=$('canvas');
+	const CORNERS=[['radius-tl',0,0],['radius-tr',1,0],['radius-br',1,1],['radius-bl',0,1]];
+	const EDGES=[['pad-haut','y',.5,0,-1],['pad-bas','y',.5,1,1],['pad-gauche','x',0,.5,-1],['pad-droite','x',1,.5,1]];
+	const gripEls={}, gripPos=[];
+	const isCorner = t => t.startsWith('radius');
+	function group(tok, sh, al){
+		if(isCorner(tok)){ if(sh&&al)return CORNERS.map(c=>c[0]); if(sh)return['radius-tl','radius-tr']; if(al)return['radius-br','radius-bl']; return[tok]; }
+		if(sh&&al)return EDGES.map(e=>e[0]); if(sh)return['pad-haut']; if(al)return['pad-bas']; return[tok];
+	}
+	const cur = tok => parseFloat(cs.getPropertyValue('--z-channel-'+tok))||0;
+	function placeGrip(g,gx,gy){ const r=hero.getBoundingClientRect(), s=canvas.getBoundingClientRect();
+		g.style.left=(r.left-s.left+canvas.scrollLeft+gx*r.width)+'px'; g.style.top=(r.top-s.top+canvas.scrollTop+gy*r.height)+'px'; }
+	function highlight(toks){ for(const t in gripEls) gripEls[t].classList.toggle('is-active', toks.includes(t)); hero.classList.toggle('is-editing', toks.length>0); }
+	let dragTok=null, hovTok=null, SH=false, AL=false;
+	const refresh = ()=>{ const t=dragTok||hovTok; if(t) highlight(group(t,SH,AL)); };
+	addEventListener('keydown',e=>{ if(e.key==='Shift')SH=true; if(e.key==='Alt')AL=true; refresh(); });
+	addEventListener('keyup',e=>{ if(e.key==='Shift')SH=false; if(e.key==='Alt')AL=false; refresh(); });
+
+	function wireGrip(g, tok, axis, dir, hi){
+		gripEls[tok]=g;
+		g.addEventListener('pointerenter',()=>{ if(!dragTok){ hovTok=tok; refresh(); } });
+		g.addEventListener('pointerleave',()=>{ if(!dragTok){ hovTok=null; highlight([]); } });
+		let start=null, base={};
+		grab(g,e=>{ SH=e.shiftKey; AL=e.altKey; dragTok=tok;
+			const pos = axis==='y'? e.clientY : e.clientX;
+			if(start==null){ start=pos; base={}; }
+			const gr=group(tok,SH,AL); highlight(gr);
+			gr.forEach(t=>{ if(base[t]==null) base[t]=cur(t); spring(t, Math.max(0,Math.min(hi, base[t]+(pos-start)*dir*0.6))); });
+		});
+		g.addEventListener('pointerup',()=>{ start=null; dragTok=null; hovTok=null; highlight([]); });
+	}
+	function mkGrip(cls){ const g=document.createElement('div'); g.className='grip '+cls; canvas.appendChild(g); return g; }
+	CORNERS.forEach(([tok,gx,gy])=>{ const g=mkGrip('grip--corner'); gripPos.push(()=>placeGrip(g,gx,gy)); wireGrip(g,tok,'y', gy?-1:1, 90); });
+	EDGES.forEach(([tok,ax,gx,gy,dir])=>{ const g=mkGrip('grip--edge '+(ax==='y'?'axis-h':'axis-v')); gripPos.push(()=>placeGrip(g,gx,gy)); wireGrip(g,tok,ax,dir,80); });
+	const placeAll = ()=> gripPos.forEach(f=>f());
+
+	/* ═══ LA PALETTE — attrape, DÉPOSE n'importe où (.paintable) ═══ */
+	let gradA='var(--accent)', gradB='var(--complement)', gradAngle=90;
+	const gradStr = ()=>`linear-gradient(${gradAngle}deg, ${resolve(gradA)}, ${resolve(gradB)})`;
+	function paintDrag(el, payload){
+		el.addEventListener('pointerdown', e=>{ e.preventDefault();
+			const ghost=document.createElement('div');
+			ghost.style.cssText='position:fixed;width:34px;height:34px;border-radius:9px;pointer-events:none;z-index:200;translate:-50% -50%;box-shadow:0 6px 20px #000a,inset 0 0 0 2px #fff6';
+			ghost.style.background=payload(); document.body.appendChild(ghost);
+			const move=ev=>{ ghost.style.left=ev.clientX+'px'; ghost.style.top=ev.clientY+'px'; };
+			const up=ev=>{ removeEventListener('pointermove',move); removeEventListener('pointerup',up); ghost.remove();
+				const t=document.elementFromPoint(ev.clientX,ev.clientY)?.closest('.paintable');
+				if(t){ t.style.background=payload(); t.classList.remove('has-gradient'); } };
+			addEventListener('pointermove',move); addEventListener('pointerup',up); move(e);
+		});
+	}
+	document.querySelectorAll('#palette .palette-chip, .scheme-swatches .swatch').forEach(c=> paintDrag(c, ()=>resolve(c.dataset.paint)));
+	paintDrag($('gradient-bar'), gradStr);
+	function paintGradUI(){ $('gradient-bar').style.background=gradStr(); $('stop-a').style.background=resolve(gradA); $('stop-b').style.background=resolve(gradB); }
+	const CYCLE=['var(--accent)','var(--complement)','var(--tierce)','var(--encre)','var(--fond)'];
+	$('stop-a').addEventListener('click',()=>{ gradA=CYCLE[(CYCLE.indexOf(gradA)+1)%CYCLE.length]; paintGradUI(); });
+	$('stop-b').addEventListener('click',()=>{ gradB=CYCLE[(CYCLE.indexOf(gradB)+1)%CYCLE.length]; paintGradUI(); });
+	$('gradient-angle').addEventListener('input',e=>{ gradAngle=+e.target.value; paintGradUI(); });
+
+	/* ═══ JETER une couleur → éclaboussure + dégradé sur le héros (volé à PÂTE) ═══ */
+	const cv=$('splash'), ctx=cv.getContext('2d'); const size=()=>{cv.width=innerWidth;cv.height=innerHeight;}; size();
+	addEventListener('resize',()=>{size();placeAll();});
 	let fly=[];
 	document.querySelectorAll('.pellet').forEach(p=>{
 		let lx,ly,vx=0,vy=0,px,py,drag=false;
 		p.addEventListener('pointerdown',e=>{drag=true;p.setPointerCapture(e.pointerId);lx=e.clientX;ly=e.clientY;p.style.position='fixed';p.style.zIndex=50;});
 		p.addEventListener('pointermove',e=>{if(!drag)return;vx=e.clientX-lx;vy=e.clientY-ly;lx=e.clientX;ly=e.clientY;px=e.clientX;py=e.clientY;p.style.left=(px-15)+'px';p.style.top=(py-15)+'px';});
-		p.addEventListener('pointerup',()=>{drag=false;const col=cs.getPropertyValue(p.dataset.hsl.match(/--[\w-]+/)[0]).trim();
-			fly.push({x:px,y:py,vx:vx*1.5,vy:vy*1.5,col,r:15}); p.style.position=''; p.style.left=''; p.style.top=''; p.style.zIndex=''; });
+		p.addEventListener('pointerup',()=>{drag=false; const col=resolve(p.dataset.paint);
+			fly.push({x:px,y:py,vx:vx*1.5,vy:vy*1.5,col,r:15}); p.style.cssText=p.style.cssText.replace(/position[^;]*;?|left[^;]*;?|top[^;]*;?|z-index[^;]*;?/g,''); });
 	});
-	function rgbaFrom(){ return true; }
-	function splashLoop(){ ctx.clearRect(0,0,cv.width,cv.height); const sr=stage.getBoundingClientRect(); const cr=clay.getBoundingClientRect();
+	(function splashLoop(){ ctx.clearRect(0,0,cv.width,cv.height); const hr=hero.getBoundingClientRect();
 		fly=fly.filter(b=>{ b.vy+=0.6; b.x+=b.vx; b.y+=b.vy; b.vx*=.99;
-			if(b.r>=15){ if(b.x>cr.left&&b.x<cr.right&&b.y>cr.top&&b.y<cr.bottom){ // impact
-				const gx=Math.round((b.x-cr.left)/cr.width*100); set('gx',gx); set('gon',1);
-				clay.classList.add('grad');
+			if(b.r>=15){ if(b.x>hr.left&&b.x<hr.right&&b.y>hr.top&&b.y<hr.bottom){
+				hero.style.setProperty('--grad-angle', Math.round((b.x-hr.left)/hr.width*180)+'deg'); hero.classList.add('has-gradient');
 				for(let i=0;i<22;i++){const a=Math.random()*6.28,s=2+Math.random()*7; fly.push({x:b.x,y:b.y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-3,col:b.col,r:3+Math.random()*4,life:1});}
 				return false; }
 				if(b.y>cv.height+40) return false; }
 			if(b.life!=null){ b.life-=.02; if(b.life<=0) return false; }
 			ctx.globalAlpha=b.life??1; ctx.fillStyle=b.col; ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,6.28); ctx.fill(); return true;
 		}); ctx.globalAlpha=1; requestAnimationFrame(splashLoop);
-	}
-	requestAnimationFrame(splashLoop);
+	})();
+	hero.addEventListener('dblclick',()=>hero.classList.remove('has-gradient'));
 
-	/* ═══ SCRUB : le nombre EST la poignée (volé à POSSÉDÉ) ═══ */
-	document.querySelectorAll('.scrub').forEach(el=>{
-		const min=+el.dataset.min, max=+el.dataset.max, map={scScale:'scale',scCtr:'contraste',scFlip:'sombre'};
-		let sx,sv; grab(el,e=>{ if(sx==null){sx=e.clientX;sv=+el.textContent;} const v=Math.max(min,Math.min(max,Math.round(sv+(e.clientX-sx)*0.4)));
-			el.textContent=v; spring(map[el.id]||el.id, v); });
-		el.addEventListener('pointerup',()=>sx=null);
-	});
-	$('fTitle').addEventListener('change',e=>rootS.setProperty('--fTitle',e.target.value));
-	$('fText').addEventListener('change',e=>rootS.setProperty('--fText',e.target.value));
-
-	/* double-clic sur la boîte : on efface le dégradé jeté */
-	clay.addEventListener('dblclick',()=>{ set('gon',0); clay.classList.remove('grad'); });
-
-	/* rafraîchit les poignées quand la matière change de taille */
-	new ResizeObserver(placeAll).observe(clay);
-	paintPrism(); requestAnimationFrame(placeAll);
+	/* replacement des poignées quand la matière bouge / on scrolle */
+	paintPrism(); paintGradUI(); requestAnimationFrame(placeAll);
+	new ResizeObserver(placeAll).observe(hero);
+	canvas.addEventListener('scroll',()=>requestAnimationFrame(placeAll),{passive:true});
 	new MutationObserver(()=>requestAnimationFrame(placeAll)).observe(document.documentElement,{attributes:true,attributeFilter:['style']});
 </script>
 </body>
