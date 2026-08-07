@@ -139,6 +139,18 @@
 <div class="essai">
 	<h2>1 · la page — <code>&lt;z-scroll page&gt;</code></h2>
 	<div class="scene"><i></i><b>le décor glisse quatre fois moins vite que la page</b></div>
+<pre class="z-code-manuel">&lt;z-scroll page&gt;&lt;/z-scroll&gt;          &lt;!-- posée n'importe où : elle pose sur :root --&gt;
+
+.progression { width: calc(var(--z-scroll__ry) * 100%); }        /* la part, 0 → 1 */
+
+.remonter    { opacity: calc(1 - var(--z-scroll__top)); }        /* rien tant qu'on est en haut */
+
+/* (dir + 1) / 2 vaut 1 en descendant, 0 en remontant · (1 - top) annule tout au sommet */
+.bandeau     { translate: 0 calc((1 - var(--z-scroll__top))
+                              * (var(--z-scroll__dir) + 1) / 2 * -110%);
+               transition: translate 260ms ease; }
+
+.scene i     { translate: 0 calc(var(--z-scroll__y) * -0.25px); }   /* le parallaxe */</pre>
 	<p class="note">
 		La barre en haut lit <code>--z-scroll__ry</code> (la part parcourue, 0→1). La flèche
 		lit <code>__top</code>. Le bandeau combine <code>__dir</code> et <code>__top</code> en
@@ -165,6 +177,16 @@
 			<i class="ombre bas"></i>
 		</z-scroll>
 	</div>
+<pre class="z-code-manuel">&lt;z-scroll class="boite"&gt;            &lt;!-- sans attribut : l'élément EST la boîte qui défile --&gt;
+  &lt;i class="ombre haut"&gt;&lt;/i&gt;        &lt;!-- DANS la boîte : une variable ne remonte pas --&gt;
+  …
+  &lt;i class="ombre bas"&gt;&lt;/i&gt;
+&lt;/z-scroll&gt;
+
+.ombre.haut { position: sticky; top: 0;
+              opacity: calc(1 - var(--z-scroll__top)); }
+.ombre.bas  { position: sticky; bottom: 0;
+              opacity: calc(1 - var(--z-scroll__end)); }</pre>
 	<p class="note">
 		Les ombres et la jauge sont <b>dans</b> la boîte : elles lisent donc SA part
 		parcourue. Posées dehors, elles liraient celle de la page — chaque nombre reste

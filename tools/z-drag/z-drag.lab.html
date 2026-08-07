@@ -128,6 +128,19 @@
 	<div class="cadre">
 		<z-drag class="palet" bounds tabindex="0">tire-moi</z-drag>
 	</div>
+<pre class="z-code-manuel">&lt;z-drag class="palet" bounds tabindex="0"&gt;tire-moi&lt;/z-drag&gt;
+
+.palet {
+  translate: calc(var(--z-drag__x) * 1px) calc(var(--z-drag__y) * 1px);
+
+  /* __held : le nombre qu'on oublie, et c'est lui qui donne le POIDS */
+  scale: calc(1 + var(--z-drag__held) * .06);
+  box-shadow: 0 calc(3px + var(--z-drag__held) * 14px)
+                calc(8px + var(--z-drag__held) * 22px) rgb(0 0 0 / .28);
+
+  /* jamais de transition sur translate : l'objet doit coller au doigt */
+  transition: scale .18s ease, box-shadow .18s ease;
+}</pre>
 	<p class="note">
 		<code>bounds</code> le garde dans son cadre. <code>__held</code> le <b>soulève</b>
 		pendant qu'on le tient — c'est le nombre qu'on oublie, et c'est lui qui donne le
@@ -141,6 +154,22 @@
 	<div class="piste">
 		<z-drag class="poignee" bounds axis="x" tabindex="0"></z-drag>
 	</div>
+<pre class="z-code-manuel">&lt;div class="piste"&gt;
+  &lt;z-drag class="poignee" bounds axis="x" tabindex="0"&gt;&lt;/z-drag&gt;
+&lt;/div&gt;
+
+.piste   { position: relative; overflow: hidden; }
+.poignee { position: relative;
+           translate: calc(var(--z-drag__x) * 1px) 0;
+           background: hsl(calc(var(--z-drag__rx) * 120) 65% 50%); }   /* rouge → vert */
+
+/* la barre remplie est peinte par la POIGNÉE et coupée par la piste :
+   une variable ne descend que dans les enfants, jamais vers le parent */
+.poignee::before {
+  content: ""; position: absolute; top: 50%; right: 50%;
+  width: 100vw; height: 10px;
+  background: var(--z-accent);
+}</pre>
 	<p class="note">
 		<code>bounds</code> allume <code>--z-drag__rx</code> : la part parcourue, 0→1 — ici
 		elle devient la <b>couleur</b> de la poignée, du rouge au vert. <b>Aucun composant
@@ -163,6 +192,9 @@
 			couvrir ça — un nombre, si.
 		</p>
 	</div>
+<pre class="z-code-manuel">/* le MÊME geste, le MÊME nombre — seule la propriété change */
+.molette { rotate: calc(var(--z-drag__x) * 2deg); }
+.teinte  { background: hsl(calc(var(--z-drag__x) * 2) 70% 55%); }</pre>
 </div>
 
 <script type="module">

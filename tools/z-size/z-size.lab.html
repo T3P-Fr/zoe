@@ -113,6 +113,11 @@
 			<div>__ratio <span class="j-ratio"><i></i></span></div>
 		</div>
 	</z-size>
+<pre class="z-code-manuel">&lt;z-size class="tirable"&gt;            &lt;!-- `resize: both` est natif : le coin à tirer --&gt;
+  &lt;p class="fluide"&gt;…&lt;/p&gt;
+&lt;/z-size&gt;
+
+.fluide { font-size: calc(13px + var(--z-size__w) * 0.02px); }   /* continu, pas par paliers */</pre>
 	<p class="note">
 		Une requête de conteneur répond oui/non à un palier fixé d'avance ; ici on a le
 		<b>nombre</b>, donc une interpolation. Les deux vont ensemble : le palier pour
@@ -136,6 +141,9 @@
 	<div class="jauges">
 		<div>__over <span class="j-over"><i></i></span></div>
 	</div>
+<pre class="z-code-manuel">/* l'ombre et la flèche n'existent QUE s'il y a une suite */
+.suite       { opacity: var(--z-size__over-y); transition: opacity .2s ease; }
+.flecheSuite { opacity: var(--z-size__over-y); transition: opacity .2s ease; }</pre>
 	<p class="note">
 		<code>--z-size__over-y</code> vaut 1 tant qu'il reste quelque chose à voir. Un pixel
 		de tolérance évite qu'elle clignote sur un arrondi de rendu.
@@ -151,6 +159,11 @@
 				largeur. Recouche-la : elle reprend sa place à gauche.</p>
 		</div>
 	</z-size>
+<pre class="z-code-manuel">/* un interrupteur 0/1 : 1 quand la boîte est plus haute que large */
+.forme { --debout: clamp(0, (1 - var(--z-size__ratio)) * 1000, 1); }
+
+/* couchée : la vignette prend 40 % · debout : elle prend tout */
+.vignette { flex-basis: calc(40% + var(--debout) * 60%); }</pre>
 	<p class="note">
 		La bascule ne dépend d'aucune dimension, mais de leur <b>rapport</b> — ce qu'une
 		requête de conteneur ne sait pas poser, puisqu'elle ne regarde qu'un côté à la fois.

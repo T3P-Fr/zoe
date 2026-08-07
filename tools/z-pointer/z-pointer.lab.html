@@ -136,6 +136,22 @@
 			</div>
 		</div></div></div>
 	</z-pointer>
+<pre class="z-code-manuel">&lt;z-pointer&gt;                          &lt;!-- sans attribut : le repère local --&gt;
+  &lt;div class="halo"&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;div&gt;&lt;div class="carte"&gt;…&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/z-pointer&gt;
+
+.halo {
+  translate: calc(var(--z-pointer--local__x) * 1px)
+             calc(var(--z-pointer--local__y) * 1px);
+  opacity: var(--z-pointer--local__in);          /* 1 dedans, 0 dehors */
+}
+
+.carte {                                         /* trois niveaux plus bas : il hérite */
+  transform: perspective(700px)
+    rotateY(calc((var(--z-pointer--local__rx) - .5) * 26deg))
+    rotateX(calc((var(--z-pointer--local__ry) - .5) * -26deg));
+}</pre>
 	<p class="note">
 		Le halo lit <code>--z-pointer--local__x/y</code> (des pixels). La carte, elle, lit
 		les ratios <code>__rx/__ry</code> (0→1) et les multiplie par des <b>degrés</b> — un
@@ -151,6 +167,17 @@
 		<div class="point retard1"></div>
 		<div class="point"></div>
 	</z-pointer>
+<pre class="z-code-manuel">/* les trois points lisent la MÊME source */
+.point {
+  translate: calc(var(--z-pointer--local__x) * 1px)
+             calc(var(--z-pointer--local__y) * 1px);
+}
+
+/* …et la transition porte sur LA VARIABLE, pas sur translate */
+.point.retard1 { transition: --z-pointer--local__x 180ms ease-out,
+                             --z-pointer--local__y 180ms ease-out; }
+.point.retard2 { transition: --z-pointer--local__x 420ms ease-out,
+                             --z-pointer--local__y 420ms ease-out; }</pre>
 	<p class="note">
 		Trois points, <b>la même source</b>, trois retards : <code>0</code>,
 		<code>180ms</code>, <code>420ms</code>. La transition ne porte pas sur
@@ -167,6 +194,16 @@
 		<div class="mire"><i></i><i></i></div>
 		<div class="jauge"><i></i></div>
 	</z-pointer>
+<pre class="z-code-manuel">&lt;z-pointer global&gt;                   &lt;!-- le repère de la FENÊTRE --&gt;
+  &lt;div class="mire"&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;
+  &lt;div class="jauge"&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;
+&lt;/z-pointer&gt;
+
+.mire i  { position: fixed;
+           translate: calc(var(--z-pointer--global__x) * 1px)
+                      calc(var(--z-pointer--global__y) * 1px); }
+
+.jauge i { width: calc(var(--z-pointer--global__rx) * 100%); }   /* le ratio → une part */</pre>
 	<p class="note">
 		La mire suit la souris sur <b>toute la page</b>, y compris ici, loin de sa boîte —
 		<code>global</code> écoute le document. La jauge lit le même mouvement en

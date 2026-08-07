@@ -121,7 +121,16 @@
 		<z-inview margin="-60px" class="entre" style="--i:1"><div class="carte">deux</div></z-inview>
 		<z-inview margin="-60px" class="entre" style="--i:2"><div class="carte">trois</div></z-inview>
 	</div>
+<pre class="z-code-manuel">&lt;z-inview margin="-80px" class="entre"&gt;…&lt;/z-inview&gt;
 
+.entre {
+  opacity: var(--z-inview__seen);                            /* 1 une fois vu, à jamais */
+  translate: 0 calc((1 - var(--z-inview__seen)) * 24px);
+  transition: opacity .7s ease, translate .7s cubic-bezier(.2, .8, .2, 1);
+}
+
+/* la cascade n'est pas un outil de plus : un délai par enfant, et c'est tout */
+.cascade &gt; * { transition-delay: calc(var(--i) * 90ms); }</pre>
 	<p class="note">
 		<code>--z-inview__seen</code> monte à 1 la première fois et <b>n'en redescend
 		jamais</b> — c'est ce qui évite le tournis quand on remonte. La cascade n'est pas un
@@ -138,6 +147,11 @@
 		<div class="carte"><b>je pars quand je sors, je reviens quand j'entre</b><br>
 			<small>le même geste, l'autre nombre</small></div>
 	</z-inview>
+<pre class="z-code-manuel">.vaEtVient {
+  opacity: var(--z-inview__in);              /* __in au lieu de __seen : voilà tout */
+  scale: calc(.9 + var(--z-inview__in) * .1);
+  transition: opacity .5s ease, scale .5s ease;
+}</pre>
 	<p class="note">
 		<code>__in</code> retombe à 0 en sortant : l'auteur choisit lequel des deux nombres
 		il lit, et c'est tout le réglage. Aucun attribut « once », aucune option.
@@ -157,6 +171,9 @@
 			<div>__cross <span class="j-cross"><i></i></span></div>
 		</div>
 	</z-inview>
+<pre class="z-code-manuel">/* __cross continue de monter quand __ratio a saturé à 1 */
+.traversee i { translate: 0 calc(var(--z-inview__cross) * -120px); }   /* le décor dérive */
+.traversee b { filter: grayscale(calc(1 - var(--z-inview__cross))); }  /* elle se colore */</pre>
 	<p class="note">
 		Regarde les quatre jauges pendant que tu défiles : <code>__ratio</code> monte, puis
 		<b>sature à 1</b> dès que le bloc tient à l'écran — alors que <code>__cross</code>
