@@ -60,7 +60,7 @@
 	À gauche la forme courte, à droite la forme en calques. Elles lisent les mêmes réglages
 	et doivent se ressembler trait pour trait — tout écart ici est un bug.
 </p>
-<div class="stack">
+<div class="stack" data-code>
 	<z-checkbox>Forme courte — le CSS peint l'hôte</z-checkbox>
 
 	<z-checkbox>
@@ -83,7 +83,7 @@
 	bouge. Un calque porte les <b>mêmes états</b> que son hôte, et il ne s'éveille que si
 	le CSS le rend touchable — une ligne, aucun JS.
 </p>
-<div class="stack vivant">
+<div class="stack vivant" data-code>
 	<z-checkbox>
 		<z-layer part="background"></z-layer>
 		<z-layer part="marker">
@@ -106,7 +106,7 @@
 	<b>C'est ça que les calques débloquent</b> — et le geste appartient à la peau, jamais
 	à cette page.
 </p>
-<div class="stack">
+<div class="stack" data-code>
 	<z-checkbox>
 		<z-layer part="background"></z-layer>
 		<z-layer part="marker">
@@ -121,7 +121,7 @@
 </div>
 
 <h2>4 · Les états posés à la main</h2>
-<div class="stack">
+<div class="stack" data-code>
 	<z-checkbox current>cochée</z-checkbox>
 	<z-checkbox disabled>désactivée</z-checkbox>
 	<z-checkbox current disabled>cochée et désactivée</z-checkbox>
@@ -139,6 +139,7 @@
 
 <script type="module">
 	import "../../examples/skin-switch.js";
+	import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
 	import "../../tools/z-contact/z-contact.js";
 	import "../../core/z-layer/z-layer.js";
 	import "./z-checkbox.js";

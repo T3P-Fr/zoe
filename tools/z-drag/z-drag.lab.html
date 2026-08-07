@@ -61,7 +61,9 @@
 		            calc(8px + var(--z-drag__held) * 22px) rgb(0 0 0 / .28);
 		transition: scale .18s ease, box-shadow .18s ease;
 	}
-	.palet:active { cursor: grabbing; }
+	/* L'ÉTAT, à côté du nombre — et chacun son emploi : le curseur BASCULE (il n'a pas
+	   d'entre-deux), l'échelle S'INTERPOLE. Un sélecteur ne sait pas faire la seconde. */
+	z-drag:state(held) { cursor: grabbing; z-index: 10; }
 
 	/* ------------------------------------------- 2 · le curseur, sans composant */
 
@@ -140,7 +142,10 @@
 
   /* jamais de transition sur translate : l'objet doit coller au doigt */
   transition: scale .18s ease, box-shadow .18s ease;
-}</pre>
+}
+
+/* l'ÉTAT à côté du NOMBRE — le curseur bascule, l'échelle s'interpole */
+z-drag:state(held) { cursor: grabbing; z-index: 10; }</pre>
 	<p class="note">
 		<code>bounds</code> le garde dans son cadre. <code>__held</code> le <b>soulève</b>
 		pendant qu'on le tient — c'est le nombre qu'on oublie, et c'est lui qui donne le

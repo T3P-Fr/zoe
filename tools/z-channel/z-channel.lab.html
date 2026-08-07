@@ -74,6 +74,10 @@ bouge là-bas — et <b>c'est le CSS</b> qui décide quoi. Zéro classe, zéro �
 		<h2>1 · curseur → barre</h2>
 		<input type="range" min="0" max="100" value="40" channel="tempo">
 		<div class="barre-cadre"><div class="barre" channel="tempo"></div></div>
+		<pre class="z-code-manuel">&lt;input type="range" channel="tempo"&gt;
+&lt;div class="barre" channel="tempo"&gt;&lt;/div&gt;
+
+.barre { width: calc(var(--z-channel-tempo) * 1%); }</pre>
 		<p class="note">Un <code>&lt;input&gt;</code> émet, une <code>&lt;div&gt;</code>
 			vide lit <code>--z-channel-tempo</code>. Rien entre les deux.</p>
 	</div>
@@ -84,6 +88,12 @@ bouge là-bas — et <b>c'est le CSS</b> qui décide quoi. Zéro classe, zéro �
 		<input type="range" min="0" max="100" value="30" channel="px">
 		<input type="range" min="0" max="100" value="60" channel="py">
 		<div class="scene"><div class="point" channel="px py"></div></div>
+		<pre class="z-code-manuel">&lt;input type="range" channel="px"&gt;
+&lt;input type="range" channel="py"&gt;
+&lt;div class="point" channel="px py"&gt;&lt;/div&gt;   &lt;!-- deux noms, deux tokens --&gt;
+
+.point { left: calc(var(--z-channel-px) * 1%);
+         top:  calc(var(--z-channel-py) * 1%); }</pre>
 		<p class="note">Le point porte <code>channel="px py"</code> : deux tokens, une
 			position. Multi-canal gratuit, sans plafond.</p>
 	</div>
@@ -98,6 +108,10 @@ bouge là-bas — et <b>c'est le CSS</b> qui décide quoi. Zéro classe, zéro �
 			<button type="button" data-tempo="50">tempo → 50</button>
 			<button type="button" data-tempo="100">tempo → 100</button>
 		</div>
+		<pre class="z-code-manuel">import { tune } from "./z-channel.js";
+
+/* le seul JS de cette page : le monde pousse une valeur DANS le canal */
+bouton.addEventListener("click", () =&gt; tune("tempo", 100));</pre>
 		<p class="note">Chaque bouton appelle <code>tune("tempo", n)</code> — la barre ET
 			le curseur de l'essai 1 se replacent.</p>
 	</div>

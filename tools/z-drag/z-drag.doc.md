@@ -94,6 +94,49 @@ Besoin de la valeur **vraiment ailleurs** — un chiffre en haut de page, un aut
 composant ? C'est `z-channel` qu'il te faut : `channel=` traverse la page, là où z-drag ne
 descend que dans ses enfants.
 
+## Pourquoi pas `draggable` et `dragstart` ?
+
+La question est juste : le navigateur a **déjà** une API de glisser-déposer
+(`draggable="true"`, `dragstart`, `dragover`, `drop`). Elle n'est pas ignorée ici — elle
+répond à **une autre question**.
+
+| | |
+|---|---|
+| **HTML5 Drag & Drop** | *transférer* une donnée : un fichier depuis le bureau, du texte d'une appli à l'autre, d'une fenêtre à l'autre |
+| **Pointer Events** *(z-drag)* | *déplacer* un objet dans la page, sous le doigt, image par image |
+
+Quatre raisons qui ferment le débat, et aucune n'est une question de goût :
+
+- **Elle ne déplace pas l'élément, elle en photographie un fantôme.** Le navigateur prend
+  une image bitmap et promène *celle-là* ; l'objet réel ne bouge pas. Ce fantôme n'est ni
+  stylable, ni animable — **tout le principe de Zoé tombe** : il n'y a plus rien que le
+  CSS puisse décider.
+- **Elle ne marche pas au doigt.** L'API native n'a jamais fonctionné sur mobile. À elle
+  seule, cette ligne suffirait.
+- **Elle ne donne pas de position continue.** Les événements sont espacés, et
+  `clientX/clientY` sont notoirement peu fiables pendant le geste (jusqu'à `0,0` sur le
+  dernier). On ne peut pas coller au doigt avec ça.
+- **Elle n'offre aucun chemin au clavier**, et le curseur est décidé par le système
+  (`dropEffect`), pas par ta feuille de style.
+
+**Les deux sont des standards** ; le tout est de prendre celui dont c'est le métier. Et
+le jour où le besoin sera vraiment « **dépose ton fichier ici** », c'est l'API native
+qu'il faudra — un autre outil, `z-drop`, qui n'aurait rien à voir avec celui-ci.
+
+## L'état, et le nombre — les deux
+
+Le pacte de Zoé dit qu'un état s'écrit `z-drag:state(held)`. Il est là, posé nativement
+(`CustomStateSet`), **et** il double le token `--z-drag__held`. Ce n'est pas deux formes
+pour la même chose : ce sont deux usages qu'aucune des deux ne couvre seule.
+
+```css
+/* l'ÉTAT — pour ce qui bascule : un curseur, une bordure, un z-index */
+z-drag:state(held) { cursor: grabbing; z-index: 10; }
+
+/* le NOMBRE — pour ce qui s'interpole : un sélecteur ne sait pas faire ça */
+z-drag { scale: calc(1 + var(--z-drag__held) * .06); }
+```
+
 ## Le clavier n'est pas une option
 
 Un objet qu'on ne peut déplacer qu'à la souris est un objet que **certains ne peuvent pas

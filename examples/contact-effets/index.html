@@ -57,9 +57,37 @@
 	<button type="button">Un &lt;button&gt; natif</button>
 </div>
 
+<h2 style="margin-top:2.2rem">Ce qui produit cet effet</h2>
+<p>Deux états, deux calques. Rien d'autre — pas une ligne de JS.</p>
+
+<pre class="z-code-manuel">&lt;z-contact fx="eclat"&gt;&lt;/z-contact&gt;      &lt;!-- la page dit « le moteur tourne ici » --&gt;
+&lt;link rel="stylesheet" href="./mon-effet.css"&gt;
+
+/* PENDANT L'APPUI — l'énergie monte et tremble */
+z-contact:state(press) {
+  background: radial-gradient(circle, color-mix(in oklab, var(--c) 60%, transparent), transparent 72%);
+  animation: eclat-souffle .45s ease-in-out infinite alternate;
+}
+z-contact:state(press) z-foreground {          /* z-foreground = l'anneau */
+  border: 2px solid var(--c);
+  animation: eclat-resserre .45s ease-out forwards,
+             eclat-tremble  .09s steps(2) infinite;
+}
+
+/* AU RELÂCHEMENT — ça explose */
+z-contact:state(release) z-foreground {        /* l'onde de choc jaillit */
+  border: 3px solid var(--c);
+  animation: eclat-onde .5s cubic-bezier(.15, .8, .3, 1) forwards;
+}
+z-contact:state(release) z-marker {            /* z-marker = le cœur : il éclate */
+  background: var(--c);
+  animation: eclat-burst .4s ease-out forwards;
+}</pre>
+
 <p class="source">
-	L'effet est écrit dans <code>examples/contact-effets/mon-effet.css</code> — ce dossier.
-	Deux blocs : <code>z-contact:state(press)</code> et <code>z-contact:state(release)</code>. Édite, recharge.
+	Le fichier complet est <code>examples/contact-effets/mon-effet.css</code> — ce dossier.
+	<code>var(--c)</code> est la couleur, posée par le moteur : elle suit la peau.
+	Édite, recharge.
 </p>
 
 <script type="module">

@@ -94,7 +94,9 @@ export class ZDrag extends HTMLElement {
 		events: [
 			{ name: "zoe:drop", description: { en: "Emitted on release — the only moment a page has something to do. detail: { x, y, rx, ry }.", fr: "Émis au relâchement — le seul moment où une page a quelque chose à faire. detail : { x, y, rx, ry }.", es: "Emitido al soltar — el único momento en que una página tiene algo que hacer. detail: { x, y, rx, ry }." } }
 		],
-		states: [],
+		states: [
+			{ name: "held", description: { en: "z-drag:state(held) while the object is held. It doubles the token, and neither covers the other: a selector switches (a cursor, a z-index), a number interpolates (a scale, a shadow).", fr: "z-drag:state(held) pendant qu'on tient l'objet. Il double le token, et aucun des deux ne couvre l'autre : un sélecteur BASCULE (un curseur, un z-index), un nombre S'INTERPOLE (une échelle, une ombre).", es: "z-drag:state(held) mientras se sostiene el objeto. Duplica el token, y ninguno cubre al otro: un selector CONMUTA (un cursor, un z-index), un número INTERPOLA (una escala, una sombra)." } }
+		],
 		cssVars: [
 			{ name: "--z-drag__x", description: { en: "The position along X, in pixels from the starting point — a bare number, so multiply it into whatever you want moved.", fr: "La position en X, en pixels depuis le point de départ — un nombre nu, à multiplier vers ce que vous voulez déplacer.", es: "La posición en X, en píxeles desde el punto de partida — un número desnudo, multiplíquelo hacia lo que quiera mover." } },
 			{ name: "--z-drag__y", description: { en: "The position along Y, in pixels from the starting point.", fr: "La position en Y, en pixels depuis le point de départ.", es: "La posición en Y, en píxeles desde el punto de partida." } },
@@ -120,6 +122,15 @@ export class ZDrag extends HTMLElement {
 	/* Tenu ou non — la mémoire qui évite de conclure un geste qui n'a jamais commencé. */
 	#held = false;
 
+	/*
+		L'ÉTAT, POSÉ NATIVEMENT — `CustomStateSet` fait exister `z-drag:state(held)` en
+		CSS, sans classe et sans attribut. Il DOUBLE le token `--z-drag__held`, et c'est
+		voulu : un sélecteur BASCULE (un curseur, un z-index — des choses qui n'ont pas
+		d'entre-deux), un nombre S'INTERPOLE (une échelle, une ombre). Aucun des deux ne
+		couvre l'autre ; ce ne sont pas deux formes pour la même chose.
+	*/
+	#internals = this.attachInternals();
+
 	#onDown = (event) => {
 		/* Le clic droit et le milieu ne saisissent rien — ils ont leur propre rôle. */
 		if (event.button !== 0) return;
@@ -132,6 +143,7 @@ export class ZDrag extends HTMLElement {
 		this.#held = true;
 		this.#prise = { x: event.clientX - this.#x, y: event.clientY - this.#y };
 		this.style.setProperty("--z-drag__held", "1");
+		this.#internals.states.add("held");
 		this.addEventListener("pointermove", this.#onMove);
 	};
 
@@ -145,6 +157,7 @@ export class ZDrag extends HTMLElement {
 		this.#held = false;
 		this.removeEventListener("pointermove", this.#onMove);
 		this.style.setProperty("--z-drag__held", "0");
+		this.#internals.states.delete("held");
 		if (this.#frame) { cancelAnimationFrame(this.#frame); this.#frame = 0; }
 		this.#last = null;
 		this.#emitDrop();

@@ -740,7 +740,18 @@
               "description": "1 while the object is held, 0 once let go — for the shadow that lifts under the finger."
             }
           ],
-          "cssStates": []
+          "cssStates": [
+            {
+              "name": {
+                "name": "held",
+                "description": {
+                  "en": "z-drag:state(held) while the object is held. It doubles the token, and neither covers the other: a selector switches (a cursor, a z-index), a number interpolates (a scale, a shadow).",
+                  "fr": "z-drag:state(held) pendant qu'on tient l'objet. Il double le token, et aucun des deux ne couvre l'autre : un sélecteur BASCULE (un curseur, un z-index), un nombre S'INTERPOLE (une échelle, une ombre).",
+                  "es": "z-drag:state(held) mientras se sostiene el objeto. Duplica el token, y ninguno cubre al otro: un selector CONMUTA (un cursor, un z-index), un número INTERPOLA (una escala, una sombra)."
+                }
+              }
+            }
+          ]
         }
       ],
       "exports": [

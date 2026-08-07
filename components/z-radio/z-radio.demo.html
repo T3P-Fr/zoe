@@ -28,7 +28,7 @@
 <h1><code>z-radio</code></h1>
 <p class="lead">Anatomie <b>marker + label</b>, comme la case — mais <b>ronde</b>, et elle ne s'éteint <b>jamais</b> toute seule : re-clique la même, il ne se passe rien. Change la peau en haut à droite — tout suit.</p>
 
-<div class="stack">
+<div class="stack" data-code>
   <z-radio value="fr">Français</z-radio>
   <z-radio value="en" current>English</z-radio>
   <z-radio value="es" error>Español (erreur)</z-radio>
@@ -38,7 +38,7 @@
 </div>
 
 <h2 style="font-size:.95rem;margin:2rem 0 .5rem">La même chose, <b>en calques</b> — structure canonique</h2>
-<div class="stack">
+<div class="stack" data-code>
   <z-radio>
     <z-layer part="background"></z-layer>
     <z-layer part="marker">
@@ -81,6 +81,7 @@
 
 <script type="module">
   import "../../examples/skin-switch.js";
+	import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
   import "../../tools/z-contact/z-contact.js";
   import "../../core/z-layer/z-layer.js";
   import "./z-radio.js";

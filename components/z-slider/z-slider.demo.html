@@ -72,7 +72,7 @@
   </p>
 
   <h2>1 · Forme courte — une ligne</h2>
-  <div class="stack">
+  <div class="stack" data-code>
     <z-slider value="40"></z-slider>
     <z-slider value="70" label="over"></z-slider>
     <z-slider value="3" min="0" max="10" step="1" markers label="under"></z-slider>
@@ -86,7 +86,7 @@
   </p>
 
   <h2>2 · Le pas et les graduations</h2>
-  <div class="stack">
+  <div class="stack" data-code>
     <z-slider value="50" step="25" markers label="under"></z-slider>
     <z-slider value="6" min="0" max="12" step="1" markers="12" label="under"></z-slider>
     <z-slider value="33" step="any" label="under"></z-slider>
@@ -111,7 +111,7 @@
   </p>
 
   <h2>4 · Forme en calques — le même curseur, pièce par pièce</h2>
-  <div class="stack">
+  <div class="stack" data-code>
     <z-slider value="40" step="10" markers label="over">
       <z-layer part="background"><z-layer part="ticks"></z-layer></z-layer>
       <z-layer part="marker"><z-layer part="dot"></z-layer></z-layer>
@@ -126,7 +126,7 @@
   </p>
 
   <h2>5 · Ce que les calques permettent (et que la forme courte ne peut pas)</h2>
-  <div class="stack">
+  <div class="stack" data-code>
     <z-slider class="fou" value="35" step="5" markers>
       <z-layer part="background"><z-layer part="ticks"></z-layer></z-layer>
       <z-layer part="marker"><z-layer part="dot"></z-layer></z-layer>
@@ -140,7 +140,7 @@
   </p>
 
   <h2>6 · Des graduations irrégulières — écrites à la main</h2>
-  <div class="stack">
+  <div class="stack" data-code>
     <z-slider value="60" step="any">
       <z-layer part="background">
         <z-layer part="tick" style="--z-tick__at: 20%"></z-layer>
@@ -160,7 +160,7 @@
 
   <h2>7 · Ce qu'il pilote</h2>
   <div class="row">
-    <div class="stack">
+    <div class="stack" data-code>
       <z-slider id="pilote-rotation" value="0" max="360" label="under"></z-slider>
       <z-slider id="pilote-opacite" value="100" label="under"></z-slider>
     </div>
@@ -174,6 +174,7 @@
 
   <script type="module">
     import "../../examples/skin-switch.js";
+	import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
     import "../../tools/z-contact/z-contact.js";
     import "../../core/z-layer/z-layer.js";
     import "./z-slider.js";
