@@ -17,6 +17,10 @@
 	.card > h2 { margin: 0 0 .2rem; font-size: 1em; }
 	.card > .note { margin: 0 0 .9rem; color: var(--z-ink-soft); font-size: .9em; }
 	.row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+
+	/* LOI : jamais une démo sans son code. Une carte est étroite → le code passe DESSOUS
+	   l'exemple plutôt qu'à côté (code.js met deux colonnes quand la place le permet). */
+	.card .z-exemple { grid-template-columns: 1fr; }
 </style>
 
 <h1>Quinze composants de plus</h1>
@@ -25,7 +29,7 @@
 <div class="grid">
 
 	<div class="card"><h2>z-card</h2><p class="note">Surface qui contient. <code>interactive</code> = focusable/cliquable.</p>
-		<div class="row">
+		<div class="row" data-code="bloc">
 			<z-card style="width:14rem"><strong>Une carte</strong><p style="margin:.4rem 0 0;color:var(--z-ink-soft)">Contenu libre, surface de la peau.</p></z-card>
 			<z-card interactive style="width:14rem"><strong>Interactive</strong><p style="margin:.4rem 0 0;color:var(--z-ink-soft)">Survole / Tab / Entrée.</p></z-card>
 		</div>
@@ -35,15 +39,15 @@
 		<p>Au-dessus</p>
 		<z-divider></z-divider>
 		<z-divider>ou bien</z-divider>
-		<div class="row" style="height:2rem">Gauche <z-divider orientation="vertical"></z-divider> Droite</div>
+		<div class="row" data-code="bloc" style="height:2rem">Gauche <z-divider orientation="vertical"></z-divider> Droite</div>
 	</div>
 
 	<div class="card"><h2>z-kbd</h2><p class="note">Une touche de clavier.</p>
-		<div class="row"><span>Copier :</span> <z-kbd>Ctrl</z-kbd> + <z-kbd>C</z-kbd> &nbsp;·&nbsp; <z-kbd>⌘</z-kbd> <z-kbd>K</z-kbd></div>
+		<div class="row" data-code="bloc"><span>Copier :</span> <z-kbd>Ctrl</z-kbd> + <z-kbd>C</z-kbd> &nbsp;·&nbsp; <z-kbd>⌘</z-kbd> <z-kbd>K</z-kbd></div>
 	</div>
 
 	<div class="card"><h2>z-skeleton</h2><p class="note">Leurre de chargement qui scintille.</p>
-		<div class="row">
+		<div class="row" data-code="bloc">
 			<z-skeleton radius="circle" w="3rem" h="3rem"></z-skeleton>
 			<div style="display:grid;gap:.5rem">
 				<z-skeleton w="14rem" h=".8rem"></z-skeleton>
@@ -71,7 +75,7 @@ z-button:state(over) { background: orange; }</z-code>
 	</div>
 
 	<div class="card"><h2>z-stat</h2><p class="note">Tuile de KPI.</p>
-		<div class="row" style="gap:2rem">
+		<div class="row" data-code="bloc" style="gap:2rem">
 			<z-stat trend="up"><span part="label">Chiffre d'affaires</span><span part="value">184 320 €</span><span part="delta">+12,4 %</span></z-stat>
 			<z-stat trend="down"><span part="label">Paniers abandonnés</span><span part="value">312</span><span part="delta">−3,1 %</span></z-stat>
 		</div>
@@ -87,7 +91,7 @@ z-button:state(over) { background: orange; }</z-code>
 	</div>
 
 	<div class="card"><h2>z-rating</h2><p class="note">Note en étoiles (clic + flèches).</p>
-		<div class="row"><z-rating value="3" max="5"></z-rating> <z-rating value="4" max="5" readonly></z-rating></div>
+		<div class="row" data-code="bloc"><z-rating value="3" max="5"></z-rating> <z-rating value="4" max="5" readonly></z-rating></div>
 	</div>
 
 	<div class="card"><h2>z-stepper</h2><p class="note">Incrémenteur autour d'un input natif.</p>
@@ -133,6 +137,7 @@ z-button:state(over) { background: orange; }</z-code>
 </div>
 
 <script type="module">
+	import "../code.js";   /* LOI : jamais une démo sans le code qui la produit */
 	import "../skin-switch.js";
 	const mods = ["z-button","z-avatar","z-disclosure","z-card","z-divider","z-kbd","z-skeleton","z-code","z-meter","z-breadcrumb","z-stat","z-avatar-group","z-rating","z-stepper","z-segmented","z-accordion","z-tabs","z-toast"];
 	for (const m of mods) await import(`../../components/${m}/${m}.js`);

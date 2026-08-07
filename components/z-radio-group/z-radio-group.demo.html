@@ -36,51 +36,62 @@
 <p class="lead">Le niveau <b>groupe</b> : exclusivité, flèches ← ↑ → ↓ (naviguer <i>c'est</i> choisir), <b>une seule</b> tabulation pour tout le groupe, une valeur. Change la peau en haut à droite.</p>
 
 <h2>En colonne, présélectionné par <code>value</code></h2>
-<z-radio-group id="langue" value="en">
-  <z-radio value="fr">Français</z-radio>
-  <z-radio value="en">English</z-radio>
-  <z-radio value="es">Español</z-radio>
-  <z-radio value="de" disabled>Deutsch (indisponible)</z-radio>
-</z-radio-group>
+<div class="stack" data-code>
+  <z-radio-group id="langue" value="en">
+    <z-radio value="fr">Français</z-radio>
+    <z-radio value="en">English</z-radio>
+    <z-radio value="es">Español</z-radio>
+    <z-radio value="de" disabled>Deutsch (indisponible)</z-radio>
+  </z-radio-group>
+</div>
 <p class="echo">Choix : <b id="echo-langue">—</b></p>
 <p class="note">Tabule jusqu'ici : <b>un seul</b> arrêt. Puis les flèches — elles sautent la ligne verrouillée et bouclent.</p>
 
 <h2>En ligne (une variable, pas un flex à écrire)</h2>
-<z-radio-group id="taille" class="row" value="m">
-  <z-radio value="s">S</z-radio>
-  <z-radio value="m">M</z-radio>
-  <z-radio value="l">L</z-radio>
-  <z-radio value="xl">XL</z-radio>
-</z-radio-group>
+<div class="stack" data-code>
+  <z-radio-group id="taille" class="row" value="m">
+    <z-radio value="s">S</z-radio>
+    <z-radio value="m">M</z-radio>
+    <z-radio value="l">L</z-radio>
+    <z-radio value="xl">XL</z-radio>
+  </z-radio-group>
+</div>
 <p class="echo">Choix : <b id="echo-taille">—</b></p>
 
 <h2>Le groupe entier verrouillé</h2>
-<z-radio-group value="oui" disabled>
-  <z-radio value="oui">Oui</z-radio>
-  <z-radio value="non">Non</z-radio>
-</z-radio-group>
+<div class="stack" data-code>
+  <z-radio-group value="oui" disabled>
+    <z-radio value="oui">Oui</z-radio>
+    <z-radio value="non">Non</z-radio>
+  </z-radio-group>
+</div>
 <p class="note"><code>disabled</code> posé sur le <b>groupe</b> descend sur ses radios.</p>
 
 <h2>Le choix manque (erreur sur le groupe)</h2>
-<z-radio-group error>
-  <z-radio value="a">Option A</z-radio>
-  <z-radio value="b">Option B</z-radio>
-</z-radio-group>
+<div class="stack" data-code>
+  <z-radio-group error>
+    <z-radio value="a">Option A</z-radio>
+    <z-radio value="b">Option B</z-radio>
+  </z-radio-group>
+</div>
 <p class="note">« Choisis-en un » n'est le défaut d'<b>aucune</b> radio : l'erreur se pose sur le groupe.</p>
 
 <h2>Groupes imbriqués — ils ne se volent rien</h2>
-<z-radio-group id="dehors" value="x">
-  <z-radio value="x">Dehors X</z-radio>
-  <z-radio value="y">Dehors Y</z-radio>
-  <z-radio-group id="dedans" value="1">
-    <z-radio value="1">Dedans 1</z-radio>
-    <z-radio value="2">Dedans 2</z-radio>
+<div class="stack" data-code>
+  <z-radio-group id="dehors" value="x">
+    <z-radio value="x">Dehors X</z-radio>
+    <z-radio value="y">Dehors Y</z-radio>
+    <z-radio-group id="dedans" value="1">
+      <z-radio value="1">Dedans 1</z-radio>
+      <z-radio value="2">Dedans 2</z-radio>
+    </z-radio-group>
   </z-radio-group>
-</z-radio-group>
+</div>
 <p class="echo">Dehors : <b id="echo-dehors">—</b> · dedans : <b id="echo-dedans">—</b></p>
 
 <script type="module">
   import "../../examples/skin-switch.js";
+  import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
   import "../../tools/z-contact/z-contact.js";
   import "./z-radio-group.js";
 

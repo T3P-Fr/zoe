@@ -42,6 +42,20 @@ z-overlay[frozen] z-contact z-foreground { animation-play-state: paused !importa
 
 <z-overlay frozen id="freeze"></z-overlay>
 
+<pre class="z-code-manuel">&lt;z-contact&gt;&lt;/z-contact&gt;              &lt;!-- la page dit « le moteur tourne ici », rien de plus --&gt;
+
+/* QUEL effet s'affiche appartient à la PEAU, jamais à la page : */
+@import url("../../tools/z-contact/effects/morph.css");   /* ← HighTech signe ainsi */
+
+/* CE LABO seul : une scène FIGÉE, pour voir l'effet à un instant précis */
+&lt;z-overlay frozen id="freeze"&gt;&lt;/z-overlay&gt;
+
+const gele = vivant.cloneNode(true);                 /* une copie que le moteur n'emportera pas */
+gele.querySelector("z-foreground").style.animationDelay = `-${(DUREE * part).toFixed(3)}s`;
+freeze.appendChild(gele);                            /* part = 0.14 · 0.45 · 0.80 */</pre>
+<p class="note">Une animation figée à un instant : on lui donne un délai <b>négatif</b> —
+	elle démarre déjà commencée, puis reste immobile. Aucune capture, aucun rendu à la main.</p>
+
 <script type="module">
 	import "../../examples/skin-switch.js";
   import "../../components/z-button/z-button.js";
