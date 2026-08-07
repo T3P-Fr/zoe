@@ -2,6 +2,42 @@
 
 ## Historique
 
+## Session du 2026-08-07 — les CAPTEURS
+
+**Impact (1-5) :** 5
+
+**Fait :**
+- 10 commits sur `jeu-memory` (`734c07a`..`acfecdb`), 45 fichiers, +4395/−85. **Cinq
+  capteurs** livrés entiers (`.js` + `.css` + `.doc.md` + `.lab.html`, inscrits partout,
+  manifeste régénéré) : `z-pointer` · `z-scroll` · `z-inview` · `z-size` · `z-drag`.
+- **`z-contact` gagne le deuxième temps** (se tient sous le doigt, conclut au
+  relâchement) avec sa recette `charge` et un effet écrit par un AUTEUR en CSS seul.
+- La **loi « jamais une démo sans son code »** énoncée par Christophe : 12 pages sur 18
+  la respectent désormais.
+- Deux dégâts silencieux arrêtés : **Prettier** cassait les transtypages JSDoc à chaque
+  sauvegarde ; **z-manifest** écrasait `.vscode/settings.json` en entier.
+
+**En cours :**
+- Tout est commité sur `jeu-memory`. **Non fusionnée** — elle attend l'œil de Christophe.
+
+**Décisions :**
+- **Les capteurs sont une FAMILLE** : ils ne peignent rien, ils posent des nombres NUS
+  (un nombre se multiplie ; une longueur ne donne que des longueurs) sur eux-mêmes, et
+  l'héritage CSS les livre. Une seule exception justifiée : `z-scroll page` → `:root`.
+- **`@property <number>`** partout, pour deux raisons dont une invisible : un nombre typé
+  s'anime, et sa valeur de départ tue le `var()` invalide qui efface un calque en silence.
+- **Pointer Events, pas `draggable`/`dragstart`** : le natif TRANSFÈRE une donnée, il ne
+  DÉPLACE pas un objet (photo bitmap, rien au doigt, pas de position continue, pas de
+  clavier). Réponse écrite dans la doc — la question se reposera.
+- **L'état ET le nombre** (`z-drag:state(held)` + `--z-drag__held`) : un sélecteur
+  bascule, un nombre s'interpole. Aucun ne couvre l'autre.
+- **Une variable ne remonte pas au parent** → on inverse le sens (la poignée peint la
+  barre) plutôt que d'inventer une exception dans l'outil.
+
+**Prochain pas :**
+- **Le geste, à l'œil** — rien n'a été manipulé par personne. Puis les 8 pages de démo
+  restantes, et des `node --test` sur le cadre de `z-drag` et la traversée de `z-inview`.
+
 ## Session du 2026-07-23 → 24
 
 **Impact (1-5) :** 5
