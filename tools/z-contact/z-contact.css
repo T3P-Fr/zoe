@@ -17,7 +17,13 @@
 
    Une peau qui n'importe rien n'a aucun effet au curseur (la peau Claude : elle signe
    avec l'onde de ses composants, qui part du composant et non du pointeur).
-   Aujourd'hui au catalogue : `morph` · `implode` · `explode`.
+   Aujourd'hui au catalogue : `morph` · `implode` · `explode` · `charge`.
+
+   UN ou DEUX temps — un effet peut se dérouler d'un trait au clic (morph/implode/explode)
+   ou se TENIR : `charge` naît au CURSOR-DOWN, vit tant que l'on appuie, se conclut au
+   CURSOR-UP. Une recette réclame ce second temps en posant `--z-contact__release--<nom>`
+   (comme `--z-contact__fx--<nom>` annonce l'effet) ; le moteur lit alors les phases sur
+   l'effet — `[phase="press"]` pendant l'appui, `[phase="release"]` au relâchement.
 
    LE MOTEUR (z-contact.js) est INTOUCHABLE et reste inchangé : à chaque contact il
    réplique l'effet dans `z-overlay`, le pose à la position du pointeur, et lui recopie
@@ -45,6 +51,11 @@ z-overlay z-contact {
 	display: block;
 	pointer-events: none;
 	--c: var(--z-contact-color, var(--z-accent, #006eff));
+	/* CENTRÉ sur le point de contact : l'effet grandit depuis SON centre, pas depuis son coin.
+	   `translate` en propriété INDIVIDUELLE → l'auteur peut animer width/scale/opacity dans ses
+	   `:state(...)` sans jamais perdre le centrage, ni écrire translate(-50%,-50%) lui-même.
+	   Sur les vieux effets (élément 0×0, tout est dans z-foreground) : décalage nul, sans effet. */
+	translate: -50% -50%;
 }
 
 /* Les parts (z-foreground = l'onde, z-marker = le point) : vrais éléments, centrés PILE

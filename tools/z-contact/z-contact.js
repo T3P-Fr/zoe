@@ -15,6 +15,12 @@
 	même composant, deux attributs. UN seul écouteur global (capture) ; zéro câblage par
 	composant. À chaque contact on émet `zoe:contact` (fx, pointerType, taille) pour que
 	d'autres briques réagissent (son, analytics, enchaînement). Skins = effets riches.
+
+	UN ou DEUX temps — un `fx` se joue d'un trait au CURSOR-DOWN (morph/implode/explode),
+	OU se TIENT jusqu'au CURSOR-UP quand sa recette déclare `--z-contact__release--<nom>`
+	(voir discoverHeldEffects). Le moteur crée alors l'effet en `phase="press"` et le garde
+	vivant sous le doigt ; au relâchement il bascule `phase="release"` (le CSS y peint la
+	conclusion) et émet `zoe:release`. Un effet à deux temps couvre donc appui ET relâchement.
 */
 import { topLayer } from "./z-overlay.js";
 import { activeSource, startContactSources } from "./z-contact-source.js";
@@ -32,6 +38,21 @@ let enabled = true;
 	particules, canvas…) se branchent ici, sans toucher au cœur.
 */
 const effects = new Map();
+
+/*
+	LES APPUIS EN COURS — pour les effets À DEUX TEMPS (voir discoverHeldEffects). Un effet
+	ordinaire naît au CURSOR-DOWN et meurt seul ; un effet à deux temps VIT tant que le doigt
+	appuie, puis se conclut au CURSOR-UP. On range chaque effet vivant par `pointerId` (multitouch :
+	plusieurs appuis simultanés, chacun le sien) → { el, safety }.
+	@type {Map<number, { el: HTMLElement, safety: number }>}
+*/
+const pressed = new Map();
+
+/*
+	Garde-fou : si aucun pointerup n'arrive (pointeur perdu, onglet masqué, geste avalé), on
+	relâche de force au bout de ce délai — un effet vivant ne doit jamais rester coincé à l'écran.
+*/
+const MAX_HOLD = 15000;
 
 function reduced() {
 	return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -65,14 +86,53 @@ function onPointerDown(event) {
 }
 
 /*
-	Fait naître un <z-contact> au point de contact. L'effet (`contact`) et la couleur
-	(l'accent de la cible) sont posés dessus ; sur tactile, l'onde est mise à l'échelle
-	de la taille du doigt (event.width) quand c'est exploitable.
+	Au RELÂCHEMENT (CURSOR-UP) ou à l'annulation du geste : on bascule l'effet pressé de ce
+	pointeur vers l'état `release` (l'auteur y écrit la conclusion — l'explosion), puis on le
+	retire quand l'animation de sortie est finie. Idempotent (un pointeur relâché deux fois ne
+	fait rien la seconde).
+	@param {number} pointerId
+*/
+function releasePressed(pointerId) {
+	const entry = pressed.get(pointerId);
+	if (!entry) return;
+	pressed.delete(pointerId);
+	clearTimeout(entry.safety);
+	const { el } = entry;
+	el.setPhase("release");
+
+	/* La recette peut donner au relâchement une durée propre (token `--z-contact-duration`
+	   scopé `[phase="release"]`). On la relit APRÈS la bascule pour honorer cette valeur. */
+	const raw = getComputedStyle(el).getPropertyValue("--z-contact-duration").trim();
+	const parsed = raw.endsWith("ms") ? parseFloat(raw) : parseFloat(raw) * 1000;
+	const duration = Number.isFinite(parsed) ? parsed : 500;
+	setTimeout(() => el.remove(), duration * 1.6 + 60);
+
+	/* Écho : le relâchement a eu lieu (pour son, enchaînements, analytics). */
+	document.dispatchEvent(new CustomEvent("zoe:release", { bubbles: true, detail: { pointerId } }));
+}
+
+/* Un seul écouteur de relâchement (comme pour l'appui) : il sert TOUS les effets à deux temps. */
+function onPointerUp(event) {
+	releasePressed(event.pointerId);
+}
+
+/*
+	Fait naître un <z-contact> au point de contact. L'effet (`fx`) et la couleur (l'accent de
+	la cible) sont posés dessus ; sur tactile, l'onde est mise à l'échelle de la taille du doigt
+	(event.width) quand c'est exploitable. Naît toujours en `phase="press"` (premier temps) ;
+	il naît en état `press`, y RESTE tant que l'on appuie, et bascule en `release` au relâchement.
+	@param {PointerEvent} event
+	@param {HTMLElement} target  le composant touché
+	@param {string} effect       le nom de l'effet (fx) — sert d'étiquette / de scope optionnel
 */
 function spawn(event, target, effect) {
 	const x = event.clientX, y = event.clientY;
 	const el = document.createElement("z-contact");
 	el.setAttribute("fx", effect);
+	/* LE TEMPS de l'effet, dans la grammaire de Zoé : l'auteur écrit `z-contact:state(press)`
+	   pendant l'appui, `z-contact:state(release)` au relâchement. setPhase pose l'état (et, le
+	   temps de la migration, l'attribut `phase=` que lisent encore les vieilles recettes). */
+	el.setPhase("press");
 	el.setAttribute("aria-hidden", "true");
 	/*
 		Couleur, en respectant la cascade : le SPÉCIFIQUE gagne, le GLOBAL est le repli.
@@ -113,8 +173,12 @@ function spawn(event, target, effect) {
 		onde de l'impact = la part `z-foreground` ; le point central (implode) = `z-marker`.
 		Vrais éléments ciblables/skinnables : `z-contact z-foreground { … }`.
 	*/
+	/* Les DEUX couches de l'anatomie, posées pour tout effet : `z-foreground` (l'onde/anneau)
+	   et `z-marker` (le point central). L'auteur en peint zéro, une ou deux — celle qu'il ne
+	   touche pas reste à 0×0, invisible, sans coût. C'est le vocabulaire des calques : on écrit
+	   `z-contact:state(press) z-foreground { … }`. */
 	el.appendChild(document.createElement("z-foreground"));
-	if (effect === "implode") el.appendChild(document.createElement("z-marker"));
+	el.appendChild(document.createElement("z-marker"));
 
 	/*
 		Taille de contact : sur tactile, event.width/height donne la géométrie du doigt.
@@ -149,8 +213,12 @@ function spawn(event, target, effect) {
 		detail: { fx: effect, x, y, size: scale, duration, pointerType, contactSize: contactSize || null },
 	}));
 
-	/* L'implose a deux couches décalées (jusqu'à ~1.3× la durée) → marge de nettoyage. */
-	setTimeout(() => el.remove(), duration * 1.6 + 60);
+	/* CHAQUE effet se tient : il vit tant que l'on appuie (état `press`) et se conclut au
+	   relâchement (état `release`, via releasePressed). On le range par pointerId (multitouch :
+	   plusieurs appuis, chacun le sien) et on arme le garde-fou. Le nettoyage a lieu au
+	   relâchement — jamais par une durée ici, sinon l'effet s'effacerait sous le doigt. */
+	const safety = setTimeout(() => releasePressed(event.pointerId), MAX_HOLD);
+	pressed.set(event.pointerId, { el, safety });
 }
 
 /* Démarre le moteur : la gouvernance des sources déclarées (watcher) + un seul
@@ -158,6 +226,11 @@ function spawn(event, target, effect) {
 export function startContact() {
 	startContactSources();
 	document.addEventListener("pointerdown", onPointerDown, true);
+	/* Le SECOND temps des effets à deux temps : relâchement normal (up) ou geste annulé
+	   (cancel — le doigt part de l'écran, un scroll prend la main…). Les deux concluent l'effet.
+	   En capture, comme l'appui : le moteur voit le geste avant que la page ne l'intercepte. */
+	document.addEventListener("pointerup", onPointerUp, true);
+	document.addEventListener("pointercancel", onPointerUp, true);
 }
 
 /* Réglage + registre d'effets, exposés via Zoe.contact. */
@@ -184,6 +257,26 @@ export const contact = {
 	et non dans un registre commun : une balise appartient au code qui la fait vivre.
 */
 export class ZContact extends HTMLElement {
+	constructor() {
+		super();
+		/* ElementInternals ouvre les ÉTATS PERSONNALISÉS : `:state(press)` / `:state(release)`.
+		   C'est CE qui laisse l'auteur écrire l'effet dans la grammaire de Zoé — décrire
+		   `z-contact` dans ses états — sans jamais connaître l'overlay ni les couches. */
+		try { this._internals = this.attachInternals(); } catch { this._internals = null; }
+	}
+
+	/*
+		Pose le TEMPS courant de l'effet : `press` (appui) puis `release` (relâchement). Un seul
+		état à la fois. On écrit l'état personnalisé (pour `:state(...)`) ET, le temps que les
+		recettes livrées migrent, l'attribut `phase=` qu'elles lisent encore.
+		@param {"press" | "release"} name
+	*/
+	setPhase(name) {
+		this.setAttribute("phase", name);
+		const states = this._internals?.states;
+		if (states) { states.clear(); states.add(name); }
+	}
+
 	/*
 		L'API MACHINE (lue par scripts/z-manifest → autocomplétion + doc + llms.txt).
 		Elle décrit la SOURCE, la seule chose qu'un auteur écrit : `<z-contact fx="…">`.

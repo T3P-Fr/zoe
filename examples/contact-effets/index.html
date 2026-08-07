@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zoé — mon effet de clic</title>
+
+
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Double-clique sur <code>ZOE.cmd</code>, ou lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis ouvre <code>http://localhost:5173/examples/contact-effets/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../page.css">
+<!-- TON effet, juste à côté. Une seule recette chargée → aucune collision, ta syntaxe est pure. -->
+<link rel="stylesheet" href="./mon-effet.css">
+
+<style>
+	:root { --z-contact-size: 30px; }
+	.pad {
+		display: grid; place-items: center; gap: 8px;
+		min-height: 240px; margin-top: 26px; padding: 40px;
+		border: 1px solid var(--z-line); background: var(--z-surface); user-select: none;
+	}
+	.pad small { color: var(--z-ink-soft); }
+	.row { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 22px; }
+	.source {
+		margin-top: 22px; padding: 10px 14px;
+		border: 1px dashed var(--z-line); border-radius: var(--z-radius, 8px);
+		font-size: 13px; color: var(--z-ink-soft);
+	}
+	.source code { font-family: ui-monospace, monospace; color: var(--z-accent); }
+</style>
+
+<!-- La source : le moteur tourne. fx = juste une étiquette pour l'allumer ; l'aspect vient
+     de mon-effet.css, écrit en z-contact:state(press) / :state(release). -->
+<z-contact fx="eclat"></z-contact>
+
+<h1>Mon effet de clic — <em>éclat</em></h1>
+<p class="lead">
+	Clique <b>et maintiens</b> sur un bouton : l'énergie se concentre et tremble. <b>Relâche</b> :
+	ça explose. Change de peau en haut à droite — la couleur suit.
+</p>
+
+<div class="pad">
+	<z-button id="pad" size="xl">MAINTIENS, PUIS RELÂCHE</z-button>
+	<small>appuie · garde le doigt · relâche</small>
+</div>
+
+<div class="row">
+	<z-button>Un bouton</z-button>
+	<z-button tone="complement">Un autre ton</z-button>
+	<button type="button">Un &lt;button&gt; natif</button>
+</div>
+
+<p class="source">
+	L'effet est écrit dans <code>examples/contact-effets/mon-effet.css</code> — ce dossier.
+	Deux blocs : <code>z-contact:state(press)</code> et <code>z-contact:state(release)</code>. Édite, recharge.
+</p>
+
+<script type="module">
+	import "../skin-switch.js";
+	import "../../components/z-button/z-button.js";
+	import "../../tools/z-contact/z-contact.js";
+</script>
+</html>

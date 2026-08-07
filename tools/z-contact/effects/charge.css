@@ -1,0 +1,105 @@
+/* ==========================================================================
+   effet · CHARGE — l'énergie se concentre en tremblant, puis EXPLOSE   Styleguide 12.6
+   --------------------------------------------------------------------------
+   LE PREMIER EFFET À DEUX TEMPS du catalogue. Il prouve la mécanique press/release de
+   z-contact : un anneau naît large au CURSOR-DOWN, se resserre sur le point de contact
+   et TREMBLE — la charge d'énergie — tant que l'on appuie ; au CURSOR-UP, il EXPLOSE.
+
+   COMMENT z-contact sait qu'il faut le TENIR jusqu'au relâchement : par la seule présence
+   du marqueur `--z-contact__release--charge` ci-dessous (comme `--z-contact__fx--charge`
+   annonce l'effet). Le moteur crée alors l'effet en `phase="press"` et ne le retire PAS ;
+   au relâchement il bascule `phase="release"`. Un effet sans ce marqueur reste à un temps.
+
+   Deux couches, deux rôles (anatomie du socle) :
+     · z-foreground = l'ANNEAU (converge + tremble → explose)
+     · z-marker     = le CŒUR d'énergie (point brûlant qui s'allume et tremble → éclate)
+
+   Réglages (posés par la peau, parité attribut/token) : --z-contact-size · --z-contact-color ·
+   --z-contact-duration (durée de l'EXPLOSION) · --z-charge-in (durée de la concentration).
+   ====================================================================== */
+
+/* Déclaration DÉCOUVRABLE de l'effet — comme implode/explode/morph. */
+@property --z-contact__fx--charge { syntax: "*"; inherits: false; }
+/* Le SECOND temps : ce marqueur seul dit au moteur « garde-moi vivant jusqu'au relâchement ». */
+@property --z-contact__release--charge { syntax: "*"; inherits: false; }
+
+/* ------------------------------------------------------------------ PREMIER TEMPS · press */
+
+/* L'ANNEAU se concentre (largeur/hauteur/opacité) ET tremble (transform) en même temps :
+   deux animations sur des propriétés DISJOINTES → elles composent sans se marcher dessus.
+   La concentration se fige (forwards) sur un petit anneau serré ; le tremblement, lui, ne
+   s'arrête jamais tant que l'on appuie (infinite). Styleguide 12.6.1 */
+z-overlay z-contact[fx="charge"][phase="press"] z-foreground {
+	width: calc(var(--z-contact-size, 26px) * 5);
+	height: calc(var(--z-contact-size, 26px) * 5);
+	border: 2px solid var(--c);
+	opacity: 0;
+	will-change: width, height, transform, opacity;
+	animation:
+		z-charge-converge var(--z-charge-in, 0.5s) var(--z-ease, ease-out) forwards,
+		z-charge-shake 0.09s steps(2, end) infinite;
+}
+
+@keyframes z-charge-converge {
+	from { width: calc(var(--z-contact-size, 26px) * 5); height: calc(var(--z-contact-size, 26px) * 5); opacity: 0; border-width: 1px; }
+	30%  { opacity: 1; }
+	to   { width: calc(var(--z-contact-size, 26px) * 1.5); height: calc(var(--z-contact-size, 26px) * 1.5); opacity: 1; border-width: 3px; }
+}
+
+/* Le TREMBLEMENT : de petites secousses autour du point de contact. Chaque image-clé garde
+   `translate(-50%, -50%)` (le centrage du socle) et y ajoute un décalage → le centre ne dérive
+   jamais, ça vibre sur place. steps(2) = saccadé, « nerveux », pas un balancement mou. */
+@keyframes z-charge-shake {
+	0%   { transform: translate(calc(-50% - 1.5px), calc(-50% + 1px)); }
+	50%  { transform: translate(calc(-50% + 1.5px), calc(-50% - 1px)); }
+	100% { transform: translate(calc(-50% - 1px),   calc(-50% + 1.5px)); }
+}
+
+/* Le CŒUR d'énergie : un point qui s'allume (opacité + halo qui grandit = ça se charge) et
+   tremble plus vite que l'anneau. Il tient sa lueur (forwards) tant que l'on appuie. */
+z-overlay z-contact[fx="charge"][phase="press"] z-marker {
+	width: calc(var(--z-contact-size, 26px) * 0.55);
+	height: calc(var(--z-contact-size, 26px) * 0.55);
+	background: var(--c);
+	opacity: 0;
+	will-change: transform, opacity, box-shadow;
+	animation:
+		z-charge-core-in var(--z-charge-in, 0.5s) ease-out forwards,
+		z-charge-shake 0.07s steps(2, end) infinite;
+}
+
+@keyframes z-charge-core-in {
+	from { opacity: 0; box-shadow: 0 0 0 var(--c); }
+	30%  { opacity: 1; }
+	to   { opacity: 1; box-shadow: 0 0 calc(var(--z-contact-size, 26px) * 0.9) var(--c); }
+}
+
+/* ------------------------------------------------------------------ SECOND TEMPS · release */
+
+/* L'EXPLOSION : au relâchement, l'anneau part de l'état serré (1.5×, là où la concentration
+   l'avait figé → continuité parfaite, aucun saut) et se dilate violemment en s'effaçant.
+   Le tremblement s'arrête net (son sélecteur `[phase="press"]` ne matche plus). Styleguide 12.6.2 */
+z-overlay z-contact[fx="charge"][phase="release"] z-foreground {
+	border: 2px solid var(--c);
+	will-change: width, height, opacity;
+	animation: z-charge-burst var(--z-contact-duration, 0.5s) var(--z-ease, ease-out) forwards;
+}
+
+@keyframes z-charge-burst {
+	from { width: calc(var(--z-contact-size, 26px) * 1.5); height: calc(var(--z-contact-size, 26px) * 1.5); opacity: 1; border-width: 3px; transform: translate(-50%, -50%); }
+	to   { width: calc(var(--z-contact-size, 26px) * 9);   height: calc(var(--z-contact-size, 26px) * 9);   opacity: 0; border-width: 0.5px; transform: translate(-50%, -50%); }
+}
+
+/* Le cœur ÉCLATE : il enfle et s'éteint, plus vite que l'anneau (l'énergie part du centre). */
+z-overlay z-contact[fx="charge"][phase="release"] z-marker {
+	width: calc(var(--z-contact-size, 26px) * 0.55);
+	height: calc(var(--z-contact-size, 26px) * 0.55);
+	background: var(--c);
+	will-change: transform, opacity;
+	animation: z-charge-core-burst calc(var(--z-contact-duration, 0.5s) * 0.6) ease-out forwards;
+}
+
+@keyframes z-charge-core-burst {
+	from { transform: translate(-50%, -50%) scale(1);   opacity: 1; }
+	to   { transform: translate(-50%, -50%) scale(2.6); opacity: 0; }
+}

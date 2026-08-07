@@ -1,0 +1,92 @@
+/* ==========================================================================
+   TON EFFET · « éclat » — décrit par ses ÉTATS, la grammaire de Zoé
+   --------------------------------------------------------------------------
+   Deux états, et deux CALQUES à peindre dedans :
+     · z-contact:state(press)    → PENDANT l'appui  (l'énergie se concentre et tremble)
+     · z-contact:state(release)  → au RELÂCHEMENT   (ça EXPLOSE)
+
+   Les calques (l'anatomie de Zoé) — le moteur les pose, tu les peins où tu veux :
+     · z-foreground = l'onde / l'anneau      · z-marker = le point central (le cœur)
+   z-contact est en light DOM : on écrit les calques EN DIRECT, `z-contact:state(x) z-foreground`
+   (pas de ::part, réservé aux composants à shadow). var(--c) = la couleur (suit la peau).
+   ====================================================================== */
+
+/* ============================================================ PENDANT L'APPUI · press */
+
+/* Le halo de l'élément lui-même : il respire (l'énergie qui monte) tant que le doigt est là. */
+z-contact:state(press) {
+	width: var(--z-contact-size, 30px);
+	height: var(--z-contact-size, 30px);
+	border-radius: 50%;
+	background: radial-gradient(circle, color-mix(in oklab, var(--c) 60%, transparent), transparent 72%);
+	animation: eclat-souffle .45s ease-in-out infinite alternate;
+}
+@keyframes eclat-souffle {
+	from { box-shadow: 0 0 10px var(--c); }
+	to   { box-shadow: 0 0 34px var(--c); }
+}
+
+/* L'anneau (z-foreground) se resserre vers le point ET tremble (la concentration). */
+z-contact:state(press) z-foreground {
+	border: 2px solid var(--c);
+	animation:
+		eclat-resserre .45s ease-out forwards,
+		eclat-tremble .09s steps(2) infinite;
+}
+@keyframes eclat-resserre {
+	from { width: calc(var(--z-contact-size, 30px) * 4);   height: calc(var(--z-contact-size, 30px) * 4);   opacity: 0; }
+	30%  { opacity: 1; }
+	to   { width: calc(var(--z-contact-size, 30px) * 1.4); height: calc(var(--z-contact-size, 30px) * 1.4); opacity: 1; }
+}
+/* Le tremblement : de petites secousses — chaque image garde le centrage translate(-50%,-50%). */
+@keyframes eclat-tremble {
+	0%   { transform: translate(calc(-50% - 1.5px), calc(-50% + 1px)); }
+	50%  { transform: translate(calc(-50% + 1.5px), calc(-50% - 1px)); }
+	100% { transform: translate(calc(-50% - 1px),   calc(-50% + 1.5px)); }
+}
+
+/* ============================================================ AU RELÂCHEMENT · release */
+
+/* L'ONDE DE CHOC (z-foreground) : elle part serrée et jaillit en s'effaçant. */
+z-contact:state(release) z-foreground {
+	border: 3px solid var(--c);
+	animation: eclat-onde .5s cubic-bezier(.15, .8, .3, 1) forwards;
+}
+@keyframes eclat-onde {
+	from { width: calc(var(--z-contact-size, 30px) * 1.4); height: calc(var(--z-contact-size, 30px) * 1.4); opacity: 1; border-width: 3px;  transform: translate(-50%, -50%); }
+	to   { width: calc(var(--z-contact-size, 30px) * 8);   height: calc(var(--z-contact-size, 30px) * 8);   opacity: 0; border-width: .5px; transform: translate(-50%, -50%); }
+}
+
+/* LE CŒUR (z-marker) éclate : il enfle et s'éteint dans un flash. */
+z-contact:state(release) z-marker {
+	width: calc(var(--z-contact-size, 30px) * .5);
+	height: calc(var(--z-contact-size, 30px) * .5);
+	background: var(--c);
+	animation: eclat-burst .4s ease-out forwards;
+}
+@keyframes eclat-burst {
+	from { transform: translate(-50%, -50%) scale(1);   opacity: 1; box-shadow: 0 0 calc(var(--z-contact-size, 30px) * .9) var(--c); }
+	to   { transform: translate(-50%, -50%) scale(2.6); opacity: 0; box-shadow: 0 0 0 var(--c); }
+}
+
+/* LES ÉTINCELLES : un point qui porte huit ombres en étoile ; on l'agrandit → elles fusent. */
+z-contact:state(release) z-marker::before {
+	content: "";
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: calc(var(--z-contact-size, 30px) * .16);
+	height: calc(var(--z-contact-size, 30px) * .16);
+	border-radius: 50%;
+	background: var(--c);
+	box-shadow:
+		0 -15px 0 var(--c),  11px -11px 0 var(--c),
+		15px 0 0 var(--c),   11px 11px 0 var(--c),
+		0 15px 0 var(--c),  -11px 11px 0 var(--c),
+		-15px 0 0 var(--c), -11px -11px 0 var(--c);
+	animation: eclat-etincelles .5s ease-out forwards;
+}
+@keyframes eclat-etincelles {
+	from { transform: translate(-50%, -50%) scale(.3) rotate(0deg);  opacity: 1; }
+	to   { transform: translate(-50%, -50%) scale(2.4) rotate(40deg); opacity: 0; }
+}
