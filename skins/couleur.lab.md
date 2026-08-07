@@ -136,7 +136,32 @@ front · pit` — soit on assume le mélange. À trancher avec le vocabulaire de
 
 ---
 
-## 6 · Dette connue
+## 6 · L'échelle élargie — POSÉE, PAS TRANCHÉE
+
+Retrouvée dans le fichier de travail (session du 25 juillet), sans le raisonnement qui va
+avec. Elle **contredit le §2**, qui tranche une échelle à six crans : la voici mise de
+côté plutôt que reperdue. Elle attend un arbitrage de Christophe.
+
+```css
+/* Les mains, nommées — elles ne sont pas dans l'échelle d'encre */
+--z-color__accent
+--z-color__soutien
+--z-color__main30
+
+/* L'échelle d'encre, à quatorze crans au lieu de six */
+--z-ink010  --z-ink020  --z-ink025  --z-ink030  --z-ink033  --z-ink040  --z-ink050
+--z-ink060  --z-ink066  --z-ink070  --z-ink075  --z-ink080  --z-ink090  --z-ink100
+
+/* Le porteur d'opacité, sans suffixe d'état */
+--z-opacity
+```
+
+**La question à trancher :** quatorze crans, est-ce l'échelle qui gagne (les tiers —
+033, 066 — manquaient vraiment), ou le début du catalogue sans fin que le §1 élimine ?
+
+---
+
+## 7 · Dette connue
 
 - **`--z-ink--veil` = `--z-ink000` = transparent.** Un alias vers le vide a-t-il un
   sens, ou est-ce un mot pour rien ? À vérifier au premier usage réel.
