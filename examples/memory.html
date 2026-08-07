@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zoé — Memory, et le compte de clics offerts</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte.
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Lance <code>node scripts/serve.mjs 5177</code> puis passe par <code>http://localhost:5177/examples/memory.html</code>.</div>'
+    );
+  </script>
+
+  <link rel="stylesheet" href="../zoe.css">
+  <link rel="stylesheet" href="../examples/page.css">
+
+  <style>
+/*
+	============================================================
+	memory — LE JEU, et surtout : LE COMPTE DE CLICS OFFERTS
+	------------------------------------------------------------
+	Une page de démo, donc un `<style>` local permis : ce qui est ici est PROPRE au jeu
+	(le retournement des cartes, la grille), jamais du décor — le décor est dans page.css.
+
+	Le jeu ne peint AUCUNE couleur en dur : il ne lit que les tokens de la peau
+	(`--z-color--*`), comme le ferait la page d'un auteur. Changer de peau dans le
+	sélecteur en haut à droite doit donc redessiner le jeu entier sans qu'une ligne d'ici
+	ne bouge — c'est le test de solidité permanent (pacte skin-switch).
+
+	Styleguide demo.memory
+	============================================================
+*/
+
+/*
+	LE PLATEAU — une grille carrée qui se serre toute seule.
+	Le nombre de colonnes vient du JS (`--colonnes`), parce que c'est le NOMBRE de paires
+	qui décide de la forme, pas l'inverse. Aucune media-query : `min()` fait le travail
+	sur téléphone comme sur écran large.
+	Styleguide demo.memory.1
+*/
+.plateau {
+	display: grid;
+	grid-template-columns: repeat(var(--colonnes, 4), 1fr);
+	gap: min(2vw, 0.8rem);
+	width: min(100%, 34rem);
+	margin-inline: auto;
+	perspective: 900px;                /* la profondeur du retournement vit sur le PARENT */
+}
+
+/*
+	LA CARTE — un vrai <button> natif, donc clavier, focus et lecteur d'écran gratuits.
+	Elle ne porte aucune couleur : ses deux faces s'en chargent. Elle ne porte que la
+	ROTATION, parce qu'une carte qui se retourne est un seul objet à deux côtés — si les
+	faces tournaient chacune de leur côté, elles se décolleraient.
+	Styleguide demo.memory.2
+*/
+.carte {
+	all: unset;                        /* on repart d'un bouton nu, pas d'un bouton de l'OS */
+	position: relative;
+	aspect-ratio: 3 / 4;
+	cursor: pointer;
+	transform-style: preserve-3d;
+	transition: transform 480ms cubic-bezier(.2, .8, .25, 1.2);   /* le rebond de la fin */
+	border-radius: var(--z-radius, 0.6rem);
+}
+
+/*
+	Retournée : un demi-tour. C'est l'ÉTAT qui décide (`data-face`), jamais le JS en
+	posant un style — le JS ne fait que dire dans quel état on est, le CSS fait le reste.
+	Styleguide demo.memory.2.1
+*/
+.carte[data-face="endroit"] { transform: rotateY(180deg); }
+
+/*
+	Appariée : la carte reste retournée mais recule d'un cran — elle sort du jeu sans
+	disparaître (elle a été gagnée, on doit pouvoir la relire). Elle cesse d'être cliquable.
+	Styleguide demo.memory.2.2
+*/
+.carte[data-appariee] {
+	transform: rotateY(180deg) scale(0.92);
+	cursor: default;
+	filter: saturate(0.55);
+	opacity: 0.72;
+}
+
+/* Le focus clavier doit rester visible MALGRÉ `all: unset`, qui vient de l'effacer. */
+.carte:focus-visible { outline: 2px solid var(--z-color--accent, currentColor); outline-offset: 3px; }
+
+/*
+	LES DEUX FACES — superposées, dos visible par défaut, endroit déjà à 180° pour être
+	à l'endroit une fois la carte tournée. `backface-visibility` fait que jamais les deux
+	ne se voient en même temps.
+	Styleguide demo.memory.3
+*/
+.face {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	backface-visibility: hidden;
+	border-radius: inherit;
+	font-size: clamp(1.4rem, 7vw, 2.4rem);
+	line-height: 1;
+	user-select: none;
+}
+
+.face.dos {
+	background: color-mix(in oklab, var(--z-color--accent, #456) 22%, var(--z-color--canvas, #fff));
+	border: 1px solid color-mix(in oklab, var(--z-color--accent, #456) 45%, transparent);
+	color: color-mix(in oklab, var(--z-color--accent, #456) 70%, var(--z-color--canvas, #fff));
+	font-size: 1.1rem;
+	letter-spacing: 0.1em;
+}
+
+.face.endroit {
+	transform: rotateY(180deg);
+	background: var(--z-color--canvas, #fff);
+	border: 1px solid color-mix(in oklab, var(--z-color--ink, #123) 20%, transparent);
+}
+
+/*
+	LE PUPITRE — le solde, la dotation, le geste. Il est AU-DESSUS du plateau et non dans
+	un coin : le chiffre qui bouge doit tomber sous l'œil qui vient de cliquer, pas à
+	l'autre bout de l'écran (la VUE d'abord).
+	Styleguide demo.memory.4
+*/
+.pupitre {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 0.6rem 1.4rem;
+	margin-block-end: 1.2rem;
+}
+
+/*
+	Le solde qui vient de changer bat une fois. Sans ce battement, un compteur qui
+	descend de 1 passe inaperçu — et c'est justement la seule information qui compte ici.
+	Styleguide demo.memory.4.1
+*/
+@keyframes battement {
+	from { transform: scale(1.18); }
+	to   { transform: scale(1); }
+}
+.solde[data-vient-de-changer] { animation: battement 260ms cubic-bezier(.2, .8, .25, 1.2); }
+
+/* Le solde à zéro s'alarme — l'information « tu n'as plus de clics » ne doit pas être à lire. */
+.solde[data-vide] { color: var(--z-color--danger, #a33); }
+
+/*
+	LE VERDICT — une ligne sous le plateau, toujours présente dans le flux (jamais
+	insérée après coup) : un message qui POUSSE le plateau ferait sauter le jeu sous le
+	doigt. Elle est vide et transparente tant qu'il n'y a rien à dire.
+	Styleguide demo.memory.5
+*/
+.verdict {
+	min-height: 2.4rem;
+	margin-block-start: 1.2rem;
+	text-align: center;
+	font-size: 1.05rem;
+	opacity: 0;
+	transition: opacity 300ms ease;
+}
+.verdict[data-dit] { opacity: 1; }
+
+/* Le réglage réduit-mouvement est un ORDRE, pas une préférence : on coupe tout. */
+@media (prefers-reduced-motion: reduce) {
+	.carte, .verdict { transition-duration: 1ms; }
+	.solde[data-vient-de-changer] { animation: none; }
+}
+  </style>
+
+  <div class="page">
+    <main class="colonne">
+      <h1>Memory — et le compte de clics offerts</h1>
+      <p class="chapo">
+        Chaque carte retournée coûte <strong>un clic</strong>. Le solde est une dotation :
+        il ne repart pas à zéro quand tu recharges la page — le jeu s'en souvient.
+      </p>
+
+      <!-- LE PUPITRE : ce qui reste, et de quoi relancer. Au-dessus du plateau, pas dans un coin. -->
+      <div class="pupitre">
+        <z-stat size="l">
+          <span part="label">Clics offerts</span>
+          <strong part="value" class="solde" id="solde">—</strong>
+          <span part="delta" id="dotation">sur —</span>
+        </z-stat>
+
+        <z-stat>
+          <span part="label">Paires trouvées</span>
+          <strong part="value" id="paires">0 / 8</strong>
+        </z-stat>
+
+        <z-button id="rejouer" tone="soft">Rebattre les cartes</z-button>
+        <z-button id="essai">Essai — 10 clics</z-button>
+        <z-button id="partie" tone="main">Partie — 160 clics</z-button>
+      </div>
+
+      <!-- LE PLATEAU : rempli par le JS, parce que c'est le nombre de paires qui décide. -->
+      <div class="plateau" id="plateau" role="grid" aria-label="Plateau de memory"></div>
+
+      <p class="verdict" id="verdict" role="status"></p>
+    </main>
+  </div>
+
+  <script type="module">
+    import "./skin-switch.js";                       /* le PACTE : le <select> de peau, en haut à droite */
+    import "../tools/z-contact/z-contact.js";        /* l'impact au point de contact — zéro câblage */
+    import "../components/z-button/z-button.js";
+    import "../components/z-stat/z-stat.js";
+
+    /*
+      ============================================================
+      LES DEUX DOTATIONS — la vraie, et celle qui sert à voir la fin
+      ------------------------------------------------------------
+      160 clics, c'est la partie honnête : 16 cartes, on a largement de quoi se tromper.
+      10 clics, c'est l'essai — on ne PEUT PAS finir, et c'est exprès : c'est le seul
+      moyen de voir en dix secondes ce qui se passe quand le compte tombe à sec.
+
+      Elles ne sont pas cachées dans le code : deux boutons dans le pupitre, parce qu'un
+      réglage qu'on doit aller éditer dans un fichier n'est pas un réglage, c'est une
+      corvée. `?clics=…` fait la même chose pour envoyer un lien déjà réglé.
+      ============================================================
+    */
+    const DOTATIONS = { essai: 10, partie: 160 };
+
+    /* Le jeu s'ouvre sur l'ESSAI : on veut voir la panne sèche avant de jouer pour de vrai. */
+    const DOTATION_PAR_DEFAUT = DOTATIONS.essai;
+
+    /* 8 paires = 16 cartes = une grille 4×4. Un symbole par paire, rien de plus. */
+    const SYMBOLES = ["🍋", "🌿", "🔷", "🎈", "🐚", "🌙", "🍒", "⚡"];
+    const COLONNES = 4;
+
+    const CLE_SOLDE = "zoe-memory-solde";
+    const CLE_DOTATION = "zoe-memory-dotation";
+
+    /*
+      L'ÉTAT DU JEU, en un seul objet. Tout le reste n'est qu'une VUE de cet objet :
+      quand quelque chose change ici, on redessine — jamais l'inverse. C'est ce qui
+      empêche l'écran et la vérité de diverger (le bug qu'on a payé cher ailleurs :
+      la roue et la couleur qui ne disaient pas la même chose).
+
+      @type {{ cartes: Array<{ symbole: string, face: "dos"|"endroit", appariee: boolean }>,
+               retournees: number[], solde: number, dotation: number, verrou: boolean }}
+    */
+    const jeu = {
+      cartes: [],
+      retournees: [],      /* les indices des cartes face visible en attente de verdict (0, 1 ou 2) */
+      solde: 0,
+      dotation: DOTATION_PAR_DEFAUT,
+      verrou: false        /* pendant la seconde où deux cartes s'observent, on n'accepte plus de clic */
+    };
+
+    const el = {
+      plateau: document.getElementById("plateau"),
+      solde: document.getElementById("solde"),
+      dotation: document.getElementById("dotation"),
+      paires: document.getElementById("paires"),
+      verdict: document.getElementById("verdict")
+    };
+
+    /**
+     * Mélange un tableau EN PLACE (Fisher-Yates). Le seul algorithme non trivial du jeu :
+     * `sort(() => Math.random() - 0.5)` a l'air de marcher et donne des mélanges biaisés.
+     * @param {any[]} tableau
+     * @returns {any[]} le même tableau, mélangé
+     */
+    const melanger = (tableau) => {
+      for (let i = tableau.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tableau[i], tableau[j]] = [tableau[j], tableau[i]];
+      }
+      return tableau;
+    };
+
+    /**
+     * Lit le solde retenu d'une session à l'autre. C'est LE point de la démo : la dotation
+     * est une monnaie, pas un score — elle survit au rechargement, et elle ne se remplit
+     * que si on le demande.
+     * @param {number} dotation la dotation de référence, si rien n'est retenu
+     * @returns {number} le solde à afficher maintenant
+     */
+    const lireSolde = (dotation) => {
+      const retenu = Number(localStorage.getItem(CLE_SOLDE));
+      return Number.isFinite(retenu) && localStorage.getItem(CLE_SOLDE) !== null ? retenu : dotation;
+    };
+
+    /**
+     * Écrit le solde et le montre. Un seul chemin pour changer le compte : impossible de
+     * décrémenter quelque part sans que l'écran et le stockage suivent.
+     * @param {number} valeur
+     */
+    const poserSolde = (valeur) => {
+      jeu.solde = Math.max(0, valeur);
+      localStorage.setItem(CLE_SOLDE, String(jeu.solde));
+      el.solde.textContent = String(jeu.solde);
+      el.solde.toggleAttribute("data-vide", jeu.solde === 0);
+
+      /* Retirer puis reposer l'attribut relance l'animation — sans le reflow forcé, le
+         navigateur regroupe les deux changements et ne voit aucun changement du tout. */
+      el.solde.removeAttribute("data-vient-de-changer");
+      void el.solde.offsetWidth;
+      el.solde.setAttribute("data-vient-de-changer", "");
+    };
+
+    /**
+     * Change la dotation de référence : remet le compteur à plein et rebat les cartes.
+     * @param {number} valeur 10 (essai) ou 160 (partie)
+     */
+    const poserDotation = (valeur) => {
+      jeu.dotation = valeur;
+      localStorage.setItem(CLE_DOTATION, String(valeur));
+      el.dotation.textContent = `sur ${valeur}`;
+      poserSolde(valeur);
+      distribuer();
+    };
+
+    /** Affiche (ou efface) la phrase du bas, sans jamais bouger le plateau. */
+    const dire = (phrase) => {
+      el.verdict.textContent = phrase;
+      el.verdict.toggleAttribute("data-dit", phrase !== "");
+    };
+
+    /**
+     * Construit le plateau : les paires, mélangées, une carte = un bouton à deux faces.
+     * On reconstruit le DOM entier plutôt que de le rafistoler — 16 nœuds, c'est gratuit,
+     * et ça garantit qu'aucun reste de la partie précédente ne traîne.
+     */
+    const distribuer = () => {
+      jeu.cartes = melanger([...SYMBOLES, ...SYMBOLES])
+        .map((symbole) => ({ symbole, face: "dos", appariee: false }));
+      jeu.retournees = [];
+      jeu.verrou = false;
+
+      el.plateau.style.setProperty("--colonnes", String(COLONNES));
+      el.plateau.replaceChildren(...jeu.cartes.map((carte, index) => {
+        const bouton = document.createElement("button");
+        bouton.className = "carte";
+        bouton.dataset.face = "dos";
+        bouton.dataset.index = String(index);
+        bouton.setAttribute("aria-label", `Carte ${index + 1}, face cachée`);
+        bouton.innerHTML =
+          '<span class="face dos" aria-hidden="true">ZOÉ</span>' +
+          `<span class="face endroit">${carte.symbole}</span>`;
+        return bouton;
+      }));
+
+      compter();
+      dire("");
+    };
+
+    /** Met à jour le compte de paires — la seule autre chose qui se lit pendant la partie. */
+    const compter = () => {
+      const trouvees = jeu.cartes.filter((c) => c.appariee).length / 2;
+      el.paires.textContent = `${trouvees} / ${SYMBOLES.length}`;
+      return trouvees;
+    };
+
+    /** Recopie l'état d'une carte sur son bouton. Le CSS fait le reste (rotation, recul). */
+    const rendreCarte = (index) => {
+      const carte = jeu.cartes[index];
+      const bouton = el.plateau.children[index];
+      bouton.dataset.face = carte.face;
+      bouton.toggleAttribute("data-appariee", carte.appariee);
+      bouton.setAttribute("aria-label", carte.face === "dos"
+        ? `Carte ${index + 1}, face cachée`
+        : `Carte ${index + 1}, ${carte.symbole}${carte.appariee ? ", appariée" : ""}`);
+    };
+
+    /**
+     * LE GESTE : retourner une carte. C'est le seul endroit où un clic coûte, et le seul
+     * endroit qui décide — tout le reste ne fait que rendre.
+     * @param {number} index
+     */
+    const retourner = (index) => {
+      const carte = jeu.cartes[index];
+
+      /* Trois refus silencieux, dans l'ordre où ils peuvent arriver. */
+      if (jeu.verrou || !carte || carte.appariee || carte.face === "endroit") return;
+      if (jeu.solde <= 0) { dire("Plus un seul clic. Recharge la dotation pour continuer."); return; }
+
+      poserSolde(jeu.solde - 1);
+      carte.face = "endroit";
+      jeu.retournees.push(index);
+      rendreCarte(index);
+
+      if (jeu.retournees.length < 2) return;
+
+      /* Deux cartes en l'air : on juge. Le verrou tient pendant qu'on les regarde. */
+      const [a, b] = jeu.retournees;
+      jeu.verrou = true;
+
+      if (jeu.cartes[a].symbole === jeu.cartes[b].symbole) {
+        jeu.cartes[a].appariee = jeu.cartes[b].appariee = true;
+        jeu.retournees = [];
+        jeu.verrou = false;
+        rendreCarte(a);
+        rendreCarte(b);
+        if (compter() === SYMBOLES.length) {
+          dire(`Plateau vide — il te restait ${jeu.solde} clic${jeu.solde > 1 ? "s" : ""}. Ils restent à toi.`);
+        }
+        return;
+      }
+
+      /* Raté : on laisse le temps de VOIR avant de refermer. 900 ms — moins, on n'a rien lu. */
+      setTimeout(() => {
+        jeu.cartes[a].face = jeu.cartes[b].face = "dos";
+        jeu.retournees = [];
+        jeu.verrou = false;
+        rendreCarte(a);
+        rendreCarte(b);
+        if (jeu.solde === 0) dire("Plus un seul clic. Recharge la dotation pour continuer.");
+      }, 900);
+    };
+
+    /* Un seul écouteur pour tout le plateau : les cartes naissent et meurent, pas lui. */
+    el.plateau.addEventListener("click", (event) => {
+      const bouton = event.target.closest(".carte");
+      if (bouton) retourner(Number(bouton.dataset.index));
+    });
+
+    document.getElementById("rejouer").addEventListener("click", () => distribuer());
+    document.getElementById("essai").addEventListener("click", () => poserDotation(DOTATIONS.essai));
+    document.getElementById("partie").addEventListener("click", () => poserDotation(DOTATIONS.partie));
+
+    /*
+      L'OUVERTURE — priorité : ?clics= (le lien déjà réglé) > la dotation retenue > l'essai.
+      Le SOLDE, lui, est repris tel quel : c'est tout l'intérêt d'une dotation qu'on retient.
+    */
+    const demande = Number(new URLSearchParams(location.search).get("clics"));
+    const retenue = Number(localStorage.getItem(CLE_DOTATION));
+    jeu.dotation = Number.isFinite(demande) && demande > 0 ? demande
+      : Number.isFinite(retenue) && retenue > 0 ? retenue
+      : DOTATION_PAR_DEFAUT;
+
+    el.dotation.textContent = `sur ${jeu.dotation}`;
+    poserSolde(demande > 0 ? demande : lireSolde(jeu.dotation));
+    distribuer();
+  </script>
+</html>
