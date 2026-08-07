@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>z-inview — l'entrée en scène, en direct</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis passe par <code>http://localhost:5173/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+	/* ==========================================================================
+	   LE LABO de z-inview. Pas une ligne de JS dans cette page : tout LIT les
+	   nombres que l'outil pose. Défile, puis REMONTE — c'est là que ça se joue.
+	   ====================================================================== */
+
+	.essai {
+		border: 1px solid var(--z-line); background: var(--z-surface);
+		padding: 26px 24px; margin-top: 34px;
+	}
+	.essai h2 {
+		font-size: 11px; margin: 0 0 18px; color: var(--z-ink-soft);
+		letter-spacing: 2px; text-transform: uppercase;
+	}
+	.essai p.note { margin: 14px 0 0; font-size: 13px; color: var(--z-ink-soft); }
+	.long { height: 80vh; display: grid; place-items: center; color: var(--z-ink-soft); }
+
+	/* ------------------------------------------- 1 · l'entrée en scène (`seen`) */
+
+	/*
+		SEEN — il monte à 1 la première fois, et n'en redescend jamais. C'est ce qui fait
+		qu'en remontant la page, rien ne rejoue : une entrée en scène ne se rejoue pas.
+	*/
+	.entre {
+		opacity: var(--z-inview__seen);
+		translate: 0 calc((1 - var(--z-inview__seen)) * 24px);
+		transition: opacity .7s ease, translate .7s cubic-bezier(.2, .8, .2, 1);
+	}
+
+	/* Le retard en cascade : le même nombre, une transition qui démarre plus tard.
+	   Zéro JS, zéro « stagger » à configurer — juste un delay par enfant. */
+	.cascade > * { transition-delay: calc(var(--i) * 90ms); }
+
+	.carte {
+		padding: 18px 20px; border: 1px solid var(--z-line);
+		background: var(--z-surface-raised, var(--z-surface));
+	}
+	.rangee { display: flex; gap: 14px; flex-wrap: wrap; }
+	.rangee > * { flex: 1 1 160px; }
+
+	/* ------------------------------------------- 2 · il va et il vient (`in`) */
+
+	/* IN — l'inverse de seen : il retombe à 0 en sortant, donc ça rejoue à chaque
+	   passage. Le même geste, l'autre nombre. */
+	.vaEtVient {
+		opacity: var(--z-inview__in);
+		scale: calc(.9 + var(--z-inview__in) * .1);
+		transition: opacity .5s ease, scale .5s ease;
+	}
+
+	/* ------------------------------------------- 3 · la traversée (`cross`) */
+
+	.traversee { position: relative; height: 300px; overflow: hidden; border: 1px dashed var(--z-line); }
+
+	/* CROSS — il continue de monter quand ratio a saturé : le décor dérive pendant
+	   toute la traversée de l'écran, et l'image se colore en chemin. */
+	.traversee i {
+		position: absolute; inset: -30% 8%; border-radius: 50%;
+		background: radial-gradient(circle, color-mix(in oklab, var(--z-accent) 45%, transparent), transparent 70%);
+		translate: 0 calc(var(--z-inview__cross) * -120px);
+	}
+	.traversee b {
+		position: absolute; inset: 0; display: grid; place-items: center;
+		filter: grayscale(calc(1 - var(--z-inview__cross)));
+		color: var(--z-accent);
+	}
+
+	/* La jauge des quatre nombres, côte à côte — pour voir lequel fait quoi. */
+	.jauges { display: grid; gap: 8px; margin-top: 16px; }
+	.jauges div { display: grid; grid-template-columns: 90px 1fr; gap: 10px; align-items: center;
+		font-size: 12px; color: var(--z-ink-soft); }
+	.jauges span { height: 8px; background: var(--z-line); }
+	.jauges span i { display: block; height: 100%; background: var(--z-accent); }
+	.j-in    i { width: calc(var(--z-inview__in) * 100%); }
+	.j-ratio i { width: calc(var(--z-inview__ratio) * 100%); }
+	.j-seen  i { width: calc(var(--z-inview__seen) * 100%); }
+	.j-cross i { width: calc(var(--z-inview__cross) * 100%); }
+</style>
+
+<h1>z-inview — <em>ce qui est à l'écran, dit au CSS</em></h1>
+<p class="lead">
+	Enveloppe, et l'apparition s'écrit en CSS. Cette page ne contient <b>pas une ligne de
+	JS</b>. Défile jusqu'en bas — puis <b>remonte</b> : c'est là qu'on voit la différence
+	entre « une fois » et « à chaque passage ».
+</p>
+
+<div class="long">↓ descends ↓</div>
+
+<div class="essai">
+	<h2>1 · l'entrée en scène — <code>__seen</code>, une seule fois</h2>
+	<z-inview margin="-80px" class="entre">
+		<div class="carte"><b>je suis entré, et je reste</b><br>
+			<small>remonte la page : je ne rejoue pas</small></div>
+	</z-inview>
+
+	<div class="rangee cascade" style="margin-top:18px">
+		<z-inview margin="-60px" class="entre" style="--i:0"><div class="carte">un</div></z-inview>
+		<z-inview margin="-60px" class="entre" style="--i:1"><div class="carte">deux</div></z-inview>
+		<z-inview margin="-60px" class="entre" style="--i:2"><div class="carte">trois</div></z-inview>
+	</div>
+
+	<p class="note">
+		<code>--z-inview__seen</code> monte à 1 la première fois et <b>n'en redescend
+		jamais</b> — c'est ce qui évite le tournis quand on remonte. La cascade n'est pas un
+		outil de plus : juste un <code>transition-delay</code> par enfant.
+		<code>margin="-80px"</code> attend qu'ils soient bien entrés.
+	</p>
+</div>
+
+<div class="long">↓ continue ↓</div>
+
+<div class="essai">
+	<h2>2 · il va et il vient — <code>__in</code>, à chaque passage</h2>
+	<z-inview margin="-120px" class="vaEtVient">
+		<div class="carte"><b>je pars quand je sors, je reviens quand j'entre</b><br>
+			<small>le même geste, l'autre nombre</small></div>
+	</z-inview>
+	<p class="note">
+		<code>__in</code> retombe à 0 en sortant : l'auteur choisit lequel des deux nombres
+		il lit, et c'est tout le réglage. Aucun attribut « once », aucune option.
+	</p>
+</div>
+
+<div class="long">↓ encore ↓</div>
+
+<div class="essai">
+	<h2>3 · la traversée — <code>__cross</code>, quand <code>ratio</code> sature</h2>
+	<z-inview>
+		<div class="traversee"><i></i><b>le décor dérive, l'image se colore</b></div>
+		<div class="jauges">
+			<div>__in <span class="j-in"><i></i></span></div>
+			<div>__ratio <span class="j-ratio"><i></i></span></div>
+			<div>__seen <span class="j-seen"><i></i></span></div>
+			<div>__cross <span class="j-cross"><i></i></span></div>
+		</div>
+	</z-inview>
+	<p class="note">
+		Regarde les quatre jauges pendant que tu défiles : <code>__ratio</code> monte, puis
+		<b>sature à 1</b> dès que le bloc tient à l'écran — alors que <code>__cross</code>
+		continue jusqu'au bout. C'est lui qu'il faut pour un décor qui glisse pendant toute
+		la traversée.
+	</p>
+</div>
+
+<div class="long">↑ maintenant REMONTE ↑</div>
+
+<script type="module">
+	import "../../examples/skin-switch.js";
+	import "./z-inview.js";
+</script>
+</html>

@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>z-drag — le glisser, en direct</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis passe par <code>http://localhost:5173/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+	/* ==========================================================================
+	   LE LABO de z-drag. Pas une ligne de JS dans cette page : l'outil pose la
+	   position, et TOUT ce qu'on voit bouger est écrit en CSS — y compris les
+	   choses qui ne sont pas des déplacements.
+	   ====================================================================== */
+
+	.essai {
+		border: 1px solid var(--z-line); background: var(--z-surface);
+		padding: 26px 24px; margin-top: 34px;
+	}
+	.essai h2 {
+		font-size: 11px; margin: 0 0 18px; color: var(--z-ink-soft);
+		letter-spacing: 2px; text-transform: uppercase;
+	}
+	.essai p.note { margin: 14px 0 0; font-size: 13px; color: var(--z-ink-soft); }
+
+	.cadre {
+		position: relative; height: 260px; padding: 16px;
+		border: 1px dashed var(--z-line);
+		background: var(--z-surface-raised, var(--z-surface));
+	}
+
+	/* ------------------------------------------- 1 · l'objet qu'on tire */
+
+	/*
+		LE PALET. `__x/__y` le déplacent ; `__held` le SOULÈVE — c'est le nombre qu'on
+		oublie, et c'est lui qui donne le poids. La transition ne porte que sur l'échelle
+		et l'ombre : jamais sur `translate`, sinon l'objet traînerait derrière le doigt.
+	*/
+	.palet {
+		width: 96px; padding: 18px 0; text-align: center; cursor: grab;
+		border-radius: 10px; font-size: 13px;
+		background: var(--z-accent); color: var(--z-accent-ink, #fff);
+		translate: calc(var(--z-drag__x) * 1px) calc(var(--z-drag__y) * 1px);
+		scale: calc(1 + var(--z-drag__held) * .06);
+		box-shadow: 0 calc(3px + var(--z-drag__held) * 14px)
+		            calc(8px + var(--z-drag__held) * 22px) rgb(0 0 0 / .28);
+		transition: scale .18s ease, box-shadow .18s ease;
+	}
+	.palet:active { cursor: grabbing; }
+
+	/* ------------------------------------------- 2 · le curseur, sans composant */
+
+	.piste {
+		position: relative; height: 44px; padding: 6px; overflow: hidden;
+		border: 1px solid var(--z-line); border-radius: 22px;
+		background: var(--z-surface);
+	}
+	/*
+		LA POIGNÉE — et sa COULEUR lit `__rx`, la part parcourue : elle passe du rouge au
+		vert en traversant. Le nombre est posé sur elle, donc lisible sur elle et dans
+		ses enfants — jamais sur son parent.
+	*/
+	.poignee {
+		position: relative; z-index: 1;
+		width: 32px; height: 32px; border-radius: 50%; cursor: grab;
+		background: hsl(calc(var(--z-drag__rx) * 120) 65% 50%);
+		translate: calc(var(--z-drag__x) * 1px) 0;
+	}
+	/*
+		LE REMPLISSAGE — peint par la POIGNÉE elle-même, et coupé par la piste.
+		Une variable CSS ne descend que dans les enfants : la piste, qui est le PARENT,
+		ne peut pas lire la position. Alors on inverse le sens — c'est la poignée qui
+		peint la barre, en la faisant déborder largement à sa gauche.
+	*/
+	.poignee::before {
+		content: ""; position: absolute; top: 50%; right: 50%;
+		width: 100vw; height: 10px; margin-top: -5px;
+		background: color-mix(in oklab, var(--z-accent) 45%, transparent);
+	}
+
+	/* ------------------------------------------- 3 · le geste n'est pas un déplacement */
+
+	.atelier { display: flex; gap: 30px; flex-wrap: wrap; align-items: center; }
+
+	/* LA MOLETTE — le même geste, mais il TOURNE au lieu de glisser. L'objet reste
+	   exactement où il est : seul son angle lit le nombre. */
+	.molette {
+		width: 110px; height: 110px; border-radius: 50%; cursor: grab;
+		border: 2px solid var(--z-accent); position: relative;
+		rotate: calc(var(--z-drag__x) * 2deg);
+	}
+	.molette::after {
+		content: ""; position: absolute; top: 6px; left: 50%; width: 3px; height: 26px;
+		margin-left: -1.5px; background: var(--z-accent);
+	}
+
+	/* LA TEINTE — le geste devient une couleur. Rien ne se déplace du tout. */
+	.teinte {
+		width: 110px; height: 110px; border-radius: 12px; cursor: grab;
+		background: hsl(calc(var(--z-drag__x) * 2) 70% 55%);
+	}
+</style>
+
+<h1>z-drag — <em>déplacer à la main, sans écrire le déplacement</em></h1>
+<p class="lead">
+	L'outil ne déplace rien : il pose la position, et <b>le CSS décide ce qu'elle bouge</b>.
+	Tire à la souris, au doigt — ou au <b>clavier</b> : tabule jusqu'à un objet et utilise
+	les flèches (10 px avec Maj). Cette page ne contient <b>pas une ligne de JS</b>.
+</p>
+
+<div class="essai">
+	<h2>1 · l'objet qu'on tire — <code>__x</code> · <code>__y</code> · <code>__held</code></h2>
+	<div class="cadre">
+		<z-drag class="palet" bounds tabindex="0">tire-moi</z-drag>
+	</div>
+	<p class="note">
+		<code>bounds</code> le garde dans son cadre. <code>__held</code> le <b>soulève</b>
+		pendant qu'on le tient — c'est le nombre qu'on oublie, et c'est lui qui donne le
+		poids. La transition ne porte jamais sur <code>translate</code> : l'objet doit
+		coller au doigt, pas traîner derrière.
+	</p>
+</div>
+
+<div class="essai">
+	<h2>2 · un curseur, sans composant curseur — <code>__rx</code></h2>
+	<div class="piste">
+		<z-drag class="poignee" bounds axis="x" tabindex="0"></z-drag>
+	</div>
+	<p class="note">
+		<code>bounds</code> allume <code>--z-drag__rx</code> : la part parcourue, 0→1 — ici
+		elle devient la <b>couleur</b> de la poignée, du rouge au vert. <b>Aucun composant
+		« slider » n'a été écrit</b>, et <code>axis="x"</code> rend le défilement vertical
+		à la page, ce qui compte au doigt.<br>
+		La barre remplie est peinte par la <b>poignée</b>, et coupée par la piste : une
+		variable ne descend que dans les enfants, donc le parent ne peut pas la lire. On
+		inverse le sens plutôt que d'inventer une exception.
+	</p>
+</div>
+
+<div class="essai">
+	<h2>3 · le geste n'est pas un déplacement</h2>
+	<div class="atelier">
+		<z-drag class="molette" axis="x" tabindex="0"></z-drag>
+		<z-drag class="teinte" axis="x" tabindex="0"></z-drag>
+		<p class="note" style="flex:1 1 200px; margin:0">
+			À gauche : le même geste devient une <b>rotation</b>. À droite : il devient une
+			<b>couleur</b>. Ni l'un ni l'autre ne se déplace. Aucune option ne pouvait
+			couvrir ça — un nombre, si.
+		</p>
+	</div>
+</div>
+
+<script type="module">
+	import "../../examples/skin-switch.js";
+	import "./z-drag.js";
+</script>
+</html>

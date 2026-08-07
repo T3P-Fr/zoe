@@ -121,6 +121,47 @@
       ]
     },
     {
+      "name": "z-scroll",
+      "description": "A progress bar, a shrinking header, a parallax, a \"back to top\" that waits its turn — all of them need one thing: how far down are we? Drop this tag and the answer lands in CSS as a number between 0 and 1.",
+      "attributes": [
+        {
+          "name": "page",
+          "description": "Measure the PAGE's scroll instead of this box. The numbers are then set on :root, readable everywhere — the page's scroll belongs to no one in particular.",
+          "values": []
+        }
+      ]
+    },
+    {
+      "name": "z-inview",
+      "description": "\"Fade it in when it scrolls into view\" — the single most common request on the web, and the reason whole libraries get loaded. Wrap it in this tag: the answer arrives in CSS as a number, and the animation stays yours to write.",
+      "attributes": [
+        {
+          "name": "margin",
+          "description": "Grows or shrinks the screen for this element only. A negative value waits until it is well inside; a positive one prepares it before it arrives."
+        }
+      ]
+    },
+    {
+      "name": "z-size",
+      "description": "Two questions CSS cannot answer on its own: how big is this box, really — and does its content overflow? Wrap it in this tag and both answers land in CSS as numbers.",
+      "attributes": []
+    },
+    {
+      "name": "z-drag",
+      "description": "Dragging is the single biggest pile of JavaScript in any interface. Wrap it in this tag: the position lands in CSS as a number, and YOU decide what it moves — a position, a rotation, an opacity. Keyboard included.",
+      "attributes": [
+        {
+          "name": "axis",
+          "description": "Locks the gesture to one axis. Optional: reading only __x in your CSS already gives a horizontal slider — this attribute exists so the GESTURE itself refuses the other direction, which is what a finger feels."
+        },
+        {
+          "name": "bounds",
+          "description": "Keeps the object inside its parent, and turns on __rx / __ry — the share travelled, 0→1. Without it the object goes wherever the hand goes.",
+          "values": []
+        }
+      ]
+    },
+    {
       "name": "z-checkbox",
       "description": "A checkbox — inherits all z-element states, marker + label anatomy, painted by the skin.",
       "attributes": [

@@ -39,6 +39,10 @@
 @import url("./tools/z-motion/z-motion.css");
 @import url("./tools/z-contact/z-contact.css");
 @import url("./tools/z-pointer/z-pointer.css");
+@import url("./tools/z-scroll/z-scroll.css");
+@import url("./tools/z-inview/z-inview.css");
+@import url("./tools/z-size/z-size.css");
+@import url("./tools/z-drag/z-drag.css");
 
 /* 3 · LES COMPOSANTS — par ordre alphabétique : aucun ne dépend d'un autre */
 @import url("./components/z-accordion/z-accordion.css");

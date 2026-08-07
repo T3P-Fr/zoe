@@ -1,0 +1,34 @@
+/* ==========================================================================
+   z-drag — LA SEULE FORME QU'IL EXIGE   Styleguide tool.drag
+   --------------------------------------------------------------------------
+   CE FICHIER NE PEINT RIEN, ET C'EST LA RÈGLE. z-drag pose la position ; ce qu'elle
+   déplace appartient à la page et à la peau.
+
+   TROIS DÉCLARATIONS, ET AUCUNE N'EST DÉCORATIVE :
+
+   `touch-action: none` — SANS ELLE, RIEN NE MARCHE AU DOIGT. Le navigateur garde le
+   geste pour faire défiler la page et n'envoie jamais les mouvements. C'est LE piège
+   du glisser-déposer tactile, et il ne se voit pas sur un ordinateur : la démo marche
+   à la souris, on livre, et ça ne marche sur aucun téléphone.
+
+   `user-select: none` — sans elle, tirer un objet SÉLECTIONNE son texte au passage :
+   l'objet suit la main avec, derrière lui, une traînée de texte en surbrillance.
+
+   `display: block` — il faut une boîte à saisir, et à mesurer pour les limites.
+
+   `:where()` a une spécificité NULLE : la moindre règle de l'auteur gagne — y compris
+   `touch-action: pan-y` pour laisser la page défiler verticalement pendant qu'on ne
+   tire l'objet qu'en X.
+   ========================================================================== */
+
+:where(z-drag) {
+	display: block;
+	touch-action: none;
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+/* Un axe verrouillé rend l'autre à la page : tirer en X ne doit pas empêcher de
+   défiler en Y. Le geste et le défilement peuvent coexister — encore faut-il le dire. */
+:where(z-drag[axis="x"]) { touch-action: pan-y; }
+:where(z-drag[axis="y"]) { touch-action: pan-x; }

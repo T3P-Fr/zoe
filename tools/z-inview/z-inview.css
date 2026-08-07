@@ -1,0 +1,17 @@
+/* ==========================================================================
+   z-inview — LA SEULE FORME QU'IL EXIGE   Styleguide tool.inview
+   --------------------------------------------------------------------------
+   CE FICHIER NE PEINT RIEN, ET C'EST LA RÈGLE. z-inview pose des nombres ; l'entrée
+   en scène appartient à la peau et à la page.
+
+   Pourquoi une BOÎTE (`block`) et pas `display: contents` : l'outil s'observe
+   LUI-MÊME. Sans boîte, il n'a ni hauteur ni position, l'observateur n'aurait rien
+   à mesurer, et tous ses nombres resteraient à zéro sans un mot.
+
+   `:where()` a une spécificité NULLE : la moindre règle de l'auteur gagne —
+   `display: grid`, `contents` (au prix de la mesure), une hauteur, ce qu'il veut.
+   ========================================================================== */
+
+:where(z-inview) {
+	display: block;
+}

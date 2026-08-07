@@ -1,0 +1,18 @@
+/* ==========================================================================
+   z-size — LA SEULE FORME QU'IL EXIGE   Styleguide tool.size
+   --------------------------------------------------------------------------
+   CE FICHIER NE PEINT RIEN, ET C'EST LA RÈGLE. z-size mesure et pose des nombres ;
+   ce qu'on en fait appartient à la page et à la peau.
+
+   Il lui faut une BOÎTE (`block`) : il se mesure LUI-MÊME. En `display: contents`,
+   il n'aurait ni taille ni contenu propre, `clientWidth` vaudrait 0, et tous ses
+   nombres resteraient à zéro sans un mot.
+
+   `:where()` a une spécificité NULLE : la moindre règle de l'auteur gagne — une
+   grille, une hauteur, un `overflow: auto` pour que le débordement devienne
+   consultable au lieu d'être seulement signalé.
+   ========================================================================== */
+
+:where(z-size) {
+	display: block;
+}

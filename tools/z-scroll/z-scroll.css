@@ -1,0 +1,30 @@
+/* ==========================================================================
+   z-scroll — LA SEULE FORME QU'IL EXIGE   Styleguide tool.scroll
+   --------------------------------------------------------------------------
+   CE FICHIER NE PEINT RIEN, ET C'EST LA RÈGLE. z-scroll pose des nombres ; ce
+   qu'on en fait appartient à la page et à la peau.
+
+   DEUX FORMES, parce qu'il y a deux modes :
+
+     `page`        — l'élément n'est qu'un porte-parole : il mesure la page et pose
+                     sur `:root`. Il ne doit RIEN occuper dans la mise en page, d'où
+                     `display: contents` — la balise se pose n'importe où sans rien
+                     décaler.
+
+     sans attribut — l'élément EST la boîte qui défile : il lui faut donc une boîte
+                     (`block`) et un débordement à faire défiler (`auto`). Sans ça,
+                     rien ne défilerait jamais et tous ses nombres resteraient à 0.
+
+   `:where()` a une spécificité NULLE : la moindre règle de l'auteur gagne — y compris
+   `overflow: scroll` pour garder la barre visible, ou une hauteur imposée.
+   ========================================================================== */
+
+:where(z-scroll) {
+	display: block;
+	overflow: auto;
+}
+
+:where(z-scroll[page]) {
+	display: contents;
+	overflow: visible;
+}

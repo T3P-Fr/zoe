@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>z-scroll — le défilement, en direct</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis passe par <code>http://localhost:5173/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+	/* ==========================================================================
+	   LE LABO de z-scroll. Pas une ligne de JS dans cette page : tout LIT les
+	   nombres que l'outil pose. Défile pour voir.
+	   ====================================================================== */
+
+	.essai {
+		border: 1px solid var(--z-line); background: var(--z-surface);
+		padding: 26px 24px; margin-top: 34px;
+	}
+	.essai h2 {
+		font-size: 11px; margin: 0 0 18px; color: var(--z-ink-soft);
+		letter-spacing: 2px; text-transform: uppercase;
+	}
+	.essai p.note { margin: 14px 0 0; font-size: 13px; color: var(--z-ink-soft); }
+	.long { height: 130vh; display: grid; place-items: center; color: var(--z-ink-soft); }
+
+	/* ------------------------------------------- 1 · la page (mode `page`) */
+
+	/* LA BARRE DE PROGRESSION — deux lignes, et c'est fini. */
+	.progression {
+		position: fixed; top: 0; left: 0; height: 4px; z-index: 10;
+		background: var(--z-accent);
+		width: calc(var(--z-scroll__ry) * 100%);
+	}
+
+	/*
+		LE BANDEAU QUI SE CACHE — trois comportements, UNE déclaration, parce que des
+		nombres, ça se combine : (dir + 1) / 2 vaut 1 en descendant et 0 en remontant ;
+		(1 - top) annule tout tant qu'on n'a pas quitté le sommet.
+	*/
+	.bandeau {
+		position: fixed; top: 4px; left: 0; right: 0; z-index: 9;
+		padding: 10px 18px; background: var(--z-surface-raised, var(--z-surface));
+		border-bottom: 1px solid var(--z-line); font-size: 13px;
+		translate: 0 calc((1 - var(--z-scroll__top)) * (var(--z-scroll__dir) + 1) / 2 * -110%);
+		transition: translate 260ms ease;
+	}
+
+	/* LA FLÈCHE « REMONTER » — elle n'existe pas tant qu'on est en haut. */
+	.remonter {
+		position: fixed; right: 18px; bottom: 18px; z-index: 9;
+		padding: 10px 14px; border: 1px solid var(--z-line);
+		background: var(--z-surface-raised, var(--z-surface));
+		opacity: calc(1 - var(--z-scroll__top));
+		scale: calc(.7 + (1 - var(--z-scroll__top)) * .3);
+		transition: opacity 240ms ease, scale 240ms ease;
+	}
+
+	/* LE PARALLAXE — le même nombre, multiplié plus petit : le décor glisse moins vite. */
+	.scene { position: relative; height: 260px; overflow: hidden; border: 1px dashed var(--z-line); }
+	.scene i {
+		position: absolute; inset: -40% 10%; border-radius: 50%;
+		background: radial-gradient(circle, color-mix(in oklab, var(--z-accent) 40%, transparent), transparent 70%);
+		translate: 0 calc(var(--z-scroll__y) * -0.25px);
+	}
+	.scene b {
+		position: absolute; inset: 0; display: grid; place-items: center;
+		translate: 0 calc(var(--z-scroll__y) * -0.08px);
+	}
+
+	/* ------------------------------------------- 2 · une boîte (sans attribut) */
+
+	/*
+		LA MÊME GRAMMAIRE, EN LOCAL. Cette boîte pose ses propres nombres sur elle-même :
+		ils ne sortent pas, et ceux de la page ne rentrent pas — elle les couvre.
+	*/
+	.boite { height: 220px; padding: 0 16px; border: 1px dashed var(--z-line); }
+	.boite p { margin: 18px 0; }
+
+	/*
+		LES DEUX OMBRES DE BORD — elles disent qu'il reste quelque chose à voir, et
+		s'effacent exactement quand il n'y a plus rien.
+
+		Elles vivent DANS la boîte (en `sticky`), et pas autour : les nombres sont posés
+		sur le `<z-scroll>`, donc seuls ses ENFANTS les héritent. Un parent lirait ceux de
+		la page — la frontière est celle de l'héritage CSS, pas une règle de plus.
+	*/
+	.ombre {
+		position: sticky; z-index: 1; display: block; height: 34px;
+		margin-inline: -16px; pointer-events: none; transition: opacity 200ms ease;
+	}
+	.ombre.haut {
+		top: 0; margin-bottom: -34px; opacity: calc(1 - var(--z-scroll__top));
+		background: linear-gradient(var(--z-surface), transparent);
+	}
+	.ombre.bas {
+		bottom: 0; margin-top: -34px; opacity: calc(1 - var(--z-scroll__end));
+		background: linear-gradient(transparent, var(--z-surface));
+	}
+
+	/* La jauge de la boîte — collée en tête (sticky), pour rester visible pendant qu'on
+	   défile : la même part que les ombres, dans une autre unité. */
+	.jauge {
+		position: sticky; top: 0; z-index: 2;
+		height: 10px; margin-inline: -16px; background: var(--z-line);
+	}
+	.jauge i { display: block; height: 100%; background: var(--z-accent);
+		width: calc(var(--z-scroll__ry) * 100%); }
+</style>
+
+<!-- Mode PAGE : la balise ne prend aucune place (display: contents) et pose sur :root. -->
+<z-scroll page></z-scroll>
+
+<div class="progression"></div>
+<div class="bandeau">le bandeau — il s'en va quand tu descends, il revient quand tu remontes</div>
+<div class="remonter">↑ remonter</div>
+
+<h1>z-scroll — <em>le défilement, donné au CSS</em></h1>
+<p class="lead">
+	Une balise posée n'importe où, et toute la page sait où elle en est. Cette page ne
+	contient <b>pas une ligne de JS</b> — barre, bandeau, flèche et parallaxe lisent tous
+	le même nombre.
+</p>
+
+<div class="essai">
+	<h2>1 · la page — <code>&lt;z-scroll page&gt;</code></h2>
+	<div class="scene"><i></i><b>le décor glisse quatre fois moins vite que la page</b></div>
+	<p class="note">
+		La barre en haut lit <code>--z-scroll__ry</code> (la part parcourue, 0→1). La flèche
+		lit <code>__top</code>. Le bandeau combine <code>__dir</code> et <code>__top</code> en
+		une seule déclaration. Le décor multiplie <code>__y</code> par un facteur plus petit
+		— c'est tout le parallaxe.
+	</p>
+</div>
+
+<div class="long">↓ continue de descendre ↓</div>
+
+<div class="essai">
+	<h2>2 · une boîte — <code>&lt;z-scroll&gt;</code>, sans attribut</h2>
+	<div class="cadre">
+		<z-scroll class="boite">
+			<i class="ombre haut"></i>
+			<div class="jauge"><i></i></div>
+			<p>Cette boîte pose ses <b>propres</b> nombres, sur elle-même.</p>
+			<p>Ils ne sortent pas d'ici, et ceux de la page ne rentrent pas : à l'intérieur,
+				elle les couvre. Deux boîtes voisines ne se marchent donc jamais dessus.</p>
+			<p>Les deux ombres, en haut et en bas, disent qu'il reste quelque chose à voir.</p>
+			<p>Elles s'effacent exactement quand il n'y a plus rien — <code>__top</code> et
+				<code>__end</code>.</p>
+			<p>Défile jusqu'ici : l'ombre du bas vient de disparaître, et la jauge est pleine.</p>
+			<i class="ombre bas"></i>
+		</z-scroll>
+	</div>
+	<p class="note">
+		Les ombres et la jauge sont <b>dans</b> la boîte : elles lisent donc SA part
+		parcourue. Posées dehors, elles liraient celle de la page — chaque nombre reste
+		chez lui, et c'est l'héritage CSS qui trace la frontière, pas une règle de plus
+		à retenir.
+	</p>
+</div>
+
+<div class="long">↓ encore un peu, pour voir la fin ↓</div>
+
+<script type="module">
+	import "../../examples/skin-switch.js";
+	import "./z-scroll.js";
+</script>
+</html>

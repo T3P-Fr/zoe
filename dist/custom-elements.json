@@ -527,6 +527,234 @@
     },
     {
       "kind": "javascript-module",
+      "path": "tools/z-scroll/z-scroll.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZScroll",
+          "tagName": "z-scroll",
+          "summary": "A progress bar, a shrinking header, a parallax, a \"back to top\" that waits its turn — all of them need one thing: how far down are we? Drop this tag and the answer lands in CSS as a number between 0 and 1.",
+          "attributes": [
+            {
+              "name": "page",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Measure the PAGE's scroll instead of this box. The numbers are then set on :root, readable everywhere — the page's scroll belongs to no one in particular."
+            }
+          ],
+          "events": [],
+          "cssProperties": [
+            {
+              "name": "--z-scroll__ry",
+              "description": "The share scrolled vertically, 0 at the start, 1 at the end — the number that serves 90% of the time."
+            },
+            {
+              "name": "--z-scroll__rx",
+              "description": "The share scrolled horizontally, 0→1."
+            },
+            {
+              "name": "--z-scroll__y",
+              "description": "The distance scrolled vertically, in pixels — a bare number, so multiply it (* 1px)."
+            },
+            {
+              "name": "--z-scroll__x",
+              "description": "The distance scrolled horizontally, in pixels."
+            },
+            {
+              "name": "--z-scroll__dir",
+              "description": "1 going down, -1 going up. It keeps its last value at rest — the one number you can never get otherwise, since it needs the previous position."
+            },
+            {
+              "name": "--z-scroll__top",
+              "description": "1 while nothing has moved from the start — for a header that only shrinks once you leave the top."
+            },
+            {
+              "name": "--z-scroll__end",
+              "description": "1 when the end is reached — for the shadow that fades out once there is nothing left to see."
+            }
+          ],
+          "cssStates": []
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-scroll",
+          "declaration": {
+            "name": "ZScroll"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "tools/z-inview/z-inview.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZInview",
+          "tagName": "z-inview",
+          "summary": "\"Fade it in when it scrolls into view\" — the single most common request on the web, and the reason whole libraries get loaded. Wrap it in this tag: the answer arrives in CSS as a number, and the animation stays yours to write.",
+          "attributes": [
+            {
+              "name": "margin",
+              "type": {
+                "text": "string"
+              },
+              "description": "Grows or shrinks the screen for this element only. A negative value waits until it is well inside; a positive one prepares it before it arrives."
+            }
+          ],
+          "events": [],
+          "cssProperties": [
+            {
+              "name": "--z-inview__in",
+              "description": "1 as soon as a single pixel is on screen, 0 otherwise — for what should play again at every pass."
+            },
+            {
+              "name": "--z-inview__ratio",
+              "description": "The visible share of the element, 0→1. It saturates at 1 once the element fits entirely on screen."
+            },
+            {
+              "name": "--z-inview__seen",
+              "description": "1 once seen — and it NEVER goes back down. An entrance does not replay: this is the number that stops a page from making you dizzy on the way back up."
+            },
+            {
+              "name": "--z-inview__cross",
+              "description": "The crossing of the screen: 0 entering from the bottom, 1 leaving through the top. The number that keeps moving when ratio has saturated — for a decor that drifts the whole way through."
+            }
+          ],
+          "cssStates": []
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-inview",
+          "declaration": {
+            "name": "ZInview"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "tools/z-size/z-size.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZSize",
+          "tagName": "z-size",
+          "summary": "Two questions CSS cannot answer on its own: how big is this box, really — and does its content overflow? Wrap it in this tag and both answers land in CSS as numbers.",
+          "attributes": [],
+          "events": [],
+          "cssProperties": [
+            {
+              "name": "--z-size__w",
+              "description": "The inner width, in pixels — a bare number, so multiply it. This is what container queries never give you: a value to interpolate."
+            },
+            {
+              "name": "--z-size__h",
+              "description": "The inner height, in pixels."
+            },
+            {
+              "name": "--z-size__ratio",
+              "description": "Width divided by height. Above 1 it is lying down, below 1 it is standing up — one number to swap a layout on shape rather than on size."
+            },
+            {
+              "name": "--z-size__over",
+              "description": "1 if the content overflows on either side. THE question CSS has no answer for — and the reason so many edge shadows and \"see more\" arrows mean nothing."
+            },
+            {
+              "name": "--z-size__over-x",
+              "description": "1 if the content overflows horizontally."
+            },
+            {
+              "name": "--z-size__over-y",
+              "description": "1 if the content overflows vertically."
+            }
+          ],
+          "cssStates": []
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-size",
+          "declaration": {
+            "name": "ZSize"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "tools/z-drag/z-drag.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZDrag",
+          "tagName": "z-drag",
+          "summary": "Dragging is the single biggest pile of JavaScript in any interface. Wrap it in this tag: the position lands in CSS as a number, and YOU decide what it moves — a position, a rotation, an opacity. Keyboard included.",
+          "attributes": [
+            {
+              "name": "axis",
+              "type": {
+                "text": "string"
+              },
+              "description": "Locks the gesture to one axis. Optional: reading only __x in your CSS already gives a horizontal slider — this attribute exists so the GESTURE itself refuses the other direction, which is what a finger feels."
+            },
+            {
+              "name": "bounds",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Keeps the object inside its parent, and turns on __rx / __ry — the share travelled, 0→1. Without it the object goes wherever the hand goes."
+            }
+          ],
+          "events": [
+            {
+              "name": "zoe:drop",
+              "description": "Emitted on release — the only moment a page has something to do. detail: { x, y, rx, ry }."
+            }
+          ],
+          "cssProperties": [
+            {
+              "name": "--z-drag__x",
+              "description": "The position along X, in pixels from the starting point — a bare number, so multiply it into whatever you want moved."
+            },
+            {
+              "name": "--z-drag__y",
+              "description": "The position along Y, in pixels from the starting point."
+            },
+            {
+              "name": "--z-drag__rx",
+              "description": "With bounds: the share travelled horizontally, 0→1 — a slider's value, for free."
+            },
+            {
+              "name": "--z-drag__ry",
+              "description": "With bounds: the share travelled vertically, 0→1."
+            },
+            {
+              "name": "--z-drag__held",
+              "description": "1 while the object is held, 0 once let go — for the shadow that lifts under the finger."
+            }
+          ],
+          "cssStates": []
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-drag",
+          "declaration": {
+            "name": "ZDrag"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "components/z-checkbox/z-checkbox.js",
       "declarations": [
         {

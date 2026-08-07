@@ -60,6 +60,14 @@ Schéma : `core/z-layer/z-layer.anatomie.txt`.
 - **`z-grid`** — mettre en page
 - **`z-channel`** — faire dialoguer des composants par variables CSS (*le CSS pilote*)
 - **`z-pointer`** — donner la position de la souris au CSS, pour tout ce qu'il enveloppe
+- **`z-scroll`** — où en est le défilement (part parcourue, sens, haut, bout)
+- **`z-inview`** — ce qui est à l'écran (entré, part visible, déjà vu, traversée)
+- **`z-size`** — la taille réelle d'une boîte, et **est-ce que ça déborde**
+- **`z-drag`** — tirer à la main : l'outil pose la position, le CSS décide ce qu'elle bouge
+
+*(Les cinq forment **les CAPTEURS** : ils ne peignent rien, ils répondent en NOMBRES aux
+questions que le CSS ne sait pas poser seul — où est la souris · où en est la page ·
+qu'est-ce qu'on voit · quelle taille ça fait · où la main a posé l'objet.)*
 
 *(« z-state » n'est plus un tool : poser des états sur ton élément = l'enrouler dans
 `z-element`, Chemin B. Un seul nom.)*
@@ -107,7 +115,8 @@ live, params temps réel). Ajouter un composant = son dossier → il apparaît p
 ```
 core/z-element/        — la base vivante (les états)
 core/z-layer/          — le calque (les pièces, un rôle chacune)
-tools/z-*/             — z-contact · z-motion · z-stager · z-grid · z-channel · z-pointer
+tools/z-*/             — z-contact · z-motion · z-stager · z-grid · z-channel
+                         les capteurs : z-pointer · z-scroll · z-inview · z-size · z-drag
 components/z-*/        — .js · .css · .doc.md · .demo.html
 skins/*/               — .css · .doc.md
 scripts/z-manifest/    — l'outil (code → doc + autocomplétion + IA)
