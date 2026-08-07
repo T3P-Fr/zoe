@@ -157,12 +157,43 @@ async function main() {
 
 	/* branche l'autocomplétion : settings VSCode → notre custom data */
 	await mkdir(join(ROOT, ".vscode"), { recursive: true });
-	await writeFile(join(ROOT, ".vscode", "settings.json"), JSON.stringify({
-		"html.customData": ["./dist/vscode.html-custom-data.json"]
-	}, null, 2));
+	await writeVscodeSettings();
 
 	console.log(`✓ z-manifest : ${entries.length} élément(s) → dist/{custom-elements.json, vscode.html-custom-data.json, llms.txt} + .vscode/settings.json`);
 	for (const e of entries) console.log(`   · <${e.api.tag}>  (${e.rel})`);
+}
+
+/*
+	LES RÉGLAGES VSCODE — on n'en possède QU'UNE ligne : `html.customData`, qui branche
+	l'autocomplétion des <z-*>. Tout le reste appartient au dépôt.
+
+	POURQUOI CETTE FONCTION EXISTE (2026-08-07) : ce script écrasait le fichier entier à
+	chaque passage. Un garde-fou ajouté à la main (couper Prettier, qui cassait les
+	transtypages JSDoc) a donc disparu au premier `node z-manifest` — sans un mot, et
+	sans que rien ne le rende visible. On FUSIONNE désormais : on lit, on remplace notre
+	ligne, on réécrit le reste tel quel.
+
+	Le fichier accepte les commentaires (VSCode lit du JSONC, pas du JSON) : on les
+	retire avant de parser. Si le fichier reste illisible, on n'y touche PAS — perdre
+	l'autocomplétion vaut mieux que perdre les réglages de quelqu'un.
+*/
+async function writeVscodeSettings() {
+	const path = join(ROOT, ".vscode", "settings.json");
+	const NOTRE_LIGNE = { "html.customData": ["./dist/vscode.html-custom-data.json"] };
+	let existant = {};
+
+	if (existsSync(path)) {
+		const brut = await readFile(path, "utf8");
+		/* Les commentaires `//` en début de ligne — la seule forme qu'on écrit ici. */
+		try {
+			existant = JSON.parse(brut.replace(/^\s*\/\/.*$/gm, ""));
+		} catch {
+			console.warn("z-manifest : .vscode/settings.json n'est pas lisible — laissé intact.");
+			return;
+		}
+	}
+
+	await writeFile(path, JSON.stringify({ ...existant, ...NOTRE_LIGNE }, null, 2) + "\n");
 }
 
 main().catch((err) => { console.error("z-manifest a échoué :", err); process.exit(1); });

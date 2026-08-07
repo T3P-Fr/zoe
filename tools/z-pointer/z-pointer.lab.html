@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>z-pointer — la souris, en direct</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis passe par <code>http://localhost:5173/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+	/* ==========================================================================
+	   LE LABO de z-pointer. Rien ici n'écoute la souris : tout LIT les nombres que
+	   l'outil a posés. Pas une ligne de JS dans cette page — le seul script importe
+	   les modules.
+	   ====================================================================== */
+
+	.essai {
+		border: 1px solid var(--z-line); background: var(--z-surface);
+		padding: 26px 24px; margin-top: 34px;
+	}
+	.essai h2 {
+		font-size: 11px; margin: 0 0 18px; color: var(--z-ink-soft);
+		letter-spacing: 2px; text-transform: uppercase;
+	}
+	.essai p.note { margin: 14px 0 0; font-size: 13px; color: var(--z-ink-soft); }
+
+	/* LA SCÈNE — la boîte du repère LOCAL. `position: relative` pour que les calques
+	   se placent par rapport à elle ; `overflow: hidden` pour que le halo soit coupé
+	   net au bord, ce qui rend la frontière de la boîte visible. */
+	.scene {
+		position: relative; overflow: hidden;
+		height: 300px; cursor: crosshair;
+		border: 1px dashed var(--z-line);
+	}
+
+	/* ------------------------------------------------------ 1 · le geste central */
+
+	/*
+		LE HALO — le div de la question. Il ne sait rien de la souris : il lit deux
+		nombres. `translate` prend les pixels, `opacity` prend le 0/1 de `in`.
+	*/
+	.halo {
+		position: absolute; top: 0; left: 0; width: 240px; height: 240px;
+		margin: -120px 0 0 -120px; border-radius: 50%; pointer-events: none;
+		background: radial-gradient(circle, color-mix(in oklab, var(--z-accent) 55%, transparent), transparent 70%);
+		translate: calc(var(--z-pointer--local__x) * 1px) calc(var(--z-pointer--local__y) * 1px);
+		opacity: var(--z-pointer--local__in);
+		transition: opacity 220ms ease;
+	}
+
+	/*
+		LA CARTE — un div ENFOUI, trois niveaux plus bas. Il reçoit les mêmes nombres
+		sans que personne ne les lui passe : une variable CSS hérite, c'est tout le tour
+		de force. Et les RATIOS deviennent ici des ANGLES — un nombre se multiplie.
+	*/
+	.profond { position: absolute; inset: 0; display: grid; place-items: center; }
+	.carte {
+		padding: 22px 30px; border: 1px solid var(--z-line); background: var(--z-surface-raised, var(--z-surface));
+		box-shadow: 0 12px 34px rgb(0 0 0 / .18); pointer-events: none;
+		transform: perspective(700px)
+			rotateY(calc((var(--z-pointer--local__rx) - .5) * 26deg))
+			rotateX(calc((var(--z-pointer--local__ry) - .5) * -26deg));
+	}
+	.carte b { display: block; font-size: 1.1em; }
+	.carte small { color: var(--z-ink-soft); }
+
+	/* ------------------------------------------------------ 2 · il traîne */
+
+	/* Trois points, la MÊME source, trois retards. C'est @property qui rend ça possible :
+	   un nombre typé s'anime, donc la variable elle-même se transitionne. */
+	.point {
+		position: absolute; top: 0; left: 0; width: 26px; height: 26px;
+		margin: -13px 0 0 -13px; border-radius: 50%; pointer-events: none;
+		background: var(--z-accent);
+		translate: calc(var(--z-pointer--local__x) * 1px) calc(var(--z-pointer--local__y) * 1px);
+		opacity: var(--z-pointer--local__in);
+		transition: opacity 220ms ease;
+	}
+	.point.retard1 {
+		opacity: calc(var(--z-pointer--local__in) * .6);
+		transition: opacity 220ms ease, --z-pointer--local__x 180ms ease-out, --z-pointer--local__y 180ms ease-out;
+	}
+	.point.retard2 {
+		opacity: calc(var(--z-pointer--local__in) * .3);
+		transition: opacity 220ms ease, --z-pointer--local__x 420ms ease-out, --z-pointer--local__y 420ms ease-out;
+	}
+
+	/* ------------------------------------------------------ 3 · le repère global */
+
+	/* LA MIRE — deux traits qui suivent la souris sur TOUTE la page, même loin de la
+	   scène. Même outil, l'autre sortie. `fixed` : le repère global EST la fenêtre. */
+	.mire { position: fixed; inset: 0; pointer-events: none; z-index: 5; opacity: .45; }
+	.mire i {
+		position: absolute; top: 0; left: 0; background: var(--z-accent);
+		translate: calc(var(--z-pointer--global__x) * 1px) calc(var(--z-pointer--global__y) * 1px);
+	}
+	.mire i:first-child { width: 1px; height: 200vh; margin-top: -100vh; }
+	.mire i:last-child  { width: 200vw; height: 1px; margin-left: -100vw; }
+
+	/* La jauge : le ratio global devient une PART. Le même nombre, une autre unité. */
+	.jauge { height: 12px; margin-top: 14px; background: var(--z-line); }
+	.jauge i { display: block; height: 100%; background: var(--z-accent);
+		width: calc(var(--z-pointer--global__rx) * 100%); }
+</style>
+
+<h1>z-pointer — <em>la souris, donnée au CSS</em></h1>
+<p class="lead">
+	L'outil ne peint rien : il pose des <b>nombres</b> sur lui-même. Une variable CSS
+	<b>hérite</b>, donc tout ce qu'il enveloppe les lit gratuitement. Cette page ne
+	contient <b>pas une ligne de JS</b> — tout est en CSS.
+</p>
+
+<!-- Le repère LOCAL seul : aucun attribut, c'est le défaut (et le moins cher). -->
+<div class="essai">
+	<h2>1 · le geste central — <code>&lt;z-pointer&gt;</code></h2>
+	<z-pointer class="scene">
+		<div class="halo"></div>
+		<div class="profond"><div><div>
+			<div class="carte">
+				<b>ce div est trois niveaux plus bas</b>
+				<small>personne ne lui a rien passé — il hérite, et il tourne</small>
+			</div>
+		</div></div></div>
+	</z-pointer>
+	<p class="note">
+		Le halo lit <code>--z-pointer--local__x/y</code> (des pixels). La carte, elle, lit
+		les ratios <code>__rx/__ry</code> (0→1) et les multiplie par des <b>degrés</b> — un
+		nombre devient ce qu'on veut. Sors de la boîte : <code>__in</code> passe à 0.
+	</p>
+</div>
+
+<!-- La démonstration de @property : la variable elle-même se transitionne. -->
+<div class="essai">
+	<h2>2 · il traîne — un nombre typé s'anime</h2>
+	<z-pointer class="scene">
+		<div class="point retard2"></div>
+		<div class="point retard1"></div>
+		<div class="point"></div>
+	</z-pointer>
+	<p class="note">
+		Trois points, <b>la même source</b>, trois retards : <code>0</code>,
+		<code>180ms</code>, <code>420ms</code>. La transition ne porte pas sur
+		<code>translate</code> mais sur <b>la variable</b> —
+		<code>transition: --z-pointer--local__x 420ms</code>. C'est ce que
+		<code>@property</code> rend possible, et ça ne coûte aucune image de JS.
+	</p>
+</div>
+
+<!-- Le repère GLOBAL : il déborde volontairement de sa boîte. -->
+<div class="essai">
+	<h2>3 · le repère global — <code>&lt;z-pointer global&gt;</code></h2>
+	<z-pointer global>
+		<div class="mire"><i></i><i></i></div>
+		<div class="jauge"><i></i></div>
+	</z-pointer>
+	<p class="note">
+		La mire suit la souris sur <b>toute la page</b>, y compris ici, loin de sa boîte —
+		<code>global</code> écoute le document. La jauge lit le même mouvement en
+		<code>__rx</code> et le multiplie par <code>100%</code>. Demande
+		<code>local global</code> et tu as les deux repères à la fois.
+	</p>
+</div>
+
+<script type="module">
+	import "../../examples/skin-switch.js";
+	import "./z-pointer.js";
+</script>
+</html>

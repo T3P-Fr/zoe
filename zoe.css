@@ -38,6 +38,7 @@
 /* 2 · LES EFFETS — mouvements réutilisables et recette du clic */
 @import url("./tools/z-motion/z-motion.css");
 @import url("./tools/z-contact/z-contact.css");
+@import url("./tools/z-pointer/z-pointer.css");
 
 /* 3 · LES COMPOSANTS — par ordre alphabétique : aucun ne dépend d'un autre */
 @import url("./components/z-accordion/z-accordion.css");

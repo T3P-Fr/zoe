@@ -59,6 +59,7 @@ Schéma : `core/z-layer/z-layer.anatomie.txt`.
 - **`z-stager`** — décaler en cascade (stagger)
 - **`z-grid`** — mettre en page
 - **`z-channel`** — faire dialoguer des composants par variables CSS (*le CSS pilote*)
+- **`z-pointer`** — donner la position de la souris au CSS, pour tout ce qu'il enveloppe
 
 *(« z-state » n'est plus un tool : poser des états sur ton élément = l'enrouler dans
 `z-element`, Chemin B. Un seul nom.)*
@@ -106,7 +107,7 @@ live, params temps réel). Ajouter un composant = son dossier → il apparaît p
 ```
 core/z-element/        — la base vivante (les états)
 core/z-layer/          — le calque (les pièces, un rôle chacune)
-tools/z-*/             — z-contact · z-motion · z-stager · z-grid · z-channel
+tools/z-*/             — z-contact · z-motion · z-stager · z-grid · z-channel · z-pointer
 components/z-*/        — .js · .css · .doc.md · .demo.html
 skins/*/               — .css · .doc.md
 scripts/z-manifest/    — l'outil (code → doc + autocomplétion + IA)

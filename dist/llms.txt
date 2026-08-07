@@ -21,6 +21,10 @@ The pointer's wake: one flat tag, and the mouse leaves a ribbon behind it.
 Attributes: fx (string), tone (string), size (string)
 States :state(): default, over, press, release, releaseOut, drag, focus, enter, exit, current, select, unselect, loading, disabled, error, success
 
+## <z-pointer> (tools)
+Want a div to follow the mouse? Wrap it in this tag — the position lands in CSS as plain numbers, and every child inherits them. No class, no listener, no JS of yours.
+Attributes: local (boolean), global (boolean)
+
 ## <z-checkbox> (components)
 A checkbox — inherits all z-element states, marker + label anatomy, painted by the skin.
 Attributes: current (boolean), indeterminate (boolean), name (string), value (string), required (boolean), disabled (boolean), error (boolean), success (boolean)

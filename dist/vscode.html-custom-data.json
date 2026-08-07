@@ -105,6 +105,22 @@
       ]
     },
     {
+      "name": "z-pointer",
+      "description": "Want a div to follow the mouse? Wrap it in this tag — the position lands in CSS as plain numbers, and every child inherits them. No class, no listener, no JS of yours.",
+      "attributes": [
+        {
+          "name": "local",
+          "description": "Coordinates in the BOX's frame (0,0 = its top-left corner). Taken by default when no frame is asked for — it is the common case, and the cheapest.",
+          "values": []
+        },
+        {
+          "name": "global",
+          "description": "Coordinates in the WINDOW's frame (0,0 = its top-left corner). The pointer is then followed everywhere, even outside the box — useful for a crosshair or a page-wide light.",
+          "values": []
+        }
+      ]
+    },
+    {
       "name": "z-checkbox",
       "description": "A checkbox — inherits all z-element states, marker + label anatomy, painted by the skin.",
       "attributes": [

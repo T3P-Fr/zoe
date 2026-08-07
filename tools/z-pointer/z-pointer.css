@@ -1,0 +1,17 @@
+/* ==========================================================================
+   z-pointer — LA SEULE FORME QU'IL EXIGE   Styleguide tool.pointer
+   --------------------------------------------------------------------------
+   CE FICHIER NE PEINT RIEN, ET C'EST LA RÈGLE. z-pointer pose des nombres ; ce
+   qu'on en fait appartient à la page et à la peau. Il n'a besoin que d'une chose :
+   ÊTRE UNE BOÎTE. Un custom element naît `inline`, et une boîte inline n'a pas de
+   coin haut-gauche stable — le repère LOCAL serait faux dès la première ligne de
+   texte qui se replie.
+
+   `:where()` a une spécificité NULLE : la moindre règle de l'auteur gagne, y compris
+   `z-pointer { display: contents }` pour qui veut l'effacer de la mise en page (au
+   prix du repère local, qui n'a alors plus de boîte — c'est son choix, pas un mur).
+   ========================================================================== */
+
+:where(z-pointer) {
+	display: block;
+}

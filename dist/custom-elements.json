@@ -450,6 +450,83 @@
     },
     {
       "kind": "javascript-module",
+      "path": "tools/z-pointer/z-pointer.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ZPointer",
+          "tagName": "z-pointer",
+          "summary": "Want a div to follow the mouse? Wrap it in this tag — the position lands in CSS as plain numbers, and every child inherits them. No class, no listener, no JS of yours.",
+          "attributes": [
+            {
+              "name": "local",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Coordinates in the BOX's frame (0,0 = its top-left corner). Taken by default when no frame is asked for — it is the common case, and the cheapest."
+            },
+            {
+              "name": "global",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Coordinates in the WINDOW's frame (0,0 = its top-left corner). The pointer is then followed everywhere, even outside the box — useful for a crosshair or a page-wide light."
+            }
+          ],
+          "events": [],
+          "cssProperties": [
+            {
+              "name": "--z-pointer--local__x",
+              "description": "Distance from the box's left edge, in pixels — a bare number, so multiply it (* 1px)."
+            },
+            {
+              "name": "--z-pointer--local__y",
+              "description": "Distance from the box's top edge, in pixels."
+            },
+            {
+              "name": "--z-pointer--local__rx",
+              "description": "The share of the box crossed horizontally, 0→1 — becomes an angle (* 360deg), a share (* 100%), anything."
+            },
+            {
+              "name": "--z-pointer--local__ry",
+              "description": "The share of the box crossed vertically, 0→1."
+            },
+            {
+              "name": "--z-pointer--local__in",
+              "description": "1 while the pointer is inside the box, 0 outside — the switch a skin uses to fade a halo out cleanly."
+            },
+            {
+              "name": "--z-pointer--global__x",
+              "description": "Distance from the window's left edge, in pixels."
+            },
+            {
+              "name": "--z-pointer--global__y",
+              "description": "Distance from the window's top edge, in pixels."
+            },
+            {
+              "name": "--z-pointer--global__rx",
+              "description": "The share of the window crossed horizontally, 0→1."
+            },
+            {
+              "name": "--z-pointer--global__ry",
+              "description": "The share of the window crossed vertically, 0→1."
+            }
+          ],
+          "cssStates": []
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "z-pointer",
+          "declaration": {
+            "name": "ZPointer"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "components/z-checkbox/z-checkbox.js",
       "declarations": [
         {

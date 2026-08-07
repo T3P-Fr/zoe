@@ -2,12 +2,6 @@
   "html.customData": [
     "./dist/vscode.html-custom-data.json"
   ],
-
-  // Prettier réécrivait Zoé à chaque sauvegarde : guillemets doubles → simples,
-  // tabulations → 8 espaces, et surtout `/** @type {any} */ (el)` → `/* @type {any} */ el`
-  // — un transtypage JSDoc cassé, donc checkJs aveugle. Le style de Zoé est tenu à la
-  // main (tabulations, guillemets doubles, blocs `/* */` narratifs) : aucun formateur
-  // n'a autorité dessus.
   "editor.formatOnSave": false,
   "prettier.enable": false
 }
