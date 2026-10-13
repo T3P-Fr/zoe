@@ -1,0 +1,53 @@
+{
+  "name": "zoe-components",
+  "version": "0.9.0",
+  "description": "Zoé — HTML-first web components with living states, portable skins and CSS-driven motion. Light DOM, zero dependencies, built to be written by humans and AI agents alike.",
+  "type": "module",
+  "private": true,
+  "keywords": [
+    "web-components",
+    "custom-elements",
+    "design-system",
+    "light-dom",
+    "css-custom-properties",
+    "skins",
+    "mcp",
+    "llms-txt"
+  ],
+  "homepage": "./index.html",
+  "exports": {
+    ".": "./zoe.js",
+    "./zoe.css": "./zoe.css",
+    "./core/*": "./core/*",
+    "./components/*": "./components/*",
+    "./tools/*": "./tools/*",
+    "./skins/*": "./skins/*",
+    "./dist/*": "./dist/*",
+    "./llms.txt": "./llms.txt",
+    "./llms-full.txt": "./llms-full.txt"
+  },
+  "files": [
+    "zoe.js",
+    "zoe.css",
+    "core",
+    "components",
+    "tools",
+    "skins",
+    "dist",
+    "docs",
+    "llms.txt",
+    "llms-full.txt",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "node scripts/serve.mjs 5173",
+    "manifest": "node scripts/z-manifest/z-manifest.js",
+    "check": "node scripts/check.mjs",
+    "test": "node --test",
+    "mcp": "node scripts/z-mcp/z-mcp.js",
+    "build": "npm run manifest && npm run check && npm test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

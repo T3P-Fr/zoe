@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "zoe": {
+      "command": "node",
+      "args": ["scripts/z-mcp/z-mcp.js"]
+    }
+  }
+}

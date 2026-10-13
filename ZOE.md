@@ -56,8 +56,6 @@ Schéma : `core/z-layer/z-layer.anatomie.txt`.
 
 **Les tools** — s'appliquent au HTML nu **ET** à z-element (`tools/`)
 - **`z-motion`** — animer (presets : shake, slide, pop, ripple, shimmer…)
-- **`z-stager`** — décaler en cascade (stagger)
-- **`z-grid`** — mettre en page
 - **`z-channel`** — faire dialoguer des composants par variables CSS (*le CSS pilote*)
 - **`z-pointer`** — donner la position de la souris au CSS, pour tout ce qu'il enveloppe
 - **`z-scroll`** — où en est le défilement (part parcourue, sens, haut, bout)
@@ -115,7 +113,7 @@ live, params temps réel). Ajouter un composant = son dossier → il apparaît p
 ```
 core/z-element/        — la base vivante (les états)
 core/z-layer/          — le calque (les pièces, un rôle chacune)
-tools/z-*/             — z-contact · z-motion · z-stager · z-grid · z-channel
+tools/z-*/             — z-contact · z-motion · z-channel · z-cursor
                          les capteurs : z-pointer · z-scroll · z-inview · z-size · z-drag
 components/z-*/        — .js · .css · .doc.md · .demo.html
 skins/*/               — .css · .doc.md

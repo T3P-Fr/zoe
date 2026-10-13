@@ -1,0 +1,11 @@
+# Fins de ligne : LF partout dans le dépôt ET dans la copie de travail. Sans cette règle,
+# un fichier écrit sous Windows arrive en CRLF, le voisin en LF, et chaque outil qui lit
+# « jusqu'à la fin de ligne » se comporte différemment selon le fichier.
+* text=auto eol=lf
+
+# Sources graphiques (Affinity) et images : binaires, jamais normalisés.
+*.af binary
+*.png binary
+*.jpg binary
+*.gif binary
+*.woff2 binary

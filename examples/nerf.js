@@ -1,13 +1,17 @@
 /*
 	============================================================
-	Zoe.js — LE CŒUR (un seul « Zoe » ; le reste sont des z-*)
+	nerf.js — UNE EXPÉRIENCE : le CSS réclame une couche, le script la pose
 	------------------------------------------------------------
-	Le seul fichier qui porte le nom Zoe. Il orchestre le modèle qu'on a tranché ; tout
-	le reste (composants, motion, channel…) est un `z-*`. Aujourd'hui il ne contient que
-	sa PREMIÈRE GRAINE : le nerf des couches. La veille (la console) et le reste viendront
-	s'y ajouter — pas de fichier `zoe-quelquechose` de plus, juste ce cœur qui grossit.
+	⚠ CE FICHIER N'EST PAS LE MODÈLE DE ZOÉ. Il vit dans examples/ parce que c'est un
+	essai (examples/nerf.lab.html), pas une brique du noyau. Le modèle tranché est celui
+	de core/z-layer : l'AUTEUR écrit ses calques (`<z-layer part="…">`), Zoé n'injecte
+	rien (ADR-0018). Ici, au contraire, le script lit les feuilles de style et CRÉE un
+	`<div class="z-background">` dès qu'une règle le réclame — deux formes pour une
+	couche, exactement ce que la loi « une seule forme » interdit dans le produit.
+	Gardé comme trace d'une piste explorée le 2026-07-25 : si l'idée revient, elle a déjà
+	son code et son banc d'essai.
 
-	LE NERF : le CSS réclame une couche, Zoé la pose à son rôle.
+	LE NERF : le CSS réclame une couche, le script la pose à son rôle.
 	L'auteur n'écrit QUE le sens (`<z-button>Envoyer</z-button>`) ; c'est le CSS qui
 	déclare les couches de dessin. Dès qu'une règle vise `z-button > .z-background`, ce
 	cœur la lit, crée le `<div>` manquant et le pose là où son RÔLE le veut (background =
@@ -22,7 +26,7 @@
 	au chargement, une fois. Le reste (autres rôles, MutationObserver, placement dans un
 	vrai Zoe-layers.css) viendra APRÈS, une fois ce cœur prouvé.
 
-	Styleguide Zoe.core
+	Styleguide examples.nerf
 	============================================================
 */
 
