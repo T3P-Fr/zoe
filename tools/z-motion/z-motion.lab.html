@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>z-motion — les mouvements, à voir bouger</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis passe par <code>http://localhost:5173/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+
+<style>
+	/*
+		LE LABO de z-motion : chaque preset, à voir BOUGER. Un mouvement ne se lit pas, il se
+		regarde — on clique une tuile, elle rejoue son @keyframes. La liste n'est pas écrite
+		ici : elle vient de la feuille (les @keyframes de z-motion.css), donc un preset ajouté
+		apparaît tout seul. Rien ici n'est du style de composant : du décor.
+	*/
+	.presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .8rem; margin: .6rem 0 1.2rem; }
+	.preset {
+		display: grid; place-items: center; gap: .5rem; padding: 1.2rem .6rem .8rem;
+		border: var(--z-border-width, 1px) solid var(--z-line); border-radius: var(--z-radius, 8px);
+		background: var(--z-surface); cursor: pointer; user-select: none; text-align: center;
+	}
+	.preset:hover { border-color: var(--z-accent); }
+	.preset b { font: 600 12px ui-monospace, monospace; color: var(--z-accent); }
+	.preset small { color: var(--z-ink-soft); font-size: 11px; }
+	/* Le sujet qui bouge : une pastille d'accent. `--preset` est posé au clic. */
+	.sujet {
+		width: 2.6em; height: 2.6em; border-radius: var(--z-radius, 8px);
+		background: var(--z-accent);
+		animation: var(--preset, none) .6s var(--z-ease-spring, ease-out);
+	}
+	/* shimmer et ripple ne se voient qu'avec leur décor : un dégradé qui glisse, un anneau qui s'étend. */
+	.preset[data-name="shimmer"] .sujet { background: linear-gradient(100deg, var(--z-accent) 30%, var(--z-accent-soft, #fff) 50%, var(--z-accent) 70%); background-size: 300% 100%; animation-duration: 1.2s; animation-timing-function: linear; }
+	.preset[data-name="ripple"] .sujet { background: transparent; border: 2px solid var(--z-accent); border-radius: 50%; }
+	.preset[data-name="spin"] .sujet { animation-timing-function: linear; }
+</style>
+
+<z-contact></z-contact>
+
+<h1><code>z-motion</code> — les mouvements partagés</h1>
+<p class="lead">Chaque tuile est un <code>@keyframes</code> offert par Zoé. <b>Cliquez</b> pour le rejouer.
+	Ils se branchent sur n'importe quel état, d'un composant Zoé ou de votre propre élément.
+	Changez la peau en haut à droite — la courbe (<code>--z-ease-spring</code>) et la couleur suivent.</p>
+
+<h2>1 · Les presets, à voir bouger</h2>
+<div class="presets" id="presets"></div>
+<p class="note">La liste est lue dans la feuille elle-même : un preset ajouté à <code>z-motion.css</code> apparaît ici sans
+	qu'on touche à cette page.</p>
+
+<h2>2 · Les brancher — sur un état, en une ligne</h2>
+<div class="stack" data-code>
+	<z-button id="secoue" type="button">Cliquez : erreur</z-button>
+	<z-element id="pop-moi"><button type="button">Cliquez : pop</button></z-element>
+</div>
+<pre class="z-code-manuel">z-button:state(error)            { animation: shake .35s var(--z-ease); }      /* chemin A : un composant Zoé */
+z-element:state(release) > button { animation: pop .4s var(--z-ease-spring); } /* chemin B : votre élément */</pre>
+<p class="note">Le mouvement est écrit en CSS, sur l'état. Le JS ne fait que poser l'état — ici, il pose
+	<code>error</code> au clic pour la démonstration ; en vrai, c'est votre application qui le pose.</p>
+
+<style>
+	/* Les deux branchements de la section 2, tels qu'écrits dans l'extrait ci-dessus. */
+	#secoue:state(error) { animation: shake .35s var(--z-ease); }
+	#pop-moi:state(release) > button { animation: pop .4s var(--z-ease-spring); }
+</style>
+
+<script type="module">
+	import "../../examples/skin-switch.js";
+	import "../../examples/code.js";
+	import "../../tools/z-contact/z-contact.js";
+	import "../../core/z-element/z-element.js";
+	import "../../components/z-button/z-button.js";
+
+	/*
+		Les presets, lus dans z-motion.css — et SEULEMENT elle (chargée par zoe.css en
+		@import) : les @keyframes privés d'un composant (z-toast-in, z-dialog-veil…) ne sont
+		pas des presets, on ne les montre pas. Un @keyframes de z-motion = une tuile.
+	*/
+	const names = [];
+	for (const sheet of document.styleSheets) {
+		try {
+			for (const rule of sheet.cssRules) {
+				if (!(rule instanceof CSSImportRule) || !rule.href.endsWith("z-motion.css")) continue;
+				for (const inner of rule.styleSheet?.cssRules || []) if (inner instanceof CSSKeyframesRule && !names.includes(inner.name)) names.push(inner.name);
+			}
+		} catch { /* feuille d'une autre origine : illisible */ }
+	}
+
+	const zone = document.getElementById("presets");
+	for (const name of names) {
+		const tile = document.createElement("div");
+		tile.className = "preset";
+		tile.dataset.name = name;
+		tile.innerHTML = `<div class="sujet"></div><b>${name}</b><small>cliquez</small>`;
+		const play = () => {
+			const sujet = tile.querySelector(".sujet");
+			sujet.style.setProperty("--preset", "none");
+			void sujet.offsetWidth;                       /* relance l'animation : on la coupe, on la repose */
+			sujet.style.setProperty("--preset", name);
+		};
+		tile.addEventListener("click", play);
+		zone.append(tile);
+		setTimeout(play, 300 + zone.children.length * 90);   /* une première vague, en cascade */
+	}
+
+	/* Section 2 : poser l'état, le CSS fait le reste. */
+	const secoue = document.getElementById("secoue");
+	secoue.addEventListener("click", () => { secoue.setState("error"); setTimeout(() => secoue.setState("error", false), 500); });
+</script>
+</html>

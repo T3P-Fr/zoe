@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>z-lint — la console qui corrige</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis passe par <code>http://localhost:5173/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+
+<style>
+	/*
+		LE LABO de z-lint : une page qui contient EXPRÈS des fautes, et qui montre à côté ce
+		que la console en dit. Le code fautif est à gauche, le verdict à droite — la cause et
+		l'effet dans le même regard. Rien ici n'est du style de composant : du décor.
+	*/
+	.faute { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; align-items: start; margin: .6rem 0 1.4rem; }
+	.faute > pre { margin: 0; padding: .7rem .9rem; border-left: 2px solid var(--z-danger); border-radius: 4px;
+		background: color-mix(in srgb, var(--z-danger) 6%, transparent); font: 12px/1.55 ui-monospace, monospace; white-space: pre-wrap; }
+	.verdict { margin: 0; padding: .7rem .9rem; border-left: 2px solid var(--z-accent); border-radius: 4px;
+		background: color-mix(in srgb, var(--z-accent) 6%, transparent); font: 12px/1.6 ui-monospace, monospace; white-space: pre-wrap; min-height: 2.6em; }
+	.verdict:empty::before { content: "…analyse en cours"; color: var(--z-ink-soft); }
+	.verdict .ok { color: var(--z-success); }
+
+	/* ═══ LES FAUTES VOLONTAIRES — chacune est signalée par z-lint ═══ */
+	z-button:state(hovered) { color: red; }                 /* état inconnu → over */
+	z-button { --z-button-bg: red; }                        /* hors grammaire → --z-button__background-color */
+	z-checkbox > [part=marker] > [part=dott] { scale: 1; }  /* pièce inconnue → dot */
+	z-card { background: var(--z-surfce); }                 /* token global mal écrit → --z-surface */
+	z-tag:state(error) { animation: shak .3s; }             /* preset inconnu → shake */
+	z-badge::part(label) { color: blue; }                   /* forme morte : light DOM */
+
+	/* ═══ CE QUI EST LÉGITIME — et que z-lint ne signale PAS ═══ */
+	@property --z-state__glow { syntax: "*"; inherits: false; initial-value: 0; }
+	z-button:state(glow) { box-shadow: 0 0 0 3px var(--z-accent-soft); }
+	z-button:state(success):state(from-loading) { outline: 2px solid var(--z-success); }
+	@keyframes maison { to { rotate: 1turn; } }
+	z-spinner { animation: maison 1s linear infinite; }
+</style>
+
+<z-contact></z-contact>
+
+<h1><code>z-lint</code> — la console qui corrige</h1>
+<p class="lead">Cette page contient des fautes <b>exprès</b>. Ouvrez la console (F12) : chacune y est
+	signalée avec le nom valide le plus proche. Le même verdict est recopié ci-dessous, à côté de
+	la faute qui l'a provoqué.</p>
+
+<h2>1 · Les fautes de cette page, et ce que la console en dit</h2>
+<div class="faute">
+<pre>&lt;z-buton&gt;Envoyer&lt;/z-buton&gt;
+&lt;z-button lodaing&gt;Chargement&lt;/z-button&gt;
+
+z-button:state(hovered) { … }
+z-button { --z-button-bg: red; }
+z-checkbox &gt; [part=marker] &gt; [part=dott] { … }
+z-card { background: var(--z-surfce); }
+z-tag:state(error) { animation: shak .3s; }
+z-badge::part(label) { … }</pre>
+<pre class="verdict" id="verdict"></pre>
+</div>
+<p class="note">Un constat par faute, les erreurs d'abord. Chaque suggestion est le mot le plus proche
+	dans le vocabulaire <b>réel</b> de Zoé — celui que le générateur tire du code.</p>
+
+<!-- les deux fautes HTML : une balise inconnue, un attribut inconnu -->
+<div class="rangee" style="margin-top:.4rem">
+	<z-buton>Envoyer</z-buton>
+	<z-button lodaing>Chargement</z-button>
+</div>
+
+<h2>2 · Ce qui est légitime, et que z-lint laisse passer</h2>
+<div class="faute">
+<pre>@property --z-state__glow { … }          /* un état déclaré par l'auteur */
+z-button:state(glow) { … }
+
+z-button:state(success):state(from-loading) { … }   /* une séquence */
+
+@keyframes maison { … }                  /* un mouvement maison */
+z-spinner { animation: maison 1s linear infinite; }</pre>
+<pre class="verdict"><span class="ok">rien à signaler</span> — déclaré par la page, donc connu.</pre>
+</div>
+<p class="note">La règle : ce que l'auteur <b>déclare</b> est connu. z-lint ne connaît que Zoé, et il
+	n'invente pas de faute.</p>
+
+<h2>3 · Depuis votre code</h2>
+<pre class="z-code-manuel">const findings = await ZoeLint.lint();   // relance l'analyse, rend les constats
+document.addEventListener("zoe:lint", (e) => e.detail.findings);</pre>
+
+<script type="module">
+	import "../../examples/skin-switch.js";
+	import "../../tools/z-contact/z-contact.js";
+	import "../../components/z-button/z-button.js";
+	import "../../components/z-spinner/z-spinner.js";
+	import { formatFinding } from "./z-lint.rules.js";
+	import "./z-lint.js";
+
+	/* Le verdict de la console, recopié dans la page : on n'oblige personne à ouvrir F12
+	   pour VOIR ce que l'outil fait. */
+	document.addEventListener("zoe:lint", (event) => {
+		const verdict = document.getElementById("verdict");
+		const lines = event.detail.findings.map(formatFinding);
+		verdict.textContent = lines.length ? lines.join("\n") : "rien à signaler";
+	});
+</script>
+</html>

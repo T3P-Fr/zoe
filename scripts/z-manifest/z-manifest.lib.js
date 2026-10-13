@@ -322,7 +322,11 @@ export async function scanRepository({ version = "0.0.0" } = {}) {
 			else warnings.push(`${dir}/${name} : dossier sans module ni CSS — ignoré`);
 			continue;
 		}
-		const read = await readApi(file);
+		/* Un module qui ne s'importe pas (syntaxe, import cassé, travail en cours) n'arrête
+		   pas la génération des autres : il est dit, et il manque — c'est le rouge qui décide. */
+		let read = null;
+		try { read = await readApi(file); }
+		catch (error) { warnings.push(`${dir}/${name} : le module ne s'importe pas — ${error.message.split("\n")[0]}`); continue; }
 		if (!read) { warnings.push(`${dir}/${name} : aucun \`static api\` (ni export \`api\`) — absent du manifeste`); continue; }
 		const entry = toEntry(read.api, { dir, name, className: read.className, paths, css });
 		warnings.push(...validateEntry(entry));
