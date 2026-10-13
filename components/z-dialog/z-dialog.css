@@ -1,0 +1,163 @@
+/*
+	============================================================
+	z-dialog.css — le rendu de z-dialog, et le SOCLE de z-drawer
+	------------------------------------------------------------
+	L'hôte n'a pas de boîte (display: contents) : la boîte, c'est le <dialog> NATIF de
+	l'auteur, qui vit dans le top layer. Ce fichier le RÉINITIALISE (le navigateur lui met
+	son propre filet et son fond) puis le peint aux tokens de la peau : surface surélevée,
+	filet, rayon, ombre, et le voile derrière (::backdrop). Il peint sobrement les trois
+	rôles optionnels que l'auteur peut poser dedans (directement, ou sous un <form>) :
+	[part=header] · [part=body] · [part=footer].
+
+	ENTRÉE / SORTIE : jouées sur `:state(enter)` et `:state(exit)`, posés par z-dialog qui
+	ATTEND la fin de `exit` avant d'appeler dialog.close() — sans ça rien ne pourrait
+	bouger. Les durées sont celles du socle (--z-dur-enter / --z-dur-exit) : UNE horloge
+	pour le minuteur JS et l'animation CSS, comme pour tout état transitoire de Zoé.
+	Le centre SURGIT (pop), les quatre bords GLISSENT depuis leur côté (`placement`).
+
+	z-drawer HÉRITE de z-dialog en JS ; en CSS l'héritage n'existe pas : le socle (reset,
+	voile, pièces, verrou de page) est écrit ici pour `:is(z-dialog, z-drawer)` plutôt que
+	recopié là-bas — ce qui est écrit deux fois divergera. z-drawer.css n'écrit que sa
+	géométrie et son glissement.
+
+	Ne fait PAS : le piège de focus, l'inertie de la page, Échap (le <dialog> natif s'en
+	charge) ; aucune croix de fermeture (Zoé n'injecte rien — l'auteur pose son bouton).
+	Requiert : une peau (tokens). Aucun autre fichier : les @keyframes sont ici.
+	Styleguide 31.0
+	============================================================
+*/
+
+/*
+	L'hôte et la boîte — commun à z-dialog et z-drawer
+	Styleguide 31.1
+
+	Le <dialog> ouvert en modal est `position: fixed` dans le top layer : l'hôte n'a rien
+	à placer, il ne fait que porter les états et les tokens, que la boîte hérite.
+*/
+:is(z-dialog, z-drawer) {
+	display: contents;
+
+	> dialog {
+		box-sizing: border-box;
+		width: var(--z-dialog__width, min(32em, 90vw));
+		padding: var(--z-dialog__padding, 1.4em 1.6em);
+		border: var(--z-border-width, 1px) solid var(--z-dialog__border-color, var(--z-line, #ccc));
+		border-radius: var(--z-dialog__radius, var(--z-radius, 8px));
+		background: var(--z-dialog__background, var(--z-surface-raised, var(--z-surface, #fff)));
+		color: var(--z-dialog__color, var(--z-ink, inherit));
+		/* `font: inherit` D'ABORD : un <dialog> n'hérite pas la typo de la page par défaut
+		   (le navigateur lui pose la sienne). On affine ensuite — l'ordre compte. */
+		font: inherit;
+		font-family: var(--z-font);
+		line-height: 1.5;
+		box-shadow: var(--z-dialog__shadow, 0 1.25em 2.5em -0.75em color-mix(in srgb, var(--z-ink, #000) 40%, transparent));
+	}
+
+	/*
+		Le voile — ::backdrop
+		Styleguide 31.2
+
+		Piège : avant Chrome 122, ::backdrop n'héritait AUCUNE variable de son dialog —
+		`var(--z-ink)` tombait au vide et le voile disparaissait. Le repli `#000` dans le
+		var() ne sert qu'à ces navigateurs-là ; les autres lisent l'encre de la peau.
+	*/
+	> dialog::backdrop {
+		background: var(--z-dialog--backdrop__background, color-mix(in srgb, var(--z-ink, #000) 45%, transparent));
+	}
+	&:state(enter) > dialog::backdrop { animation: z-dialog-veil var(--z-dur-enter, .3s) var(--z-ease, ease-out); }
+	&:state(exit)  > dialog::backdrop { animation: z-dialog-veil var(--z-dur-exit, .22s) var(--z-ease, ease-in) reverse forwards; }
+
+	/*
+		Les pièces — header · body · footer, posées par l'auteur sur SES éléments
+		Styleguide 31.3
+
+		Elles se lisent sous le <dialog> directement, OU sous un <form> qui l'emplit : le
+		`<form method="dialog">` est l'enveloppe idiomatique d'une boîte, et l'exclure
+		aurait forcé l'auteur à choisir entre le formulaire natif et les pièces. Un seul
+		niveau, exprès : au-delà, on repeindrait les pièces d'un composant imbriqué.
+
+		Les filets du header et du footer sont transparents par défaut : une peau à filets
+		(HighTech) les allume d'un token, une peau à aplats n'a rien à défaire.
+	*/
+	> dialog,
+	> dialog > form {
+		> [part=header] {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: var(--z-gap, .6em);
+			margin: 0 0 var(--z-dialog__gap, 1em);
+			padding-bottom: .6em;
+			border-bottom: var(--z-border-width, 1px) solid var(--z-dialog--header__border-color, transparent);
+		}
+		> [part=header] :is(h1, h2, h3, h4, h5, h6) {
+			margin: 0;
+			font-family: var(--z-font-title, var(--z-font));
+			font-size: var(--z-dialog--header__font-size, 1.15em);
+			font-weight: var(--z-font-weight-strong, 600);
+			line-height: 1.3;
+		}
+		> [part=body] { margin: 0; }
+		> [part=body] > :first-child { margin-top: 0; }
+		> [part=body] > :last-child { margin-bottom: 0; }
+		> [part=footer] {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: flex-end;
+			gap: var(--z-dialog--footer__gap, var(--z-gap, .6em));
+			margin: var(--z-dialog__gap, 1em) 0 0;
+			padding-top: .6em;
+			border-top: var(--z-border-width, 1px) solid var(--z-dialog--footer__border-color, transparent);
+		}
+		/* Un <dialog> sans pièces (un titre, un paragraphe) : pas de marge perdue aux bords. */
+		> :first-child { margin-top: 0; }
+		> :last-child { margin-bottom: 0; }
+	}
+}
+
+/*
+	Entrée et sortie de la BOÎTE — z-dialog seulement (z-drawer a son glissement)
+	Styleguide 31.4
+
+	Un seul jeu de @keyframes, écrit pour l'entrée : la sortie le REJOUE À L'ENVERS
+	(`reverse`) et tient la dernière image (`forwards`) jusqu'à ce que dialog.close()
+	cache la boîte. Chaque trajet est donc écrit une fois.
+*/
+z-dialog {
+	&:state(enter) > dialog { animation: z-dialog-in var(--z-dur-enter, .3s) var(--z-ease-spring, ease-out); }
+	&:state(exit)  > dialog { animation: z-dialog-in var(--z-dur-exit, .22s) var(--z-ease, ease-in) reverse forwards; }
+
+	/* Les bords : la boîte se cale contre le sien, à `--z-dialog__offset` du bord. */
+	&[placement=top]    > dialog { margin-top: var(--z-dialog__offset, 1.5em); margin-bottom: auto; }
+	&[placement=bottom] > dialog { margin-top: auto; margin-bottom: var(--z-dialog__offset, 1.5em); }
+	&[placement=left]   > dialog { margin-left: var(--z-dialog__offset, 1.5em); margin-right: auto; }
+	&[placement=right]  > dialog { margin-left: auto; margin-right: var(--z-dialog__offset, 1.5em); }
+
+	/* …et arrive depuis ce bord. Seul le nom change : durée, courbe et sens restent ceux
+	   posés plus haut (la cascade se fait propriété par propriété). */
+	&[placement=top]:is(:state(enter), :state(exit))    > dialog { animation-name: z-dialog-in-top; }
+	&[placement=bottom]:is(:state(enter), :state(exit)) > dialog { animation-name: z-dialog-in-bottom; }
+	&[placement=left]:is(:state(enter), :state(exit))   > dialog { animation-name: z-dialog-in-left; }
+	&[placement=right]:is(:state(enter), :state(exit))  > dialog { animation-name: z-dialog-in-right; }
+}
+
+/*
+	La page derrière : le défilement se bloque tant qu'une boîte est ouverte
+	Styleguide 31.5
+
+	Le natif rend la page inerte, mais la laisse défiler sous la boîte. `overflow: hidden`
+	retire la barre : sur une page longue à barre classique, le contenu glisse d'une
+	largeur de barre à l'ouverture. `scrollbar-gutter: stable` l'éviterait là… et en
+	ajouterait une sur une page courte. On laisse la page décider ; ici, le minimum.
+*/
+html:has(:is(z-dialog, z-drawer):state(open)) {
+	overflow: hidden;
+}
+
+/* Sans `to` : l'arrivée est l'état de repos calculé — la boîte finit là où le CSS la met. */
+@keyframes z-dialog-veil      { from { opacity: 0; } }
+@keyframes z-dialog-in        { from { opacity: 0; transform: translateY(.75em) scale(.96); } }
+@keyframes z-dialog-in-top    { from { opacity: 0; transform: translateY(-1.5em); } }
+@keyframes z-dialog-in-bottom { from { opacity: 0; transform: translateY(1.5em); } }
+@keyframes z-dialog-in-left   { from { opacity: 0; transform: translateX(-1.5em); } }
+@keyframes z-dialog-in-right  { from { opacity: 0; transform: translateX(1.5em); } }

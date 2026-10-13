@@ -1,0 +1,137 @@
+/*
+	============================================================
+	z-popover.css — le rendu de z-popover : le PANNEAU FLOTTANT (et celui de z-menu)
+	------------------------------------------------------------
+	Le déclencheur reste en place dans la ligne ; le panneau, lui, est FIXÉ dans la
+	fenêtre aux deux nombres que z-popover mesure (--z-popover__x / __y, des px nus), et
+	il entre/sort en glissant d'un cheveu depuis son déclencheur — jamais un pop sec.
+
+	LA FAMILLE EST NOMMÉE ICI : `z-popover, z-menu`. z-menu ÉTEND z-popover en JS, mais
+	le CSS n'a pas d'héritage — `<z-menu>` n'est pas matché par `z-popover { }`. Plutôt
+	que de recopier le panneau dans z-menu.css (ce qui est écrit deux fois divergera), on
+	le peint une fois pour les deux ; z-menu.css n'ajoute que ce qu'un menu a en propre et
+	règle les tokens `--z-popover__…` depuis les siens.
+
+	Ce fichier ne positionne PAS (c'est le JS qui mesure) et n'anime PAS en JS (c'est
+	le CSS qui bouge) : la mesure d'un côté, le mouvement de l'autre, comme z-tabs.
+	Requiert : une peau (tokens) + l'API Popover du navigateur (ou le repli `hidden` du JS).
+	Styleguide 33.0
+	============================================================
+*/
+
+/*
+	Le sujet — l'hôte a la taille de son déclencheur, le panneau ne compte pas
+	Styleguide 33.1
+*/
+z-popover, z-menu {
+	display: inline-block;
+	position: relative;
+	vertical-align: middle;
+
+	/*
+		Le panneau — fixé dans la fenêtre, posé par les deux nombres du JS
+		Styleguide 33.2
+
+		PIÈGE : le popover natif se CENTRE tout seul (feuille du navigateur : `inset: 0 ;
+		margin: auto`) et arrive avec un filet noir, un padding et un fond système. Tout
+		est écrasé ici — sinon x/y ne servent à rien et le panneau sort en gris Windows.
+	*/
+	> [part=panel] {
+		position: fixed;
+		inset: auto;
+		margin: 0;
+		left: calc(var(--z-popover__x, 0) * 1px);
+		top: calc(var(--z-popover__y, 0) * 1px);
+		/* Hors API Popover (repli) seulement : en top layer, z-index est ignoré. */
+		z-index: 30;
+		box-sizing: border-box;
+		width: var(--z-popover__width, max-content);
+		max-width: var(--z-popover__max-width, min(22em, 90vw));
+		max-height: var(--z-popover__max-height, calc(100vh - 2em));
+		overflow: auto;
+		padding: var(--z-popover__padding, var(--z-pad-y, .6em) var(--z-pad-x, .9em));
+		border: var(--z-border-width, 1px) solid var(--z-popover__border-color, var(--z-line));
+		border-radius: var(--z-popover__radius, var(--z-radius, 6px));
+		background: var(--z-popover__background, var(--z-surface-raised, var(--z-surface)));
+		color: var(--z-popover__color, var(--z-ink));
+		/* Le repli est une ombre DOUCE ; une peau à filets (HighTech, loi « zéro ombre »)
+		   l'éteint d'un token : `--z-popover__shadow: none`. */
+		box-shadow: var(--z-popover__shadow, 0 .6em 1.6em -.6em color-mix(in srgb, var(--z-ink) 35%, transparent));
+		font-family: var(--z-font);
+		line-height: 1.5;
+		text-align: start;
+
+		/*
+			FERMÉ — invisible, en RETRAIT vers son déclencheur (translate). Et le SOUFFLE
+			entre les deux (transform) : deux propriétés distinctes pour deux rôles — le
+			souffle est fixe, le retrait s'anime. Le côté effectif vient de `data-placement`.
+		*/
+		opacity: 0;
+		translate: var(--z-popover--panel__translate);
+
+		/*
+			ENTRÉE / SORTIE — opacity + translate, et `display` + `overlay` en DISCRET.
+			PIÈGE, et c'est LE piège du popover natif : à la fermeture, le navigateur passe le
+			panneau en `display: none` et le sort du top layer À L'INSTANT. Sans
+			`allow-discrete` sur ces deux-là, la sortie n'a AUCUNE animation — il disparaît
+			sec, quoi qu'on écrive sur opacity. Avec, display et overlay ne basculent qu'à la
+			FIN de la transition : le fondu a le temps de se jouer. (Même mécanique pour le
+			repli `hidden`.) La durée ici est celle de la FERMETURE : une transition prend
+			ses réglages dans l'état où elle ARRIVE.
+		*/
+		transition:
+			opacity var(--z-dur-close, .22s) var(--z-ease, ease),
+			translate var(--z-dur-close, .22s) var(--z-ease, ease),
+			overlay var(--z-dur-close, .22s) allow-discrete,
+			display var(--z-dur-close, .22s) allow-discrete;
+	}
+
+	/*
+		Les quatre côtés — d'où vient le panneau (retrait), et de combien il respire (souffle)
+		Styleguide 33.3
+
+		Le retrait est un TOKEN et pas une valeur : `@starting-style` plus bas doit le relire
+		tel quel, et un token écrit une fois ne diverge pas. `--z-popover__travel` = la
+		distance parcourue à l'entrée ; `--z-popover__offset` = l'écart déclencheur ↔ panneau.
+	*/
+	> [part=panel],
+	> [part=panel][data-placement="bottom"] {
+		--z-popover--panel__translate: 0 calc(-1 * var(--z-popover__travel, .35em));
+		transform: translateY(var(--z-popover__offset, .4em));
+	}
+	> [part=panel][data-placement="top"] {
+		--z-popover--panel__translate: 0 var(--z-popover__travel, .35em);
+		transform: translateY(calc(-1 * var(--z-popover__offset, .4em)));
+	}
+	> [part=panel][data-placement="right"] {
+		--z-popover--panel__translate: calc(-1 * var(--z-popover__travel, .35em)) 0;
+		transform: translateX(var(--z-popover__offset, .4em));
+	}
+	> [part=panel][data-placement="left"] {
+		--z-popover--panel__translate: var(--z-popover__travel, .35em) 0;
+		transform: translateX(calc(-1 * var(--z-popover__offset, .4em)));
+	}
+
+	/*
+		OUVERT — en place, visible, au ressort de la peau (durée d'OUVERTURE)
+		Styleguide 33.4
+	*/
+	&:state(open) > [part=panel] {
+		opacity: 1;
+		translate: 0 0;
+		transition-duration: var(--z-dur-open, .28s);
+		transition-timing-function: var(--z-ease-spring, ease-out);
+	}
+
+	/*
+		Le point de départ de l'entrée. Sans ce bloc, un élément qui passe de `display:
+		none` à visible n'a PAS d'état « avant » : il apparaîtrait déjà en place, et seule
+		la sortie bougerait. `@starting-style` lui en donne un — le même que fermé.
+	*/
+	@starting-style {
+		&:state(open) > [part=panel] {
+			opacity: 0;
+			translate: var(--z-popover--panel__translate);
+		}
+	}
+}

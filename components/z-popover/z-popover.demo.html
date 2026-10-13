@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <title>z-popover — démo</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Les composants ne se définiront pas. Lancez <code>node scripts/serve.mjs 5173</code> ' +
+      'puis passez par <code>http://localhost:5173/</code>.</div>'
+    );
+  </script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+  <style>
+    /* Le contenu des panneaux de CETTE page : des paragraphes serrés, une pile de cases.
+       Rien ici ne touche au composant — c'est le décor de ce qu'on met dedans. */
+    [part=panel] p { margin: 0; }
+    [part=panel] p + p { margin-top: .5em; }
+    [part=panel] .stack { gap: .6rem; }
+  </style>
+
+  <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+  <z-contact></z-contact>
+
+  <h1><code>z-popover</code></h1>
+  <p class="lead">Un panneau flottant <b>ancré à son déclencheur</b>, sur l'API Popover native : top layer, fermeture au clic dehors, <kbd>Échap</kbd>, un seul ouvert à la fois. Vous écrivez le déclencheur et le panneau ; Zoé les relie, les place, et les fait bouger. Changez la peau en haut à droite — tout suit.</p>
+
+  <h2>1 · Le geste — <code class="tag">&lt;z-popover&gt;</code></h2>
+  <div class="stack" data-code>
+    <z-popover>
+      <z-button part="trigger" type="button">Options</z-button>
+      <div part="panel">
+        <p><b>Un panneau, du contenu libre.</b></p>
+        <p>Il s'ouvre sous son bouton, se ferme au clic dehors ou à <kbd>Échap</kbd>.</p>
+      </div>
+    </z-popover>
+  </div>
+  <p class="note">Cliquez : le panneau naît en retrait vers son bouton et glisse en place. Un deuxième clic — ou un clic n'importe où ailleurs — le referme par le même chemin. Aucun rôle n'est imposé au panneau : ce que vous mettez dedans décide.</p>
+
+  <h2>2 · Les quatre côtés — <code class="tag">placement</code></h2>
+  <div class="stack" data-code>
+    <div class="rangee">
+      <z-popover placement="bottom">
+        <z-button part="trigger" type="button" tone="complement">bottom</z-button>
+        <div part="panel"><p>Sous le bouton (défaut).</p></div>
+      </z-popover>
+      <z-popover placement="top">
+        <z-button part="trigger" type="button" tone="complement">top</z-button>
+        <div part="panel"><p>Au-dessus du bouton.</p></div>
+      </z-popover>
+      <z-popover placement="left">
+        <z-button part="trigger" type="button" tone="complement">left</z-button>
+        <div part="panel"><p>À gauche du bouton.</p></div>
+      </z-popover>
+      <z-popover placement="right">
+        <z-button part="trigger" type="button" tone="complement">right</z-button>
+        <div part="panel"><p>À droite du bouton.</p></div>
+      </z-popover>
+    </div>
+  </div>
+  <p class="note">Le côté demandé est un souhait : s'il manque de place dans la fenêtre, le panneau <b>se retourne</b> du côté opposé (réduisez la fenêtre, ouvrez « top » tout en haut de la page). Le côté effectif est écrit sur le panneau en <code>data-placement</code> — c'est lui qui oriente le mouvement.</p>
+
+  <h2>3 · Le bord d'alignement — <code class="tag">align</code></h2>
+  <div class="stack" data-code>
+    <div class="rangee">
+      <z-popover align="start">
+        <z-button part="trigger" type="button" tone="complement">start</z-button>
+        <div part="panel"><p>Calé sur le bord gauche du bouton.</p></div>
+      </z-popover>
+      <z-popover align="center">
+        <z-button part="trigger" type="button" tone="complement">center</z-button>
+        <div part="panel"><p>Centré sur le bouton.</p></div>
+      </z-popover>
+      <z-popover align="end">
+        <z-button part="trigger" type="button" tone="complement">end</z-button>
+        <div part="panel"><p>Calé sur le bord droit du bouton.</p></div>
+      </z-popover>
+    </div>
+  </div>
+  <p class="note">Le panneau s'aligne sur un <b>bord</b> du déclencheur — ou sur son centre. Quoi qu'il arrive, il reste dans la fenêtre, à 8 px des bords.</p>
+
+  <h2>4 · Depuis le JS — <code class="tag">open</code>, <code class="tag">show()</code>, <code class="tag">toggle</code></h2>
+  <div class="stack" data-code>
+    <z-popover id="pilote" placement="right">
+      <z-button part="trigger" type="button">Piloté</z-button>
+      <div part="panel"><p>Ouvert, fermé, basculé : par le bouton, par l'API, ou par le navigateur.</p></div>
+    </z-popover>
+  </div>
+  <div class="rangee" style="margin-top:.6rem">
+    <z-button type="button" tone="complement" id="ouvrir">show()</z-button>
+    <z-button type="button" tone="complement" id="fermer">hide()</z-button>
+    <z-button type="button" tone="complement" id="basculer">toggle()</z-button>
+  </div>
+  <p class="note" id="journal">Aucune bascule pour l'instant.</p>
+<pre class="z-code-manuel">const pilote = document.querySelector("#pilote");
+pilote.show();  pilote.hide();  pilote.toggle();      // ou : pilote.open = true
+pilote.addEventListener("toggle", (event) => {
+  journal.textContent = event.detail.open ? "Ouvert." : "Fermé.";
+});</pre>
+  <p class="note">L'attribut <code>open</code> est la source de vérité : fermez au clic dehors ou à <kbd>Échap</kbd>, et il suit — l'événement <code>toggle</code> part <b>une fois par bascule</b>, quelle qu'en soit la cause.</p>
+
+  <h2>5 · Un contenu qui travaille — des filtres</h2>
+  <div class="stack" data-code>
+    <z-popover align="end">
+      <z-button part="trigger" type="button">Filtrer</z-button>
+      <div part="panel">
+        <div class="stack">
+          <z-checkbox current>En stock</z-checkbox>
+          <z-checkbox>Promotions</z-checkbox>
+          <z-checkbox>Nouveautés</z-checkbox>
+          <z-button type="button" size="s" class="appliquer">Appliquer</z-button>
+        </div>
+      </div>
+    </z-popover>
+  </div>
+  <p class="note">Le panneau est à vous — aucun rôle n'est imposé (si votre contenu est un dialogue, posez-lui <code>role="dialog"</code>). <kbd>Tab</kbd> entre dedans depuis le bouton ; <kbd>Échap</kbd> ou « Appliquer » referme et <b>rend le focus au bouton</b>.</p>
+
+  <script type="module">
+    import "../../examples/skin-switch.js";
+    import "../../tools/z-contact/z-contact.js";
+    import "../../core/z-layer/z-layer.js";
+    import "../z-button/z-button.js";
+    import "../z-checkbox/z-checkbox.js";
+    import "./z-popover.js";
+    import "../../examples/code.js";
+
+    /* Section 4 : le pilotage par l'API, et le journal des bascules — juste sous le bouton. */
+    const pilote = document.querySelector("#pilote");
+    const journal = document.querySelector("#journal");
+    document.querySelector("#ouvrir").addEventListener("click", () => pilote.show());
+    document.querySelector("#fermer").addEventListener("click", () => pilote.hide());
+    document.querySelector("#basculer").addEventListener("click", () => pilote.toggle());
+    pilote.addEventListener("toggle", (event) => {
+      journal.textContent = event.detail.open ? "Ouvert (toggle · open: true)." : "Fermé (toggle · open: false).";
+    });
+
+    /* Section 5 : « Appliquer » referme son popover — c'est du code d'auteur, le composant
+       ne sait pas ce qu'est un bouton d'action. */
+    document.querySelector(".appliquer").addEventListener("click", (event) => {
+      event.target.closest("z-popover").hide();
+    });
+
+    /* `?open` dans l'URL : ouvre le premier popover au chargement. Sert à la capture
+       headless (un screenshot ne sait pas cliquer) — sans effet sur l'usage normal. */
+    if (new URLSearchParams(location.search).has("open")) {
+      customElements.whenDefined("z-popover").then(() => document.querySelector("z-popover").show());
+    }
+  </script>
+
+</html>

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <title>z-checkbox-group — démo</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Les composants ne se définiront pas. Lancez <code>node scripts/serve.mjs 5173</code> ' +
+      'puis passez par <code>http://localhost:5173/</code>.</div>'
+    );
+  </script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+  <style>
+    /* Le retour se lit JUSTE SOUS le groupe qui l'a produit — jamais à l'autre bout. */
+    .echo { font-size: .85rem; margin-top: .5rem; }
+    .echo b { color: var(--z-accent); }
+    .row { --z-checkbox-group__direction: row; --z-checkbox-group__gap: 1.4em; }
+    .actions { display: flex; gap: .6rem; }
+
+    /*
+      LA PREUVE DES NOMBRES — l'intitulé écrit « 2 / 3 » tout seul, avec counter(), à
+      partir des deux entiers que le groupe pose. Aucun nœud, aucun JS : une règle d'auteur.
+    */
+    .compte > [part="label"]::after {
+      content: " · " counter(c) " / " counter(t);
+      counter-reset: c var(--z-checkbox-group__count) t var(--z-checkbox-group__total);
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+
+  <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+  <z-contact></z-contact>
+
+  <h1><code>z-checkbox-group</code></h1>
+  <p class="lead">Le niveau <b>groupe</b> des cases : une valeur-liste, une maîtresse « tout cocher » qui reflète la liste, l'exigence « au moins une », un seul <code>name</code> pour le formulaire. Changez la peau en haut à droite.</p>
+
+  <h2>1 · Le groupe canonique — la maîtresse reflète la liste</h2>
+  <div class="stack" data-code>
+    <z-checkbox-group id="interets" name="topics">
+      <span part="label">Vos centres d'intérêt</span>
+      <z-checkbox part="all">Tout cocher</z-checkbox>
+      <z-checkbox value="design">Design</z-checkbox>
+      <z-checkbox value="code" current>Code</z-checkbox>
+      <z-checkbox value="motion">Motion</z-checkbox>
+    </z-checkbox-group>
+  </div>
+  <p class="echo">Liste : <b id="echo-interets">—</b></p>
+  <p class="note">Cochez une case : la maîtresse passe <b>indéterminée</b> ; toutes : elle se coche ; cliquez-la : tout bascule d'un coup, et le groupe émet <b>un</b> <code>change</code>.</p>
+
+  <h2>2 · Présélection par <code class="tag">value</code>, en ligne</h2>
+  <div class="stack" data-code>
+    <z-checkbox-group id="jours" class="row" value="lun mer ven">
+      <span part="label">Jours de livraison</span>
+      <z-checkbox value="lun">Lun</z-checkbox>
+      <z-checkbox value="mar">Mar</z-checkbox>
+      <z-checkbox value="mer">Mer</z-checkbox>
+      <z-checkbox value="jeu">Jeu</z-checkbox>
+      <z-checkbox value="ven">Ven</z-checkbox>
+    </z-checkbox-group>
+  </div>
+  <p class="echo">Liste : <b id="echo-jours">—</b></p>
+  <p class="note">L'espace sépare, comme pour <code>channel="x y"</code>. Le groupe tient ensuite l'attribut à jour : inspectez-le, il dit toujours vrai. <code>row</code> tient en une variable.</p>
+
+  <h2>3 · Les nombres — « 2 / 3 » écrit en CSS pur</h2>
+  <div class="stack" data-code>
+    <z-checkbox-group class="compte">
+      <span part="label">Options</span>
+      <z-checkbox value="a" current>Sauvegarde quotidienne</z-checkbox>
+      <z-checkbox value="b" current>Alertes par e-mail</z-checkbox>
+      <z-checkbox value="c">Accès partagé</z-checkbox>
+    </z-checkbox-group>
+  </div>
+  <p class="note">Le groupe pose <code>--z-checkbox-group__count</code> et <code>__total</code> ; l'intitulé les écrit avec <code>counter()</code> — voir le <code>&lt;style&gt;</code> de cette page. Aucun nœud, aucun JS.</p>
+
+  <h2>4 · Dans un formulaire — <code class="tag">required</code> et <code class="tag">name</code></h2>
+  <form id="formulaire" class="stack" data-code="bloc">
+    <z-checkbox-group name="topics" required>
+      <span part="label">Au moins un sujet <b>(requis)</b></span>
+      <z-checkbox part="all">Tout cocher</z-checkbox>
+      <z-checkbox value="design">Design</z-checkbox>
+      <z-checkbox value="code">Code</z-checkbox>
+      <z-checkbox value="motion" disabled>Motion (indisponible)</z-checkbox>
+    </z-checkbox-group>
+    <div class="actions">
+      <z-button type="submit">Envoyer</z-button>
+      <z-button type="reset" tone="soft">Réinitialiser</z-button>
+    </div>
+  </form>
+  <p class="note" id="envoi">Rien envoyé pour l'instant.</p>
+  <p class="note">Soumettez vide : le groupe <b>tremble</b> et passe en <code class="tag">error</code> ; cochez une case, il s'apaise. Les cases partent sous le <code>name</code> du groupe : <code>topics=design&amp;topics=code</code>. La case verrouillée ne suit pas la maîtresse.</p>
+  <pre class="z-code-manuel">const group = document.querySelector("z-checkbox-group");
+group.value;                      // → ["code"]
+group.value = ["design", "code"]; // coche exactement celles-là, en silence
+group.count;                      // → 2
+group.all;                        // → la maîtresse, ou null
+group.addEventListener("change", () => group.value);</pre>
+
+  <h2>5 · Le groupe entier verrouillé</h2>
+  <div class="stack" data-code>
+    <z-checkbox-group value="push" disabled>
+      <span part="label">Notifications</span>
+      <z-checkbox part="all">Toutes</z-checkbox>
+      <z-checkbox value="push">Push</z-checkbox>
+      <z-checkbox value="mail">E-mail</z-checkbox>
+    </z-checkbox-group>
+  </div>
+  <p class="note"><code class="tag">disabled</code> posé sur le <b>groupe</b> descend sur chaque case et la maîtresse — et remonte avec lui.</p>
+
+  <script type="module">
+    import "../../examples/skin-switch.js";
+    import "../../tools/z-contact/z-contact.js";
+    import "../z-button/z-button.js";
+    import "./z-checkbox-group.js";
+    import "../../examples/code.js";
+
+    /* Le retour s'écrit sous le groupe qui l'a produit (la VUE d'abord). On lit .value
+       du groupe — une liste —, jamais l'événement de la case. */
+    for (const [id, echo] of [["interets", "echo-interets"], ["jours", "echo-jours"]]) {
+      const group = document.getElementById(id);
+      const out = document.getElementById(echo);
+      const show = () => { out.textContent = group.value.join(", ") || "—"; };
+      group.addEventListener("change", show);
+      show();
+    }
+
+    /* Le formulaire : la validation est celle du navigateur (z-button soumet par
+       requestSubmit) — `submit` n'arrive ici que si l'exigence est remplie. */
+    const formulaire = document.querySelector("#formulaire");
+    const envoi = document.querySelector("#envoi");
+    formulaire.addEventListener("submit", (evenement) => {
+      evenement.preventDefault();
+      const donnees = [...new FormData(formulaire)].map(([cle, valeur]) => `${cle}=${valeur}`);
+      envoi.textContent = donnees.length ? `Envoyé : ${donnees.join(" · ")}` : "Envoyé : rien du tout.";
+    });
+    formulaire.addEventListener("reset", () => { envoi.textContent = "Remis à zéro."; });
+  </script>
+
+</html>

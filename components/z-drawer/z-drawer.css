@@ -1,0 +1,98 @@
+/*
+	============================================================
+	z-drawer.css — la géométrie du tiroir
+	------------------------------------------------------------
+	Un z-drawer EST un z-dialog : surface, filet, rayon, ombre, voile, pièces (header ·
+	body · footer) et verrou de page viennent de z-dialog.css, écrit pour
+	`:is(z-dialog, z-drawer)` — et il lit les MÊMES tokens `--z-dialog__*`. Ici, seulement
+	ce qui fait d'une boîte un TIROIR : collé à un bord, toute la hauteur (toute la largeur
+	pour top/bottom), coins arrondis côté intérieur seulement, pas de filet côté écran, et
+	une entrée qui GLISSE depuis son bord — la sortie rejoue le trajet à l'envers.
+
+	`placement` : right (défaut) · left · top · bottom. Le défaut n'est pas écrit dans le
+	HTML (z-drawer le connaît) : `:not([placement])` vaut donc `right`.
+
+	Ne fait PAS : peindre la boîte (z-dialog.css) ni la grammaire d'états (le socle).
+	Requiert : z-dialog.css chargé AVANT (c'est l'ordre de zoe.css) + une peau.
+	Styleguide 32.0
+	============================================================
+*/
+
+z-drawer {
+
+	/*
+		Le panneau — il tient un bord, pas le centre
+		Styleguide 32.1
+
+		Le navigateur centre un <dialog> modal par `margin: auto` et le borne à
+		`calc(100% - 6px - 2em)` : les deux sont levés, le bord décide.
+	*/
+	> dialog {
+		margin: 0;
+		max-width: none;
+		max-height: none;
+		border-radius: 0;
+	}
+
+	/*
+		Droite et gauche — toute la hauteur, une largeur
+		Styleguide 32.2
+	*/
+	&:is(:not([placement]), [placement=right]) > dialog,
+	&[placement=left] > dialog {
+		inset: 0;
+		width: var(--z-drawer__width, min(24em, 90vw));
+		height: auto;
+	}
+	&:is(:not([placement]), [placement=right]) > dialog {
+		left: auto;
+		border-right-width: 0;
+		border-radius: var(--z-dialog__radius, var(--z-radius, 8px)) 0 0 var(--z-dialog__radius, var(--z-radius, 8px));
+	}
+	&[placement=left] > dialog {
+		right: auto;
+		border-left-width: 0;
+		border-radius: 0 var(--z-dialog__radius, var(--z-radius, 8px)) var(--z-dialog__radius, var(--z-radius, 8px)) 0;
+	}
+
+	/*
+		Haut et bas — toute la largeur, une hauteur
+		Styleguide 32.3
+	*/
+	&[placement=top] > dialog,
+	&[placement=bottom] > dialog {
+		inset: 0;
+		width: auto;
+		height: var(--z-drawer__height, min(24em, 90vh));
+	}
+	&[placement=top] > dialog {
+		bottom: auto;
+		border-top-width: 0;
+		border-radius: 0 0 var(--z-dialog__radius, var(--z-radius, 8px)) var(--z-dialog__radius, var(--z-radius, 8px));
+	}
+	&[placement=bottom] > dialog {
+		top: auto;
+		border-bottom-width: 0;
+		border-radius: var(--z-dialog__radius, var(--z-radius, 8px)) var(--z-dialog__radius, var(--z-radius, 8px)) 0 0;
+	}
+
+	/*
+		Le glissement — depuis son bord, et retour par le même chemin
+		Styleguide 32.4
+
+		Comme z-dialog : un seul jeu de @keyframes (l'entrée), la sortie le rejoue à
+		l'envers (`reverse` + `forwards`). Pas de fondu : un panneau de 100 % qui sort de
+		l'écran n'a rien à estomper, et l'opacité ferait voir la page à travers.
+	*/
+	&:state(enter) > dialog { animation: z-drawer-in-right var(--z-dur-enter, .3s) var(--z-ease-spring, ease-out); }
+	&:state(exit)  > dialog { animation: z-drawer-in-right var(--z-dur-exit, .22s) var(--z-ease, ease-in) reverse forwards; }
+	&[placement=left]:is(:state(enter), :state(exit))   > dialog { animation-name: z-drawer-in-left; }
+	&[placement=top]:is(:state(enter), :state(exit))    > dialog { animation-name: z-drawer-in-top; }
+	&[placement=bottom]:is(:state(enter), :state(exit)) > dialog { animation-name: z-drawer-in-bottom; }
+}
+
+/* Sans `to` : l'arrivée est la position de repos — collé à son bord. */
+@keyframes z-drawer-in-right  { from { transform: translateX(100%); } }
+@keyframes z-drawer-in-left   { from { transform: translateX(-100%); } }
+@keyframes z-drawer-in-top    { from { transform: translateY(-100%); } }
+@keyframes z-drawer-in-bottom { from { transform: translateY(100%); } }

@@ -1,0 +1,97 @@
+/*
+	============================================================
+	z-menu.css — le rendu de z-menu : une COLONNE D'ACTIONS dans un panneau de z-popover
+	------------------------------------------------------------
+	Le panneau — sa surface, son ancrage, son entrée/sortie — est peint par z-popover.css,
+	qui nomme la famille (`z-popover, z-menu`) : z-menu EST un z-popover, et ce qui est
+	écrit deux fois divergerait. Ici, seulement ce qu'un menu a en propre : un panneau
+	serré, des items pleine largeur débarrassés de leur habit de bouton, un séparateur.
+
+	Les réglages du panneau passent par les tokens de z-popover, réglés DEPUIS les nôtres
+	(`--z-popover__padding: var(--z-menu__padding, …)`) : l'auteur écrit `--z-menu__…`,
+	et le panneau partagé obéit.
+
+	Requiert : une peau (tokens) + components/z-popover/z-popover.css.
+	Styleguide 34.0
+	============================================================
+*/
+
+/*
+	Le sujet — un z-popover dont le panneau est serré et étroit
+	Styleguide 34.1
+*/
+z-menu {
+	--z-popover__padding: var(--z-menu__padding, .3em);
+	--z-popover__width: var(--z-menu__width, max-content);
+
+	> [part=panel] {
+		min-width: var(--z-menu__min-width, 11em);
+	}
+
+	/*
+		Un item — l'action, pleine largeur, sans l'habit du bouton natif
+		Styleguide 34.2
+
+		Le reset est complet (appearance, border, background, font) : un <button> arrive
+		avec son look système, et la couche classless d'une peau peut en rajouter dans un
+		<form>. Un <a href> reçoit le même habit — `text-decoration: none`, sinon le lien
+		se souligne au milieu des boutons.
+	*/
+	> [part=panel] > [part=item] {
+		appearance: none;
+		display: flex;
+		align-items: center;
+		gap: var(--z-menu--item__gap, .6em);
+		width: 100%;
+		box-sizing: border-box;
+		margin: 0;
+		padding: var(--z-menu--item__padding, .5em .8em);
+		border: 0;
+		border-radius: var(--z-menu--item__radius, max(calc(var(--z-radius, 6px) - .2em), 0px));
+		background: var(--z-menu--item__background, transparent);
+		color: var(--z-menu--item__color, var(--z-ink));
+		font: inherit;
+		text-align: start;
+		text-decoration: none;
+		white-space: nowrap;
+		cursor: pointer;
+		outline: none;
+		transition: background var(--z-dur, .2s) var(--z-ease, ease), color var(--z-dur, .2s) var(--z-ease, ease);
+	}
+
+	/* Survol et focus, UN seul visuel : le survol déplace le focus (JS), les deux ne
+	   désignent donc jamais deux items différents. */
+	> [part=panel] > [part=item]:is(:hover, :focus) {
+		background: var(--z-menu--item__background-over, var(--z-accent-soft, color-mix(in srgb, var(--z-accent) 12%, transparent)));
+		color: var(--z-menu--item__color-over, var(--z-ink));
+	}
+
+	/* L'action dangereuse : encre danger, et son survol se teinte du même rouge. */
+	> [part=panel] > [part=item]:is([tone="danger"], [data-tone="danger"]) {
+		color: var(--z-danger);
+	}
+	> [part=panel] > [part=item]:is([tone="danger"], [data-tone="danger"]):is(:hover, :focus) {
+		background: color-mix(in srgb, var(--z-danger) 12%, transparent);
+		color: var(--z-danger);
+	}
+
+	> [part=panel] > [part=item]:is([disabled], [aria-disabled="true"]) {
+		background: transparent;
+		color: var(--z-disabled);
+		cursor: not-allowed;
+	}
+
+	/*
+		Le séparateur — un filet, qu'il soit <hr> ou <div>
+		Styleguide 34.3
+
+		PIÈGE : le <hr> natif porte un `border: inset` sur les quatre côtés et une marge
+		`auto` ; on le ramène à un seul trait.
+	*/
+	> [part=panel] > [part=separator] {
+		height: 0;
+		margin: var(--z-menu--separator__margin, .3em .4em);
+		border: 0;
+		border-top: var(--z-border-width, 1px) solid var(--z-menu--separator__color, var(--z-line-soft, var(--z-line)));
+	}
+}

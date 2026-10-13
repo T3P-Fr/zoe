@@ -1,0 +1,180 @@
+/*
+	============================================================
+	z-field.css — le rendu de z-field : un contrôle NATIF habillé, ses états visibles
+	------------------------------------------------------------
+	Ce que ce fichier peint : la colonne label › contrôle › aide › erreur ; le contrôle
+	natif aux MÊMES tokens que la couche classless de la peau (filet --z-line, rayon
+	--z-radius, --z-pad-y/--z-pad-x, fonte --z-font, fond --z-surface) — il s'accorde
+	avec elle, il ne lutte pas contre ; et les états que le JS pose (error · success ·
+	filled · disabled), plus le focus, lu en CSS pur (:focus-within).
+
+	Requiert : une peau (tokens). Ni calque, ni preset de mouvement.
+	CE QU'IL NE FAIT PAS : il ne redessine pas le <select> (la flèche reste celle du
+	navigateur) et n'écrit aucun texte — hors le compteur `counter`, un NOMBRE posé par
+	le JS et écrit par counter(), sans nœud.
+	Styleguide 30.0
+	============================================================
+*/
+
+/*
+	Les deux nombres publiés par le composant.
+	Déclarés en <integer> : counter() n'accepte rien d'autre, et une valeur non typée
+	ne s'interpolerait pas.
+	Styleguide 30.1
+*/
+@property --z-field__length { syntax: "<integer>"; inherits: true; initial-value: 0; }
+@property --z-field__max    { syntax: "<integer>"; inherits: true; initial-value: 0; }
+
+/*
+	z-field — le sujet : une colonne
+	Styleguide 30.2
+*/
+z-field {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: var(--z-field__gap, .35em);
+	position: relative;
+	box-sizing: border-box;
+	inline-size: var(--z-field__inline-size, auto);
+	color: var(--z-ink);
+	font-family: var(--z-font);
+	letter-spacing: var(--z-letter, 0);
+
+	/*
+		L'humeur — le socle pose `--z-state__color` sur la liste de balises que z-manifest
+		régénère ; le champ la pose aussi, à l'identique, pour tenir seul (chargé avant la
+		liste, ou sans elle).
+		Styleguide 30.2.1
+	*/
+	--z-state__color: var(--z-accent);
+	&:state(error)    { --z-state__color: var(--z-danger); }
+	&:state(success)  { --z-state__color: var(--z-success); }
+	&:state(disabled) { --z-state__color: var(--z-disabled); }
+
+	/*
+		Le label : petit, en retrait, il prend l'humeur dès que le champ a le focus — le
+		retour naît au-dessus de ce qu'on tape, là où l'œil est déjà.
+		`margin: 0` : la couche classless lui donne un margin-bottom qui doublerait le gap.
+		Styleguide 30.2.2
+	*/
+	> label {
+		display: block;
+		margin: 0;
+		font-size: var(--z-field--label__font-size, var(--z-font-size-sm, .86em));
+		font-weight: var(--z-field--label__font-weight, var(--z-font-weight, 400));
+		color: var(--z-field--label__color, var(--z-ink-soft));
+		transition: color var(--z-dur, .18s) var(--z-ease, ease);
+	}
+	&:focus-within > label { color: var(--z-state__color); }
+
+	/*
+		Le contrôle natif : les tokens de la couche classless (filet, rayon, padding, fonte,
+		surface), pour qu'un <input> dans un z-field et un <input> nu se ressemblent.
+		Styleguide 30.2.3
+	*/
+	> :is(input, textarea, select) {
+		box-sizing: border-box;
+		inline-size: 100%;
+		min-inline-size: 0;
+		margin: 0;
+		padding: var(--z-field--control__padding, var(--z-pad-y, .5em) var(--z-pad-x, .7em));
+		font: inherit;
+		font-family: var(--z-font);
+		font-size: var(--z-field--control__font-size, var(--z-font-size, 1em));
+		letter-spacing: inherit;
+		color: var(--z-field--control__color, var(--z-ink));
+		background: var(--z-field--control__background, var(--z-surface));
+		border: var(--z-border-width, 1px) solid var(--z-field--control__border-color, var(--z-line));
+		border-radius: var(--z-field--control__radius, var(--z-radius, 4px));
+		outline: none;
+		transition:
+			border-color var(--z-dur, .18s) var(--z-ease, ease),
+			box-shadow var(--z-dur, .18s) var(--z-ease-spring, ease),
+			background var(--z-dur, .18s) var(--z-ease, ease);
+	}
+	> :is(input, textarea)::placeholder { color: var(--z-ink-soft); opacity: .75; }
+	> textarea { min-block-size: 5em; resize: vertical; }
+
+	/* Le focus : filet à l'humeur + halo. Sur l'HÔTE (:focus-within) et non sur le contrôle
+	   (:focus) pour que label et contrôle s'allument d'un seul déclencheur. */
+	&:focus-within > :is(input, textarea, select) {
+		border-color: var(--z-state__color);
+		box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-state__color) 30%, transparent));
+	}
+
+	/*
+		Jugé : le filet prend l'humeur (danger ou succès), focus ou pas.
+		Styleguide 30.2.4
+	*/
+	&:is(:state(error), :state(success)) > :is(input, textarea, select) { border-color: var(--z-state__color); }
+
+	/*
+		Verrouillé : tout s'estompe, le contrôle s'enfonce.
+		Styleguide 30.2.5
+	*/
+	&:state(disabled) {
+		cursor: not-allowed;
+		> label, > [part="hint"] { color: var(--z-disabled); }
+		> :is(input, textarea, select) {
+			color: var(--z-disabled);
+			background: var(--z-surface-sunken);
+			cursor: not-allowed;
+		}
+	}
+
+	/*
+		L'aide et l'erreur : la même ligne petite sous le contrôle ; l'erreur en danger.
+		Styleguide 30.2.6
+	*/
+	> [part="hint"],
+	> [part="error"] {
+		display: flex;
+		justify-content: space-between;
+		gap: .6em;
+		margin: 0;
+		font-size: var(--z-field--hint__font-size, var(--z-font-size-sm, .86em));
+		line-height: 1.4;
+	}
+	> [part="hint"] { color: var(--z-field--hint__color, var(--z-ink-soft)); }
+
+	/*
+		L'erreur n'existe qu'en :state(error), et elle ARRIVE (loi Zoé : rien ne pope) :
+		`display` transitionne en allow-discrete, l'entrée part de @starting-style, la
+		sortie fond avant que display ne bascule. Sans ces deux lignes, un display: none
+		couperait net toute transition.
+	*/
+	> [part="error"] {
+		color: var(--z-field--error__color, var(--z-danger));
+		transition:
+			opacity var(--z-dur, .18s) var(--z-ease, ease),
+			translate var(--z-dur, .18s) var(--z-ease-spring, ease),
+			display var(--z-dur, .18s) allow-discrete;
+		@starting-style { opacity: 0; translate: 0 -.35em; }
+	}
+	&:not(:state(error)) > [part="error"] {
+		display: none;
+		opacity: 0;
+		translate: 0 -.35em;
+	}
+}
+
+/*
+	═══ LE COMPTEUR — `counter` écrit « 12 / 80 » en CSS pur ═══
+	Styleguide 30.3
+
+	`counter-reset` avec une custom property : la seule façon d'ÉCRIRE un nombre sans
+	nœud (le tour de z-slider). Il se pose à droite de l'aide — l'aide doit donc exister
+	(vide suffit : `<small part="hint"></small>`). Sans `maxlength` sur le contrôle, le
+	total n'a pas de sens : on n'écrit que la longueur.
+*/
+z-field[counter] > [part="hint"]::after {
+	content: counter(z-length) " / " counter(z-max);
+	counter-reset: z-length var(--z-field__length) z-max var(--z-field__max);
+	margin-inline-start: auto;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+	color: var(--z-field--counter__color, var(--z-ink-soft));
+	transition: color var(--z-dur, .18s) var(--z-ease, ease);
+}
+z-field[counter]:not(:has(> [maxlength])) > [part="hint"]::after { content: counter(z-length); }

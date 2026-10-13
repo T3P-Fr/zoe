@@ -2,8 +2,8 @@
 	============================================================
 	zoe.css — LE POINT D'ENTRÉE UNIQUE. Une page charge ÇA, et rien d'autre.
 	------------------------------------------------------------
-	POURQUOI CE FICHIER EXISTE (2026-07-21, après un ras-le-bol de Christophe, et il
-	avait raison) : chaque page choisissait sa liste de CSS et son ordre. Résultat
+	POURQUOI CE FICHIER EXISTE (2026-07-21) : chaque page choisissait sa liste de CSS
+	et son ordre. Résultat
 	mesuré, le même bouton HighTech : 33,6 px sur la planche de la peau, 48 px sur la
 	démo du composant. La démo de la case ne chargeait même pas le socle — donc pas de
 	`box-sizing`, pas de variants. Douze pages, douze empilements, douze rendus.

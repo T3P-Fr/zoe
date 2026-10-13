@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <title>z-field — démo</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Les composants ne se définiront pas. Lancez <code>node scripts/serve.mjs 5173</code> ' +
+      'puis passez par <code>http://localhost:5173/</code>.</div>'
+    );
+  </script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+  <style>
+    /* Les champs de la démo ont une largeur de lecture : sans elle, un <input> fait 20 caractères. */
+    z-field { --z-field__inline-size: 22em; }
+
+    /*
+      LA PREUVE DE `filled` — un label FLOTTANT, en CSS pur : il se pose dans le champ
+      au repos, et remonte sur le filet dès que le champ a le focus OU une valeur.
+      Rien ici ne touche au composant : un état, une transition.
+    */
+    .flottant > label {
+      position: absolute;
+      left: var(--z-pad-x, .7em);
+      top: 50%;
+      translate: 0 -50%;
+      padding: 0 .3em;
+      font-size: inherit;
+      pointer-events: none;
+      transition: top var(--z-dur) var(--z-ease-spring), translate var(--z-dur) var(--z-ease-spring), font-size var(--z-dur) var(--z-ease);
+    }
+    .flottant:is(:focus-within, :state(filled)) > label {
+      top: 0;
+      font-size: var(--z-font-size-sm);
+      background: var(--z-page);
+    }
+
+    /* Le retour se lit JUSTE SOUS le formulaire qui l'a produit — jamais à l'autre bout. */
+    .actions { display: flex; gap: .6rem; }
+  </style>
+
+  <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+  <z-contact></z-contact>
+
+  <h1><code>z-field</code></h1>
+  <p class="lead">Un champ de formulaire autour d'un contrôle <b>natif</b> : le navigateur garde le clavier, l'autocomplétion et la validation ; Zoé relie le label, l'aide et l'erreur, et rend les <b>états visibles</b>. Rien remplacé, rien injecté. Changez la peau en haut à droite — tout suit.</p>
+
+  <h2>1 · Le champ canonique — tapez, puis sortez du champ</h2>
+  <div class="stack" data-code>
+    <z-field>
+      <label>Adresse e-mail</label>
+      <input type="email" name="email" required placeholder="vous@exemple.fr">
+      <small part="hint">Nous ne la partagerons jamais.</small>
+      <small part="error"></small>
+    </z-field>
+  </div>
+  <p class="note">Le champ ne juge <b>jamais</b> pendant la première frappe. Quittez-le : s'il est invalide, le message du <b>navigateur</b> s'écrit dans <code class="tag">[part=error]</code> laissé vide ; corrigez, il s'efface en direct. Valide et non vide : <code class="tag">success</code>.</p>
+
+  <h2>2 · Les trois contrôles que le champ sait envelopper</h2>
+  <div class="stack" data-code>
+    <z-field>
+      <label>Nom d'utilisateur</label>
+      <input type="text" name="pseudo" required minlength="3" pattern="[a-z0-9_]+">
+      <small part="hint">Minuscules, chiffres et _ — trois caractères au moins.</small>
+      <small part="error"></small>
+    </z-field>
+    <z-field>
+      <label>Pays</label>
+      <select name="pays" required>
+        <option value="">— choisissez —</option>
+        <option>France</option>
+        <option>Belgique</option>
+        <option>Suisse</option>
+        <option>Canada</option>
+      </select>
+      <small part="error"></small>
+    </z-field>
+    <z-field>
+      <label>Votre message</label>
+      <textarea name="message" rows="3" placeholder="Quelques mots…"></textarea>
+      <small part="hint">Facultatif.</small>
+    </z-field>
+  </div>
+  <p class="note"><code class="tag">required</code>, <code class="tag">minlength</code>, <code class="tag">pattern</code> restent sur le contrôle : <b>une seule source</b>. Le champ lit <code>validity</code>, il ne recalcule rien.</p>
+
+  <h2>3 · Le compteur — <code class="tag">counter</code>, écrit en CSS pur</h2>
+  <div class="stack" data-code>
+    <z-field counter>
+      <label>Accroche</label>
+      <textarea name="accroche" maxlength="80" rows="2" placeholder="Quatre-vingts caractères, pas un de plus."></textarea>
+      <small part="hint">Soyez bref.</small>
+    </z-field>
+    <z-field counter>
+      <label>Titre</label>
+      <input type="text" name="titre" placeholder="Sans maxlength : la longueur seule">
+      <small part="hint"></small>
+    </z-field>
+  </div>
+  <p class="note">Le champ pose deux <b>nombres</b> sur l'hôte (<code>--z-field__length</code>, <code>--z-field__max</code>) ; le CSS les écrit avec <code>counter()</code> au bout de l'aide — aucun nœud, aucun texte posé par le JS.</p>
+
+  <h2>4 · Ce que <code class="tag">filled</code> permet — un label flottant, sans JS</h2>
+  <div class="stack" data-code>
+    <z-field class="flottant">
+      <label>Prénom</label>
+      <input type="text" name="prenom">
+    </z-field>
+    <z-field class="flottant">
+      <label>Ville</label>
+      <input type="text" name="ville" value="Lyon">
+    </z-field>
+  </div>
+  <p class="note">Le label est posé <b>dans</b> le champ au repos et remonte sur le filet au focus ou dès qu'il y a une valeur (<code>:state(filled)</code>). Quelques lignes de CSS d'auteur — voir le <code>&lt;style&gt;</code> de cette page.</p>
+
+  <h2>5 · Les états posés à la main</h2>
+  <div class="stack" data-code>
+    <z-field error>
+      <label>Code promo</label>
+      <input type="text" name="promo" value="ETE2O26">
+      <small part="error">Ce code a expiré le 31 août.</small>
+    </z-field>
+    <z-field success>
+      <label>Identifiant</label>
+      <input type="text" name="identifiant" value="c.rousseau">
+      <small part="hint">Disponible.</small>
+    </z-field>
+    <z-field disabled>
+      <label>Référence</label>
+      <input type="text" name="reference" value="ZOE-2026-0142">
+      <small part="hint">Attribuée par le système.</small>
+    </z-field>
+  </div>
+  <p class="note">Une erreur venue du <b>serveur</b> ? Posez <code class="tag">error</code> et votre texte dans <code class="tag">[part=error]</code> : le champ ne le touche pas. <code class="tag">disabled</code> descend sur le contrôle.</p>
+
+  <h2>6 · Dans un formulaire — soumettez vide, puis corrigez</h2>
+  <form id="formulaire" class="stack" data-code="bloc">
+    <z-field>
+      <label>Nom</label>
+      <input type="text" name="nom" required minlength="2" autocomplete="name">
+      <small part="error"></small>
+    </z-field>
+    <z-field>
+      <label>Adresse e-mail</label>
+      <input type="email" name="email" required autocomplete="email">
+      <small part="hint">Pour la confirmation.</small>
+      <small part="error"></small>
+    </z-field>
+    <z-field counter>
+      <label>Message</label>
+      <textarea name="message" required maxlength="120" rows="3"></textarea>
+      <small part="hint"></small>
+      <small part="error"></small>
+    </z-field>
+    <div class="actions">
+      <z-button type="submit">Envoyer</z-button>
+      <z-button type="reset" tone="soft">Réinitialiser</z-button>
+    </div>
+  </form>
+  <p class="note" id="envoi">Rien envoyé pour l'instant.</p>
+  <p class="note">La validation est celle du <b>navigateur</b> : à la soumission, chaque champ refusé passe en <code class="tag">error</code>, écrit son message (la bulle native est retenue), et le focus va au <b>premier</b>. Le reset ramène tout au repos.</p>
+  <pre class="z-code-manuel">const field = document.querySelector("z-field");
+field.control;            // → le &lt;input&gt; natif
+field.valid;              // → la validité native, à l'instant
+field.validate();         // juge maintenant : pose error/success, écrit le message
+field.addEventListener("change", () => field.valid);   // le change du contrôle bulle, intact</pre>
+
+  <script type="module">
+    import "../../examples/skin-switch.js";
+    import "../../tools/z-contact/z-contact.js";
+    import "../z-button/z-button.js";
+    import "./z-field.js";
+    import "../../examples/code.js";
+
+    /*
+      Le formulaire : la validation est celle du navigateur (z-button soumet par
+      requestSubmit) — `submit` n'arrive ici que si tout est valide. On montre ce qui
+      PART vraiment, juste sous le bouton (loi de la vue).
+    */
+    const formulaire = document.querySelector("#formulaire");
+    const envoi = document.querySelector("#envoi");
+    formulaire.addEventListener("submit", (evenement) => {
+      evenement.preventDefault();
+      const donnees = [...new FormData(formulaire)].map(([cle, valeur]) => `${cle}=${String(valeur).slice(0, 24)}`);
+      envoi.textContent = `Envoyé : ${donnees.join(" · ")}`;
+    });
+    formulaire.addEventListener("reset", () => { envoi.textContent = "Remis à zéro."; });
+  </script>
+
+</html>

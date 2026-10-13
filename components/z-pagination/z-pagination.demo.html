@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <title>z-pagination — démo</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Les composants ne se définiront pas. Lancez <code>node scripts/serve.mjs 5173</code> ' +
+      'puis passez par <code>http://localhost:5173/</code>.</div>'
+    );
+  </script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+  <style>
+    /* Le retour se lit JUSTE SOUS la pagination qui l'a produit — jamais à l'autre bout. */
+    .echo { font-size: .85rem; margin-top: .5rem; }
+    .echo b { color: var(--z-accent); }
+  </style>
+
+  <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+  <z-contact></z-contact>
+
+  <h1><code>z-pagination</code></h1>
+  <p class="lead">La pagination <b>SEO-correcte</b> : vous écrivez de vrais liens, Zoé pose le sens, la page courante, les bornes, la fenêtre et le clavier. Rien n'est généré. Changez la peau en haut à droite — tout suit.</p>
+
+  <h2>1 · Des vrais liens — le contrat SEO</h2>
+  <div class="stack" data-code>
+    <z-pagination id="seo" page="3" label="Pages des résultats">
+      <a part="prev" href="?p=2">Précédent</a>
+      <a href="?p=1">1</a>
+      <a href="?p=2">2</a>
+      <a href="?p=3">3</a>
+      <a href="?p=4">4</a>
+      <a href="?p=5">5</a>
+      <a href="?p=6">6</a>
+      <a href="?p=7">7</a>
+      <a href="?p=8">8</a>
+      <a href="?p=9">9</a>
+      <a href="?p=10">10</a>
+      <a href="?p=11">11</a>
+      <a href="?p=12">12</a>
+      <a part="next" href="?p=4">Suivant</a>
+    </z-pagination>
+  </div>
+  <p class="note">Douze liens écrits — le crawler les lit <b>tous</b> ; la fenêtre (<code class="tag">siblings</code> = 1) n'en montre que cinq, et pose « … » devant 12. Cliquez : le lien <b>navigue</b>, la page se recharge avec <code>?p=</code>, et quatre lignes d'auteur relisent la courante.</p>
+  <pre class="z-code-manuel">const pager = document.querySelector("#seo");
+const p = Number(new URLSearchParams(location.search).get("p"));
+if (p) {
+  pager.page = p;                                              // la marque et la fenêtre suivent
+  pager.querySelector("[part=prev]").href = `?p=${p - 1}`;     // ce que le serveur écrirait
+  pager.querySelector("[part=next]").href = `?p=${p + 1}`;
+}</pre>
+
+  <h2>2 · L'application pilote — des boutons, pas de <code class="tag">href</code></h2>
+  <div class="stack" data-code>
+    <z-pagination id="app" page="1" label="Pages du tableau">
+      <button type="button" part="prev">‹</button>
+      <button type="button">1</button>
+      <button type="button">2</button>
+      <button type="button">3</button>
+      <button type="button">4</button>
+      <button type="button">5</button>
+      <button type="button">6</button>
+      <button type="button">7</button>
+      <button type="button">8</button>
+      <button type="button" part="next">›</button>
+    </z-pagination>
+  </div>
+  <p class="echo">Page <b id="echo-app">1</b> — <code>change</code> reçu, <code>detail.page</code> lu.</p>
+  <p class="note">Sans <code>href</code>, rien ne navigue : le composant pose <code class="tag">page</code> lui-même et émet <code>change</code>. Un <code>&lt;button&gt;</code> plutôt qu'un <code>&lt;a&gt;</code> sans href : il reste focusable et a un sens pour le lecteur d'écran. Tabulez, puis <kbd>←</kbd> <kbd>→</kbd> <kbd>Home</kbd> <kbd>End</kbd>.</p>
+
+  <h2>3 · La fenêtre — <code class="tag">siblings</code> 0 et 2</h2>
+  <div class="stack" data-code>
+    <z-pagination page="5" siblings="0">
+      <button type="button">1</button>
+      <button type="button">2</button>
+      <button type="button">3</button>
+      <button type="button">4</button>
+      <button type="button">5</button>
+      <button type="button">6</button>
+      <button type="button">7</button>
+      <button type="button">8</button>
+      <button type="button">9</button>
+      <button type="button">10</button>
+    </z-pagination>
+    <z-pagination page="5" siblings="2">
+      <button type="button">1</button>
+      <button type="button">2</button>
+      <button type="button">3</button>
+      <button type="button">4</button>
+      <button type="button">5</button>
+      <button type="button">6</button>
+      <button type="button">7</button>
+      <button type="button">8</button>
+      <button type="button">9</button>
+      <button type="button">10</button>
+    </z-pagination>
+  </div>
+  <p class="note">Les pages au-delà de <code>siblings</code> crans reçoivent <code class="tag">far</code> (cachées) ; la première et la dernière restent toujours. Cliquez : la fenêtre <b>glisse</b> avec la courante.</p>
+
+  <h2>4 · Les bornes — première et dernière page</h2>
+  <div class="stack" data-code>
+    <z-pagination page="1">
+      <a part="prev" href="?p=0">Précédent</a>
+      <a href="?p=1">1</a>
+      <a href="?p=2">2</a>
+      <a href="?p=3">3</a>
+      <a href="?p=4">4</a>
+      <a part="next" href="?p=2">Suivant</a>
+    </z-pagination>
+    <z-pagination page="4">
+      <a part="prev" href="?p=3">Précédent</a>
+      <a href="?p=1">1</a>
+      <a href="?p=2">2</a>
+      <a href="?p=3">3</a>
+      <a href="?p=4">4</a>
+      <a part="next" href="?p=5">Suivant</a>
+    </z-pagination>
+  </div>
+  <p class="note">« Précédent » est mort sur la première page, « Suivant » sur la dernière : <code>aria-disabled</code> + <code class="tag">disabled</code> + <code>tabindex="-1"</code>. Le lien reste écrit — le crawler le lit, l'utilisateur ne le clique plus.</p>
+
+  <h2>5 · Des liens, mais c'est vous qui décidez — <code>preventDefault()</code></h2>
+  <div class="stack" data-code>
+    <z-pagination id="veto" page="2" label="Pages, interceptées">
+      <a href="?p=1">1</a>
+      <a href="?p=2">2</a>
+      <a href="?p=3">3</a>
+      <a href="?p=4">4</a>
+      <a href="?p=5">5</a>
+    </z-pagination>
+  </div>
+  <p class="echo">Page <b id="echo-veto">2</b> — le lien n'a pas navigué.</p>
+  <pre class="z-code-manuel">pager.addEventListener("change", (event) => {
+  event.preventDefault();          // je prends la main : le lien ne navigue pas
+  charger(event.detail.page);      // la courante est déjà déplacée
+});</pre>
+
+  <script type="module">
+    import "../../examples/skin-switch.js";
+    import "../../tools/z-contact/z-contact.js";
+    import "./z-pagination.js";
+    import "../../examples/code.js";
+
+    /* 1 · Les vrais liens : la page se recharge avec ?p= — on relit la courante, et on
+       écrit les href de prev/next comme le ferait le serveur. */
+    const seo = document.querySelector("#seo");
+    const p = Number(new URLSearchParams(location.search).get("p"));
+    if (p) {
+      seo.page = p;
+      seo.querySelector("[part=prev]").href = `?p=${p - 1}`;
+      seo.querySelector("[part=next]").href = `?p=${p + 1}`;
+    }
+
+    /* 2 · L'application pilote : pas de href, le composant pose `page` et émet change.
+       Le retour s'écrit sous la pagination (la VUE d'abord). */
+    const app = document.querySelector("#app");
+    app.addEventListener("change", (event) => {
+      document.querySelector("#echo-app").textContent = event.detail.page;
+    });
+
+    /* 5 · Des liens, mais l'auteur dit non : preventDefault, et le composant pose `page`. */
+    const veto = document.querySelector("#veto");
+    veto.addEventListener("change", (event) => {
+      event.preventDefault();
+      document.querySelector("#echo-veto").textContent = event.detail.page;
+    });
+  </script>
+
+</html>

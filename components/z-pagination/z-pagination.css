@@ -1,0 +1,136 @@
+/*
+	============================================================
+	z-pagination.css — la pagination : des pastilles, une courante, des « … »
+	------------------------------------------------------------
+	Le composant ne dessine QUE le rythme : chaque lien devient une pastille carrée, la
+	courante se remplit d'accent, les liens `far` disparaissent, un `gap` dessine « … »
+	devant lui (un ::before, jamais un nœud — ADR-0018), les bornes mortes s'estompent.
+	Il habille des <a> (ou des <button>) écrits par l'auteur, enfants DIRECTS (`> *`) :
+	une pagination dans une pagination ne se fait pas repeindre.
+	Requiert : une peau (tokens) + tools/z-motion (@keyframes pop).
+	Styleguide 36.0
+	============================================================
+*/
+
+/*
+	z-pagination — le sujet : une rangée
+	Styleguide 36.1
+*/
+z-pagination {
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--z-pagination__gap, .35em);
+	font-family: var(--z-font);
+	letter-spacing: var(--z-letter, 0);
+	color: var(--z-ink);
+
+	/*
+		L'humeur — le socle pose `--z-state__color` sur la liste de balises que z-manifest
+		régénère ; la pagination la pose aussi, à l'identique, pour tenir seule.
+		Styleguide 36.1.1
+	*/
+	--z-state__color: var(--z-accent);
+	&:state(disabled) { --z-state__color: var(--z-disabled); }
+
+	/*
+		La pastille : un carré au repos (min-width = height), qui s'allonge pour « Précédent ».
+		`appearance: none` + `font: inherit` : un <button> repart du même point qu'un <a>.
+		Styleguide 36.1.2
+	*/
+	> * {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+		position: relative;
+		min-inline-size: var(--z-pagination--page__size, 2.2em);
+		block-size: var(--z-pagination--page__size, 2.2em);
+		padding: 0 var(--z-pagination--page__padding, .6em);
+		margin: 0;
+		font: inherit;
+		font-variant-numeric: tabular-nums;
+		line-height: 1;
+		color: var(--z-pagination--page__color, var(--z-ink));
+		background: var(--z-pagination--page__background, transparent);
+		border: var(--z-border-width, 1px) solid var(--z-pagination--page__border-color, var(--z-line));
+		border-radius: var(--z-pagination--page__radius, var(--z-radius, 4px));
+		text-decoration: none;
+		cursor: pointer;
+		user-select: none;
+		outline: none;
+		appearance: none;
+		-webkit-tap-highlight-color: transparent;
+		transition:
+			color var(--z-dur, .18s) var(--z-ease, ease),
+			background var(--z-dur, .18s) var(--z-ease, ease),
+			border-color var(--z-dur, .18s) var(--z-ease, ease),
+			box-shadow var(--z-dur, .18s) var(--z-ease-spring, ease);
+	}
+
+	/* Survol et focus : l'accent SIGNALE (le lien devient actionnable), le halo au focus
+	   clavier seulement. */
+	> :is(:hover, :focus-visible):not([current], [disabled]) {
+		color: var(--z-accent);
+		border-color: var(--z-accent);
+	}
+	> :focus-visible {
+		box-shadow: 0 0 0 3px var(--z-focus-halo, color-mix(in srgb, var(--z-state__color) 30%, transparent));
+	}
+
+	/*
+		La courante : pleine d'accent, en gras, et elle ARRIVE en ressort (pop rejoue à
+		chaque fois qu'un lien devient courant — c'est l'attribut qui change, pas le nœud).
+		Styleguide 36.1.3
+	*/
+	> [current] {
+		color: var(--z-pagination--page__color-current, var(--z-accent-ink, #fff));
+		background: var(--z-pagination--page__background-current, var(--z-accent));
+		border-color: var(--z-pagination--page__background-current, var(--z-accent));
+		font-weight: var(--z-font-weight-strong, 600);
+		cursor: default;
+		animation: pop var(--z-dur-select, .26s) var(--z-ease-spring, ease-out);
+	}
+
+	/*
+		La fenêtre : `far` disparaît ; `gap` dessine « … » DEVANT sa pastille — un ::before
+		sorti de la boîte (absolu, calé à gauche), la pastille se décale d'autant pour lui
+		laisser la place. Hors flux : la rangée ne saute pas quand la fenêtre glisse.
+		Styleguide 36.1.4
+	*/
+	> [far] { display: none; }
+	> [gap] {
+		margin-inline-start: calc(var(--z-pagination--ellipsis__size, 1.3em) + var(--z-pagination__gap, .35em));
+	}
+	> [gap]::before {
+		content: "\2026";   /* \2026 = … */
+		position: absolute;
+		inset-inline-end: calc(100% + var(--z-pagination__gap, .35em));
+		inline-size: var(--z-pagination--ellipsis__size, 1.3em);
+		text-align: center;
+		color: var(--z-pagination--ellipsis__color, var(--z-ink-soft));
+		font-weight: var(--z-font-weight, 400);
+		pointer-events: none;
+	}
+
+	/*
+		Les bornes mortes et le gel : le lien reste écrit, il ne répond plus.
+		Styleguide 36.1.5
+	*/
+	> [disabled] {
+		color: var(--z-disabled);
+		border-color: var(--z-line);
+		background: transparent;
+		cursor: default;
+		pointer-events: none;
+	}
+	&:state(disabled) > * {
+		color: var(--z-disabled);
+		cursor: default;
+		pointer-events: none;
+	}
+	&:state(disabled) > [current] {
+		background: color-mix(in srgb, var(--z-accent) 32%, var(--z-surface-sunken));
+		border-color: transparent;
+	}
+}

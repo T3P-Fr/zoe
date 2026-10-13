@@ -1,0 +1,86 @@
+/*
+	============================================================
+	z-checkbox-group.css — la mise en rang du choix multiple
+	------------------------------------------------------------
+	Le groupe ne PEINT rien de la case : il l'aligne, titre la liste, sépare la
+	maîtresse d'un filet, et dit l'erreur à l'échelle du GROUPE (l'intitulé prend
+	l'humeur, l'ensemble tremble une fois). Tout le look d'une case appartient à
+	z-checkbox. Aucune balise injectée : le filet est un ::before du conteneur, rangé
+	par `order`.
+	Requiert : une peau (tokens) + components/z-checkbox/z-checkbox.css + tools/z-motion
+	(@keyframes shake).
+	Styleguide 35.0
+	============================================================
+*/
+
+/*
+	Les deux nombres publiés par le composant.
+	Déclarés en <integer> pour que counter() puisse les écrire — « 2 / 3 » dans un
+	intitulé, sans un nœud de plus (voir la démo).
+	Styleguide 35.1
+*/
+@property --z-checkbox-group__count { syntax: "<integer>"; inherits: true; initial-value: 0; }
+@property --z-checkbox-group__total { syntax: "<integer>"; inherits: true; initial-value: 0; }
+
+/*
+	z-checkbox-group — le sujet
+	Une pile de cases (colonne par défaut, `row` en une variable), comme z-radio-group.
+	Styleguide 35.2
+*/
+z-checkbox-group {
+	display: inline-flex;
+	flex-direction: var(--z-checkbox-group__direction, column);
+	flex-wrap: wrap;
+	gap: var(--z-checkbox-group__gap, var(--z-gap, .55em));
+	align-items: var(--z-checkbox-group__align, flex-start);
+	font: inherit;
+	font-family: var(--z-font);
+	outline: none;
+
+	/*
+		L'humeur — le socle pose `--z-state__color` sur la liste de balises que z-manifest
+		régénère ; le groupe la pose aussi, à l'identique, pour tenir seul.
+		Styleguide 35.2.1
+	*/
+	--z-state__color: var(--z-accent);
+	&:state(error)    { --z-state__color: var(--z-danger); }
+	&:state(success)  { --z-state__color: var(--z-success); }
+	&:state(disabled) { --z-state__color: var(--z-disabled); }
+
+	/*
+		L'intitulé et la maîtresse, EN TÊTE. `order` les remonte où que l'auteur les ait
+		écrits ; `flex-basis: 100%` leur donne leur propre ligne quand le groupe est en
+		`row` (en colonne, un pourcentage d'une hauteur indéfinie vaut `content` : sans effet).
+		Styleguide 35.2.2
+	*/
+	> [part="label"] {
+		order: -3;
+		flex: 0 0 100%;
+		font-size: var(--z-checkbox-group--label__font-size, var(--z-font-size-sm, .86em));
+		color: var(--z-checkbox-group--label__color, var(--z-ink-soft));
+		letter-spacing: var(--z-letter, 0);
+		transition: color var(--z-dur, .18s) var(--z-ease, ease);
+	}
+	> [part="all"] { order: -2; }
+
+	/* Le filet sous la maîtresse : un ::before du groupe, glissé entre elle et les cases
+	   par `order`. Il n'existe que s'il y a une maîtresse. */
+	&:has(> [part="all"])::before {
+		content: "";
+		order: -1;
+		flex: 0 0 100%;
+		align-self: stretch;
+		border-top: var(--z-border-width, 1px) solid var(--z-checkbox-group--rule__color, var(--z-line-soft));
+	}
+
+	/*
+		Jugé / verrouillé. L'erreur est celle du GROUPE (« cochez-en au moins une ») :
+		l'intitulé prend l'humeur et l'ensemble tremble — pas une case en particulier. Le
+		verrou, lui, est descendu par le JS sur chaque case (elles se peignent seules) ;
+		ici, l'intitulé suit.
+		Styleguide 35.2.3
+	*/
+	&:is(:state(error), :state(success)) > [part="label"] { color: var(--z-state__color); }
+	&:state(error) { animation: shake var(--z-dur-release, .32s) var(--z-ease, ease); }
+	&:state(disabled) > [part="label"] { color: var(--z-disabled); }
+}

@@ -12,7 +12,7 @@
 	  1. L'ANGLE EST CASSÉ, JAMAIS ARRONDI. 2px, pas un de plus : de quoi adoucir
 	     l'arête, pas de quoi lire « bouton rond ». Rien ici n'est une pastille.
 	     (Seul le rond d'une radio l'est : c'est une FORME de sens, pas une décoration.)
-	     ⚠ RÉVISÉ le 2026-07-20 par Christophe (« légèrement arrondi ») — la source dit
+	     ⚠ RÉVISÉ le 2026-07-20 (décision produit : « légèrement arrondi ») — la source dit
 	     0px. C'est un écart ASSUMÉ à la source, pas une dérive de mémoire : la loi des
 	     peaux interdit de redessiner sans lui, pas de décider avec lui.
 	  2. LE FILET, JAMAIS L'APLAT. Tout se délimite par un trait de 1px. Une surface
@@ -150,7 +150,7 @@
 	--z-scale-xl: 1.4;
 
 	/* FORME — l'angle est CASSÉ, pas arrondi (loi 1, révisée le 2026-07-20 par
-	   Christophe : « légèrement arrondi »). 2px : assez pour adoucir l'arête, trop peu
+	   décision produit : « légèrement arrondi »). 2px : assez pour adoucir l'arête, trop peu
 	   pour qu'on lise « bouton rond ». Le filet fait 1px, toujours (loi 2). */
 	--z-radius: 2px;
 	--z-radius-pill: 2px;             /* même les « pills » restent des rectangles ici */
@@ -206,7 +206,7 @@
 	--z-contact-color: var(--z-accent);
 
 	/* PAS de remplissage — essayé le 2026-07-20, retiré aussitôt : la tache bleue
-	   « sortait d'on ne sait où » (Christophe). Le contour seul suffit et respecte la
+	   « sortait d'on ne sait où » (décision produit). Le contour seul suffit et respecte la
 	   loi 2. La recette expose `--z-contact-fill` si une autre peau en veut un. */
 
 	color-scheme: light;
@@ -255,6 +255,39 @@ z-button[tone="main"] {
 	box-shadow:
 		0 0 0 1px color-mix(in oklab, var(--z-accent) 30%, transparent),
 		0 12px 30px color-mix(in oklab, var(--z-accent) 22%, transparent);
+}
+
+/* ==========================================================================
+   CE QU'ELLE PEINT — le panneau flottant (z-popover, z-menu)   Styleguide hightech.popover
+   --------------------------------------------------------------------------
+   Loi 3 : ZÉRO ombre portée, zéro élévation. Un panneau qui s'ouvre se délimite au
+   filet (loi 2), il ne « flotte » pas au-dessus de la planche. Le composant propose une
+   ombre douce en repli (une peau sans avis la garde) : HighTech l'éteint d'un token.
+   Le reste — angle 2px, filet --z-line, surface raised, mono — vient des tokens de
+   fondation, sans une ligne de plus.
+   ====================================================================== */
+z-popover, z-menu {
+	--z-popover__shadow: none;
+}
+
+/* ==========================================================================
+   CE QU'ELLE PEINT — la boîte modale et le tiroir  Styleguide hightech.dialog
+   --------------------------------------------------------------------------
+   PORTÉ DE LA SOURCE : FullConcept--HighTech.html, frames FB-04 « Modale » (un cadre
+   au filet, une ligne de titre au-dessus du contenu) et DP-04 « Tiroir » (un panneau
+   tenu au bord par un seul filet, côté contenu). Les lois tranchent le reste :
+     · loi 3 — ZÉRO ombre portée : le voile suffit à décoller la boîte ;
+     · loi 2 — LE FILET : la boîte s'encadre d'un trait fort, le titre et les actions
+       se séparent du contenu par un trait ordinaire.
+   Quatre tokens, aucune règle : z-dialog.css lit déjà le rayon (2px), la surface et
+   l'encre de la peau. z-drawer lit les mêmes tokens (c'est un z-dialog).
+   ====================================================================== */
+z-dialog,
+z-drawer {
+	--z-dialog__shadow: none;
+	--z-dialog__border-color: var(--z-line-strong);
+	--z-dialog--header__border-color: var(--z-line);
+	--z-dialog--footer__border-color: var(--z-line);
 }
 
 /* ==========================================================================

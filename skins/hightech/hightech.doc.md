@@ -4,7 +4,7 @@
 > [`source/FullConcept--HighTech.html`](./source/FullConcept--HighTech.html), le
 > référentiel « Atomes de composants web ». Avant de toucher **une** valeur : ouvrir la
 > source et comparer. Si la source manque un jour : **s'arrêter et demander**, ne pas
-> redessiner de mémoire. C'est comme ça qu'on avait perdu son essence une première fois.
+> redessiner de mémoire. Redessinée de mémoire, la peau perd son essence.
 
 ## Les cinq lois (écrites en interdits)
 
@@ -34,7 +34,7 @@ Les panneaux sont **blancs** sur ce papier greige : c'est ce contraste-là qui f
 
 ## Vérifier qu'on n'a pas dérivé
 
-Ouvre **[`hightech.demo.html`](./hightech.demo.html)** : les composants Zoé sous la peau
+Ouvrez **[`hightech.demo.html`](./hightech.demo.html)** : les composants Zoé sous la peau
 **à gauche**, la capture de la source **à droite**. Un écart se *voit* — il ne se discute
 pas. C'est le contrôle à faire après toute modification de la peau **ou** d'un composant.
 

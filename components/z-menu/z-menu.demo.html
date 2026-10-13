@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <title>z-menu — démo</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Les composants ne se définiront pas. Lancez <code>node scripts/serve.mjs 5173</code> ' +
+      'puis passez par <code>http://localhost:5173/</code>.</div>'
+    );
+  </script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+  <style>
+    /* La coche d'un menu de BASCULES (section 4) : du décor d'auteur, pas du composant —
+       on montre qu'un item peut porter son propre état. */
+    .bascule[aria-checked="true"]::before { content: "✓"; }
+    .bascule::before { content: ""; display: inline-block; width: 1em; }
+  </style>
+
+  <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+  <z-contact></z-contact>
+
+  <h1><code>z-menu</code></h1>
+  <p class="lead">Un <b>menu d'actions</b> (ARIA « menu button ») bâti sur <code>z-popover</code> : l'ancrage, le top layer et l'animation sont hérités ; z-menu ajoute les rôles, le clavier et l'activation. Vous écrivez les items ; Zoé les relie. Changez la peau en haut à droite — tout suit.</p>
+
+  <h2>1 · Le menu d'actions — <code class="tag">&lt;z-menu&gt;</code></h2>
+  <div class="stack" data-code>
+    <z-menu id="actions">
+      <z-button part="trigger" type="button">Actions ▾</z-button>
+      <div part="panel">
+        <button part="item" value="rename">Renommer</button>
+        <button part="item" value="duplicate">Dupliquer</button>
+        <hr part="separator">
+        <button part="item" value="delete" tone="danger">Supprimer</button>
+      </div>
+    </z-menu>
+  </div>
+  <p class="note" id="choix">Aucune action choisie pour l'instant.</p>
+  <p class="note">Ouvrez au clic, à <kbd>Entrée</kbd>, <kbd>Espace</kbd> ou <kbd>↓</kbd> (<kbd>↑</kbd> entre par le dernier item). Dedans : <kbd>↓</kbd>/<kbd>↑</kbd> en boucle, <kbd>Home</kbd>/<kbd>End</kbd>, une lettre saute à l'item qui commence par elle (« s » → Supprimer), <kbd>Entrée</kbd>/<kbd>Espace</kbd> activent, <kbd>Échap</kbd> ferme et rend le focus au bouton. Chaque activation émet <code>select</code> — le composant émet, la page décide.</p>
+
+  <h2>2 · Des liens — un <code class="tag">&lt;a href&gt;</code> est un item qui navigue</h2>
+  <div class="stack" data-code>
+    <z-menu>
+      <z-button part="trigger" type="button" tone="complement">Aller à ▾</z-button>
+      <div part="panel">
+        <a part="item" href="#top">Haut de page</a>
+        <a part="item" href="#desactives">Items désactivés</a>
+        <a part="item" href="#bascules">Menu de bascules</a>
+        <hr part="separator">
+        <a part="item" href="../z-popover/z-popover.demo.html">Démo de z-popover</a>
+      </div>
+    </z-menu>
+  </div>
+  <p class="note">Le composant ne touche pas au clic d'un lien : il émet <code>select</code>, ferme, et le navigateur navigue comme d'habitude. Un lien dans un menu n'est plus un arrêt de tabulation (<code>tabindex="-1"</code>) — c'est le menu qui en est un.</p>
+
+  <h2 id="desactives">3 · Items désactivés — <code class="tag">disabled</code>, <code class="tag">aria-disabled</code></h2>
+  <div class="stack" data-code>
+    <z-menu>
+      <z-button part="trigger" type="button" tone="complement">Fichier ▾</z-button>
+      <div part="panel">
+        <button part="item" value="new">Nouveau</button>
+        <button part="item" value="open">Ouvrir…</button>
+        <button part="item" value="save" disabled>Enregistrer</button>
+        <button part="item" value="export" aria-disabled="true">Exporter…</button>
+        <hr part="separator">
+        <button part="item" value="close">Fermer</button>
+      </div>
+    </z-menu>
+  </div>
+  <p class="note">Les deux formes sont sautées par les flèches et ignorées au clic. <code>aria-disabled</code> garde l'item lisible par un lecteur d'écran (il existe, il est juste indisponible) ; <code>disabled</code> le sort tout à fait.</p>
+
+  <h2 id="bascules">4 · Rester ouvert — <code class="tag">preventDefault()</code> sur <code class="tag">select</code></h2>
+  <div class="stack" data-code>
+    <z-menu id="affichage">
+      <z-button part="trigger" type="button" tone="complement">Affichage ▾</z-button>
+      <div part="panel">
+        <button part="item" class="bascule" role="menuitemcheckbox" aria-checked="true" value="grid">Grille</button>
+        <button part="item" class="bascule" role="menuitemcheckbox" aria-checked="false" value="rulers">Règles</button>
+        <button part="item" class="bascule" role="menuitemcheckbox" aria-checked="true" value="guides">Guides</button>
+      </div>
+    </z-menu>
+  </div>
+<pre class="z-code-manuel">&lt;!-- chaque item porte SON état, écrit par l'auteur (le code affiché ci-dessus
+     retire role/aria-*, d'ordinaire posés par Zoé — ici c'est vous qui les écrivez) --&gt;
+&lt;button part="item" role="menuitemcheckbox" aria-checked="true" value="grid"&gt;Grille&lt;/button&gt;
+
+affichage.addEventListener("select", (event) => {
+  event.preventDefault();                       // le menu reste ouvert
+  const item = event.detail.item;
+  item.setAttribute("aria-checked", String(item.getAttribute("aria-checked") !== "true"));
+});</pre>
+  <p class="note">Un menu de <b>bascules</b> : chaque item porte son état (<code>role="menuitemcheckbox"</code> + <code>aria-checked</code> — z-menu respecte un rôle déjà posé), et <code>preventDefault()</code> sur <code>select</code> garde le menu ouvert. La coche est trois lignes de CSS d'auteur.</p>
+
+  <h2>5 · Hérité de z-popover — <code class="tag">placement</code>, <code class="tag">align</code></h2>
+  <div class="stack" data-code>
+    <z-menu placement="top" align="end">
+      <z-button part="trigger" type="button" tone="complement">Vers le haut, calé à droite ▾</z-button>
+      <div part="panel">
+        <button part="item">Première action</button>
+        <button part="item">Deuxième action</button>
+        <button part="item">Troisième action</button>
+      </div>
+    </z-menu>
+  </div>
+  <p class="note">Tout ce que sait z-popover, z-menu le sait : le côté, le bord d'alignement, le retournement quand ça déborde, le suivi du défilement, <code>open</code> et l'événement <code>toggle</code>. Sans <code>value</code>, c'est le texte de l'item qui part dans <code>select</code>.</p>
+
+  <script type="module">
+    import "../../examples/skin-switch.js";
+    import "../../tools/z-contact/z-contact.js";
+    import "../../core/z-layer/z-layer.js";
+    import "../z-button/z-button.js";
+    import "./z-menu.js";
+    import "../../examples/code.js";
+
+    /* Section 1 : ce que la page reçoit, écrit JUSTE SOUS le menu (loi de la vue). */
+    const choix = document.querySelector("#choix");
+    document.querySelector("#actions").addEventListener("select", (event) => {
+      choix.textContent = `select · value: "${event.detail.value}" — item : <${event.detail.item.tagName.toLowerCase()}>${event.detail.item.textContent.trim()}</…>`;
+    });
+
+    /* Section 4 : le menu de bascules — preventDefault() garde le menu ouvert, et c'est
+       l'AUTEUR qui porte l'état coché (le composant ne sait pas ce qu'est une colonne). */
+    document.querySelector("#affichage").addEventListener("select", (event) => {
+      event.preventDefault();
+      const item = event.detail.item;
+      item.setAttribute("aria-checked", String(item.getAttribute("aria-checked") !== "true"));
+    });
+
+    /* `?open` dans l'URL : ouvre le premier menu au chargement. Sert à la capture
+       headless (un screenshot ne sait pas cliquer) — sans effet sur l'usage normal. */
+    if (new URLSearchParams(location.search).has("open")) {
+      customElements.whenDefined("z-menu").then(() => document.querySelector("z-menu").show());
+    }
+  </script>
+
+</html>

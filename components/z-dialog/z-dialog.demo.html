@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <title>z-dialog — démo</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Les composants ne se définiront pas. Lancez <code>node scripts/serve.mjs 5173</code> ' +
+      'puis passez par <code>http://localhost:5173/</code>.</div>'
+    );
+  </script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+
+  <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+  <z-contact></z-contact>
+
+  <h1><code>z-dialog</code></h1>
+  <p class="lead">Une boîte modale bâtie sur le <code>&lt;dialog&gt;</code> <b>natif</b> : le navigateur donne le piège de focus, la page inerte et <kbd>Échap</kbd> ; Zoé ajoute les états, l'entrée et la sortie animées, les déclencheurs déclaratifs et le light-dismiss. Changez la peau en haut à droite — tout suit.</p>
+
+  <h2>1 · La boîte canonique — <code class="tag">commandfor</code> + <code class="tag">command</code></h2>
+  <div class="stack" data-code="bloc">
+    <z-button type="button" commandfor="confirm" command="show-modal">Supprimer…</z-button>
+    <z-dialog id="confirm" light-dismiss>
+      <dialog>
+        <header part="header"><h2>Supprimer ce fichier ?</h2></header>
+        <p part="body">Cette action est définitive. <kbd>Échap</kbd> ou un clic sur le fond annulent.</p>
+        <footer part="footer">
+          <z-button type="button" command="close" tone="soft">Annuler</z-button>
+          <z-button type="button" command="close" value="delete" tone="danger">Supprimer</z-button>
+        </footer>
+      </dialog>
+    </z-dialog>
+  </div>
+  <p class="note" id="verdict">Rien décidé pour l'instant. Aucune ligne de JS pour ouvrir ni fermer : le déclencheur <b>vise l'id du z-dialog</b>, jamais le <code>&lt;dialog&gt;</code> interne. Le bouton qui ferme donne sa <code>value</code> au <code>returnValue</code>.</p>
+
+  <h2>2 · Les cinq placements — et l'API JS</h2>
+  <div class="stack" data-code="bloc">
+    <div class="rangee">
+      <z-button type="button" data-placement="center">center</z-button>
+      <z-button type="button" data-placement="top">top</z-button>
+      <z-button type="button" data-placement="bottom">bottom</z-button>
+      <z-button type="button" data-placement="left">left</z-button>
+      <z-button type="button" data-placement="right">right</z-button>
+    </div>
+    <z-dialog id="place" light-dismiss>
+      <dialog>
+        <header part="header"><h2>Placée en <span id="ou">center</span></h2></header>
+        <p part="body">Le centre surgit ; chaque bord glisse depuis son côté. Cliquez le fond pour fermer.</p>
+      </dialog>
+    </z-dialog>
+  </div>
+  <pre class="z-code-manuel">boite.placement = "top";     // ou l'attribut placement="top"
+boite.show();                // dialog.showModal() + l'entrée
+await boite.close("ok");     // joue la sortie, PUIS ferme — returnValue = "ok"</pre>
+  <p class="note">Une seule boîte, cinq déclencheurs : le programme choisit où elle se pose avant de l'ouvrir. <code>open</code> reste l'attribut source de vérité — <code>show()</code> ne fait que le poser.</p>
+
+  <h2>3 · Un formulaire <code class="tag">method="dialog"</code></h2>
+  <div class="stack" data-code="bloc">
+    <z-button type="button" commandfor="rename" command="show-modal">Renommer…</z-button>
+    <z-dialog id="rename">
+      <dialog>
+        <form method="dialog">
+          <header part="header"><h2>Renommer le fichier</h2></header>
+          <div part="body">
+            <label for="nom">Nouveau nom</label>
+            <input id="nom" name="nom" value="rapport.pdf" required autofocus>
+          </div>
+          <footer part="footer">
+            <button type="button" command="close">Annuler</button>
+            <button value="rename">Renommer</button>
+          </footer>
+        </form>
+      </dialog>
+    </z-dialog>
+  </div>
+  <p class="note" id="renomme">Rien renommé pour l'instant. Des boutons <b>natifs</b> cette fois : la soumission ferme la boîte après validation (videz le champ, puis Entrée), et la <code>value</code> du bouton soumetteur devient <code>returnValue</code>. Zoé n'intercepte que pour jouer la sortie d'abord.</p>
+
+  <h2>4 · Refuser la fermeture — l'événement <code class="tag">cancel</code></h2>
+  <div class="stack" data-code="bloc">
+    <z-button type="button" commandfor="brouillon" command="show-modal">Écrire un mot…</z-button>
+    <z-dialog id="brouillon" light-dismiss>
+      <dialog>
+        <header part="header"><h2>Un mot</h2></header>
+        <div part="body"><textarea id="mot" rows="3" placeholder="Tapez quelque chose, puis Échap."></textarea></div>
+        <footer part="footer">
+          <z-button type="button" command="request-close" tone="soft">Fermer</z-button>
+          <z-button type="button" command="close" value="sent">Envoyer</z-button>
+        </footer>
+      </dialog>
+    </z-dialog>
+  </div>
+  <pre class="z-code-manuel">brouillon.addEventListener("cancel", (evenement) => {
+  if (mot.value.trim()) evenement.preventDefault();   // un brouillon non vide ne se perd pas
+});</pre>
+  <p class="note" id="garde"><kbd>Échap</kbd>, le clic sur le fond et <code>command="request-close"</code> passent tous par <code>cancel</code> (annulable) : un seul écouteur garde les trois portes. « Envoyer » (<code>command="close"</code>) ferme sans demander.</p>
+
+  <script type="module">
+    import "../../examples/skin-switch.js";
+    import "../../tools/z-contact/z-contact.js";
+    import "../../core/z-layer/z-layer.js";
+    import "../z-button/z-button.js";
+    import "./z-dialog.js";
+    import "../../examples/code.js";
+
+    /* 1 · Le verdict se lit dans l'événement `close` — rien d'autre à câbler. */
+    const confirmation = document.querySelector("#confirm");
+    const verdict = document.querySelector("#verdict");
+    confirmation.addEventListener("close", (evenement) => {
+      verdict.textContent = evenement.detail.returnValue === "delete"
+        ? "Supprimé — returnValue = « delete »."
+        : "Annulé — returnValue vide.";
+    });
+
+    /* 2 · Une boîte, cinq déclencheurs : le programme dit où, puis ouvre. */
+    const place = document.querySelector("#place");
+    const ou = document.querySelector("#ou");
+    for (const bouton of document.querySelectorAll("[data-placement]")) {
+      bouton.addEventListener("click", () => {
+        place.placement = bouton.dataset.placement;
+        ou.textContent = place.placement;
+        place.show();
+      });
+    }
+
+    /* 3 · Le formulaire : returnValue = la value du bouton soumetteur. Le natif ne vide
+       pas returnValue à l'annulation : on le remet à zéro à l'ouverture. */
+    const rename = document.querySelector("#rename");
+    const renomme = document.querySelector("#renomme");
+    rename.addEventListener("open", () => { rename.returnValue = ""; });
+    rename.addEventListener("close", (evenement) => {
+      const nom = rename.querySelector("#nom").value;
+      renomme.textContent = evenement.detail.returnValue === "rename"
+        ? `Renommé en « ${nom} » — returnValue = « rename ».`
+        : "Annulé — returnValue vide.";
+    });
+
+    /* 4 · Refuser Échap, le fond et request-close tant que le brouillon n'est pas vide. */
+    const brouillon = document.querySelector("#brouillon");
+    const mot = document.querySelector("#mot");
+    const garde = document.querySelector("#garde");
+    brouillon.addEventListener("cancel", (evenement) => {
+      if (!mot.value.trim()) return;
+      evenement.preventDefault();
+      garde.textContent = "Fermeture refusée : le brouillon n'est pas vide. Effacez-le, ou « Envoyer ».";
+    });
+    brouillon.addEventListener("close", (evenement) => {
+      garde.textContent = evenement.detail.returnValue === "sent" ? "Envoyé." : "Fermé, brouillon vide.";
+    });
+
+    /* `?open` dans l'URL : ouvre la première boîte au chargement — pour la capture
+       d'écran headless de l'état ouvert. Sans effet sur l'usage normal de la page. */
+    if (new URLSearchParams(location.search).has("open")) confirmation.show();
+  </script>
+
+</html>

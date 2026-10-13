@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <title>z-drawer — démo</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Les composants ne se définiront pas. Lancez <code>node scripts/serve.mjs 5173</code> ' +
+      'puis passez par <code>http://localhost:5173/</code>.</div>'
+    );
+  </script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+  <style>
+    /* Le décor d'une navigation dans le tiroir — propre à cette page, pas au composant. */
+    nav[part=body] { display: flex; flex-direction: column; gap: .4em; }
+    nav[part=body] a { color: var(--z-ink); text-decoration: none; padding: .5em .6em; border-radius: var(--z-radius); }
+    nav[part=body] a:hover, nav[part=body] a:focus-visible { background: var(--z-accent-soft); color: var(--z-accent); outline: none; }
+    .filtres label { display: flex; align-items: center; gap: .5em; margin: .3em 0; }
+  </style>
+
+  <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+  <z-contact></z-contact>
+
+  <h1><code>z-drawer</code></h1>
+  <p class="lead">Un panneau latéral modal : un <code>z-dialog</code> <b>collé à un bord</b>, sur toute la hauteur, qui glisse depuis son côté. Même <code>&lt;dialog&gt;</code> natif, mêmes déclencheurs, même fermeture animée. Changez la peau en haut à droite — tout suit.</p>
+
+  <h2>1 · Le tiroir canonique — une navigation, à droite</h2>
+  <div class="stack" data-code="bloc">
+    <z-button type="button" commandfor="menu" command="show-modal">Menu</z-button>
+    <z-drawer id="menu" light-dismiss>
+      <dialog>
+        <header part="header">
+          <h2>Menu</h2>
+          <z-button type="button" command="close" tone="soft">Fermer</z-button>
+        </header>
+        <nav part="body">
+          <a href="#accueil">Accueil</a>
+          <a href="#catalogue">Catalogue</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </dialog>
+    </z-drawer>
+  </div>
+  <p class="note" id="menu-note">Rien choisi pour l'instant. Le déclencheur vise l'<b>id du z-drawer</b> ; <kbd>Échap</kbd>, le bouton Fermer ou un clic sur le fond referment — en animé, le panneau repart par où il est venu.</p>
+
+  <h2>2 · Les quatre bords</h2>
+  <div class="stack" data-code="bloc">
+    <div class="rangee">
+      <z-button type="button" data-placement="right">right</z-button>
+      <z-button type="button" data-placement="left">left</z-button>
+      <z-button type="button" data-placement="top">top</z-button>
+      <z-button type="button" data-placement="bottom">bottom</z-button>
+    </div>
+    <z-drawer id="bord" light-dismiss>
+      <dialog>
+        <header part="header"><h2>Depuis <span id="ou">right</span></h2></header>
+        <p part="body">Droite et gauche prennent toute la hauteur ; haut et bas toute la largeur. Cliquez le fond pour fermer.</p>
+      </dialog>
+    </z-drawer>
+  </div>
+  <pre class="z-code-manuel">tiroir.placement = "left";   // ou l'attribut placement="left"
+tiroir.show();</pre>
+  <p class="note">Le défaut, <code>right</code>, ne s'écrit pas : un <code>&lt;z-drawer&gt;</code> sans attribut sort de la droite. Les coins ne s'arrondissent que côté intérieur ; le filet tombe côté écran.</p>
+
+  <h2>3 · Des filtres dans un <code class="tag">&lt;form method="dialog"&gt;</code></h2>
+  <div class="stack" data-code="bloc">
+    <z-button type="button" commandfor="filtres" command="show-modal">Filtrer…</z-button>
+    <z-drawer id="filtres" placement="left">
+      <dialog>
+        <form method="dialog" class="filtres">
+          <header part="header"><h2>Filtres</h2></header>
+          <div part="body">
+            <label><input type="checkbox" name="stock" checked> En stock seulement</label>
+            <label><input type="checkbox" name="promo"> En promotion</label>
+            <label><input type="checkbox" name="neuf"> Nouveautés</label>
+          </div>
+          <footer part="footer">
+            <button type="button" command="close">Annuler</button>
+            <button value="apply">Appliquer</button>
+          </footer>
+        </form>
+      </dialog>
+    </z-drawer>
+  </div>
+  <p class="note" id="filtres-note">Aucun filtre appliqué. La soumission ferme le tiroir (sortie jouée d'abord) et <code>returnValue</code> reçoit la <code>value</code> du bouton soumetteur ; Annuler ferme sans rien appliquer.</p>
+
+  <script type="module">
+    import "../../examples/skin-switch.js";
+    import "../../tools/z-contact/z-contact.js";
+    import "../../core/z-layer/z-layer.js";
+    import "../z-button/z-button.js";
+    import "./z-drawer.js";
+    import "../../examples/code.js";
+
+    /* 1 · Un lien choisi ferme le tiroir — code d'auteur, le composant ne connaît pas
+       ses liens (zéro logique métier). */
+    const menu = document.querySelector("#menu");
+    const menuNote = document.querySelector("#menu-note");
+    menu.addEventListener("click", (evenement) => {
+      const lien = evenement.target.closest("a");
+      if (!lien) return;
+      evenement.preventDefault();
+      menuNote.textContent = `Choisi : ${lien.textContent}.`;
+      menu.close(lien.textContent);
+    });
+
+    /* 2 · Un tiroir, quatre déclencheurs : le programme dit le bord, puis ouvre. */
+    const bord = document.querySelector("#bord");
+    const ou = document.querySelector("#ou");
+    for (const bouton of document.querySelectorAll("[data-placement]")) {
+      bouton.addEventListener("click", () => {
+        bord.placement = bouton.dataset.placement;
+        ou.textContent = bord.placement;
+        bord.show();
+      });
+    }
+
+    /* 3 · Les filtres : lus dans le formulaire quand le tiroir se ferme sur « apply ». */
+    const filtres = document.querySelector("#filtres");
+    const filtresNote = document.querySelector("#filtres-note");
+    filtres.addEventListener("open", () => { filtres.returnValue = ""; });
+    filtres.addEventListener("close", (evenement) => {
+      if (evenement.detail.returnValue !== "apply") { filtresNote.textContent = "Annulé — rien appliqué."; return; }
+      const choisis = [...new FormData(filtres.querySelector("form")).keys()];
+      filtresNote.textContent = choisis.length ? `Appliqué : ${choisis.join(" · ")}.` : "Appliqué : aucun filtre.";
+    });
+
+    /* `?open` dans l'URL : ouvre le premier tiroir au chargement — pour la capture
+       d'écran headless de l'état ouvert. Sans effet sur l'usage normal de la page. */
+    if (new URLSearchParams(location.search).has("open")) menu.show();
+  </script>
+
+</html>
