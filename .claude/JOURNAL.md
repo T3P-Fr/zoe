@@ -2,6 +2,35 @@
 
 ## Historique
 
+## Session du 2026-10-13 — LA FINITION (carte blanche)
+
+**Impact (1-5) :** 5
+
+**Fait :**
+- Branche `finition`, fusionnée dans `master`. 48 éléments (2 core · 10 tools · 36 composants),
+  65 pages, `npm run check` vert, 27 tests, 72 démos × peaux sans erreur console.
+- **IA/MCP** : `docs/GRAMMAR.md`, `llms.txt` + `llms-full.txt` à la racine, `dist/zoe.json`,
+  serveur MCP `scripts/z-mcp` (7 outils, `.mcp.json`), `tools/z-lint` (la console qui corrige),
+  `example` + `members` dans chaque `static api`.
+- **7 composants neufs** : z-field, z-checkbox-group, z-pagination, z-dialog, z-drawer,
+  z-popover, z-menu. **24 docs + démos** écrites pour les composants orphelins, 14 bugs corrigés.
+- **Socle** : fix de la capture du pointeur (un `<button>` natif dans un z-element reçoit son click).
+- **Doc pro** : viewer sur zoe.json, accueil généré, intro réécrite, vouvoiement, zéro prénom,
+  README, CHANGELOG, package.json, zoe.js. Fiche : `.claude/concepts/2026-10-13--finition-mcp-doc-pro.md`.
+
+**En cours :**
+- Rien. Tout est commité sur `master` (non poussé).
+
+**Décisions :**
+- Le natif reste natif : z-field enveloppe `<input>`, z-dialog enveloppe `<dialog>`, z-popover
+  s'appuie sur l'API Popover, z-pagination laisse l'auteur écrire ses liens.
+- Une source (le code) → toutes les sorties ; le rouge (`npm run check`) décide.
+
+**Prochain pas :**
+- **L'œil de Christophe sur le mouvement** des sorties animées neuves (tag, alert, dialog,
+  drawer, popover, menu). Trancher les écarts de nommage tokens ↔ rôles et la piste trop
+  pâle de HighTech. Décider la licence.
+
 ## Session du 2026-08-07 — les CAPTEURS
 
 **Impact (1-5) :** 5
