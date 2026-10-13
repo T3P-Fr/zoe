@@ -7,8 +7,8 @@
 	de deux façons :
 	  · comme BASE : `class ZButton extends ZElement { … }` → le composant hérite de
 	    TOUS nos états, gratuitement, et n'a plus qu'à peindre le sien (son CSS) ;
-	  · comme ENVELOPPE : `<z-element><button>…</button></z-element>` → ton propre
-	    élément hérite des états, tu écris son CSS. (C'est ce qu'on appelait
+	  · comme ENVELOPPE : `<z-element><button>…</button></z-element>` → votre propre
+	    élément hérite des états, vous écrivez son CSS. (C'est ce qu'on appelait
 	    « z-state » : c'était le même moteur — un seul nom désormais.)
 
 	NOS états — la palette normée :
@@ -499,11 +499,32 @@ export class ZElement extends HTMLElement {
 		this.#set("release", false);
 		this.#set("releaseOut", false);
 		this.#set("press", true);
-		/* CAPTURE : le pointerup reviendra à CET élément même lâché dehors → releaseOut
-		   émis, press/drag refermés proprement. (try : setPointerCapture lève si le
-		   pointeur n'est plus actif — événements synthétiques.) */
+		/*
+			CAPTURE : le pointerup reviendra à CET élément même lâché dehors → releaseOut
+			émis, press/drag refermés proprement. (try : setPointerCapture lève si le
+			pointeur n'est plus actif — événements synthétiques.)
+
+			SAUF quand l'appui vise un élément NATIF interactif écrit par l'auteur (un
+			<button>, un <a>, un <input> dans l'hôte) : avec la capture, le navigateur adresse
+			le `click` à l'élément qui capture — le bouton natif ne recevrait JAMAIS le sien
+			(vérifié aux vrais clics, Chrome 154 / Pointer Events niveau 3). On laisse alors le
+			pointeur libre, et on écoute UN pointerup sur la fenêtre pour refermer press/drag et
+			poser release/releaseOut quand même.
+		*/
+		if (this.#targetsNativeControl(event)) {
+			window.addEventListener("pointerup", this.#onUp, { once: true, capture: true });
+			window.addEventListener("pointercancel", this.#onUp, { once: true, capture: true });
+			return;
+		}
 		try { this.setPointerCapture?.(event.pointerId); } catch { /* pas grave */ }
 	};
+
+	/* L'appui part-il d'un contrôle natif de l'auteur, dedans ? @param {PointerEvent} event @returns {boolean} */
+	#targetsNativeControl(event) {
+		const target = event.target;
+		if (!(target instanceof Element) || target === this) return false;
+		return Boolean(target.closest("button, a[href], input, select, textarea, summary, label, [contenteditable]"));
+	}
 
 	#onMove = (event) => {
 		if (!this.#pressed || this.#dragging) return;
