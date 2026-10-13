@@ -53,6 +53,14 @@ import { ZElement } from "../../core/z-element/z-element.js";
 export class ZCheckbox extends ZElement {
 	static api = {
 		tag: "z-checkbox",
+		example: `<z-checkbox name="cgu" required>J'accepte les conditions</z-checkbox>
+<z-checkbox name="lettre" value="hebdo" current>Recevoir la lettre</z-checkbox>
+<z-checkbox indeterminate>Tout cocher</z-checkbox>`,
+		members: [
+			{ kind: "field", name: "checked", type: "boolean", description: { en: "Checked or not — mirrors `current`. Setting it never clears `indeterminate`.", fr: "Cochée ou non — reflet de `current`. La poser ne lève jamais `indeterminate`.", es: "Marcada o no — reflejo de `current`. Ponerla nunca quita `indeterminate`." } },
+			{ kind: "field", name: "indeterminate", type: "boolean", description: { en: "The third value (aria-checked=mixed).", fr: "La troisième valeur (aria-checked=mixed).", es: "El tercer valor (aria-checked=mixed)." } },
+			{ kind: "field", name: "value", type: "string", description: { en: "What is submitted when checked (default \"on\").", fr: "Ce qui part quand elle est cochée (défaut « on »).", es: "Lo que se envía al estar marcada (por defecto «on»)." } }
+		],
 		summary: {
 			en: "A checkbox — inherits all z-element states, marker + label anatomy, painted by the skin.",
 			fr: "Une case à cocher — hérite tous les états de z-element, anatomie marker + label, peinte par la peau.",
@@ -94,7 +102,7 @@ export class ZCheckbox extends ZElement {
 				description: { en: "What informs — moved, hidden or animated as one block.", fr: "Ce qui informe — déplacé, caché ou animé d'un bloc.", es: "Lo que informa — movido, ocultado o animado en bloque." },
 				children: [
 					{ part: "icon", optional: true, description: { en: "Optional, before the label.", fr: "Optionnel, avant le label.", es: "Opcional, antes de la etiqueta." } },
-					{ part: "label", description: { en: "Your text.", fr: "Ton texte.", es: "Tu texto." } }
+					{ part: "label", description: { en: "Your text.", fr: "Votre texte.", es: "Su texto." } }
 				]
 			},
 			{ part: "contact", description: { en: "What receives the gesture — covers (and may overflow) the component, invisible.", fr: "Ce qui reçoit le geste — couvre (et peut déborder) le composant, invisible.", es: "Lo que recibe el gesto — cubre (y puede desbordar) el componente, invisible." } }

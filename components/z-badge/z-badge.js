@@ -26,6 +26,9 @@ import { ZElement } from "../../core/z-element/z-element.js";
 export class ZBadge extends ZElement {
 	static api = {
 		tag: "z-badge",
+		example: `<z-badge>Nouveau</z-badge>
+<z-badge tone="danger">3</z-badge>
+<z-badge tone="success" size="s">payé</z-badge>`,
 		summary: {
 			en: "A status/count pill — inherits z-element's tone & size variants, painted by the skin. Almost zero code: the frozen socle does the work.",
 			fr: "Une pastille de statut/compteur — hérite les variants tone & size de z-element, peinte par la peau. Presque zéro code : le socle figé fait le travail.",
@@ -44,7 +47,7 @@ export class ZBadge extends ZElement {
 			{
 				part: "infos",
 				description: { en: "What informs — the badge's text/number.", fr: "Ce qui informe — le texte/nombre du badge.", es: "Lo que informa — el texto/número del badge." },
-				children: [{ part: "label", description: { en: "Your text.", fr: "Ton texte.", es: "Tu texto." } }]
+				children: [{ part: "label", description: { en: "Your text.", fr: "Votre texte.", es: "Su texto." } }]
 			}
 		]
 	};

@@ -38,6 +38,16 @@ const STEP = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
 export class ZRadioGroup extends ZElement {
 	static api = {
 		tag: "z-radio-group",
+		example: `<z-radio-group value="en" name="lang">
+  <z-radio value="fr">Français</z-radio>
+  <z-radio value="en">English</z-radio>
+  <z-radio value="es">Español</z-radio>
+</z-radio-group>`,
+		members: [
+			{ kind: "field", name: "value", type: "string", description: { en: "The chosen radio's value (empty when none). Setting it selects without firing `change`.", fr: "La valeur de la radio choisie (vide si aucune). La poser choisit sans émettre `change`.", es: "El valor de la radio elegida (vacío si ninguna). Ponerlo elige sin emitir `change`." } },
+			{ kind: "field", name: "radios", type: "Element[]", description: { en: "The z-radio of this group (not those of a nested group).", fr: "Les z-radio de ce groupe (pas celles d'un groupe imbriqué).", es: "Las z-radio de este grupo (no las de un grupo anidado)." } },
+			{ kind: "field", name: "selected", type: "Element | null", description: { en: "The chosen radio.", fr: "La radio choisie.", es: "La radio elegida." } }
+		],
 		summary: {
 			en: "A group of z-radio: single choice, arrow-key navigation, roving tabindex, one value.",
 			fr: "Un groupe de z-radio : choix unique, navigation aux flèches, roving tabindex, une valeur.",

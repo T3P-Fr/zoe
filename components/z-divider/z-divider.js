@@ -24,6 +24,12 @@ import { ZElement } from "../../core/z-element/z-element.js";
 export class ZDivider extends ZElement {
 	static api = {
 		tag: "z-divider",
+		example: `<z-divider></z-divider>
+<z-divider>ou</z-divider>
+<z-divider orientation="vertical"></z-divider>`,
+		members: [
+			{ kind: "field", name: "orientation", type: "\"horizontal\" | \"vertical\"", description: { en: "Mirrors the attribute.", fr: "Reflet de l'attribut.", es: "Reflejo del atributo." } }
+		],
 		summary: {
 			en: "A separator — a plain rule, or two rules framing a centred label. role=separator + aria-orientation.",
 			fr: "Un séparateur — un simple filet, ou deux filets encadrant un label centré. role=separator + aria-orientation.",

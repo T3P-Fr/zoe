@@ -284,6 +284,8 @@ export class ZContact extends HTMLElement {
 	*/
 	static api = {
 		tag: "z-contact",
+		example: `<z-contact></z-contact>
+<!-- one tag anywhere in the page: every interactive element gets the skin's click effect -->`,
 		summary: {
 			en: "Need a click effect across your whole page? Drop this tag anywhere — problem solved. Two effects by default; not to your taste? Make your own in a few lines of CSS.",
 			fr: "Besoin d'un effet de clic visuel sur toute votre page ? Posez cette balise n'importe où — problème résolu. Deux effets par défaut ; ils ne vous conviennent pas ? Faites le vôtre en quelques lignes de CSS.",

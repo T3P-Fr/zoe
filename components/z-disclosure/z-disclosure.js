@@ -30,6 +30,14 @@ let uid = 0;
 export class ZDisclosure extends ZElement {
 	static api = {
 		tag: "z-disclosure",
+		example: `<z-disclosure open>
+  <z-layer part="label">Ce que Zoé garde natif</z-layer>
+  <z-layer part="panel">Titres, paragraphes, liens — lus par les moteurs de recherche.</z-layer>
+</z-disclosure>`,
+		members: [
+			{ kind: "field", name: "open", type: "boolean", description: { en: "Open or closed — mirrors the attribute.", fr: "Ouvert ou fermé — reflet de l'attribut.", es: "Abierto o cerrado — reflejo del atributo." } },
+			{ kind: "method", name: "toggle()", type: "void", description: { en: "Opens or closes, and fires `toggle`.", fr: "Ouvre ou ferme, et émet `toggle`.", es: "Abre o cierra, y emite `toggle`." } }
+		],
 		summary: {
 			en: "A disclosure (title → collapsible content) — inherits z-element states, accessible (aria-expanded/controls, inert when closed), animatable.",
 			fr: "Un dépli (titre → contenu repliable) — hérite les états de z-element, accessible (aria-expanded/controls, inert fermé), animable.",

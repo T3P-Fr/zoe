@@ -406,6 +406,7 @@ export class ZCursor extends ZElement {
 	*/
 	static api = {
 		tag: "z-cursor",
+		example: `<z-cursor fx="move" tone="main"></z-cursor>`,
 		summary: {
 			en: "The pointer's wake: one flat tag, and the mouse leaves a ribbon behind it.",
 			fr: "Le sillage du pointeur : une balise à plat, et la souris laisse un ruban derrière elle.",

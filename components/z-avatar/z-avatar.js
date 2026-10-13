@@ -24,6 +24,13 @@ import { ZElement } from "../../core/z-element/z-element.js";
 export class ZAvatar extends ZElement {
 	static api = {
 		tag: "z-avatar",
+		example: `<z-avatar name="Ada Lovelace">AL</z-avatar>
+<z-avatar name="Grace Hopper" src="/img/grace.jpg"></z-avatar>
+<z-avatar size="l" tone="soft">?</z-avatar>`,
+		members: [
+			{ kind: "field", name: "src", type: "string", description: { en: "The image URL (mirrors the attribute).", fr: "L'URL de l'image (reflet de l'attribut).", es: "La URL de la imagen (reflejo del atributo)." } },
+			{ kind: "field", name: "name", type: "string", description: { en: "The accessible name (mirrors the attribute).", fr: "Le nom accessible (reflet de l'attribut).", es: "El nombre accesible (reflejo del atributo)." } }
+		],
 		summary: {
 			en: "An identity chip — an image if given, otherwise the initials. role=img with an alt from name. Inherits tone/size.",
 			fr: "Une pastille d'identité — une image si fournie, sinon les initiales. role=img avec une alternative depuis name. Hérite tone/size.",

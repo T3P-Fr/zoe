@@ -31,6 +31,13 @@ import { ZElement } from "../../core/z-element/z-element.js";
 export class ZMeter extends ZElement {
 	static api = {
 		tag: "z-meter",
+		example: `<z-meter value="72"></z-meter>
+<z-meter value="15" low="20" high="80" optimum="100"></z-meter>
+<z-meter value="3" max="5"></z-meter>`,
+		members: [
+			{ kind: "field", name: "value", type: "number", description: { en: "The measured amount.", fr: "La quantité mesurée.", es: "La cantidad medida." } },
+			{ kind: "field", name: "min · max", type: "number", description: { en: "The bounds (mirror the attributes).", fr: "Les bornes (reflets des attributs).", es: "Los límites (reflejos de los atributos)." } }
+		],
 		summary: {
 			en: "A gauge (role=meter): a scalar measurement within a range, coloured by low/high/optimum thresholds. Not a progress bar — it shows a state, not an advance.",
 			fr: "Une jauge (role=meter) : une mesure scalaire dans une plage, colorée par les seuils low/high/optimum. Pas une barre de progression — elle montre un état, pas une avancée.",

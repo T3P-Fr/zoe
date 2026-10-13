@@ -32,6 +32,16 @@ import { ZElement } from "../../core/z-element/z-element.js";
 export class ZButton extends ZElement {
 	static api = {
 		tag: "z-button",
+		example: `<z-button>Envoyer</z-button>
+<z-button tone="soft">Annuler</z-button>
+<z-button loading>Chargement…</z-button>
+<form>
+  <z-button type="submit">Valider</z-button>
+  <z-button type="reset" tone="soft">Réinitialiser</z-button>
+</form>`,
+		members: [
+			{ kind: "field", name: "type", type: "\"submit\" | \"reset\" | \"button\"", description: { en: "What it does inside a form (mirrors the attribute; default submit).", fr: "Ce qu'il fait dans un formulaire (reflet de l'attribut ; submit par défaut).", es: "Lo que hace en un formulario (reflejo del atributo; submit por defecto)." } }
+		],
 		summary: {
 			en: "A button — inherits all z-element states, skinnable by themes.",
 			fr: "Un bouton — hérite tous les états de z-element, habillable par les peaux.",
@@ -58,7 +68,7 @@ export class ZButton extends ZElement {
 				description: { en: "What informs — moved, hidden or animated as one block.", fr: "Ce qui informe — déplacé, caché ou animé d'un bloc.", es: "Lo que informa — movido, ocultado o animado en bloque." },
 				children: [
 					{ part: "icon", optional: true, description: { en: "Optional, before the label.", fr: "Optionnel, avant le label.", es: "Opcional, antes de la etiqueta." } },
-					{ part: "label", description: { en: "Your text.", fr: "Ton texte.", es: "Tu texto." } }
+					{ part: "label", description: { en: "Your text.", fr: "Votre texte.", es: "Su texto." } }
 				]
 			},
 			{ part: "contact", description: { en: "What receives the gesture — covers (and may overflow) the component, invisible.", fr: "Ce qui reçoit le geste — couvre (et peut déborder) le composant, invisible.", es: "Lo que recibe el gesto — cubre (y puede desbordar) el componente, invisible." } }

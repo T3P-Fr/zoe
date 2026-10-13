@@ -29,6 +29,9 @@ import { ZElement } from "../../core/z-element/z-element.js";
 export class ZSkeleton extends ZElement {
 	static api = {
 		tag: "z-skeleton",
+		example: `<z-skeleton radius="circle" w="3em" h="3em"></z-skeleton>
+<z-skeleton radius="pill" h="1em" w="60%"></z-skeleton>
+<z-skeleton h="6em"></z-skeleton>`,
 		summary: {
 			en: "A shimmering loading placeholder (skeleton). Purely visual and aria-hidden — a decoy holding the space until real content arrives.",
 			fr: "Un leurre de chargement qui scintille (skeleton). Purement visuel et aria-hidden — il occupe la place jusqu'à l'arrivée du vrai contenu.",

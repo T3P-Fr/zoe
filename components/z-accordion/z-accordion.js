@@ -34,6 +34,20 @@ import "../z-disclosure/z-disclosure.js";
 export class ZAccordion extends ZElement {
 	static api = {
 		tag: "z-accordion",
+		example: `<z-accordion exclusive>
+  <z-disclosure open>
+    <z-layer part="label">Livraison</z-layer>
+    <z-layer part="panel">Sous 48 h en France métropolitaine.</z-layer>
+  </z-disclosure>
+  <z-disclosure>
+    <z-layer part="label">Retours</z-layer>
+    <z-layer part="panel">30 jours, sans justificatif.</z-layer>
+  </z-disclosure>
+</z-accordion>`,
+		members: [
+			{ kind: "field", name: "exclusive", type: "boolean", description: { en: "Mirrors the `exclusive` attribute.", fr: "Reflet de l'attribut `exclusive`.", es: "Reflejo del atributo `exclusive`." } },
+			{ kind: "field", name: "disclosures", type: "Element[]", description: { en: "The z-disclosure children this accordion coordinates.", fr: "Les z-disclosure que cet accordéon coordonne.", es: "Los z-disclosure que coordina este acordeón." } }
+		],
 		summary: {
 			en: "A group of z-disclosure — when `exclusive`, opening one closes the others. Coordination only.",
 			fr: "Un groupe de z-disclosure — en `exclusive`, ouvrir l'un ferme les autres. Coordination seule.",

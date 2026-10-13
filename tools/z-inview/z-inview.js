@@ -72,7 +72,13 @@ export class ZInview extends HTMLElement {
 
 	static api = {
 		tag: "z-inview",
-		example: "tools/z-inview/z-inview.lab.html",
+		example: `<z-inview>
+  <h2>Ce titre entre en scène</h2>
+</z-inview>
+<style>
+  z-inview h2 { opacity: var(--z-inview__seen); translate: 0 calc((1 - var(--z-inview__seen)) * 20px);
+                transition: opacity .6s, translate .6s; }
+</style>`,
 		summary: {
 			en: "\"Fade it in when it scrolls into view\" — the single most common request on the web, and the reason whole libraries get loaded. Wrap it in this tag: the answer arrives in CSS as a number, and the animation stays yours to write.",
 			fr: "« Ça apparaît quand ça entre à l'écran » — la demande la plus répandue du web, et la raison pour laquelle on charge des bibliothèques entières. Enveloppez-le dans cette balise : la réponse arrive dans le CSS sous forme de nombre, et l'animation reste la vôtre.",

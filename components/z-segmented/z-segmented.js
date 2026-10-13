@@ -39,6 +39,16 @@ const STEP = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
 export class ZSegmented extends ZElement {
 	static api = {
 		tag: "z-segmented",
+		example: `<z-segmented value="mois">
+  <button part="segment" value="jour">Jour</button>
+  <button part="segment" value="mois">Mois</button>
+  <button part="segment" value="an">Année</button>
+</z-segmented>`,
+		members: [
+			{ kind: "field", name: "value", type: "string", description: { en: "The chosen segment's value. Setting it selects without firing `change`.", fr: "La valeur du segment choisi. La poser choisit sans émettre `change`.", es: "El valor del segmento elegido. Ponerlo elige sin emitir `change`." } },
+			{ kind: "field", name: "segments", type: "Element[]", description: { en: "The `[part=segment]` children.", fr: "Les enfants `[part=segment]`.", es: "Los hijos `[part=segment]`." } },
+			{ kind: "field", name: "selected", type: "Element | null", description: { en: "The current segment.", fr: "Le segment courant.", es: "El segmento actual." } }
+		],
 		summary: {
 			en: "A segmented control: single choice among 2–5 options, with an indicator that slides under the current one.",
 			fr: "Un contrôle segmenté : choix unique parmi 2 à 5 options, avec un indicateur qui glisse sous la courante.",

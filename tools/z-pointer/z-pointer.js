@@ -92,7 +92,17 @@ export class ZPointer extends HTMLElement {
 
 	static api = {
 		tag: "z-pointer",
-		example: "tools/z-pointer/z-pointer.lab.html",
+		example: `<z-pointer>
+  <div class="halo"></div>
+</z-pointer>
+<style>
+  .halo {
+    position: absolute; width: 200px; height: 200px; margin: -100px 0 0 -100px; border-radius: 50%;
+    background: radial-gradient(circle, var(--z-accent), transparent 70%);
+    translate: calc(var(--z-pointer--local__x) * 1px) calc(var(--z-pointer--local__y) * 1px);
+    opacity: var(--z-pointer--local__in);
+  }
+</style>`,
 		summary: {
 			en: "Want a div to follow the mouse? Wrap it in this tag — the position lands in CSS as plain numbers, and every child inherits them. No class, no listener, no JS of yours.",
 			fr: "Vous voulez qu'un div suive la souris ? Enveloppez-le dans cette balise — la position arrive dans le CSS sous forme de nombres, et tous les enfants en héritent. Aucune classe, aucun écouteur, aucun JS de votre part.",

@@ -31,9 +31,14 @@ import { ZElement } from "../../core/z-element/z-element.js";
 export class ZBreadcrumb extends ZElement {
 	static api = {
 		tag: "z-breadcrumb",
+		example: `<z-breadcrumb label="Vous êtes ici">
+  <a href="/">Accueil</a>
+  <a href="/boutique">Boutique</a>
+  <span aria-current="page">Chaussures</span>
+</z-breadcrumb>`,
 		summary: {
 			en: "A breadcrumb trail — you write the links, Zoé adds the meaning (nav + label) and the « › » separators in CSS. Nothing injected.",
-			fr: "Un fil d'Ariane — tu écris les liens, Zoé pose le sens (nav + libellé) et les séparateurs « › » en CSS. Rien d'injecté.",
+			fr: "Un fil d'Ariane — vous écrivez les liens, Zoé pose le sens (nav + libellé) et les séparateurs « › » en CSS. Rien d'injecté.",
 			es: "Una miga de pan — tú escribes los enlaces, Zoé pone el sentido (nav + etiqueta) y los separadores « › » en CSS. Nada inyectado."
 		},
 		attributes: [

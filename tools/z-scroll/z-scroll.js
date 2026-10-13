@@ -69,7 +69,12 @@ export class ZScroll extends HTMLElement {
 
 	static api = {
 		tag: "z-scroll",
-		example: "tools/z-scroll/z-scroll.lab.html",
+		example: `<z-scroll page></z-scroll>
+<div class="progress"></div>
+<style>
+  .progress { position: fixed; inset: 0 auto auto 0; height: 3px; background: var(--z-accent);
+              width: calc(var(--z-scroll__ry) * 100%); }
+</style>`,
 		summary: {
 			en: "A progress bar, a shrinking header, a parallax, a \"back to top\" that waits its turn — all of them need one thing: how far down are we? Drop this tag and the answer lands in CSS as a number between 0 and 1.",
 			fr: "Une barre de progression, un bandeau qui rétrécit, un parallaxe, une flèche « remonter » qui attend son tour — tous réclament la même chose : où en est-on ? Posez cette balise et la réponse arrive dans le CSS, un nombre entre 0 et 1.",

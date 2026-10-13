@@ -30,6 +30,13 @@ const REMOVE_ZONE_EM = 1.7;
 export class ZTag extends ZElement {
 	static api = {
 		tag: "z-tag",
+		example: `<z-tag>design</z-tag>
+<z-tag tone="main" removable>filtre : rouge</z-tag>
+<z-tag size="s" tone="soft">brouillon</z-tag>`,
+		members: [
+			{ kind: "field", name: "removable", type: "boolean", description: { en: "Mirrors the `removable` attribute.", fr: "Reflet de l'attribut `removable`.", es: "Reflejo del atributo `removable`." } },
+			{ kind: "method", name: "remove()", type: "void", description: { en: "Removes the tag: fires cancelable `zoe:remove`, then plays `exit` and detaches.", fr: "Retire l'étiquette : émet `zoe:remove` (annulable), puis joue `exit` et se détache.", es: "Quita la etiqueta: emite `zoe:remove` (cancelable), luego reproduce `exit` y se separa." } }
+		],
 		summary: {
 			en: "A tag/chip for keywords, filters, categories — inherits tone & size; optionally removable.",
 			fr: "Une étiquette pour mots-clés, filtres, catégories — hérite tone & size ; retirable en option.",
@@ -52,7 +59,7 @@ export class ZTag extends ZElement {
 				description: { en: "What informs — moved or animated as one block.", fr: "Ce qui informe — déplacé ou animé d'un bloc.", es: "Lo que informa — movido o animado en bloque." },
 				children: [
 					{ part: "icon", optional: true, description: { en: "Optional, before the label.", fr: "Optionnel, avant le label.", es: "Opcional, antes de la etiqueta." } },
-					{ part: "label", description: { en: "Your text.", fr: "Ton texte.", es: "Tu texto." } }
+					{ part: "label", description: { en: "Your text.", fr: "Votre texte.", es: "Su texto." } }
 				]
 			}
 		]

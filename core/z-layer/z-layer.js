@@ -67,6 +67,17 @@ import { ZElement } from "../z-element/z-element.js";
 export class ZLayer extends ZElement {
 	static api = {
 		tag: "z-layer",
+		example: `<z-checkbox>
+  <z-layer part="background"></z-layer>
+  <z-layer part="marker">
+    <z-layer part="ring"></z-layer>
+    <z-layer part="dot"></z-layer>
+  </z-layer>
+  <z-layer part="infos">
+    <z-layer part="label">J'accepte les conditions</z-layer>
+  </z-layer>
+  <z-layer part="contact"></z-layer>
+</z-checkbox>`,
 		summary: {
 			en: "The pieces of a component — its background, its label, its tick — already painted for you. You only write a layer to take over one precise part.",
 			fr: "Les pièces d'un composant — son fond, son libellé, sa coche — déjà peintes pour vous. Vous n'écrivez un calque que pour reprendre la main sur une partie précise.",

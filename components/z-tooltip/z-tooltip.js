@@ -32,6 +32,11 @@ const FOCUSABLE = "a[href], button, input, select, textarea, [tabindex]";
 export class ZTooltip extends ZElement {
 	static api = {
 		tag: "z-tooltip",
+		example: `<z-tooltip>
+  <button>?</button>
+  <z-layer part="tip">On habille le natif, on ne le remplace pas.</z-layer>
+</z-tooltip>
+<z-tooltip tip="Explication rapide" placement="bottom"><button>?</button></z-tooltip>`,
 		summary: {
 			en: "A hint bubble shown on hover and keyboard focus — accessible via a [part=tip] piece wired with aria-describedby.",
 			fr: "Une bulle d'aide montrée au survol et au focus clavier — accessible via une pièce [part=tip] reliée par aria-describedby.",

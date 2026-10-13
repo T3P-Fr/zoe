@@ -19,9 +19,9 @@
 	  · repos                     : default (posé tant qu'aucun statut n'est actif)
 
 	`exit` n'est PAS posé par le socle : quand l'élément part, disconnectedCallback
-	arrive trop tard pour animer. C'est celui qui RETIRE (tools/z-stager) qui fait
-	`await el.play("exit")` puis retire le nœud. Le socle ne connaît pas z-stager :
-	il rend seulement `play()` attendable.
+	arrive trop tard pour animer. C'est celui qui RETIRE (z-toast dans `dismiss()`, ou
+	le code de la page) qui fait `await el.play("exit")` puis retire le nœud. Le socle
+	ne connaît pas qui retire : il rend seulement `play()` attendable.
 
 	Deux mécaniques :
 	  – TRANSITOIRE : posé par les événements ou play(word), retiré tout seul ;
@@ -74,6 +74,23 @@ export class ZElement extends HTMLElement {
 	*/
 	static api = {
 		tag: "z-element",
+		example: `<z-element state="glow: over">
+  <button>Envoyer</button>
+</z-element>
+<style>
+  z-element:state(press) > button { scale: .97; }
+  z-element:state(glow)  > button { box-shadow: 0 0 0 3px var(--z-accent-soft); }
+</style>`,
+		members: [
+			{ kind: "method", name: "setState(name, on = true)", type: "void", description: { en: "Sets or clears a state. A durable or CSS-declared state goes through its attribute; any other name is posed directly in :state().", fr: "Pose ou retire un état. Un état durable ou déclaré en CSS passe par son attribut ; tout autre nom est posé directement en :state().", es: "Pone o quita un estado. Un estado duradero o declarado en CSS pasa por su atributo; cualquier otro nombre se pone directamente en :state()." } },
+			{ kind: "method", name: "toggleState(name)", type: "void", description: { en: "Flips a state.", fr: "Bascule un état.", es: "Alterna un estado." } },
+			{ kind: "method", name: "play(word)", type: "Promise<void>", description: { en: "Plays a transient state and resolves when it ends (duration read from --z-dur-<word>). `await el.play(\"exit\")` before `el.remove()`.", fr: "Joue un état transitoire et rend la main à sa fin (durée lue dans --z-dur-<mot>). `await el.play(\"exit\")` avant `el.remove()`.", es: "Reproduce un estado transitorio y resuelve al terminar (duración leída en --z-dur-<palabra>). `await el.play(\"exit\")` antes de `el.remove()`." } },
+			{ kind: "field", name: "states", type: "string[]", description: { en: "The states active right now.", fr: "Les états actifs à l'instant.", es: "Los estados activos ahora." } },
+			{ kind: "field", name: "disabled", type: "boolean", description: { en: "Read-only mirror of the `disabled` attribute.", fr: "Reflet en lecture de l'attribut `disabled`.", es: "Reflejo de solo lectura del atributo `disabled`." } },
+			{ kind: "method", name: "setFormValue(value)", type: "void", description: { en: "What the element submits in its form; `null` submits nothing (components call it, pages rarely do).", fr: "Ce que l'élément envoie au formulaire ; `null` n'envoie rien (appelé par les composants, rarement par une page).", es: "Lo que el elemento envía al formulario; `null` no envía nada (lo llaman los componentes, raramente una página)." } },
+			{ kind: "method", name: "setValidity(message?)", type: "void", description: { en: "Declares the element invalid with a message, or valid without one.", fr: "Déclare l'élément invalide avec un message, ou valide sans.", es: "Declara el elemento inválido con un mensaje, o válido sin él." } },
+			{ kind: "method", name: "checkValidity() · reportValidity()", type: "boolean", description: { en: "The standard constraint-validation API, as on a native input.", fr: "L'API standard de validation, comme sur un input natif.", es: "La API estándar de validación, como en un input nativo." } }
+		],
 		summary: {
 			en: "The living base: carries interaction states as :state() and emits z-state.",
 			fr: "La base vivante : porte les états d'interaction en :state() et émet z-state.",
@@ -251,7 +268,7 @@ export class ZElement extends HTMLElement {
 	/*
 		Joue un état TRANSITOIRE à la demande (enter, exit, release…) et REND LA MAIN
 		quand il est retiré. C'est ce qui rend `exit` utilisable : celui qui retire
-		l'élément (tools/z-stager) fait `await el.play("exit")` PUIS `el.remove()` —
+		l'élément (z-toast, ou le code de la page) fait `await el.play("exit")` PUIS `el.remove()` —
 		sinon la sortie ne peut pas s'animer (disconnectedCallback arrive trop tard).
 		@param {string} word
 		@returns {Promise<void>} résolue à la fin de l'état (durée --z-dur-<mot>)

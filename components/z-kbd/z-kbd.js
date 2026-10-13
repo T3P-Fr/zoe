@@ -24,6 +24,7 @@ import { ZElement } from "../../core/z-element/z-element.js";
 export class ZKbd extends ZElement {
 	static api = {
 		tag: "z-kbd",
+		example: `<p>Appuyez sur <z-kbd>Ctrl</z-kbd> + <z-kbd>K</z-kbd> pour chercher.</p>`,
 		summary: {
 			en: "A keyboard key cap — pure display, monospace, bordered with a subtle key relief. Inherits size.",
 			fr: "Un capuchon de touche clavier — affichage pur, monospace, fileté avec un léger relief de touche. Hérite size.",

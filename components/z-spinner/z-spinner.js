@@ -26,6 +26,8 @@ const DEFAULT_LABEL = "Chargement…";
 export class ZSpinner extends ZElement {
 	static api = {
 		tag: "z-spinner",
+		example: `<z-spinner label="Chargement des commandes"></z-spinner>
+<z-spinner size="s" tone="soft"></z-spinner>`,
 		summary: {
 			en: "A loading spinner — inherits tone/size, role=status with an accessible label. The ring spins in CSS.",
 			fr: "Un indicateur d'attente — hérite tone/size, role=status avec un libellé accessible. L'anneau tourne en CSS.",

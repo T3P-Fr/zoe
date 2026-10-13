@@ -55,7 +55,13 @@ export class ZSize extends HTMLElement {
 
 	static api = {
 		tag: "z-size",
-		example: "tools/z-size/z-size.lab.html",
+		example: `<z-size>
+  <p>Ce texte grandit avec sa boîte.</p>
+</z-size>
+<style>
+  z-size p { font-size: calc(14px + var(--z-size__w) * 0.012px); }
+  z-size   { box-shadow: inset 0 calc(var(--z-size__over) * -8px) 8px -8px var(--z-ink-soft); }
+</style>`,
 		summary: {
 			en: "Two questions CSS cannot answer on its own: how big is this box, really — and does its content overflow? Wrap it in this tag and both answers land in CSS as numbers.",
 			fr: "Deux questions auxquelles le CSS ne sait pas répondre seul : quelle taille fait vraiment cette boîte — et son contenu déborde-t-il ? Enveloppez-la dans cette balise, les deux réponses arrivent dans le CSS sous forme de nombres.",

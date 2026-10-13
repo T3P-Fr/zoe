@@ -29,6 +29,14 @@ import { ZElement } from "../../core/z-element/z-element.js";
 export class ZCard extends ZElement {
 	static api = {
 		tag: "z-card",
+		example: `<z-card>
+  <h3>Titre de la carte</h3>
+  <p>Contenu libre : texte, images, autres composants.</p>
+</z-card>
+<z-card interactive tone="soft">Toute la carte est cliquable.</z-card>`,
+		members: [
+			{ kind: "field", name: "interactive", type: "boolean", description: { en: "Mirrors the `interactive` attribute.", fr: "Reflet de l'attribut `interactive`.", es: "Reflejo del atributo `interactive`." } }
+		],
 		summary: {
 			en: "A surface card holding free content — inherits tone & size; optionally interactive (hover + clickable, role=button).",
 			fr: "Une carte-surface qui contient du contenu libre — hérite tone & size ; interactive en option (survol + cliquable, role=button).",

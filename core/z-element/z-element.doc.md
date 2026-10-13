@@ -263,8 +263,8 @@ await el.play("exit");   // pose :state(exit), attend --z-dur-exit
 el.remove();             // et seulement là, on retire
 ```
 
-C'est ce que fera `z-stager`. Le socle ne connaît pas z-stager : il fournit l'attente,
-pas la politique.
+C'est ce que fait `z-toast` dans `dismiss()`. Le socle ne connaît pas qui retire : il
+fournit l'attente, pas la politique.
 
 ## Composer
 

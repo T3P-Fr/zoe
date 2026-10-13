@@ -62,7 +62,14 @@ export class ZDrag extends HTMLElement {
 
 	static api = {
 		tag: "z-drag",
-		example: "tools/z-drag/z-drag.lab.html",
+		example: `<z-drag axis="x" bounds>
+  <div class="knob"></div>
+</z-drag>
+<style>
+  .knob { width: 2em; height: 2em; border-radius: 50%; background: var(--z-accent); cursor: grab;
+          translate: calc(var(--z-drag__x) * 1px) 0; scale: calc(1 + var(--z-drag__held) * .1); }
+  z-drag:state(held) .knob { cursor: grabbing; }
+</style>`,
 		summary: {
 			en: "Dragging is the single biggest pile of JavaScript in any interface. Wrap it in this tag: the position lands in CSS as a number, and YOU decide what it moves — a position, a rotation, an opacity. Keyboard included.",
 			fr: "Le glisser-déposer est le plus gros paquet de JavaScript d'une interface. Enveloppez-le dans cette balise : la position arrive dans le CSS sous forme de nombre, et c'est VOUS qui décidez ce qu'elle déplace — une position, une rotation, une opacité. Clavier compris.",

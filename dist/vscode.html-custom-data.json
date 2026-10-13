@@ -3,32 +3,35 @@
   "tags": [
     {
       "name": "z-element",
-      "description": "The living base: carries interaction states as :state() and emits z-state.",
+      "description": {
+        "kind": "markdown",
+        "value": "The living base: carries interaction states as :state() and emits z-state.\n\n```html\n<z-element state=\"glow: over\">\n  <button>Envoyer</button>\n</z-element>\n<style>\n  z-element:state(press) > button { scale: .97; }\n  z-element:state(glow)  > button { box-shadow: 0 0 0 3px var(--z-accent-soft); }\n</style>\n```"
+      },
       "attributes": [
         {
           "name": "current",
           "description": "Durable selection (checked, active tab) — set by a selectable component.",
-          "values": []
+          "valueSet": "v"
         },
         {
           "name": "loading",
           "description": "Status: loading / processing.",
-          "values": []
+          "valueSet": "v"
         },
         {
           "name": "disabled",
           "description": "Disabled: blocks interaction.",
-          "values": []
+          "valueSet": "v"
         },
         {
           "name": "error",
           "description": "Status: error.",
-          "values": []
+          "valueSet": "v"
         },
         {
           "name": "success",
           "description": "Status: valid / done.",
-          "values": []
+          "valueSet": "v"
         },
         {
           "name": "name",
@@ -37,58 +40,175 @@
         {
           "name": "required",
           "description": "The form is invalid until this control has a value.",
-          "values": []
+          "valueSet": "v"
         },
         {
           "name": "state",
-          "description": ""
+          "description": "`état: condition, …`: custom states, each with an optional condition — state=\"armed: press +2s, glow: over, busy\". Comma separates; `:` adds a condition (gesture like `press +2s`, or clock `every 2s`); no condition = posed at once.",
+          "values": [
+            {
+              "name": "état: condition, …",
+              "description": "custom states, each with an optional condition — state=\"armed: press +2s, glow: over, busy\". Comma separates; `:` adds a condition (gesture like `press +2s`, or clock `every 2s`); no condition = posed at once."
+            }
+          ]
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-element"
         }
       ]
     },
     {
       "name": "z-layer",
-      "description": "The pieces of a component — its background, its label, its tick — already painted for you. You only write a layer to take over one precise part.",
+      "description": {
+        "kind": "markdown",
+        "value": "The pieces of a component — its background, its label, its tick — already painted for you. You only write a layer to take over one precise part.\n\n```html\n<z-checkbox>\n  <z-layer part=\"background\"></z-layer>\n  <z-layer part=\"marker\">\n    <z-layer part=\"ring\"></z-layer>\n    <z-layer part=\"dot\"></z-layer>\n  </z-layer>\n  <z-layer part=\"infos\">\n    <z-layer part=\"label\">J'accepte les conditions</z-layer>\n  </z-layer>\n  <z-layer part=\"contact\"></z-layer>\n</z-checkbox>\n```"
+      },
       "attributes": [
         {
           "name": "part",
           "description": "The role this layer plays (background, marker, ring, dot, label, icon…). Shared across components: the same word means the same thing everywhere."
         }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-layer"
+        }
       ]
     },
     {
       "name": "z-contact",
-      "description": "Need a click effect across your whole page? Drop this tag anywhere — problem solved. Two effects by default; not to your taste? Make your own in a few lines of CSS.",
+      "description": {
+        "kind": "markdown",
+        "value": "Need a click effect across your whole page? Drop this tag anywhere — problem solved. Two effects by default; not to your taste? Make your own in a few lines of CSS.\n\n```html\n<z-contact></z-contact>\n<!-- one tag anywhere in the page: every interactive element gets the skin's click effect -->\n```"
+      },
       "attributes": [
         {
           "name": "fx",
-          "description": "Kill switch only; the effect itself belongs to the skin."
+          "description": "Kill switch only; the effect itself belongs to the skin. — `none`: cut the effect on this page — fx's ONLY role. WHICH effect shows belongs to the skin, never the page",
+          "values": [
+            {
+              "name": "none",
+              "description": "cut the effect on this page — fx's ONLY role. WHICH effect shows belongs to the skin, never the page"
+            }
+          ]
         },
         {
           "name": "disabled",
           "description": "Set by the engine on every source but the last one — the last declared wins.",
-          "values": []
+          "valueSet": "v"
         },
         {
           "name": "size",
-          "description": ""
+          "description": "`<longueur>`: e.g. 24px — sets --z-contact-size",
+          "values": [
+            {
+              "name": "<longueur>",
+              "description": "e.g. 24px — sets --z-contact-size"
+            }
+          ]
         },
         {
           "name": "width",
-          "description": ""
+          "description": "`<longueur>`: e.g. 2px — sets --z-contact-width",
+          "values": [
+            {
+              "name": "<longueur>",
+              "description": "e.g. 2px — sets --z-contact-width"
+            }
+          ]
         },
         {
           "name": "duration",
-          "description": ""
+          "description": "`<durée>`: e.g. 2s — sets --z-contact-duration",
+          "values": [
+            {
+              "name": "<durée>",
+              "description": "e.g. 2s — sets --z-contact-duration"
+            }
+          ]
         },
         {
           "name": "color",
-          "description": ""
+          "description": "`<couleur>`: e.g. tomato — sets --z-contact-color",
+          "values": [
+            {
+              "name": "<couleur>",
+              "description": "e.g. tomato — sets --z-contact-color"
+            }
+          ]
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-contact"
         }
       ]
     },
     {
       "name": "z-cursor",
-      "description": "The pointer's wake: one flat tag, and the mouse leaves a ribbon behind it.",
+      "description": {
+        "kind": "markdown",
+        "value": "The pointer's wake: one flat tag, and the mouse leaves a ribbon behind it.\n\n```html\n<z-cursor fx=\"move\" tone=\"main\"></z-cursor>\n```"
+      },
       "attributes": [
         {
           "name": "fx",
@@ -102,78 +222,735 @@
           "name": "size",
           "description": "Thickness of the wake, on the shared scale (xs → xl)."
         }
-      ]
-    },
-    {
-      "name": "z-pointer",
-      "description": "Want a div to follow the mouse? Wrap it in this tag — the position lands in CSS as plain numbers, and every child inherits them. No class, no listener, no JS of yours.",
-      "attributes": [
+      ],
+      "references": [
         {
-          "name": "local",
-          "description": "Coordinates in the BOX's frame (0,0 = its top-left corner). Taken by default when no frame is asked for — it is the common case, and the cheapest.",
-          "values": []
-        },
-        {
-          "name": "global",
-          "description": "Coordinates in the WINDOW's frame (0,0 = its top-left corner). The pointer is then followed everywhere, even outside the box — useful for a crosshair or a page-wide light.",
-          "values": []
+          "name": "Demo",
+          "url": "./tools/z-cursor/z-cursor.demo.html"
         }
       ]
     },
     {
-      "name": "z-scroll",
-      "description": "A progress bar, a shrinking header, a parallax, a \"back to top\" that waits its turn — all of them need one thing: how far down are we? Drop this tag and the answer lands in CSS as a number between 0 and 1.",
+      "name": "z-drag",
+      "description": {
+        "kind": "markdown",
+        "value": "Dragging is the single biggest pile of JavaScript in any interface. Wrap it in this tag: the position lands in CSS as a number, and YOU decide what it moves — a position, a rotation, an opacity. Keyboard included.\n\n```html\n<z-drag axis=\"x\" bounds>\n  <div class=\"knob\"></div>\n</z-drag>\n<style>\n  .knob { width: 2em; height: 2em; border-radius: 50%; background: var(--z-accent); cursor: grab;\n          translate: calc(var(--z-drag__x) * 1px) 0; scale: calc(1 + var(--z-drag__held) * .1); }\n  z-drag:state(held) .knob { cursor: grabbing; }\n</style>\n```"
+      },
       "attributes": [
         {
-          "name": "page",
-          "description": "Measure the PAGE's scroll instead of this box. The numbers are then set on :root, readable everywhere — the page's scroll belongs to no one in particular.",
-          "values": []
+          "name": "axis",
+          "description": "Locks the gesture to one axis. Optional: reading only __x in your CSS already gives a horizontal slider — this attribute exists so the GESTURE itself refuses the other direction, which is what a finger feels. — `x`: horizontal only · `y`: vertical only",
+          "values": [
+            {
+              "name": "x",
+              "description": "horizontal only"
+            },
+            {
+              "name": "y",
+              "description": "vertical only"
+            }
+          ]
+        },
+        {
+          "name": "bounds",
+          "description": "Keeps the object inside its parent, and turns on __rx / __ry — the share travelled, 0→1. Without it the object goes wherever the hand goes.",
+          "valueSet": "v"
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-drag"
         }
       ]
     },
     {
       "name": "z-inview",
-      "description": "\"Fade it in when it scrolls into view\" — the single most common request on the web, and the reason whole libraries get loaded. Wrap it in this tag: the answer arrives in CSS as a number, and the animation stays yours to write.",
+      "description": {
+        "kind": "markdown",
+        "value": "\"Fade it in when it scrolls into view\" — the single most common request on the web, and the reason whole libraries get loaded. Wrap it in this tag: the answer arrives in CSS as a number, and the animation stays yours to write.\n\n```html\n<z-inview>\n  <h2>Ce titre entre en scène</h2>\n</z-inview>\n<style>\n  z-inview h2 { opacity: var(--z-inview__seen); translate: 0 calc((1 - var(--z-inview__seen)) * 20px);\n                transition: opacity .6s, translate .6s; }\n</style>\n```"
+      },
       "attributes": [
         {
           "name": "margin",
-          "description": "Grows or shrinks the screen for this element only. A negative value waits until it is well inside; a positive one prepares it before it arrives."
+          "description": "Grows or shrinks the screen for this element only. A negative value waits until it is well inside; a positive one prepares it before it arrives. — `<longueur>`: e.g. -80px — trigger later, once it is really in view",
+          "values": [
+            {
+              "name": "<longueur>",
+              "description": "e.g. -80px — trigger later, once it is really in view"
+            }
+          ]
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-inview"
+        }
+      ]
+    },
+    {
+      "name": "z-pointer",
+      "description": {
+        "kind": "markdown",
+        "value": "Want a div to follow the mouse? Wrap it in this tag — the position lands in CSS as plain numbers, and every child inherits them. No class, no listener, no JS of yours.\n\n```html\n<z-pointer>\n  <div class=\"halo\"></div>\n</z-pointer>\n<style>\n  .halo {\n    position: absolute; width: 200px; height: 200px; margin: -100px 0 0 -100px; border-radius: 50%;\n    background: radial-gradient(circle, var(--z-accent), transparent 70%);\n    translate: calc(var(--z-pointer--local__x) * 1px) calc(var(--z-pointer--local__y) * 1px);\n    opacity: var(--z-pointer--local__in);\n  }\n</style>\n```"
+      },
+      "attributes": [
+        {
+          "name": "local",
+          "description": "Coordinates in the BOX's frame (0,0 = its top-left corner). Taken by default when no frame is asked for — it is the common case, and the cheapest.",
+          "valueSet": "v"
+        },
+        {
+          "name": "global",
+          "description": "Coordinates in the WINDOW's frame (0,0 = its top-left corner). The pointer is then followed everywhere, even outside the box — useful for a crosshair or a page-wide light.",
+          "valueSet": "v"
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-pointer"
+        }
+      ]
+    },
+    {
+      "name": "z-scroll",
+      "description": {
+        "kind": "markdown",
+        "value": "A progress bar, a shrinking header, a parallax, a \"back to top\" that waits its turn — all of them need one thing: how far down are we? Drop this tag and the answer lands in CSS as a number between 0 and 1.\n\n```html\n<z-scroll page></z-scroll>\n<div class=\"progress\"></div>\n<style>\n  .progress { position: fixed; inset: 0 auto auto 0; height: 3px; background: var(--z-accent);\n              width: calc(var(--z-scroll__ry) * 100%); }\n</style>\n```"
+      },
+      "attributes": [
+        {
+          "name": "page",
+          "description": "Measure the PAGE's scroll instead of this box. The numbers are then set on :root, readable everywhere — the page's scroll belongs to no one in particular.",
+          "valueSet": "v"
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-scroll"
         }
       ]
     },
     {
       "name": "z-size",
-      "description": "Two questions CSS cannot answer on its own: how big is this box, really — and does its content overflow? Wrap it in this tag and both answers land in CSS as numbers.",
-      "attributes": []
-    },
-    {
-      "name": "z-drag",
-      "description": "Dragging is the single biggest pile of JavaScript in any interface. Wrap it in this tag: the position lands in CSS as a number, and YOU decide what it moves — a position, a rotation, an opacity. Keyboard included.",
-      "attributes": [
+      "description": {
+        "kind": "markdown",
+        "value": "Two questions CSS cannot answer on its own: how big is this box, really — and does its content overflow? Wrap it in this tag and both answers land in CSS as numbers.\n\n```html\n<z-size>\n  <p>Ce texte grandit avec sa boîte.</p>\n</z-size>\n<style>\n  z-size p { font-size: calc(14px + var(--z-size__w) * 0.012px); }\n  z-size   { box-shadow: inset 0 calc(var(--z-size__over) * -8px) 8px -8px var(--z-ink-soft); }\n</style>\n```"
+      },
+      "attributes": [],
+      "references": [
         {
-          "name": "axis",
-          "description": "Locks the gesture to one axis. Optional: reading only __x in your CSS already gives a horizontal slider — this attribute exists so the GESTURE itself refuses the other direction, which is what a finger feels."
-        },
-        {
-          "name": "bounds",
-          "description": "Keeps the object inside its parent, and turns on __rx / __ry — the share travelled, 0→1. Without it the object goes wherever the hand goes.",
-          "values": []
+          "name": "Documentation",
+          "url": "./docs/index.html#z-size"
         }
       ]
     },
     {
+      "name": "z-accordion",
+      "description": {
+        "kind": "markdown",
+        "value": "A group of z-disclosure — when `exclusive`, opening one closes the others. Coordination only.\n\n```html\n<z-accordion exclusive>\n  <z-disclosure open>\n    <z-layer part=\"label\">Livraison</z-layer>\n    <z-layer part=\"panel\">Sous 48 h en France métropolitaine.</z-layer>\n  </z-disclosure>\n  <z-disclosure>\n    <z-layer part=\"label\">Retours</z-layer>\n    <z-layer part=\"panel\">30 jours, sans justificatif.</z-layer>\n  </z-disclosure>\n</z-accordion>\n```"
+      },
+      "attributes": [
+        {
+          "name": "exclusive",
+          "description": "Only one disclosure open at a time — opening one closes the others.",
+          "valueSet": "v"
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
+    },
+    {
+      "name": "z-alert",
+      "description": {
+        "kind": "markdown",
+        "value": "A contextual message — tone drives the colour, role=status (or alert for danger). Optionally dismissible.\n\n```html\n<z-alert tone=\"success\">Vos modifications sont enregistrées.</z-alert>\n<z-alert tone=\"danger\" dismissible>Le paiement a été refusé.</z-alert>\n```"
+      },
+      "attributes": [
+        {
+          "name": "tone",
+          "description": "The kind of message — drives colour and, for danger, the live politeness.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "dismissible",
+          "description": "Adds a × ; closes on click (on the ×) or Delete/Backspace when focused.",
+          "valueSet": "v"
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
+    },
+    {
+      "name": "z-avatar",
+      "description": {
+        "kind": "markdown",
+        "value": "An identity chip — an image if given, otherwise the initials. role=img with an alt from name. Inherits tone/size.\n\n```html\n<z-avatar name=\"Ada Lovelace\">AL</z-avatar>\n<z-avatar name=\"Grace Hopper\" src=\"/img/grace.jpg\"></z-avatar>\n<z-avatar size=\"l\" tone=\"soft\">?</z-avatar>\n```"
+      },
+      "attributes": [
+        {
+          "name": "src",
+          "description": "Image URL — set as the host's background (no injected <img>)."
+        },
+        {
+          "name": "name",
+          "description": "The person/thing shown — becomes the accessible alt (role=img + aria-label)."
+        },
+        {
+          "name": "size",
+          "description": "Size factor, from the socle variant.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
+    },
+    {
+      "name": "z-avatar-group",
+      "description": {
+        "kind": "markdown",
+        "value": "A stack of overlapping z-avatar, each ringed in the page colour to stand out. On hover, the avatar lifts and comes to the front. Nothing injected.\n\n```html\n<z-avatar-group max=\"3\">\n  <z-avatar name=\"Ada Lovelace\">AL</z-avatar>\n  <z-avatar name=\"Grace Hopper\">GH</z-avatar>\n  <z-avatar name=\"Margaret Hamilton\">MH</z-avatar>\n  <z-avatar tone=\"soft\">+4</z-avatar>\n</z-avatar-group>\n```"
+      },
+      "attributes": [
+        {
+          "name": "max",
+          "description": "Author's guide: past this many faces, add a final <z-avatar>+N</z-avatar> yourself (no node is generated)."
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
+    },
+    {
+      "name": "z-badge",
+      "description": {
+        "kind": "markdown",
+        "value": "A status/count pill — inherits z-element's tone & size variants, painted by the skin. Almost zero code: the frozen socle does the work.\n\n```html\n<z-badge>Nouveau</z-badge>\n<z-badge tone=\"danger\">3</z-badge>\n<z-badge tone=\"success\" size=\"s\">payé</z-badge>\n```"
+      },
+      "attributes": [
+        {
+          "name": "tone",
+          "description": "Importance/colour, from the socle variant.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "size",
+          "description": "Size factor, from the socle variant (everything follows in em).",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
+    },
+    {
+      "name": "z-breadcrumb",
+      "description": {
+        "kind": "markdown",
+        "value": "A breadcrumb trail — you write the links, Zoé adds the meaning (nav + label) and the « › » separators in CSS. Nothing injected.\n\n```html\n<z-breadcrumb label=\"Vous êtes ici\">\n  <a href=\"/\">Accueil</a>\n  <a href=\"/boutique\">Boutique</a>\n  <span aria-current=\"page\">Chaussures</span>\n</z-breadcrumb>\n```"
+      },
+      "attributes": [
+        {
+          "name": "label",
+          "description": "The accessible name of the navigation (defaults to « Fil d'Ariane »)."
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
+    },
+    {
+      "name": "z-button",
+      "description": {
+        "kind": "markdown",
+        "value": "A button — inherits all z-element states, skinnable by themes.\n\n```html\n<z-button>Envoyer</z-button>\n<z-button tone=\"soft\">Annuler</z-button>\n<z-button loading>Chargement…</z-button>\n<form>\n  <z-button type=\"submit\">Valider</z-button>\n  <z-button type=\"reset\" tone=\"soft\">Réinitialiser</z-button>\n</form>\n```"
+      },
+      "attributes": [
+        {
+          "name": "type",
+          "description": "What it does inside a form: submit (default), reset, or nothing.",
+          "values": [
+            {
+              "name": "submit"
+            },
+            {
+              "name": "reset"
+            },
+            {
+              "name": "button"
+            }
+          ]
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled: blocks interaction.",
+          "valueSet": "v"
+        },
+        {
+          "name": "loading",
+          "description": "Loading (skeleton sweep, not clickable).",
+          "valueSet": "v"
+        },
+        {
+          "name": "error",
+          "description": "Error (danger border + shake).",
+          "valueSet": "v"
+        },
+        {
+          "name": "success",
+          "description": "Valid (success border).",
+          "valueSet": "v"
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-button"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-button/z-button.demo.html"
+        }
+      ]
+    },
+    {
+      "name": "z-card",
+      "description": {
+        "kind": "markdown",
+        "value": "A surface card holding free content — inherits tone & size; optionally interactive (hover + clickable, role=button).\n\n```html\n<z-card>\n  <h3>Titre de la carte</h3>\n  <p>Contenu libre : texte, images, autres composants.</p>\n</z-card>\n<z-card interactive tone=\"soft\">Toute la carte est cliquable.</z-card>\n```"
+      },
+      "attributes": [
+        {
+          "name": "interactive",
+          "description": "The whole card reacts to hover (elevation + accent border) and becomes focusable/clickable — role=button, Enter/Space fire a click.",
+          "valueSet": "v"
+        },
+        {
+          "name": "tone",
+          "description": "Importance/colour, from the socle variant.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "size",
+          "description": "Size factor, from the socle variant (everything follows in em).",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
+    },
+    {
       "name": "z-checkbox",
-      "description": "A checkbox — inherits all z-element states, marker + label anatomy, painted by the skin.",
+      "description": {
+        "kind": "markdown",
+        "value": "A checkbox — inherits all z-element states, marker + label anatomy, painted by the skin.\n\n```html\n<z-checkbox name=\"cgu\" required>J'accepte les conditions</z-checkbox>\n<z-checkbox name=\"lettre\" value=\"hebdo\" current>Recevoir la lettre</z-checkbox>\n<z-checkbox indeterminate>Tout cocher</z-checkbox>\n```"
+      },
       "attributes": [
         {
           "name": "current",
           "description": "Checked: a durable selection set by the component (click / Space).",
-          "values": []
+          "valueSet": "v"
         },
         {
           "name": "indeterminate",
           "description": "Neither checked nor unchecked — the state of a 'check all' box whose children disagree. Any click resolves it to checked.",
-          "values": []
+          "valueSet": "v"
         },
         {
           "name": "name",
@@ -186,384 +963,373 @@
         {
           "name": "required",
           "description": "The form is invalid until this box is checked.",
-          "values": []
+          "valueSet": "v"
         },
         {
           "name": "disabled",
           "description": "Disabled: blocks interaction.",
-          "values": []
+          "valueSet": "v"
         },
         {
           "name": "error",
           "description": "Invalid (e.g. required and unchecked).",
-          "values": []
+          "valueSet": "v"
         },
         {
           "name": "success",
           "description": "Valid.",
-          "values": []
-        }
-      ]
-    },
-    {
-      "name": "z-button",
-      "description": "A button — inherits all z-element states, skinnable by themes.",
-      "attributes": [
-        {
-          "name": "type",
-          "description": "What it does inside a form: submit (default), reset, or nothing."
-        },
-        {
-          "name": "disabled",
-          "description": "Disabled: blocks interaction.",
-          "values": []
-        },
-        {
-          "name": "loading",
-          "description": "Loading (skeleton sweep, not clickable).",
-          "values": []
-        },
-        {
-          "name": "error",
-          "description": "Error (danger border + shake).",
-          "values": []
-        },
-        {
-          "name": "success",
-          "description": "Valid (success border).",
-          "values": []
-        }
-      ]
-    },
-    {
-      "name": "z-radio",
-      "description": "A radio button — z-element states, marker + label anatomy, selects but never unselects itself.",
-      "attributes": [
-        {
-          "name": "value",
-          "description": "The value this radio carries — read by z-radio-group."
-        },
-        {
-          "name": "current",
-          "description": "Selected: a durable selection set by the component (click / Space / Enter).",
-          "values": []
-        },
-        {
-          "name": "disabled",
-          "description": "Disabled: blocks interaction.",
-          "values": []
-        },
-        {
-          "name": "error",
-          "description": "Invalid (e.g. a required choice is missing).",
-          "values": []
-        },
-        {
-          "name": "success",
-          "description": "Valid.",
-          "values": []
-        }
-      ]
-    },
-    {
-      "name": "z-radio-group",
-      "description": "A group of z-radio: single choice, arrow-key navigation, roving tabindex, one value.",
-      "attributes": [
-        {
-          "name": "value",
-          "description": "The selected radio's value — set it to preselect, read it to know the choice."
-        },
-        {
-          "name": "disabled",
-          "description": "Disables the whole group.",
-          "values": []
-        },
-        {
-          "name": "error",
-          "description": "The group's choice is invalid (e.g. required and empty).",
-          "values": []
-        },
-        {
-          "name": "success",
-          "description": "The group's choice is valid.",
-          "values": []
-        }
-      ]
-    },
-    {
-      "name": "z-slider",
-      "description": "A value slider — poses progress (0→1) in the cascade, the skin paints everything.",
-      "attributes": [
-        {
-          "name": "value",
-          "description": "Current value. Clamped to [min, max] and snapped to step."
-        },
-        {
-          "name": "min",
-          "description": "Lower bound (default 0)."
-        },
-        {
-          "name": "max",
-          "description": "Upper bound (default 100)."
-        },
-        {
-          "name": "step",
-          "description": "Increment. `any` for a continuous slider (default 1)."
-        },
-        {
-          "name": "orientation",
-          "description": "Track direction. Vertical runs bottom→top: up means more."
-        },
-        {
-          "name": "markers",
-          "description": "Graduations. Bare = one per step; a number = that many intervals."
-        },
-        {
-          "name": "label",
-          "description": "Where the value is written, relative to the track. `none` (default) writes nothing."
-        },
-        {
-          "name": "disabled",
-          "description": "Disabled: blocks interaction.",
-          "values": []
-        }
-      ]
-    },
-    {
-      "name": "z-badge",
-      "description": "A status/count pill — inherits z-element's tone & size variants, painted by the skin. Almost zero code: the frozen socle does the work.",
-      "attributes": [
-        {
-          "name": "tone",
-          "description": "Importance/colour, from the socle variant."
+          "valueSet": "v"
         },
         {
           "name": "size",
-          "description": "Size factor, from the socle variant (everything follows in em)."
-        }
-      ]
-    },
-    {
-      "name": "z-tag",
-      "description": "A tag/chip for keywords, filters, categories — inherits tone & size; optionally removable.",
-      "attributes": [
-        {
-          "name": "removable",
-          "description": "Shows a × ; removes on click (on the ×) or Delete/Backspace when focused.",
-          "values": []
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
         },
         {
           "name": "tone",
-          "description": "Importance/colour, from the socle variant."
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
         },
         {
-          "name": "size",
-          "description": "Size factor, from the socle variant."
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
         }
-      ]
-    },
-    {
-      "name": "z-switch",
-      "description": "An on/off switch — inherits all z-element states, form-bound, painted by the skin. Immediate effect, unlike a checkbox you'll validate later.",
-      "attributes": [
+      ],
+      "references": [
         {
-          "name": "current",
-          "description": "On: a durable state set by the component (click / Space).",
-          "values": []
+          "name": "Documentation",
+          "url": "./docs/index.html#z-checkbox"
         },
         {
-          "name": "name",
-          "description": "Form field name."
-        },
-        {
-          "name": "value",
-          "description": "What is submitted when on (default: \"on\")."
-        },
-        {
-          "name": "disabled",
-          "description": "Disabled: blocks interaction.",
-          "values": []
-        }
-      ]
-    },
-    {
-      "name": "z-progress",
-      "description": "A progress bar — inherits z-element states + tone/size, painted by the skin. value/max → a percentage the CSS draws.",
-      "attributes": [
-        {
-          "name": "value",
-          "description": "Current amount (0…max)."
-        },
-        {
-          "name": "max",
-          "description": "The total (default 100)."
-        },
-        {
-          "name": "indeterminate",
-          "description": "Unknown amount — a sweep animates, aria-valuenow is dropped.",
-          "values": []
-        },
-        {
-          "name": "tone",
-          "description": "Fill colour, from the socle variant."
-        },
-        {
-          "name": "size",
-          "description": "Size factor, from the socle variant."
-        }
-      ]
-    },
-    {
-      "name": "z-spinner",
-      "description": "A loading spinner — inherits tone/size, role=status with an accessible label. The ring spins in CSS.",
-      "attributes": [
-        {
-          "name": "label",
-          "description": "Accessible text read by screen readers (default: \"Chargement…\")."
-        },
-        {
-          "name": "tone",
-          "description": "Colour, from the socle variant."
-        },
-        {
-          "name": "size",
-          "description": "Size factor, from the socle variant."
-        }
-      ]
-    },
-    {
-      "name": "z-avatar",
-      "description": "An identity chip — an image if given, otherwise the initials. role=img with an alt from name. Inherits tone/size.",
-      "attributes": [
-        {
-          "name": "src",
-          "description": "Image URL — set as the host's background (no injected <img>)."
-        },
-        {
-          "name": "name",
-          "description": "The person/thing shown — becomes the accessible alt (role=img + aria-label)."
-        },
-        {
-          "name": "size",
-          "description": "Size factor, from the socle variant."
-        }
-      ]
-    },
-    {
-      "name": "z-disclosure",
-      "description": "A disclosure (title → collapsible content) — inherits z-element states, accessible (aria-expanded/controls, inert when closed), animatable.",
-      "attributes": [
-        {
-          "name": "open",
-          "description": "Open: reveals the panel.",
-          "values": []
-        }
-      ]
-    },
-    {
-      "name": "z-alert",
-      "description": "A contextual message — tone drives the colour, role=status (or alert for danger). Optionally dismissible.",
-      "attributes": [
-        {
-          "name": "tone",
-          "description": "The kind of message — drives colour and, for danger, the live politeness."
-        },
-        {
-          "name": "dismissible",
-          "description": "Adds a × ; closes on click (on the ×) or Delete/Backspace when focused.",
-          "values": []
-        }
-      ]
-    },
-    {
-      "name": "z-tooltip",
-      "description": "A hint bubble shown on hover and keyboard focus — accessible via a [part=tip] piece wired with aria-describedby.",
-      "attributes": [
-        {
-          "name": "tip",
-          "description": "Short form: the bubble text as an attribute (visual; prefer a [part=tip] piece for full a11y)."
-        },
-        {
-          "name": "placement",
-          "description": "Where the bubble sits (default top)."
-        }
-      ]
-    },
-    {
-      "name": "z-card",
-      "description": "A surface card holding free content — inherits tone & size; optionally interactive (hover + clickable, role=button).",
-      "attributes": [
-        {
-          "name": "interactive",
-          "description": "The whole card reacts to hover (elevation + accent border) and becomes focusable/clickable — role=button, Enter/Space fire a click.",
-          "values": []
-        },
-        {
-          "name": "tone",
-          "description": "Importance/colour, from the socle variant."
-        },
-        {
-          "name": "size",
-          "description": "Size factor, from the socle variant (everything follows in em)."
-        }
-      ]
-    },
-    {
-      "name": "z-skeleton",
-      "description": "A shimmering loading placeholder (skeleton). Purely visual and aria-hidden — a decoy holding the space until real content arrives.",
-      "attributes": [
-        {
-          "name": "w",
-          "description": "Convenience width (any CSS length, e.g. \"12em\"). You may style the box yourself instead."
-        },
-        {
-          "name": "h",
-          "description": "Convenience height (any CSS length, e.g. \"1em\")."
-        },
-        {
-          "name": "radius",
-          "description": "\"pill\" for a text line, \"circle\" for an avatar. Default: the skin's radius."
+          "name": "Demo",
+          "url": "./components/z-checkbox/z-checkbox.demo.html"
         }
       ]
     },
     {
       "name": "z-code",
-      "description": "Displays code as written — a block by default (pre-like, scrolls horizontally) or inline with `inline` (a monospace chip). No syntax highlighting, nothing injected.",
+      "description": {
+        "kind": "markdown",
+        "value": "Displays code as written — a block by default (pre-like, scrolls horizontally) or inline with `inline` (a monospace chip). No syntax highlighting, nothing injected.\n\n```html\n<z-code>npm run dev\n# http://localhost:5173</z-code>\n<p>Installez avec <z-code inline>npm install</z-code>.</p>\n```"
+      },
       "attributes": [
         {
           "name": "inline",
           "description": "Render as an inline chip in a line of text instead of a block.",
-          "values": []
-        }
-      ]
-    },
-    {
-      "name": "z-divider",
-      "description": "A separator — a plain rule, or two rules framing a centred label. role=separator + aria-orientation.",
-      "attributes": [
-        {
-          "name": "orientation",
-          "description": "Direction of the rule: horizontal (default) or vertical (a short 1em stroke)."
+          "valueSet": "v"
         },
         {
           "name": "size",
-          "description": "Size factor, from the socle variant (label and stroke follow in em)."
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
         }
-      ]
+      ],
+      "references": []
     },
     {
-      "name": "z-breadcrumb",
-      "description": "A breadcrumb trail — you write the links, Zoé adds the meaning (nav + label) and the « › » separators in CSS. Nothing injected.",
+      "name": "z-disclosure",
+      "description": {
+        "kind": "markdown",
+        "value": "A disclosure (title → collapsible content) — inherits z-element states, accessible (aria-expanded/controls, inert when closed), animatable.\n\n```html\n<z-disclosure open>\n  <z-layer part=\"label\">Ce que Zoé garde natif</z-layer>\n  <z-layer part=\"panel\">Titres, paragraphes, liens — lus par les moteurs de recherche.</z-layer>\n</z-disclosure>\n```"
+      },
       "attributes": [
         {
-          "name": "label",
-          "description": "The accessible name of the navigation (defaults to « Fil d'Ariane »)."
+          "name": "open",
+          "description": "Open: reveals the panel.",
+          "valueSet": "v"
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
         }
-      ]
+      ],
+      "references": []
+    },
+    {
+      "name": "z-divider",
+      "description": {
+        "kind": "markdown",
+        "value": "A separator — a plain rule, or two rules framing a centred label. role=separator + aria-orientation.\n\n```html\n<z-divider></z-divider>\n<z-divider>ou</z-divider>\n<z-divider orientation=\"vertical\"></z-divider>\n```"
+      },
+      "attributes": [
+        {
+          "name": "orientation",
+          "description": "Direction of the rule: horizontal (default) or vertical (a short 1em stroke).",
+          "values": [
+            {
+              "name": "horizontal"
+            },
+            {
+              "name": "vertical"
+            }
+          ]
+        },
+        {
+          "name": "size",
+          "description": "Size factor, from the socle variant (label and stroke follow in em).",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
+    },
+    {
+      "name": "z-kbd",
+      "description": {
+        "kind": "markdown",
+        "value": "A keyboard key cap — pure display, monospace, bordered with a subtle key relief. Inherits size.\n\n```html\n<p>Appuyez sur <z-kbd>Ctrl</z-kbd> + <z-kbd>K</z-kbd> pour chercher.</p>\n```"
+      },
+      "attributes": [
+        {
+          "name": "size",
+          "description": "Size factor, from the socle variant (everything follows in em).",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
     },
     {
       "name": "z-meter",
-      "description": "A gauge (role=meter): a scalar measurement within a range, coloured by low/high/optimum thresholds. Not a progress bar — it shows a state, not an advance.",
+      "description": {
+        "kind": "markdown",
+        "value": "A gauge (role=meter): a scalar measurement within a range, coloured by low/high/optimum thresholds. Not a progress bar — it shows a state, not an advance.\n\n```html\n<z-meter value=\"72\"></z-meter>\n<z-meter value=\"15\" low=\"20\" high=\"80\" optimum=\"100\"></z-meter>\n<z-meter value=\"3\" max=\"5\"></z-meter>\n```"
+      },
       "attributes": [
         {
           "name": "value",
@@ -588,40 +1354,336 @@
         {
           "name": "optimum",
           "description": "Where the ideal sits — decides which side reads as good (success) or bad (danger)."
-        }
-      ]
-    },
-    {
-      "name": "z-kbd",
-      "description": "A keyboard key cap — pure display, monospace, bordered with a subtle key relief. Inherits size.",
-      "attributes": [
+        },
         {
           "name": "size",
-          "description": "Size factor, from the socle variant (everything follows in em)."
-        }
-      ]
-    },
-    {
-      "name": "z-stat",
-      "description": "A KPI tile — a label, a big number, an optional delta. `trend` colours the delta (success/danger) and gives it an arrow, in pure CSS.",
-      "attributes": [
-        {
-          "name": "trend",
-          "description": "Direction of the delta: up (success + ↑) or down (danger + ↓). Absent = neutral (soft ink)."
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
         },
         {
           "name": "tone",
-          "description": "Importance/colour of the tile, from the socle variant."
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
+    },
+    {
+      "name": "z-progress",
+      "description": {
+        "kind": "markdown",
+        "value": "A progress bar — inherits z-element states + tone/size, painted by the skin. value/max → a percentage the CSS draws.\n\n```html\n<z-progress value=\"40\"></z-progress>\n<z-progress value=\"3\" max=\"5\" tone=\"success\"></z-progress>\n<z-progress indeterminate></z-progress>\n```"
+      },
+      "attributes": [
+        {
+          "name": "value",
+          "description": "Current amount (0…max)."
+        },
+        {
+          "name": "max",
+          "description": "The total (default 100)."
+        },
+        {
+          "name": "indeterminate",
+          "description": "Unknown amount — a sweep animates, aria-valuenow is dropped.",
+          "valueSet": "v"
+        },
+        {
+          "name": "tone",
+          "description": "Fill colour, from the socle variant.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
         },
         {
           "name": "size",
-          "description": "Size factor, from the socle variant (everything follows in em)."
+          "description": "Size factor, from the socle variant.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
+    },
+    {
+      "name": "z-radio",
+      "description": {
+        "kind": "markdown",
+        "value": "A radio button — z-element states, marker + label anatomy, selects but never unselects itself.\n\n```html\n<z-radio value=\"fr\">Français</z-radio>\n<z-radio value=\"en\" current>English</z-radio>\n<z-radio value=\"es\" disabled>Español</z-radio>\n```"
+      },
+      "attributes": [
+        {
+          "name": "value",
+          "description": "The value this radio carries — read by z-radio-group."
+        },
+        {
+          "name": "current",
+          "description": "Selected: a durable selection set by the component (click / Space / Enter).",
+          "valueSet": "v"
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled: blocks interaction.",
+          "valueSet": "v"
+        },
+        {
+          "name": "error",
+          "description": "Invalid (e.g. a required choice is missing).",
+          "valueSet": "v"
+        },
+        {
+          "name": "success",
+          "description": "Valid.",
+          "valueSet": "v"
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-radio"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-radio/z-radio.demo.html"
+        }
+      ]
+    },
+    {
+      "name": "z-radio-group",
+      "description": {
+        "kind": "markdown",
+        "value": "A group of z-radio: single choice, arrow-key navigation, roving tabindex, one value.\n\n```html\n<z-radio-group value=\"en\" name=\"lang\">\n  <z-radio value=\"fr\">Français</z-radio>\n  <z-radio value=\"en\">English</z-radio>\n  <z-radio value=\"es\">Español</z-radio>\n</z-radio-group>\n```"
+      },
+      "attributes": [
+        {
+          "name": "value",
+          "description": "The selected radio's value — set it to preselect, read it to know the choice."
+        },
+        {
+          "name": "disabled",
+          "description": "Disables the whole group.",
+          "valueSet": "v"
+        },
+        {
+          "name": "error",
+          "description": "The group's choice is invalid (e.g. required and empty).",
+          "valueSet": "v"
+        },
+        {
+          "name": "success",
+          "description": "The group's choice is valid.",
+          "valueSet": "v"
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-radio-group"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-radio-group/z-radio-group.demo.html"
         }
       ]
     },
     {
       "name": "z-rating",
-      "description": "A star rating — a slider from 0 to max, set by click or keyboard, painted by the skin.",
+      "description": {
+        "kind": "markdown",
+        "value": "A star rating — a slider from 0 to max, set by click or keyboard, painted by the skin.\n\n```html\n<z-rating value=\"3\"></z-rating>\n<z-rating value=\"4\" max=\"5\" name=\"note\"></z-rating>\n<z-rating value=\"2\" readonly></z-rating>\n```"
+      },
       "attributes": [
         {
           "name": "value",
@@ -634,12 +1696,12 @@
         {
           "name": "readonly",
           "description": "Shown but not editable — a rating you display.",
-          "values": []
+          "valueSet": "v"
         },
         {
           "name": "disabled",
           "description": "Disabled: blocks interaction.",
-          "values": []
+          "valueSet": "v"
         },
         {
           "name": "name",
@@ -648,59 +1710,71 @@
         {
           "name": "required",
           "description": "The form is invalid while the rating is 0.",
-          "values": []
-        }
-      ]
-    },
-    {
-      "name": "z-avatar-group",
-      "description": "A stack of overlapping z-avatar, each ringed in the page colour to stand out. On hover, the avatar lifts and comes to the front. Nothing injected.",
-      "attributes": [
-        {
-          "name": "max",
-          "description": "Author's guide: past this many faces, add a final <z-avatar>+N</z-avatar> yourself (no node is generated)."
-        }
-      ]
-    },
-    {
-      "name": "z-accordion",
-      "description": "A group of z-disclosure — when `exclusive`, opening one closes the others. Coordination only.",
-      "attributes": [
-        {
-          "name": "exclusive",
-          "description": "Only one disclosure open at a time — opening one closes the others.",
-          "values": []
-        }
-      ]
-    },
-    {
-      "name": "z-stepper",
-      "description": "A number stepper wrapping a native <input>: paints − / + zones, the input stays the source of truth.",
-      "attributes": [
-        {
-          "name": "aria-label",
-          "description": "Names the group for assistive tech (e.g. \"Quantity\")."
+          "valueSet": "v"
         },
         {
-          "name": "disabled",
-          "description": "Disables the − / + zones (the input keeps its own disabled state).",
-          "values": []
-        }
-      ]
-    },
-    {
-      "name": "z-tabs",
-      "description": "Tabs — author writes tabs + panels, z-tabs gives roles, keyboard, and a sliding indicator. Nestable.",
-      "attributes": [
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
         {
-          "name": "value",
-          "description": "The active tab's value — set it to preselect, read it to know the choice."
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
         }
-      ]
+      ],
+      "references": []
     },
     {
       "name": "z-segmented",
-      "description": "A segmented control: single choice among 2–5 options, with an indicator that slides under the current one.",
+      "description": {
+        "kind": "markdown",
+        "value": "A segmented control: single choice among 2–5 options, with an indicator that slides under the current one.\n\n```html\n<z-segmented value=\"mois\">\n  <button part=\"segment\" value=\"jour\">Jour</button>\n  <button part=\"segment\" value=\"mois\">Mois</button>\n  <button part=\"segment\" value=\"an\">Année</button>\n</z-segmented>\n```"
+      },
       "attributes": [
         {
           "name": "value",
@@ -709,17 +1783,745 @@
         {
           "name": "disabled",
           "description": "Disables the whole control.",
-          "values": []
+          "valueSet": "v"
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
+    },
+    {
+      "name": "z-skeleton",
+      "description": {
+        "kind": "markdown",
+        "value": "A shimmering loading placeholder (skeleton). Purely visual and aria-hidden — a decoy holding the space until real content arrives.\n\n```html\n<z-skeleton radius=\"circle\" w=\"3em\" h=\"3em\"></z-skeleton>\n<z-skeleton radius=\"pill\" h=\"1em\" w=\"60%\"></z-skeleton>\n<z-skeleton h=\"6em\"></z-skeleton>\n```"
+      },
+      "attributes": [
+        {
+          "name": "w",
+          "description": "Convenience width (any CSS length, e.g. \"12em\"). You may style the box yourself instead."
+        },
+        {
+          "name": "h",
+          "description": "Convenience height (any CSS length, e.g. \"1em\")."
+        },
+        {
+          "name": "radius",
+          "description": "\"pill\" for a text line, \"circle\" for an avatar. Default: the skin's radius.",
+          "values": [
+            {
+              "name": "pill"
+            },
+            {
+              "name": "circle"
+            }
+          ]
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
+    },
+    {
+      "name": "z-slider",
+      "description": {
+        "kind": "markdown",
+        "value": "A value slider — poses progress (0→1) in the cascade, the skin paints everything.\n\n```html\n<z-slider min=\"0\" max=\"100\" value=\"40\" name=\"volume\"></z-slider>\n<z-slider value=\"25\" step=\"5\" markers label=\"over\"></z-slider>\n<z-slider orientation=\"vertical\" value=\"60\"></z-slider>\n```"
+      },
+      "attributes": [
+        {
+          "name": "value",
+          "description": "Current value. Clamped to [min, max] and snapped to step."
+        },
+        {
+          "name": "min",
+          "description": "Lower bound (default 0)."
+        },
+        {
+          "name": "max",
+          "description": "Upper bound (default 100)."
+        },
+        {
+          "name": "step",
+          "description": "Increment. `any` for a continuous slider (default 1)."
+        },
+        {
+          "name": "orientation",
+          "description": "Track direction. Vertical runs bottom→top: up means more.",
+          "values": [
+            {
+              "name": "horizontal"
+            },
+            {
+              "name": "vertical"
+            }
+          ]
+        },
+        {
+          "name": "markers",
+          "description": "Graduations. Bare = one per step; a number = that many intervals.",
+          "values": [
+            {
+              "name": "boolean"
+            },
+            {
+              "name": "number"
+            }
+          ]
+        },
+        {
+          "name": "label",
+          "description": "Where the value is written, relative to the track. `none` (default) writes nothing.",
+          "values": [
+            {
+              "name": "over"
+            },
+            {
+              "name": "under"
+            },
+            {
+              "name": "none"
+            }
+          ]
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled: blocks interaction.",
+          "valueSet": "v"
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-slider"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-slider/z-slider.demo.html"
         }
       ]
     },
     {
+      "name": "z-spinner",
+      "description": {
+        "kind": "markdown",
+        "value": "A loading spinner — inherits tone/size, role=status with an accessible label. The ring spins in CSS.\n\n```html\n<z-spinner label=\"Chargement des commandes\"></z-spinner>\n<z-spinner size=\"s\" tone=\"soft\"></z-spinner>\n```"
+      },
+      "attributes": [
+        {
+          "name": "label",
+          "description": "Accessible text read by screen readers (default: \"Chargement…\")."
+        },
+        {
+          "name": "tone",
+          "description": "Colour, from the socle variant.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "size",
+          "description": "Size factor, from the socle variant.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
+    },
+    {
+      "name": "z-stat",
+      "description": {
+        "kind": "markdown",
+        "value": "A KPI tile — a label, a big number, an optional delta. `trend` colours the delta (success/danger) and gives it an arrow, in pure CSS.\n\n```html\n<z-stat trend=\"up\">\n  <span part=\"label\">Chiffre d'affaires</span>\n  <strong part=\"value\">1,24 M€</strong>\n  <span part=\"delta\">+12,4 %</span>\n</z-stat>\n```"
+      },
+      "attributes": [
+        {
+          "name": "trend",
+          "description": "Direction of the delta: up (success + ↑) or down (danger + ↓). Absent = neutral (soft ink).",
+          "values": [
+            {
+              "name": "up"
+            },
+            {
+              "name": "down"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance/colour of the tile, from the socle variant.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "size",
+          "description": "Size factor, from the socle variant (everything follows in em).",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
+    },
+    {
+      "name": "z-stepper",
+      "description": {
+        "kind": "markdown",
+        "value": "A number stepper wrapping a native <input>: paints − / + zones, the input stays the source of truth.\n\n```html\n<z-stepper aria-label=\"Quantité\">\n  <input type=\"number\" name=\"qty\" value=\"3\" min=\"0\" max=\"9\" step=\"1\">\n</z-stepper>\n```"
+      },
+      "attributes": [
+        {
+          "name": "aria-label",
+          "description": "Names the group for assistive tech (e.g. \"Quantity\")."
+        },
+        {
+          "name": "disabled",
+          "description": "Disables the − / + zones (the input keeps its own disabled state).",
+          "valueSet": "v"
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
+    },
+    {
+      "name": "z-switch",
+      "description": {
+        "kind": "markdown",
+        "value": "An on/off switch — inherits all z-element states, form-bound, painted by the skin. Immediate effect, unlike a checkbox you'll validate later.\n\n```html\n<z-switch name=\"notifications\">Notifications</z-switch>\n<z-switch current>Mode sombre</z-switch>\n<z-switch disabled>Indisponible</z-switch>\n```"
+      },
+      "attributes": [
+        {
+          "name": "current",
+          "description": "On: a durable state set by the component (click / Space).",
+          "valueSet": "v"
+        },
+        {
+          "name": "name",
+          "description": "Form field name."
+        },
+        {
+          "name": "value",
+          "description": "What is submitted when on (default: \"on\")."
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled: blocks interaction.",
+          "valueSet": "v"
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
+    },
+    {
+      "name": "z-tabs",
+      "description": {
+        "kind": "markdown",
+        "value": "Tabs — author writes tabs + panels, z-tabs gives roles, keyboard, and a sliding indicator. Nestable.\n\n```html\n<z-tabs value=\"livraison\">\n  <div part=\"tablist\">\n    <button part=\"tab\" value=\"livraison\">Livraison</button>\n    <button part=\"tab\" value=\"retours\">Retours</button>\n  </div>\n  <div part=\"panel\" value=\"livraison\">Sous 48 h en France.</div>\n  <div part=\"panel\" value=\"retours\">30 jours, sans justificatif.</div>\n</z-tabs>\n```"
+      },
+      "attributes": [
+        {
+          "name": "value",
+          "description": "The active tab's value — set it to preselect, read it to know the choice."
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
+    },
+    {
+      "name": "z-tag",
+      "description": {
+        "kind": "markdown",
+        "value": "A tag/chip for keywords, filters, categories — inherits tone & size; optionally removable.\n\n```html\n<z-tag>design</z-tag>\n<z-tag tone=\"main\" removable>filtre : rouge</z-tag>\n<z-tag size=\"s\" tone=\"soft\">brouillon</z-tag>\n```"
+      },
+      "attributes": [
+        {
+          "name": "removable",
+          "description": "Shows a × ; removes on click (on the ×) or Delete/Backspace when focused.",
+          "valueSet": "v"
+        },
+        {
+          "name": "tone",
+          "description": "Importance/colour, from the socle variant.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "size",
+          "description": "Size factor, from the socle variant.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
+    },
+    {
       "name": "z-toast",
-      "description": "An ephemeral notification — tone drives colour, auto-closes after `duration` (paused on hover/focus), animated in and out.",
+      "description": {
+        "kind": "markdown",
+        "value": "An ephemeral notification — tone drives colour, auto-closes after `duration` (paused on hover/focus), animated in and out.\n\n```html\n<z-toast tone=\"success\">Enregistré.</z-toast>\n<z-toast tone=\"danger\" dismissible duration=\"0\">Le paiement a échoué.</z-toast>\n```"
+      },
       "attributes": [
         {
           "name": "tone",
-          "description": "The kind of message — drives colour and, for danger, the live politeness."
+          "description": "The kind of message — drives colour and, for danger, the live politeness.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
         },
         {
           "name": "duration",
@@ -728,9 +2530,123 @@
         {
           "name": "dismissible",
           "description": "Adds a × ; closes on click (on the ×) or Delete/Backspace when focused.",
-          "values": []
+          "valueSet": "v"
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
         }
-      ]
+      ],
+      "references": []
+    },
+    {
+      "name": "z-tooltip",
+      "description": {
+        "kind": "markdown",
+        "value": "A hint bubble shown on hover and keyboard focus — accessible via a [part=tip] piece wired with aria-describedby.\n\n```html\n<z-tooltip>\n  <button>?</button>\n  <z-layer part=\"tip\">On habille le natif, on ne le remplace pas.</z-layer>\n</z-tooltip>\n<z-tooltip tip=\"Explication rapide\" placement=\"bottom\"><button>?</button></z-tooltip>\n```"
+      },
+      "attributes": [
+        {
+          "name": "tip",
+          "description": "Short form: the bubble text as an attribute (visual; prefer a [part=tip] piece for full a11y)."
+        },
+        {
+          "name": "placement",
+          "description": "Where the bubble sits (default top).",
+          "values": [
+            {
+              "name": "top"
+            },
+            {
+              "name": "bottom"
+            }
+          ]
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": []
     }
   ]
 }

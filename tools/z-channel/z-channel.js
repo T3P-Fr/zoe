@@ -104,8 +104,12 @@
 */
 export const api = {
 	tag: "z-channel",
+	example: `<input type="range" channel="tempo" min="0" max="100" value="40">
+<div channel="tempo" style="height: 8px; background: var(--z-accent); width: calc(var(--z-channel-tempo) * 1%)"></div>`,
+	members: [
+		{ kind: "method", name: "tune(name, value)", type: "void", description: { en: "Exported function — writes a value on a channel from JS (a server, a clock); every member follows.", fr: "Fonction exportée — écrit une valeur sur un canal depuis le JS (un serveur, une horloge) ; tous les membres suivent.", es: "Función exportada — escribe un valor en un canal desde JS (un servidor, un reloj); todos los miembros siguen." } }
+	],
 	attributeTool: true,
-	example: "tools/z-channel/z-channel.lab.html",
 	summary: {
 		fr: "Le canal : deux éléments qui portent le même channel=\"nom\" sont reliés. Ce qui change ici bouge là-bas — et c'est le CSS qui décide quoi. Zéro classe, zéro écouteur.",
 		en: "The channel: two elements sharing the same channel=\"name\" are linked. What changes here moves there — and the CSS decides what. No class, no listener.",

@@ -41,6 +41,14 @@ const STAR = "★";
 export class ZRating extends ZElement {
 	static api = {
 		tag: "z-rating",
+		example: `<z-rating value="3"></z-rating>
+<z-rating value="4" max="5" name="note"></z-rating>
+<z-rating value="2" readonly></z-rating>`,
+		members: [
+			{ kind: "field", name: "value", type: "number", description: { en: "The rating, an integer in [0, max].", fr: "La note, un entier dans [0, max].", es: "La nota, un entero en [0, max]." } },
+			{ kind: "field", name: "max", type: "number", description: { en: "Number of stars (default 5).", fr: "Nombre d'étoiles (défaut 5).", es: "Número de estrellas (por defecto 5)." } },
+			{ kind: "field", name: "readonly", type: "boolean", description: { en: "Shown but not editable.", fr: "Affichée mais non modifiable.", es: "Mostrada pero no editable." } }
+		],
 		summary: {
 			en: "A star rating — a slider from 0 to max, set by click or keyboard, painted by the skin.",
 			fr: "Une note en étoiles — un curseur de 0 à max, posé au clic ou au clavier, peint par la peau.",

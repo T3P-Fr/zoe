@@ -37,6 +37,12 @@ const DEFAULT_DURATION = 4000;
 export class ZToast extends ZElement {
 	static api = {
 		tag: "z-toast",
+		example: `<z-toast tone="success">Enregistré.</z-toast>
+<z-toast tone="danger" dismissible duration="0">Le paiement a échoué.</z-toast>`,
+		members: [
+			{ kind: "method", name: "dismiss()", type: "Promise<void>", description: { en: "Closes the toast: fires cancelable `zoe:dismiss`, plays `exit`, then removes the node.", fr: "Ferme le toast : émet `zoe:dismiss` (annulable), joue `exit`, puis retire le nœud.", es: "Cierra el toast: emite `zoe:dismiss` (cancelable), reproduce `exit`, luego quita el nodo." } },
+			{ kind: "field", name: "duration", type: "number", description: { en: "Milliseconds before auto-close (0 = never).", fr: "Millisecondes avant l'auto-fermeture (0 = jamais).", es: "Milisegundos antes del cierre automático (0 = nunca)." } }
+		],
 		summary: {
 			en: "An ephemeral notification — tone drives colour, auto-closes after `duration` (paused on hover/focus), animated in and out.",
 			fr: "Une notification éphémère — le ton donne la couleur, se ferme seule après `duration` (en pause au survol/focus), animée à l'entrée et à la sortie.",

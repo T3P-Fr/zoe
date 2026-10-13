@@ -28,6 +28,11 @@ const CLOSE_ZONE_EM = 2.2;
 export class ZAlert extends ZElement {
 	static api = {
 		tag: "z-alert",
+		example: `<z-alert tone="success">Vos modifications sont enregistrées.</z-alert>
+<z-alert tone="danger" dismissible>Le paiement a été refusé.</z-alert>`,
+		members: [
+			{ kind: "method", name: "dismiss()", type: "void", description: { en: "Closes the alert: fires cancelable `zoe:dismiss`, then plays `exit` and removes the node.", fr: "Ferme l'alerte : émet `zoe:dismiss` (annulable), puis joue `exit` et retire le nœud.", es: "Cierra la alerta: emite `zoe:dismiss` (cancelable), luego reproduce `exit` y quita el nodo." } }
+		],
 		summary: {
 			en: "A contextual message — tone drives the colour, role=status (or alert for danger). Optionally dismissible.",
 			fr: "Un message contextuel — le ton donne la couleur, role=status (ou alert pour un danger). Fermable en option.",

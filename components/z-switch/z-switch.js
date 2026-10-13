@@ -30,6 +30,13 @@ import { ZElement } from "../../core/z-element/z-element.js";
 export class ZSwitch extends ZElement {
 	static api = {
 		tag: "z-switch",
+		example: `<z-switch name="notifications">Notifications</z-switch>
+<z-switch current>Mode sombre</z-switch>
+<z-switch disabled>Indisponible</z-switch>`,
+		members: [
+			{ kind: "field", name: "checked", type: "boolean", description: { en: "On or off — mirrors `current`.", fr: "Allumé ou éteint — reflet de `current`.", es: "Encendido o apagado — reflejo de `current`." } },
+			{ kind: "field", name: "value", type: "string", description: { en: "What is submitted when on (default \"on\").", fr: "Ce qui part quand il est allumé (défaut « on »).", es: "Lo que se envía al estar encendido (por defecto «on»)." } }
+		],
 		summary: {
 			en: "An on/off switch — inherits all z-element states, form-bound, painted by the skin. Immediate effect, unlike a checkbox you'll validate later.",
 			fr: "Un interrupteur on/off — hérite tous les états de z-element, lié au formulaire, peint par la peau. Effet immédiat, contrairement à une case qu'on validera.",
@@ -59,7 +66,7 @@ export class ZSwitch extends ZElement {
 			{
 				part: "infos",
 				description: { en: "What informs — moved, hidden or animated as one block.", fr: "Ce qui informe — déplacé, caché ou animé d'un bloc.", es: "Lo que informa — movido, ocultado o animado en bloque." },
-				children: [{ part: "label", description: { en: "Your text.", fr: "Ton texte.", es: "Tu texto." } }]
+				children: [{ part: "label", description: { en: "Your text.", fr: "Votre texte.", es: "Su texto." } }]
 			},
 			{ part: "contact", description: { en: "What receives the gesture — invisible, may overflow.", fr: "Ce qui reçoit le geste — invisible, peut déborder.", es: "Lo que recibe el gesto — invisible, puede desbordar." } }
 		]

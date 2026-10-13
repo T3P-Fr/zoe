@@ -26,6 +26,13 @@ import { ZElement } from "../../core/z-element/z-element.js";
 export class ZRadio extends ZElement {
 	static api = {
 		tag: "z-radio",
+		example: `<z-radio value="fr">Français</z-radio>
+<z-radio value="en" current>English</z-radio>
+<z-radio value="es" disabled>Español</z-radio>`,
+		members: [
+			{ kind: "field", name: "checked", type: "boolean", description: { en: "Chosen or not — mirrors `current`. Only code can set it to false.", fr: "Choisie ou non — reflet de `current`. Seul le code peut la passer à false.", es: "Elegida o no — reflejo de `current`. Solo el código puede ponerla en false." } },
+			{ kind: "field", name: "value", type: "string", description: { en: "The `value` attribute, or the label text when absent.", fr: "L'attribut `value`, ou le texte du label à défaut.", es: "El atributo `value`, o el texto de la etiqueta si falta." } }
+		],
 		summary: {
 			en: "A radio button — z-element states, marker + label anatomy, selects but never unselects itself.",
 			fr: "Un bouton radio — états de z-element, anatomie marker + label, se sélectionne mais ne se dé-sélectionne jamais lui-même.",
@@ -63,7 +70,7 @@ export class ZRadio extends ZElement {
 				description: { en: "What informs — moved, hidden or animated as one block.", fr: "Ce qui informe — déplacé, caché ou animé d'un bloc.", es: "Lo que informa — movido, ocultado o animado en bloque." },
 				children: [
 					{ part: "icon", optional: true, description: { en: "Optional, before the label.", fr: "Optionnel, avant le label.", es: "Opcional, antes de la etiqueta." } },
-					{ part: "label", description: { en: "Your text.", fr: "Ton texte.", es: "Tu texto." } }
+					{ part: "label", description: { en: "Your text.", fr: "Votre texte.", es: "Su texto." } }
 				]
 			},
 			{ part: "contact", description: { en: "What receives the gesture — covers (and may overflow) the component, invisible.", fr: "Ce qui reçoit le geste — couvre (et peut déborder) le composant, invisible.", es: "Lo que recibe el gesto — cubre (y puede desbordar) el componente, invisible." } }

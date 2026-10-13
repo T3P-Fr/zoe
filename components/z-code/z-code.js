@@ -25,6 +25,12 @@ import { ZElement } from "../../core/z-element/z-element.js";
 export class ZCode extends ZElement {
 	static api = {
 		tag: "z-code",
+		example: `<z-code>npm run dev
+# http://localhost:5173</z-code>
+<p>Installez avec <z-code inline>npm install</z-code>.</p>`,
+		members: [
+			{ kind: "field", name: "inline", type: "boolean", description: { en: "Mirrors the `inline` attribute.", fr: "Reflet de l'attribut `inline`.", es: "Reflejo del atributo `inline`." } }
+		],
 		summary: {
 			en: "Displays code as written — a block by default (pre-like, scrolls horizontally) or inline with `inline` (a monospace chip). No syntax highlighting, nothing injected.",
 			fr: "Affiche du code tel qu'écrit — en bloc par défaut (comme <pre>, défile à l'horizontale) ou en ligne avec `inline` (une puce monospace). Pas de coloration, rien d'injecté.",
@@ -42,7 +48,7 @@ export class ZCode extends ZElement {
 			{
 				part: "infos",
 				description: { en: "What informs — the code itself.", fr: "Ce qui informe — le code lui-même.", es: "Lo que informa — el código en sí." },
-				children: [{ part: "label", description: { en: "Your code text.", fr: "Ton texte de code.", es: "Tu texto de código." } }]
+				children: [{ part: "label", description: { en: "Your code text.", fr: "Votre texte de code.", es: "Su texto de código." } }]
 			}
 		]
 	};

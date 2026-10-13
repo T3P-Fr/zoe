@@ -27,6 +27,14 @@ import { ZElement } from "../../core/z-element/z-element.js";
 export class ZProgress extends ZElement {
 	static api = {
 		tag: "z-progress",
+		example: `<z-progress value="40"></z-progress>
+<z-progress value="3" max="5" tone="success"></z-progress>
+<z-progress indeterminate></z-progress>`,
+		members: [
+			{ kind: "field", name: "value", type: "number", description: { en: "Current amount (mirrors the attribute).", fr: "La quantité actuelle (reflet de l'attribut).", es: "La cantidad actual (reflejo del atributo)." } },
+			{ kind: "field", name: "max", type: "number", description: { en: "The total (default 100).", fr: "Le total (défaut 100).", es: "El total (predeterminado 100)." } },
+			{ kind: "field", name: "indeterminate", type: "boolean", description: { en: "Unknown amount — a sweep animates.", fr: "Quantité inconnue — un balayage anime.", es: "Cantidad desconocida — un barrido anima." } }
+		],
 		summary: {
 			en: "A progress bar — inherits z-element states + tone/size, painted by the skin. value/max → a percentage the CSS draws.",
 			fr: "Une barre de progression — hérite les états de z-element + tone/size, peinte par la peau. value/max → un pourcentage que le CSS dessine.",

@@ -36,6 +36,13 @@ const BUTTON_ZONE_EM = 2.2;
 export class ZStepper extends ZElement {
 	static api = {
 		tag: "z-stepper",
+		example: `<z-stepper aria-label="Quantité">
+  <input type="number" name="qty" value="3" min="0" max="9" step="1">
+</z-stepper>`,
+		members: [
+			{ kind: "field", name: "value", type: "number", description: { en: "The inner input's value.", fr: "La valeur de l'input interne.", es: "El valor del input interno." } },
+			{ kind: "method", name: "stepUp() · stepDown()", type: "void", description: { en: "One increment up or down — the same path as the − / + zones.", fr: "Un cran vers le haut ou le bas — le même chemin que les zones − / +.", es: "Un paso arriba o abajo — el mismo camino que las zonas − / +." } }
+		],
 		summary: {
 			en: "A number stepper wrapping a native <input>: paints − / + zones, the input stays the source of truth.",
 			fr: "Un incrémenteur autour d'un <input> natif : peint les zones − / +, l'input reste la source de vérité.",

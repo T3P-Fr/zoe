@@ -46,6 +46,20 @@ const STEP = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
 export class ZTabs extends ZElement {
 	static api = {
 		tag: "z-tabs",
+		example: `<z-tabs value="livraison">
+  <div part="tablist">
+    <button part="tab" value="livraison">Livraison</button>
+    <button part="tab" value="retours">Retours</button>
+  </div>
+  <div part="panel" value="livraison">Sous 48 h en France.</div>
+  <div part="panel" value="retours">30 jours, sans justificatif.</div>
+</z-tabs>`,
+		members: [
+			{ kind: "field", name: "value", type: "string", description: { en: "The active tab's value. Setting it selects without firing `change`.", fr: "La valeur de l'onglet actif. La poser sélectionne sans émettre `change`.", es: "El valor de la pestaña activa. Ponerlo selecciona sin emitir `change`." } },
+			{ kind: "field", name: "selectedIndex", type: "number", description: { en: "Index of the active tab (-1 when none).", fr: "L'index de l'onglet actif (-1 si aucun).", es: "Índice de la pestaña activa (-1 si ninguna)." } },
+			{ kind: "field", name: "tabs · panels", type: "Element[]", description: { en: "The `[part=tab]` and `[part=panel]` children of THIS z-tabs.", fr: "Les enfants `[part=tab]` et `[part=panel]` de CE z-tabs.", es: "Los hijos `[part=tab]` y `[part=panel]` de ESTE z-tabs." } },
+			{ kind: "field", name: "selectedTab", type: "Element | null", description: { en: "The active tab.", fr: "L'onglet actif.", es: "La pestaña activa." } }
+		],
 		summary: {
 			en: "Tabs — author writes tabs + panels, z-tabs gives roles, keyboard, and a sliding indicator. Nestable.",
 			fr: "Des onglets — l'auteur écrit onglets + panneaux, z-tabs donne rôles, clavier et un indicateur glissant. Imbriquable.",

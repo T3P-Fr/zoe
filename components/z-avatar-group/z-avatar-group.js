@@ -28,6 +28,12 @@ import "../z-avatar/z-avatar.js";
 export class ZAvatarGroup extends ZElement {
 	static api = {
 		tag: "z-avatar-group",
+		example: `<z-avatar-group max="3">
+  <z-avatar name="Ada Lovelace">AL</z-avatar>
+  <z-avatar name="Grace Hopper">GH</z-avatar>
+  <z-avatar name="Margaret Hamilton">MH</z-avatar>
+  <z-avatar tone="soft">+4</z-avatar>
+</z-avatar-group>`,
 		summary: {
 			en: "A stack of overlapping z-avatar, each ringed in the page colour to stand out. On hover, the avatar lifts and comes to the front. Nothing injected.",
 			fr: "Une pile de z-avatar qui se chevauchent, chacun cerné de la couleur de page pour se détacher. Au survol, l'avatar remonte et passe devant. Rien d'injecté.",

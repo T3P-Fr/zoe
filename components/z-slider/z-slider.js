@@ -47,6 +47,14 @@ const PAGE_FACTOR = 10;
 export class ZSlider extends ZElement {
 	static api = {
 		tag: "z-slider",
+		example: `<z-slider min="0" max="100" value="40" name="volume"></z-slider>
+<z-slider value="25" step="5" markers label="over"></z-slider>
+<z-slider orientation="vertical" value="60"></z-slider>`,
+		members: [
+			{ kind: "field", name: "value", type: "number", description: { en: "The current value, clamped to [min, max] and snapped to step. Setting it animates (progress is a typed @property).", fr: "La valeur courante, bornée à [min, max] et calée sur le pas. La poser anime (progress est une @property typée).", es: "El valor actual, limitado a [min, max] y ajustado al paso. Ponerlo anima (progress es una @property tipada)." } },
+			{ kind: "field", name: "min · max · step", type: "number", description: { en: "The bounds and increment (read-only mirrors of the attributes).", fr: "Les bornes et l'incrément (reflets en lecture des attributs).", es: "Los límites y el incremento (reflejos de solo lectura de los atributos)." } },
+			{ kind: "field", name: "progress", type: "number", description: { en: "0→1, the position along the track.", fr: "0→1, la position sur la piste.", es: "0→1, la posición en la pista." } }
+		],
 		summary: {
 			en: "A value slider — poses progress (0→1) in the cascade, the skin paints everything.",
 			fr: "Un curseur de valeur — pose une progression (0→1) dans la cascade, la peau peint tout.",

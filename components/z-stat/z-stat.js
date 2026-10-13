@@ -28,6 +28,11 @@ import { ZElement } from "../../core/z-element/z-element.js";
 export class ZStat extends ZElement {
 	static api = {
 		tag: "z-stat",
+		example: `<z-stat trend="up">
+  <span part="label">Chiffre d'affaires</span>
+  <strong part="value">1,24 M€</strong>
+  <span part="delta">+12,4 %</span>
+</z-stat>`,
 		summary: {
 			en: "A KPI tile — a label, a big number, an optional delta. `trend` colours the delta (success/danger) and gives it an arrow, in pure CSS.",
 			fr: "Une tuile de KPI — un intitulé, un grand nombre, une variation optionnelle. `trend` colore la variation (succès/danger) et lui pose une flèche, en CSS pur.",
