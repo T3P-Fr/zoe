@@ -35,8 +35,8 @@
 
 	ET LE CSS NATIF ? `animation-timeline: scroll()` fait une partie du travail, et le
 	fera mieux le jour où tous les navigateurs suivront. Mais une timeline n'anime que
-	des keyframes : elle ne donne pas de NOMBRE. Ici le nombre est à toi — tu le
-	multiplies, tu le compares, tu le passes à `color-mix()`. Les deux cohabitent très
+	des keyframes : elle ne donne pas de NOMBRE. Ici le nombre est à vous — vous le
+	multipliez, vous le comparez, vous le passez à `color-mix()`. Les deux cohabitent très
 	bien ; ce n'est pas un remplacement, c'est l'autre bout du problème.
 
 	Styleguide tool.scroll

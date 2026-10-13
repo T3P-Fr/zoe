@@ -50,7 +50,7 @@
 <aside class="meta">
 	<b>Ce que voit Google, ici, sans exécuter une ligne de JS ↓</b>
 	Le HTML sous ce bandeau est 100 % natif : des <code>&lt;h1&gt; &lt;h2&gt; &lt;p&gt; &lt;a&gt; &lt;ul&gt; &lt;blockquote&gt;</code>.
-	Aucune balise <code>z-*</code>. La peau (en haut à droite) ne fait que l'<b>habiller</b> — change-la, tout suit.
+	Aucune balise <code>z-*</code>. La peau (en haut à droite) ne fait que l'<b>habiller</b> — changez-la, tout suit.
 	<pre><span class="tag">&lt;article&gt;</span>
   <span class="tag">&lt;h1&gt;</span>Le natif habillé<span class="tag">&lt;/h1&gt;</span>
   <span class="tag">&lt;p&gt;</span>… <span class="tag">&lt;a href=</span>"…"<span class="tag">&gt;</span>un vrai lien<span class="tag">&lt;/a&gt;</span> …<span class="tag">&lt;/p&gt;</span>
@@ -62,8 +62,8 @@
 	<h1>Le natif habillé</h1>
 	<p>
 		Cet article est écrit en <strong>HTML pur</strong>. Pas un composant, pas une classe.
-		Pourtant il est mis en forme, et il <em>bouge</em> : survole un lien, il se souligne d'un
-		trait qui grandit ; regarde les titres, leur accent se pose. C'est la couche
+		Pourtant il est mis en forme, et il <em>bouge</em> : survolez un lien, il se souligne d'un
+		trait qui grandit ; regardez les titres, leur accent se pose. C'est la couche
 		<strong>classless</strong> de Zoé : on <em>habille sans rien renommer</em>.
 	</p>
 
@@ -107,8 +107,8 @@
 
 	<h5>Le reste du vocabulaire</h5>
 	<p>
-		Tout le natif est habillé : appuie sur <kbd>Ctrl</kbd> + <kbd>U</kbd> pour voir le
-		source, et note que <mark>rien n'est caché à l'index</mark>. <small>(La couche couvre
+		Tout le natif est habillé : appuyez sur <kbd>Ctrl</kbd> + <kbd>U</kbd> pour voir le
+		source, et notez que <mark>rien n'est caché à l'index</mark>. <small>(La couche couvre
 		aussi <code>h6</code>, <code>dl</code>, <code>abbr</code>…)</small>
 	</p>
 	<dl>
@@ -123,17 +123,17 @@
 	<h2>Et le formulaire ?</h2>
 	<p>
 		L'autre moitié — habiller sans rien renommer : un <code>&lt;form&gt;</code> natif,
-		habillé par la peau, <strong>sans un seul <code>z-*</code></strong>. Change de peau, il
+		habillé par la peau, <strong>sans un seul <code>z-*</code></strong>. Changez de peau, il
 		change de monde — et il <em>répond</em> (focus, survol, press).
 	</p>
 	<form onsubmit="return false">
 		<p>
-			<label for="mail">Ton adresse</label><br>
-			<input id="mail" type="email" placeholder="toi@exemple.fr">
+			<label for="mail">Votre adresse</label><br>
+			<input id="mail" type="email" placeholder="vous@exemple.fr">
 		</p>
 		<p>
 			<label for="mot">Un mot</label><br>
-			<textarea id="mot" placeholder="Écris ici…"></textarea>
+			<textarea id="mot" placeholder="Écrivez ici…"></textarea>
 		</p>
 		<p>
 			<label><input type="checkbox" checked> Je garde le natif</label>
@@ -151,14 +151,14 @@
 
 	<h2>Et si je veux l'animer ?</h2>
 	<p>
-		Habiller n'est pas animer. Pour qu'un titre <em>apparaisse</em> en mouvement, tu
-		l'<strong>encapsules</strong> — sans jamais le faire disparaître du source :
+		Habiller n'est pas animer. Pour qu'un titre <em>apparaisse</em> en mouvement, vous
+		l'<strong>encapsulez</strong> — sans jamais le faire disparaître du source :
 	</p>
 	<pre><code>&lt;z-reveal&gt;
   &lt;h1&gt;mon titre&lt;/h1&gt;   &lt;!-- TOI tu l'écris, en vrai --&gt;
 &lt;/z-reveal&gt;</code></pre>
 	<p>
-		Le <code>&lt;h1&gt;</code> reste écrit par toi, donc indexé ; <code>z-reveal</code> ne
+		Le <code>&lt;h1&gt;</code> reste écrit par vous, donc indexé ; <code>z-reveal</code> ne
 		fait que l'animer. Deux couches, jamais confondues.
 	</p>
 </article>

@@ -55,8 +55,11 @@ Schéma : `core/z-layer/z-layer.anatomie.txt`.
   déclarables en CSS (`@property --z-state__x`).
 
 **Les tools** — s'appliquent au HTML nu **ET** à z-element (`tools/`)
+- **`z-contact`** — l'effet au point de contact, signé par la peau (une balise dans la page)
+- **`z-cursor`** — le sillage du pointeur (un ruban qui suit la souris, ou fuse d'un clic à l'autre)
 - **`z-motion`** — animer (presets : shake, slide, pop, ripple, shimmer…)
 - **`z-channel`** — faire dialoguer des composants par variables CSS (*le CSS pilote*)
+- **`z-lint`** — la console qui corrige : balise, attribut, état, pièce ou token inconnu → le nom le plus proche
 - **`z-pointer`** — donner la position de la souris au CSS, pour tout ce qu'il enveloppe
 - **`z-scroll`** — où en est le défilement (part parcourue, sens, haut, bout)
 - **`z-inview`** — ce qui est à l'écran (entré, part visible, déjà vu, traversée)
@@ -97,27 +100,41 @@ source de la doc.
 
 ## La doc, comment elle se fabrique
 
-Une source, plusieurs sorties. Chaque composant déclare son API (`static api`).
-**`scripts/z-manifest`** la lit et génère :
+Une source, plusieurs sorties. Chaque composant déclare son API (`static api` : résumé,
+exemple, attributs, événements, états, calques, variables, membres — en trois langues) ;
+son CSS dit les tokens qu'il lit. **`scripts/z-manifest`** lit tout ça et génère :
+- `dist/zoe.json` → **l'index complet** (la doc, l'accueil et le serveur MCP le lisent)
+- `dist/custom-elements.json` → interop (standard Custom Elements Manifest)
 - `dist/vscode.html-custom-data.json` → **autocomplétion VSCode**
-- `dist/custom-elements.json` → **doc officielle** (`docs/`) + interop (standard CEM)
-- `dist/llms.txt` → **IA / LLM**
+- `llms.txt` · `llms-full.txt` (racine) → **IA / LLM** (grammaire + référence, convention llmstxt.org)
+- les listes de balises de `core/z-element/z-element.css` et la table du `README.md`
 
-On écrit la doc **une fois**, dans le code. `docs/index.html` la met en scène (démos
-live, params temps réel). Ajouter un composant = son dossier → il apparaît partout.
+**`scripts/z-mcp`** expose la même source à un agent IA par le protocole MCP (`.mcp.json`) :
+`zoe_grammar · zoe_list · zoe_get · zoe_example · zoe_search · zoe_skins · zoe_lint`.
+**`scripts/check.mjs`** est le rouge qui décide : api complète, dossier complet, listes
+alignées, aucun lien mort, dist à jour. `node --test` couvre le générateur, les règles de
+z-lint et le serveur.
+
+On écrit la doc **une fois**, dans le code. `docs/index.html` la met en scène (exemple
+rendu + son code, narratif, tables). Ajouter un composant = son dossier → il apparaît partout.
 
 ---
 
 ## L'arbre
 
 ```
-core/z-element/        — la base vivante (les états)
+zoe.css · zoe.js       — les deux points d'entrée (tout Zoé ; vérifiés par check)
+core/z-element/        — la base vivante (les états, le formulaire, les déclencheurs)
 core/z-layer/          — le calque (les pièces, un rôle chacune)
-tools/z-*/             — z-contact · z-motion · z-channel · z-cursor
+tools/z-*/             — z-contact · z-cursor · z-motion · z-channel · z-lint
                          les capteurs : z-pointer · z-scroll · z-inview · z-size · z-drag
-components/z-*/        — .js · .css · .doc.md · .demo.html
-skins/*/               — .css · .doc.md
-scripts/z-manifest/    — l'outil (code → doc + autocomplétion + IA)
+components/z-*/        — .js · .css · .doc.md · .demo.html (+ .lab.html pour les essais)
+skins/*/               — .css · .doc.md · .demo.html (la planche de contrôle)
+scripts/z-manifest/    — le générateur (code → index, manifeste, autocomplétion, llms.txt)
+scripts/z-mcp/         — le serveur MCP (la même source, outil par outil, pour un agent)
+scripts/check.mjs      — le contrôle de cohérence · scripts/serve.mjs — le serveur local
 dist/                  — sorties générées (jamais éditées à la main)
-docs/                  — la doc officielle (viewer léger du manifeste)
+llms.txt · llms-full.txt — la référence pour les IA, à la racine
+docs/                  — la doc officielle (viewer de dist/zoe.json) · GRAMMAR.md · intro.html
+examples/              — pages entières, et la boîte à outils des démos (page.css, code.js…)
 ```

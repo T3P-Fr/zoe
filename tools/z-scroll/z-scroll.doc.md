@@ -84,8 +84,8 @@ Un décor qui glisse moins vite que le texte : c'est le même nombre, multiplié
 
 `animation-timeline: scroll()` fait une partie du travail, et le fera mieux le jour où
 tous les navigateurs suivront. Mais **une timeline n'anime que des keyframes** : elle ne
-donne pas de nombre. Ici le nombre est à toi — tu le multiplies, tu le compares, tu le
-passes à `color-mix()`, tu le mets dans un `calc()` avec autre chose. Les deux
+donne pas de nombre. Ici le nombre est à vous — vous le multipliez, vous le comparez, vous le
+passez à `color-mix()`, vous le mettez dans un `calc()` avec autre chose. Les deux
 cohabitent : ce n'est pas un remplacement, c'est l'autre bout du problème.
 
 ## Le coût

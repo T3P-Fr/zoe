@@ -64,7 +64,7 @@
 <h1><code>z-cursor</code> — le sillage du pointeur</h1>
 <p class="lead">
 	Une <b>seule balise</b> à poser dans la page, à plat, et la souris laisse un ruban
-	derrière elle. Rien à câbler, rien à importer par composant. Change la peau en haut à
+	derrière elle. Rien à câbler, rien à importer par composant. Changez la peau en haut à
 	droite — la couleur du sillage suit.
 </p>
 
@@ -74,8 +74,8 @@
 
 <h2>La piste</h2>
 <p class="note">
-	Balade-toi ici. Vite, lentement, en arrêt brusque — c'est là que le ruban se lit.
-	Et <b>change de peau</b> : la queue de Claude est une plume qui traîne, celle de
+	Baladez-vous ici. Vite, lentement, en arrêt brusque — c'est là que le ruban se lit.
+	Et <b>changez de peau</b> : la queue de Claude est une plume qui traîne, celle de
 	HighTech un tracé d'instrument, fin et sec. Même balise, deux écritures.
 </p>
 
@@ -86,12 +86,12 @@
 	
 </div>
 
-<div class="piste" id="piste">bouge la souris — ou clique en deux endroits</div>
+<div class="piste" id="piste">bougez la souris — ou cliquez en deux endroits</div>
 
 <h2>Les réglages</h2>
 <p class="note">
 	Les tokens du ruban vivent sur <code>:root</code> : le moteur les relit à chaque image,
-	donc tout bouge sous tes yeux. Quand tu as trouvé, les valeurs se recopient dans la peau.
+	donc tout bouge sous vos yeux. Quand vous avez trouvé, les valeurs se recopient dans la peau.
 </p>
 
 <div class="molettes">
@@ -103,7 +103,7 @@
 <h2>Le couple</h2>
 <p class="note">
 	<code>z-cursor</code> est le <b>sillage</b> (le trajet), <code>z-contact</code> est
-	l'<b>impact</b> (le point d'arrivée). Deux balises, deux moitiés du même geste — clique
+	l'<b>impact</b> (le point d'arrivée). Deux balises, deux moitiés du même geste — cliquez
 	dans la piste pour les voir se répondre.
 </p>
 <div class="row">
@@ -126,7 +126,7 @@
 	document.querySelector("body > z-cursor").setAttribute("fx", choisi);
 	document.getElementById(`l-${choisi}`)?.style.setProperty("color", "var(--z-accent)");
 	document.getElementById(`l-${choisi}`)?.style.setProperty("font-weight", "700");
-	if (choisi === "click") document.getElementById("piste").textContent = "clique ici, puis là — le trait fuse d'un clic à l'autre";
+	if (choisi === "click") document.getElementById("piste").textContent = "cliquez ici, puis là — le trait fuse d'un clic à l'autre";
 
 	await import("./z-cursor.js");
 

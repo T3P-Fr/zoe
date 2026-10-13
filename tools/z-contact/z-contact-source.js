@@ -13,7 +13,7 @@
 	POURQUOI la DÉCLARATION (à plat) et pas l'ENCAPSULATION (wrapper)
 	----------------------------------------------------------------
 	On écrit `<z-contact fx trail>` UNE fois, à plat — on n'enveloppe RIEN. Choix
-	assumé (Christophe) : l'encapsulation (façon React/Flutter, wrapper + provider)
+	assumé (décision produit) : l'encapsulation (façon React/Flutter, wrapper + provider)
 	alourdit le HTML de nesting illisible. React y est CONTRAINT (en JS pur, un enfant
 	ne « voit » pas une config globale sans un parent qui la lui passe). Zoé n'a pas
 	cette contrainte : la plateforme a DÉJÀ une cascade globale (DOM, events, custom
@@ -23,7 +23,7 @@
 	L'encapsulation reste possible en OPTION (envelopper une zone pour une recette
 	locale), mais le DÉFAUT est la déclaration.
 
-	LA RÈGLE (décision Christophe, 2026-07-14)
+	LA RÈGLE (décision du 2026-07-14)
 	------------------------------------------
 	Parmi toutes les sources écrites dans la page, **seule la DERNIÈRE alimente** le
 	moteur ; **toutes les autres passent en `disabled`** (`<z-contact disabled>`). La

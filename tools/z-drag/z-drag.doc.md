@@ -91,7 +91,7 @@ poignée peigne la barre, et que la piste la coupe.
 ```
 
 Besoin de la valeur **vraiment ailleurs** — un chiffre en haut de page, un autre
-composant ? C'est `z-channel` qu'il te faut : `channel=` traverse la page, là où z-drag ne
+composant ? C'est `z-channel` qu'il vous faut : `channel=` traverse la page, là où z-drag ne
 descend que dans ses enfants.
 
 ## Pourquoi pas `draggable` et `dragstart` ?
@@ -117,11 +117,11 @@ Quatre raisons qui ferment le débat, et aucune n'est une question de goût :
   `clientX/clientY` sont notoirement peu fiables pendant le geste (jusqu'à `0,0` sur le
   dernier). On ne peut pas coller au doigt avec ça.
 - **Elle n'offre aucun chemin au clavier**, et le curseur est décidé par le système
-  (`dropEffect`), pas par ta feuille de style.
+  (`dropEffect`), pas par votre feuille de style.
 
 **Les deux sont des standards** ; le tout est de prendre celui dont c'est le métier. Et
-le jour où le besoin sera vraiment « **dépose ton fichier ici** », c'est l'API native
-qu'il faudra — un autre outil, `z-drop`, qui n'aurait rien à voir avec celui-ci.
+si le besoin est vraiment « **dépose ton fichier ici** », c'est l'API native
+qu'il faut — un autre outil, qui n'aurait rien à voir avec celui-ci.
 
 ## L'état, et le nombre — les deux
 
@@ -149,10 +149,10 @@ mouvement** — c'est ce qu'un lecteur d'écran sait annoncer.
 Un objet libre en deux dimensions, lui, n'a **aucun équivalent ARIA**. On ne lui invente
 pas de rôle — surtout pas `application`, qui couperait la navigation du lecteur d'écran
 sur toute la zone. Il garde son étiquette : plus honnête qu'un mot qui promet ce qu'il ne
-tient pas. Et rien de tout cela n'écrase ce que tu as écrit toi-même.
+tient pas. Et rien de tout cela n'écrase ce que vous avez écrit vous-même.
 
 `tabindex` n'est pas posé d'office, et c'est délibéré : rendre focusable ce qui ne devait
-pas l'être **casse l'ordre de tabulation d'une page entière**. La console te le rappelle
+pas l'être **casse l'ordre de tabulation d'une page entière**. La console vous le rappelle
 une fois, gentiment.
 
 ## `zoe:drop` — le seul moment où la page a quelque chose à faire

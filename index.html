@@ -3,21 +3,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Zoé — l'atelier</title>
+<meta name="description" content="Zoé : web components HTML-first, états vivants, peaux portables. L'atelier : documentation, démos de chaque composant, outils, peaux, exemples.">
 
 <!--
 	index.html — LA PORTE D'ENTRÉE de l'atelier Zoé.
 	Une seule URL à retenir : http://localhost:5173/
 
-	ELLE PORTE LA PEAU, comme tout le reste. Elle a longtemps eu SA propre palette —
-	treize couleurs inventées et un mode sombre à elle : une troisième peau clandestine,
-	exactement le contraire de ce que Zoé raconte. Corrigé le 2026-07-20.
+	LA LISTE N'EST PAS ÉCRITE ICI : elle se GÉNÈRE depuis dist/zoe.json (l'index que
+	scripts/z-manifest tire du code). Un composant ajouté au dépôt apparaît ici tout seul,
+	avec sa démo, son lab et sa doc — une liste tenue à la main oubliait toujours le dernier.
 
-	Elle reste pour autant LE POINT DE SECOURS : elle doit s'afficher même si la peau ne
-	charge pas (page ouverte en file://, fichier manquant, JS coupé). D'où la règle de
-	tout ce fichier — chaque couleur s'écrit `var(--z-token, REPLI)`, et le repli est une
-	COULEUR SYSTÈME (Canvas, CanvasText, LinkText, GrayText) : celles du navigateur, qui
-	suivent déjà le thème clair/sombre de l'OS. Zéro couleur inventée, zéro mode sombre à
-	maintenir en double.
+	ELLE PORTE LA PEAU, comme tout le reste, et elle reste LE POINT DE SECOURS : elle doit
+	s'afficher même si la peau ne charge pas (page ouverte en file://, fichier manquant, JS
+	coupé). D'où la règle de tout ce fichier — chaque couleur s'écrit `var(--z-token, REPLI)`,
+	et le repli est une COULEUR SYSTÈME (Canvas, CanvasText, LinkText, GrayText) : celles du
+	navigateur, qui suivent déjà le thème clair/sombre de l'OS.
 
 	Seule exception : le rouge du bandeau file:// plus bas. Il doit crier même quand plus
 	rien ne fonctionne — il ne peut donc dépendre de rien.
@@ -34,22 +34,10 @@
 		line-height: 1.6;
 	}
 
-	main {
-		max-width: 1280px;
-		margin: auto;
-	}
+	main { max-width: 1280px; margin: auto; }
 
-	h1 {
-		margin: 0;
-		font-family: var(--z-font-title, inherit);
-		font-size: 1.5rem;
-		letter-spacing: -.01em;
-	}
-
-	.lead {
-		margin: .4rem 0 2.5rem;
-		color: var(--z-ink-soft, GrayText);
-	}
+	h1 { margin: 0; font-family: var(--z-font-title, inherit); font-size: 1.5rem; letter-spacing: -.01em; }
+	.lead { margin: .4rem 0 2.5rem; color: var(--z-ink-soft, GrayText); max-width: 60ch; }
 
 	/* Les intertitres reprennent le sur-titre des peaux : petit, espacé, en sourdine. */
 	h2 {
@@ -60,13 +48,11 @@
 		text-transform: uppercase;
 		color: var(--z-ink-soft, GrayText);
 	}
+	h2 small { font-weight: 400; letter-spacing: 0; text-transform: none; margin-left: .6rem; }
 
 	/*
-		Les destinations se rangent de GAUCHE À DROITE et passent à la ligne toutes
-		seules. En colonne, une par ligne, la page deviendrait un couloir sans fin le jour
-		où il y aura quarante pages — et l'œil devrait tout parcourir pour en trouver une.
-		`auto-fill` + `minmax` : le navigateur met autant de tuiles par ligne que la
-		largeur le permet, sans qu'on ait à décider d'un nombre de colonnes.
+		Les destinations se rangent de GAUCHE À DROITE et passent à la ligne toutes seules.
+		`auto-fill` + `minmax` : autant de tuiles par ligne que la largeur le permet.
 	*/
 	.cartes {
 		display: grid;
@@ -85,31 +71,19 @@
 		background: var(--z-surface, Canvas);
 		color: inherit;
 		text-decoration: none;
-		transition:
-			border-color var(--z-dur, .18s) var(--z-ease, ease),
-			transform var(--z-dur, .18s) var(--z-ease, ease);
+		transition: border-color var(--z-dur, .18s) var(--z-ease, ease), transform var(--z-dur, .18s) var(--z-ease, ease);
 	}
+	/* Le survol soulève au lieu de décaler : un décalage latéral bousculerait les voisines. */
+	a.card:hover { border-color: var(--z-accent, LinkText); transform: translateY(-2px); }
+	a.card b { font-family: var(--z-font, ui-monospace, monospace); font-size: 13px; font-weight: 600; line-height: 1.3; color: var(--z-accent, LinkText); }
+	a.card span { color: var(--z-ink-soft, GrayText); font-size: .8rem; line-height: 1.35; }
+	/* Les portes secondaires d'une carte (lab, doc), en bas, petites. */
+	a.card .portes { display: flex; gap: .7rem; margin-top: .3rem; font: 500 11px ui-monospace, monospace; color: var(--z-ink-soft, GrayText); }
+	a.card .portes u { text-decoration: none; border-bottom: 1px solid currentColor; }
+	a.card .portes u:hover { color: var(--z-accent, LinkText); }
 
-	/* Le survol soulève au lieu de décaler : dans une grille, un décalage latéral
-	   bousculerait visuellement les voisines de la même ligne. */
-	a.card:hover {
-		border-color: var(--z-accent, LinkText);
-		transform: translateY(-2px);
-	}
-
-	a.card b {
-		font-family: var(--z-font, ui-monospace, monospace);
-		font-size: 13px;
-		font-weight: 600;
-		line-height: 1.3;
-		color: var(--z-accent, LinkText);
-	}
-
-	a.card span {
-		color: var(--z-ink-soft, GrayText);
-		font-size: .8rem;
-		line-height: 1.35;
-	}
+	/* En attendant l'index, ou s'il manque : la carte le dit, elle ne reste pas vide. */
+	.vide { color: var(--z-ink-soft, GrayText); font-size: .9rem; }
 
 	/*
 		LE BANDEAU D'URGENCE — la seule chose de ce fichier qui ne dépend de RIEN.
@@ -117,68 +91,53 @@
 		ES sont bloqués : ni peau, ni composants, ni sélecteur. Ses couleurs sont donc
 		écrites en dur, à dessein. Une alarme qui a besoin du courant n'est pas une alarme.
 	*/
-	#filewarn {
-		display: none;
-		padding: 1rem 1.2rem;
-		border-radius: 10px;
-		margin-bottom: 2rem;
-		background: #7a1d0c;
-		color: #fff;
-	}
-
-	#filewarn code {
-		background: rgba(0, 0, 0, .35);
-		padding: .15em .45em;
-		border-radius: 4px;
-	}
+	#filewarn { display: none; padding: 1rem 1.2rem; border-radius: 10px; margin-bottom: 2rem; background: #7a1d0c; color: #fff; }
+	#filewarn code { background: rgba(0, 0, 0, .35); padding: .15em .45em; border-radius: 4px; }
 </style>
 
 <main>
 	<h1>Zoé — l'atelier</h1>
-	<p class="lead">Toutes les pages du projet. Une seule URL à retenir — et elle porte la peau, comme le reste.</p>
+	<p class="lead">Web components HTML-first : des états vivants (<code>:state()</code>), des peaux portables, du mouvement en CSS.
+		Toutes les pages du projet, et elles portent la peau — changez-la en haut à droite.</p>
 
 	<div id="filewarn">
 		<b>Cette page est ouverte en <code>file://</code>.</b><br>
 		Le navigateur bloque les modules ES : la peau ne se chargera pas et les pages
-		paraîtront mortes. Double-clique sur <code>ZOE.cmd</code>, ou lance
-		<code>node scripts/serve.mjs 5173</code> puis ouvre <code>http://localhost:5173/</code>.
+		paraîtront mortes. Double-cliquez sur <code>ZOE.cmd</code>, ou lancez
+		<code>npm run dev</code> puis ouvrez <code>http://localhost:5173/</code>.
 	</div>
 
-	<h2>La doc</h2>
+	<h2>Commencer</h2>
 	<div class="cartes">
-		<a class="card" href="./docs/index.html"><b>docs</b><span>la doc officielle, générée depuis le code (EN / FR / ES)</span></a>
+		<a class="card" href="./docs/index.html"><b>la documentation</b><span>chaque élément : exemple vivant, attributs, états, calques, variables — générée depuis le code, EN / FR / ES</span></a>
+		<a class="card" href="./docs/intro.html"><b>le socle</b><span>le modèle en une page : le sens en HTML, les états, les calques, la peau, le pacte</span></a>
+		<a class="card" href="./docs/GRAMMAR.md"><b>la grammaire</b><span>la règle complète, écrite une fois — pour les humains et pour les IA</span></a>
+		<a class="card" href="./llms.txt"><b>llms.txt</b><span>la référence pour un agent IA · un serveur MCP l'expose outil par outil (<code>.mcp.json</code>)</span></a>
 	</div>
 
-	<h2>Les composants — démos vivantes</h2>
-	<div class="cartes">
-		<a class="card" href="./components/z-button/z-button.demo.html"><b>z-button</b><span>forme courte et forme en calques, tous les états</span></a>
-		<a class="card" href="./components/z-checkbox/z-checkbox.demo.html"><b>z-checkbox</b><span>deux écritures, même rendu</span></a>
-		<a class="card" href="./components/z-radio/z-radio.demo.html"><b>z-radio</b><span>le bouton radio</span></a>
-		<a class="card" href="./components/z-radio-group/z-radio-group.demo.html"><b>z-radio-group</b><span>le groupe et sa sélection</span></a>
-	</div>
+	<h2>Les composants <small id="n-components"></small></h2>
+	<div class="cartes" id="components"><p class="vide">…</p></div>
 
-	<h2>Les tools — démos vivantes</h2>
-	<div class="cartes">
-		<a class="card" href="./tools/z-cursor/z-cursor.demo.html"><b>z-cursor</b><span>le sillage du pointeur — une balise à poser, le ruban suit la souris</span></a>
-		<a class="card" href="./tools/z-pointer/z-pointer.lab.html"><b>z-pointer</b><span>la position de la souris, donnée au CSS — enveloppe un <code>&lt;div&gt;</code>, il suit sans une ligne de JS</span></a>
-		<a class="card" href="./tools/z-scroll/z-scroll.lab.html"><b>z-scroll</b><span>où en est le défilement — la barre de progression, le bandeau qui se cache, le parallaxe, en <code>calc()</code></span></a>
-		<a class="card" href="./tools/z-inview/z-inview.lab.html"><b>z-inview</b><span>ce qui est à l'écran — « ça apparaît quand ça entre », sans bibliothèque ni classe posée par du JS</span></a>
-		<a class="card" href="./tools/z-size/z-size.lab.html"><b>z-size</b><span>la taille réelle, et <b>est-ce que ça déborde</b> — la question sans réponse du CSS</span></a>
-		<a class="card" href="./tools/z-drag/z-drag.lab.html"><b>z-drag</b><span>tirer à la main — l'outil pose la position, le CSS décide ce qu'elle bouge (clavier compris)</span></a>
-	</div>
+	<h2>Les outils <small id="n-tools"></small></h2>
+	<div class="cartes" id="tools"><p class="vide">…</p></div>
 
-	<!--
-		LE HUB DU LAB — une seule rubrique, et c'est celle-ci.
-		Avant le 2026-07-21 les labs étaient éparpillés dans trois rubriques (« Les essais »,
-		« Les tools », « Les planches de contrôle ») : trois noms pour la même chose, et
-		Christophe qui ne retrouvait plus rien. Une page de lab s'ajoute ICI, nulle part
-		ailleurs. Si un jour la liste déborde, elle sortira dans sa propre page — pas avant.
-	-->
-	<h2>Le lab — rien de tranché, à voir bouger</h2>
+	<h2>Le noyau</h2>
+	<div class="cartes" id="core"><p class="vide">…</p></div>
+
+	<h2>Les peaux</h2>
+	<div class="cartes" id="skins"><p class="vide">…</p></div>
+
+	<h2>Les exemples — des pages entières</h2>
 	<div class="cartes">
-		<a class="card" href="./components/z-button/z-button.lab.html"><b>z-button</b><span>le pupitre — tous ses paramètres en direct · une variable peut-elle appartenir à un composant sans Shadow DOM ? · les variants <code>size</code> / <code>tone</code> / <code>width</code></span></a>
-		<a class="card" href="./components/z-radio-group/z-radio-group.lab.html"><b>z-radio-group</b><span>vérification visuelle du groupe et de sa sélection</span></a>
-		<a class="card" href="./examples/contact-effets/index.html"><b>z-contact — mon effet</b><span>un effet de clic écrit en <code>z-contact:state(press)</code> / <code>:state(release)</code> — maintiens, ça charge ; relâche, ça explose</span></a>
+		<a class="card" href="./examples/trois-variables.html"><b>cinq nombres, une interface</b><span>aucune palette écrite : poussez un curseur, toute la page se ré-harmonise</span></a>
+		<a class="card" href="./examples/theme-builder.html"><b>l'atelier de thème</b><span>un thème entier déduit de quelques curseurs, par le canal</span></a>
+		<a class="card" href="./examples/palette-vivante.html"><b>la palette vivante</b><span>un curseur, tout se ré-harmonise — le canal en action</span></a>
+		<a class="card" href="./examples/memory.html"><b>le memory</b><span>un jeu complet : états, capteurs, et une dotation de clics qui survit au rechargement</span></a>
+		<a class="card" href="./examples/seo-classless/"><b>SEO — le natif habillé</b><span>une page en HTML nu, habillée par la couche classless de la peau</span></a>
+		<a class="card" href="./examples/contact-effets/"><b>un effet de clic maison</b><span>écrit en CSS seul, sur <code>z-contact:state(press)</code> / <code>:state(release)</code></span></a>
+		<a class="card" href="./examples/composants-neufs/"><b>galerie I</b><span>badge, tag, switch, avatar, progress, spinner… sur une seule page</span></a>
+		<a class="card" href="./examples/composants-plus/"><b>galerie II</b><span>quinze composants de plus, côte à côte</span></a>
+		<a class="card" href="./examples/nerf.lab.html"><b>le nerf (essai non retenu)</b><span>une piste explorée : le CSS réclame une couche, un script la pose — gardée comme trace</span></a>
 	</div>
 </main>
 
@@ -193,5 +152,71 @@
 <!-- La peau et son sélecteur (le pacte : toute page de l'atelier peut changer de peau). -->
 <script type="module">
 	import "./examples/skin-switch.js";
+
+	/*
+		LES CARTES, depuis l'index généré. Une carte par élément : la DÉMO en porte principale
+		(ou le lab, ou la fiche de doc), le résumé en français, et les portes secondaires en
+		bas. Rien n'est écrit à la main : un composant ajouté apparaît ici tout seul.
+	*/
+	const texte = (valeur) => (typeof valeur === "string" ? valeur : valeur?.fr || valeur?.en || "");
+
+	function carte(entree) {
+		const principale = entree.paths.demo || entree.paths.lab || `./docs/index.html#${entree.tag}`;
+		const a = document.createElement("a");
+		a.className = "card";
+		a.href = principale.startsWith("./") ? principale : `./${principale}`;
+		const b = document.createElement("b");
+		b.textContent = entree.attributeTool ? entree.tag : `<${entree.tag}>`;
+		const span = document.createElement("span");
+		span.textContent = texte(entree.summary);
+		a.append(b, span);
+
+		const portes = document.createElement("span");
+		portes.className = "portes";
+		const porte = (label, href, event) => {
+			const u = document.createElement("u");
+			u.textContent = label;
+			/* Une porte secondaire DANS la carte : on arrête le clic avant le lien principal. */
+			u.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); location.href = href; });
+			portes.append(u);
+		};
+		if (entree.paths.demo && entree.paths.lab) porte("lab", `./${entree.paths.lab}`);
+		porte("doc", `./docs/index.html#${entree.tag}`);
+		a.append(portes);
+		return a;
+	}
+
+	function remplir(id, liste) {
+		const zone = document.getElementById(id);
+		zone.innerHTML = "";
+		for (const entree of liste) zone.append(carte(entree));
+	}
+
+	try {
+		const index = await (await fetch("./dist/zoe.json")).json();
+		const par = (kind) => index.elements.filter((e) => e.kind === kind);
+		remplir("components", par("components"));
+		remplir("tools", par("tools"));
+		remplir("core", par("core"));
+		document.getElementById("n-components").textContent = `${par("components").length}`;
+		document.getElementById("n-tools").textContent = `${par("tools").length}`;
+
+		const peaux = document.getElementById("skins");
+		peaux.innerHTML = "";
+		for (const peau of index.skins) {
+			const a = document.createElement("a");
+			a.className = "card";
+			a.href = `./${peau.paths.demo || peau.paths.css}`;
+			const b = document.createElement("b"); b.textContent = peau.name;
+			const span = document.createElement("span");
+			span.textContent = peau.paths.demo ? "la planche de contrôle : les composants sous la peau, la source en face" : peau.paths.css;
+			a.append(b, span);
+			peaux.append(a);
+		}
+	} catch (erreur) {
+		for (const id of ["components", "tools", "core", "skins"]) {
+			document.getElementById(id).innerHTML = `<p class="vide">L'index <code>dist/zoe.json</code> ne se charge pas (${erreur.message}). Lancez <code>npm run manifest</code>.</p>`;
+		}
+	}
 </script>
 </html>

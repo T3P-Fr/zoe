@@ -71,11 +71,11 @@
 
 :root {
   /*
-    ⏸ JOUR/NUIT EN PAUSE — décision de Christophe, 2026-07-21.
-    Il se heurtait à l'harmonie : deux systèmes se disputaient la clarté des fonds, et
-    un fond teinté par l'harmonie ne peut pas en même temps être piloté par une bascule
-    clair/sombre. On règle une chose à la fois. La mécanique n'est pas supprimée — elle
-    est figée à 0 (jour), et le jour où on la rallume, l'harmonie devra lui céder L.
+    ⏸ JOUR/NUIT EN PAUSE — décision du 2026-07-21.
+    Deux systèmes se disputaient la clarté des fonds, et un fond teinté par l'harmonie
+    ne peut pas en même temps être piloté par une bascule clair/sombre. On règle une
+    chose à la fois. La mécanique n'est pas supprimée — elle est figée à 0 (jour) ; si
+    on la rallume, l'harmonie devra lui céder L.
   */
   --z-nuit: 0;
 
@@ -86,7 +86,7 @@
 
   /*
     ── L'HARMONIE. L'angle est le seul paramètre, et il fait tout le travail. ──
-        180 complémentaire · 150 split · 120 triade · 30 analogue · 45 le tien
+        180 complémentaire · 150 split · 120 triade · 30 analogue · 45 le vôtre
     « Complémentaire » n'est pas un concept à part : c'est une valeur de ce curseur.
   */
   --z-color--mate__angle: 180;
@@ -107,7 +107,7 @@
     le fait vibrer. C'est vieux comme la peinture ; ici c'est une soustraction d'angle.
 
     Un seul curseur, `--z-fond__c`, dose combien : 0 = papier neutre, 0.06 = ambiance
-    franche. La VARIÉTÉ, elle, vient de l'angle — change-le et toute la pièce change
+    franche. La VARIÉTÉ, elle, vient de l'angle — changez-le et toute la pièce change
     de lumière sans qu'on touche aux fonds.
   */
   --z-fond__h: var(--z-color--mate__h);
@@ -146,7 +146,7 @@ button:disabled, [data-eteint] {
 	LES CINQ RANGS — et c'est ici que « dose » cesse d'être une idée.
 
 	`--z-dose` n'est pas une valeur, c'est un CURSEUR DE CONTRASTE : les cinq rangs en
-	dérivent tous par un facteur. Pousse-le, et toute la hiérarchie de la page respire
+	dérivent tous par un facteur. Poussez-le, et toute la hiérarchie de la page respire
 	ou se serre d'un bloc — le titre, la légende, les filets, les fonds teintés.
 
 	Un design system classique demande ici trente valeurs à décider, à maintenir, puis
@@ -379,9 +379,9 @@ button:hover { filter: brightness(1.08); }
     <main>
       <h1>Tableau de bord</h1>
       <p class="sous">
-        Bouge <b>Harmonie</b>. Le fond de page, les cartes, le premier plan : rien de
+        Bougez <b>Harmonie</b>. Le fond de page, les cartes, le premier plan : rien de
         tout ça n'est un gris. Tout descend de la couleur <b>complémentaire à la
-        main</b>, et l'angle seul donne la variété. Change-le, et toute la pièce change
+        main</b>, et l'angle seul donne la variété. Changez-le, et toute la pièce change
         de lumière sans qu'on ait touché à un seul fond.
       </p>
 
@@ -425,7 +425,7 @@ button:hover { filter: brightness(1.08); }
       </div>
 
       <div class="pitch" data-plan="creux">
-        <b>Ce que tu viens de voir.</b> Cette page n'a <b>aucune palette</b>. Pas de
+        <b>Ce que vous venez de voir.</b> Cette page n'a <b>aucune palette</b>. Pas de
         <code>--bleu-500</code>, pas de <code>--gris-200</code>, pas de thème sombre.
         Cinq nombres — <code>L</code>, <code>C</code>, <code>H</code>, l'<code>angle</code> de l'harmonie et la <code>dose</code> — et
         une formule écrite <b>une seule fois</b>.
@@ -448,8 +448,8 @@ button:hover { filter: brightness(1.08); }
         <h2>Sous le capot — les cinq rangs de « dose »</h2>
         <p class="sous" style="margin:0 0 .6rem">
           <code>dose</code> n'est pas une valeur, c'est un <b>curseur de contraste</b>.
-          Les cinq rangs ci-dessous en dérivent tous par un simple facteur. Pousse le
-          troisième curseur en haut : ils bougent <b>ensemble</b>, et toute la page avec
+          Les cinq rangs ci-dessous en dérivent tous par un simple facteur. Poussez le
+          dernier curseur (la dose) en haut : ils bougent <b>ensemble</b>, et toute la page avec
           eux. Un design system classique demande ici trente valeurs à décider, à
           maintenir, puis à redécider pour le mode sombre.
         </p>
@@ -471,7 +471,7 @@ button:hover { filter: brightness(1.08); }
             <p>Le texte courant. Le rang le plus utilisé de toute l'interface.</p>
           </div>
           <div class="vu" style="color: color-mix(in oklab, var(--z-ink) calc(var(--d-corps) * 100%), var(--z-canvas))">
-            Bouge le curseur en lisant cette phrase : tu sens le moment exact où
+            Bougez le curseur en lisant cette phrase : vous sentez le moment exact où
             l'effort de lecture change.
           </div>
         </div>
@@ -521,7 +521,7 @@ button:hover { filter: brightness(1.08); }
           <b>nombre</b>, et le reste en découle. Là c'était la géométrie — un knob et une
           jauge sont sortis d'une simple feuille de style. Ici c'est la couleur.
           <br><br>
-          <b>Rien à mémoriser, donc rien à oublier</b> — ni pour toi, ni pour l'IA à qui
+          <b>Rien à mémoriser, donc rien à oublier</b> — ni pour vous, ni pour l'IA à qui
           un développeur demandera d'écrire du Zoé.
         </div>
       </div>

@@ -24,7 +24,7 @@
 <style>
 	/* ==========================================================================
 	   LE LABO de z-inview. Pas une ligne de JS dans cette page : tout LIT les
-	   nombres que l'outil pose. Défile, puis REMONTE — c'est là que ça se joue.
+	   nombres que l'outil pose. Défilez, puis REMONTEZ — c'est là que ça se joue.
 	   ====================================================================== */
 
 	.essai {
@@ -103,17 +103,17 @@
 <h1>z-inview — <em>ce qui est à l'écran, dit au CSS</em></h1>
 <p class="lead">
 	Enveloppe, et l'apparition s'écrit en CSS. Cette page ne contient <b>pas une ligne de
-	JS</b>. Défile jusqu'en bas — puis <b>remonte</b> : c'est là qu'on voit la différence
+	JS</b>. Défilez jusqu'en bas — puis <b>remontez</b> : c'est là qu'on voit la différence
 	entre « une fois » et « à chaque passage ».
 </p>
 
-<div class="long">↓ descends ↓</div>
+<div class="long">↓ descendez ↓</div>
 
 <div class="essai">
 	<h2>1 · l'entrée en scène — <code>__seen</code>, une seule fois</h2>
 	<z-inview margin="-80px" class="entre">
 		<div class="carte"><b>je suis entré, et je reste</b><br>
-			<small>remonte la page : je ne rejoue pas</small></div>
+			<small>remontez la page : je ne rejoue pas</small></div>
 	</z-inview>
 
 	<div class="rangee cascade" style="margin-top:18px">
@@ -139,7 +139,7 @@
 	</p>
 </div>
 
-<div class="long">↓ continue ↓</div>
+<div class="long">↓ continuez ↓</div>
 
 <div class="essai">
 	<h2>2 · il va et il vient — <code>__in</code>, à chaque passage</h2>
@@ -175,14 +175,14 @@
 .traversee i { translate: 0 calc(var(--z-inview__cross) * -120px); }   /* le décor dérive */
 .traversee b { filter: grayscale(calc(1 - var(--z-inview__cross))); }  /* elle se colore */</pre>
 	<p class="note">
-		Regarde les quatre jauges pendant que tu défiles : <code>__ratio</code> monte, puis
+		Regardez les quatre jauges pendant que vous défilez : <code>__ratio</code> monte, puis
 		<b>sature à 1</b> dès que le bloc tient à l'écran — alors que <code>__cross</code>
 		continue jusqu'au bout. C'est lui qu'il faut pour un décor qui glisse pendant toute
 		la traversée.
 	</p>
 </div>
 
-<div class="long">↑ maintenant REMONTE ↑</div>
+<div class="long">↑ maintenant REMONTEZ ↑</div>
 
 <script type="module">
 	import "../../examples/skin-switch.js";

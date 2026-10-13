@@ -44,7 +44,7 @@ affichée **en permanence** parce que personne ne sait dire si ça déborde vrai
 }
 ```
 
-Ajoute un paragraphe, agrandis la fenêtre, laisse une image finir de charger : elle
+Ajoutez un paragraphe, agrandissez la fenêtre, laissez une image finir de charger : elle
 apparaît et disparaît **au bon moment**, sans un mot de plus.
 
 ## La forme, pas la taille

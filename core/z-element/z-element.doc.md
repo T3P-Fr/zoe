@@ -4,7 +4,7 @@
 
 # ① EN CLAIR
 
-## Le code que tu n'écris plus
+## Le code que vous n'écrivez plus
 
 Un bouton qui réagit vraiment — survol, appui, lâché dedans, lâché à côté, glissé,
 focus clavier — coûte ça, à la main, sur **chaque** composant du projet :
@@ -28,7 +28,7 @@ z-element:state(press) { transform: scale(.97); }
 ```
 
 z-element surveille l'élément et **écrit dessus ce qui lui arrive**, en `:state()` —
-un sélecteur natif du navigateur, pas une classe inventée. Tu ne décris plus que
+un sélecteur natif du navigateur, pas une classe inventée. Vous ne décrivez plus que
 l'apparence. Zéro JavaScript, zéro dépendance, rien à nettoyer.
 
 > Un bouton n'a plus trois apparences (repos, survol, appui) mais une quinzaine —
@@ -37,7 +37,7 @@ l'apparence. Zéro JavaScript, zéro dépendance, rien à nettoyer.
 
 ## Les mots que Zoé pose toute seule
 
-Elle les tient à jour toute seule. Tu n'écris que le CSS.
+Elle les tient à jour toute seule. Vous n'écrivez que le CSS.
 
 | État | Posé quand |
 |---|---|
@@ -50,10 +50,10 @@ Elle les tient à jour toute seule. Tu n'écris que le CSS.
 | `focus` | l'élément prend le focus, souris ou clavier |
 | `enter` | il vient d'arriver dans la page |
 
-## Les mots que tu poses, toi
+## Les mots que vous posez, vous
 
-Ceux-là viennent de ton application, pas du geste : z-element ne peut pas savoir que
-ton formulaire est invalide ni que ta requête est partie. Tu les poses en attribut :
+Ceux-là viennent de votre application, pas du geste : z-element ne peut pas savoir que
+votre formulaire est invalide ni que votre requête est partie. Vous les posez en attribut :
 
 ```html
 <z-element loading>Envoi en cours…</z-element>
@@ -68,7 +68,7 @@ ton formulaire est invalide ni que ta requête est partie. Tu les poses en attri
 | `success` | l'opération a réussi |
 | `current` | l'élément **sélectionné** : onglet ouvert, case cochée |
 
-Depuis ton JavaScript, c'est le même état :
+Depuis votre JavaScript, c'est le même état :
 
 ```js
 btn.setState("loading");         // pose
@@ -84,7 +84,7 @@ default  ⇄  over  →  press  →  release      lâché dessus : le clic compt
 
 Puis retour à `default`. **Rien ne reste cliqué** : un bouton n'est pas un
 interrupteur. Un élément qui reste allumé, c'est `current` — une sélection, posée
-exprès par ton code, jamais par le clic.
+exprès par votre code, jamais par le clic.
 
 ---
 
@@ -126,7 +126,7 @@ hériterait des règles de la carte.
 
 **Pourquoi pas `::part()`**, qui serait plus lisible ? Parce qu'elle n'existe **que pour
 le Shadow DOM** — une capsule scellée où le CSS de la page n'entre pas. Zoé est en
-**light DOM** : ton HTML reste le tien, ton CSS l'atteint directement, il n'y a aucun
+**light DOM** : votre HTML reste le vôtre, votre CSS l'atteint directement, il n'y a aucun
 sceau à percer. `::part()` ne trouverait rien à traverser et ne sélectionnerait rien,
 **sans le moindre message d'erreur**.
 
@@ -149,8 +149,8 @@ z-button {
 ## Deux chemins d'utilisation
 
 - **Chemin A — étendre.** Un composant Zoé hérite de tout : `class ZButton extends ZElement {}`.
-- **Chemin B — enrouler.** `<z-element><button>…</button></z-element>` : ta structure
-  reste la tienne, Zoé n'injecte aucune balise. (C'est ce qu'on appelait « z-state » —
+- **Chemin B — enrouler.** `<z-element><button>…</button></z-element>` : votre structure
+  reste la vôtre, Zoé n'injecte aucune balise. (C'est ce qu'on appelait « z-state » —
   c'était le même moteur, un seul nom désormais.)
 
 ## Trois voies pour poser un état, une seule vérité
@@ -168,7 +168,7 @@ z-element:state(glow) { … }             /* → pilotable <z-element glow> */
 ```
 
 Pour les états **durables**, l'attribut est la source de vérité : `setState()` ne fait
-que le poser ou le retirer. Ce que tu lis dans le HTML est ce qui est vrai.
+que le poser ou le retirer. Ce que vous lisez dans le HTML est ce qui est vrai.
 
 Un `setState("nimporteQuoi")` fonctionne aussi : le mot est posé directement en
 `:state()` sans passer par un attribut. Utile pour un état maison ponctuel.
@@ -208,7 +208,7 @@ Les receveurs réagissent en local (`z-element:state(armed) …`) ou à distance
 
 - **Transitoire** — posé puis retiré tout seul (`over`, `press`, `release`, `enter`…).
   Sa durée se règle en CSS : `--z-dur-<mot>` (`--z-dur-release`, `--z-dur-enter`).
-- **Durable** — porté par un attribut, il reste jusqu'à ce que tu l'enlèves
+- **Durable** — porté par un attribut, il reste jusqu'à ce que vous l'enleviez
   (`current`, `loading`, `disabled`, `error`, `success`).
 
 `select` / `unselect` sont des gestes transitoires joués **automatiquement** quand

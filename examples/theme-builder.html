@@ -15,7 +15,7 @@
 		------------------------------------------------------------
 		AUCUNE couleur, taille ou espace n'est écrit en dur dans l'aperçu. Tout est
 		DÉDUIT de curseurs, posés sur la page par le canal (--z-channel-*), puis calculé
-		ici en tokens (--page, --ink, --accent, --scale…). Bouge un curseur → l'interface
+		ici en tokens (--page, --ink, --accent, --scale…). Bougez un curseur → l'interface
 		entière se ré-harmonise, en direct, presque sans JavaScript (seule la FAMILLE de
 		police en demande trois lignes — le CSS ne sait pas la choisir par un nombre).
 
@@ -179,7 +179,7 @@
 	<!-- ============ LES CONTRÔLES ============ -->
 	<aside class="panel">
 		<h1>Atelier de thème</h1>
-		<p class="sub">Tout l'aperçu est déduit de ces curseurs. Bouge-en un : l'interface entière se ré-harmonise.</p>
+		<p class="sub">Tout l'aperçu est déduit de ces curseurs. Bougez-en un : l'interface entière se ré-harmonise.</p>
 
 		<div class="presets">
 			<button class="preset" data-preset="defaut">Défaut</button>
@@ -229,7 +229,7 @@
 			<div class="hero">
 				<span class="eyebrow">Aperçu vivant</span>
 				<h2 class="title">Un thème entier,<br>déduit de quelques nombres.</h2>
-				<p class="lead">Rien ici n'a de couleur, de taille ou d'espace écrit à la main. Chaque pièce lit les tokens du thème et se recompose en direct. Passe en sombre, tire la saturation à zéro pour du monochrome, écarte le contraste pour du pastel ou du gothic.</p>
+				<p class="lead">Rien ici n'a de couleur, de taille ou d'espace écrit à la main. Chaque pièce lit les tokens du thème et se recompose en direct. Passez en sombre, tirez la saturation à zéro pour du monochrome, écartez le contraste pour du pastel ou du gothic.</p>
 			</div>
 
 			<div class="swatches">
@@ -261,7 +261,7 @@
 				<div class="card">
 					<h3>Un champ</h3>
 					<p style="margin-bottom:.6rem">Focus = liseré d'accent.</p>
-					<input class="field" placeholder="Écris ici…">
+					<input class="field" placeholder="Écrivez ici…">
 				</div>
 			</div>
 
@@ -300,7 +300,7 @@
 	}
 
 	/* Les PRESETS : ils ne font que POUSSER les curseurs (puis le canal + le CSS font
-	   tout le reste, comme si tu les avais tirés à la main). D'un clic, l'interface morphe. */
+	   tout le reste, comme si vous les aviez tirés à la main). D'un clic, l'interface morphe. */
 	const PRESETS = {
 		defaut: { teinte: 255, satur: 60, comp: 150, sombre: 6,  contraste: 48, surface: 7,  police: 1, graisse: 420, echelle: 100, espace: 100, disabled: 38, muted: 60 },
 		pastel: { teinte: 338, satur: 74, comp: 40,  sombre: 4,  contraste: 18, surface: 5,  police: 1, graisse: 380, echelle: 100, espace: 116, disabled: 40, muted: 62 },

@@ -669,7 +669,7 @@
       "paths": {
         "js": "tools/z-cursor/z-cursor.js",
         "css": "tools/z-cursor/z-cursor.css",
-        "doc": null,
+        "doc": "tools/z-cursor/z-cursor.doc.md",
         "demo": "tools/z-cursor/z-cursor.demo.html",
         "lab": null
       },
@@ -1069,6 +1069,53 @@
       "name": "z-inview"
     },
     {
+      "tag": "z-lint",
+      "kind": "tools",
+      "className": "z-lint",
+      "attributeTool": true,
+      "summary": {
+        "en": "The console that corrects: load it in development and every unknown tag, attribute, state, part or misspelled token is reported with the nearest valid name. The browser stays silent; z-lint speaks.",
+        "fr": "La console qui corrige : chargez-le en développement, et chaque balise, attribut, état, pièce ou token mal écrit est signalé avec le nom valide le plus proche. Le navigateur se tait ; z-lint parle.",
+        "es": "La consola que corrige: cárguelo en desarrollo y cada etiqueta, atributo, estado, pieza o token mal escrito se señala con el nombre válido más cercano. El navegador calla; z-lint habla."
+      },
+      "example": "<script type=\"module\" src=\"tools/z-lint/z-lint.js\"></script>",
+      "paths": {
+        "js": "tools/z-lint/z-lint.js",
+        "css": null,
+        "doc": "tools/z-lint/z-lint.doc.md",
+        "demo": null,
+        "lab": "tools/z-lint/z-lint.lab.html"
+      },
+      "attributes": [],
+      "events": [
+        {
+          "name": "zoe:lint",
+          "description": {
+            "en": "Fired on `document` after each pass. detail: { findings } — each finding has level, kind, found, expected, message.",
+            "fr": "Émis sur `document` après chaque passe. detail : { findings } — chaque constat porte level, kind, found, expected, message.",
+            "es": "Emitido en `document` tras cada pasada. detail: { findings } — cada hallazgo lleva level, kind, found, expected, message."
+          }
+        }
+      ],
+      "states": [],
+      "layers": [],
+      "cssVars": [],
+      "tokens": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "ZoeLint.lint()",
+          "type": "Promise<object[]>",
+          "description": {
+            "en": "Re-runs the analysis on the whole page and returns the findings (also printed to the console).",
+            "fr": "Relance l'analyse sur toute la page et rend les constats (aussi écrits dans la console).",
+            "es": "Vuelve a analizar toda la página y devuelve los hallazgos (también escritos en la consola)."
+          }
+        }
+      ],
+      "name": "z-lint"
+    },
+    {
       "tag": "z-motion",
       "kind": "tools",
       "className": null,
@@ -1084,7 +1131,7 @@
         "css": "tools/z-motion/z-motion.css",
         "doc": "tools/z-motion/z-motion.doc.md",
         "demo": null,
-        "lab": null
+        "lab": "tools/z-motion/z-motion.lab.html"
       },
       "attributes": [],
       "events": [],
@@ -1421,8 +1468,8 @@
       "paths": {
         "js": "components/z-accordion/z-accordion.js",
         "css": "components/z-accordion/z-accordion.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-accordion/z-accordion.doc.md",
+        "demo": "components/z-accordion/z-accordion.demo.html",
         "lab": null
       },
       "attributes": [
@@ -1532,7 +1579,13 @@
           }
         }
       ],
-      "tokens": [],
+      "tokens": [
+        {
+          "name": "--z-accordion__gap",
+          "part": null,
+          "property": "gap"
+        }
+      ],
       "members": [
         {
           "kind": "field",
@@ -1571,8 +1624,8 @@
       "paths": {
         "js": "components/z-alert/z-alert.js",
         "css": "components/z-alert/z-alert.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-alert/z-alert.doc.md",
+        "demo": "components/z-alert/z-alert.demo.html",
         "lab": null
       },
       "attributes": [
@@ -1756,7 +1809,7 @@
         {
           "kind": "method",
           "name": "dismiss()",
-          "type": "void",
+          "type": "Promise<void>",
           "description": {
             "en": "Closes the alert: fires cancelable `zoe:dismiss`, then plays `exit` and removes the node.",
             "fr": "Ferme l'alerte : émet `zoe:dismiss` (annulable), puis joue `exit` et retire le nœud.",
@@ -1776,12 +1829,12 @@
         "fr": "Une pastille d'identité — une image si fournie, sinon les initiales. role=img avec une alternative depuis name. Hérite tone/size.",
         "es": "Una ficha de identidad — una imagen si se da, si no las iniciales. role=img con alternativa desde name. Hereda tone/size."
       },
-      "example": "<z-avatar name=\"Ada Lovelace\">AL</z-avatar>\n<z-avatar name=\"Grace Hopper\" src=\"/img/grace.jpg\"></z-avatar>\n<z-avatar size=\"l\" tone=\"soft\">?</z-avatar>",
+      "example": "<z-avatar name=\"Ada Lovelace\">AL</z-avatar>\n<z-avatar name=\"Grace Hopper\" src=\"/img/grace.jpg\"></z-avatar>\n<z-avatar name=\"Inconnu\" size=\"l\" tone=\"soft\">?</z-avatar>",
       "paths": {
         "js": "components/z-avatar/z-avatar.js",
         "css": "components/z-avatar/z-avatar.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-avatar/z-avatar.doc.md",
+        "demo": "components/z-avatar/z-avatar.demo.html",
         "lab": null
       },
       "attributes": [
@@ -1987,12 +2040,12 @@
         "fr": "Une pile de z-avatar qui se chevauchent, chacun cerné de la couleur de page pour se détacher. Au survol, l'avatar remonte et passe devant. Rien d'injecté.",
         "es": "Una pila de z-avatar superpuestos, cada uno con un aro del color de página para destacar. Al pasar el cursor, el avatar sube y pasa al frente. Nada inyectado."
       },
-      "example": "<z-avatar-group max=\"3\">\n  <z-avatar name=\"Ada Lovelace\">AL</z-avatar>\n  <z-avatar name=\"Grace Hopper\">GH</z-avatar>\n  <z-avatar name=\"Margaret Hamilton\">MH</z-avatar>\n  <z-avatar tone=\"soft\">+4</z-avatar>\n</z-avatar-group>",
+      "example": "<z-avatar-group max=\"3\">\n  <z-avatar name=\"Ada Lovelace\">AL</z-avatar>\n  <z-avatar name=\"Grace Hopper\">GH</z-avatar>\n  <z-avatar name=\"Margaret Hamilton\">MH</z-avatar>\n  <z-avatar name=\"4 autres personnes\" tone=\"soft\">+4</z-avatar>\n</z-avatar-group>",
       "paths": {
         "js": "components/z-avatar-group/z-avatar-group.js",
         "css": "components/z-avatar-group/z-avatar-group.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-avatar-group/z-avatar-group.doc.md",
+        "demo": "components/z-avatar-group/z-avatar-group.demo.html",
         "lab": null
       },
       "attributes": [
@@ -2002,8 +2055,8 @@
           "values": [],
           "description": {
             "en": "Author's guide: past this many faces, add a final <z-avatar>+N</z-avatar> yourself (no node is generated).",
-            "fr": "Repère pour l'auteur : au-delà de ce nombre de visages, ajoute toi-même un dernier <z-avatar>+N</z-avatar> (aucun nœud généré).",
-            "es": "Guía para el autor: pasado este número de caras, añade tú mismo un último <z-avatar>+N</z-avatar> (no se genera ningún nodo)."
+            "fr": "Repère pour l'auteur : au-delà de ce nombre de visages, ajoutez vous-même un dernier <z-avatar>+N</z-avatar> (aucun nœud généré).",
+            "es": "Guía para el autor: pasado este número de caras, añada usted mismo un último <z-avatar>+N</z-avatar> (no se genera ningún nodo)."
           }
         }
       ],
@@ -2144,8 +2197,8 @@
       "paths": {
         "js": "components/z-badge/z-badge.js",
         "css": "components/z-badge/z-badge.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-badge/z-badge.doc.md",
+        "demo": "components/z-badge/z-badge.demo.html",
         "lab": null
       },
       "attributes": [
@@ -2323,8 +2376,8 @@
               "optional": false,
               "description": {
                 "en": "Your text.",
-                "fr": "Ton texte.",
-                "es": "Tu texto."
+                "fr": "Votre texte.",
+                "es": "Su texto."
               },
               "children": []
             }
@@ -2354,15 +2407,15 @@
       "attributeTool": false,
       "summary": {
         "en": "A breadcrumb trail — you write the links, Zoé adds the meaning (nav + label) and the « › » separators in CSS. Nothing injected.",
-        "fr": "Un fil d'Ariane — tu écris les liens, Zoé pose le sens (nav + libellé) et les séparateurs « › » en CSS. Rien d'injecté.",
-        "es": "Una miga de pan — tú escribes los enlaces, Zoé pone el sentido (nav + etiqueta) y los separadores « › » en CSS. Nada inyectado."
+        "fr": "Un fil d'Ariane — vous écrivez les liens, Zoé pose le sens (nav + libellé) et les séparateurs « › » en CSS. Rien d'injecté.",
+        "es": "Una miga de pan — usted escribe los enlaces, Zoé pone el sentido (nav + etiqueta) y los separadores « › » en CSS. Nada inyectado."
       },
       "example": "<z-breadcrumb label=\"Vous êtes ici\">\n  <a href=\"/\">Accueil</a>\n  <a href=\"/boutique\">Boutique</a>\n  <span aria-current=\"page\">Chaussures</span>\n</z-breadcrumb>",
       "paths": {
         "js": "components/z-breadcrumb/z-breadcrumb.js",
         "css": "components/z-breadcrumb/z-breadcrumb.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-breadcrumb/z-breadcrumb.doc.md",
+        "demo": "components/z-breadcrumb/z-breadcrumb.demo.html",
         "lab": null
       },
       "attributes": [
@@ -2684,8 +2737,8 @@
               "optional": false,
               "description": {
                 "en": "Your text.",
-                "fr": "Ton texte.",
-                "es": "Tu texto."
+                "fr": "Votre texte.",
+                "es": "Su texto."
               },
               "children": []
             }
@@ -2773,8 +2826,8 @@
       "paths": {
         "js": "components/z-card/z-card.js",
         "css": "components/z-card/z-card.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-card/z-card.doc.md",
+        "demo": "components/z-card/z-card.demo.html",
         "lab": null
       },
       "attributes": [
@@ -3261,8 +3314,8 @@
               "optional": false,
               "description": {
                 "en": "Your text.",
-                "fr": "Ton texte.",
-                "es": "Tu texto."
+                "fr": "Votre texte.",
+                "es": "Su texto."
               },
               "children": []
             }
@@ -3417,6 +3470,296 @@
       "name": "z-checkbox"
     },
     {
+      "tag": "z-checkbox-group",
+      "kind": "components",
+      "className": "ZCheckboxGroup",
+      "attributeTool": false,
+      "summary": {
+        "en": "A group of z-checkbox: a list value, a 'check all' master, 'at least one' required, one name for FormData.",
+        "fr": "Un groupe de z-checkbox : une valeur-liste, une maîtresse « tout cocher », « au moins une » en required, un seul name pour FormData.",
+        "es": "Un grupo de z-checkbox: un valor-lista, una maestra «marcar todo», «al menos una» con required, un solo name para FormData."
+      },
+      "example": "<z-checkbox-group name=\"topics\" required>\n  <span part=\"label\">Vos centres d'intérêt</span>\n  <z-checkbox part=\"all\">Tout cocher</z-checkbox>\n  <z-checkbox value=\"design\">Design</z-checkbox>\n  <z-checkbox value=\"code\" current>Code</z-checkbox>\n  <z-checkbox value=\"motion\">Motion</z-checkbox>\n</z-checkbox-group>",
+      "paths": {
+        "js": "components/z-checkbox-group/z-checkbox-group.js",
+        "css": "components/z-checkbox-group/z-checkbox-group.css",
+        "doc": "components/z-checkbox-group/z-checkbox-group.doc.md",
+        "demo": "components/z-checkbox-group/z-checkbox-group.demo.html",
+        "lab": null
+      },
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "values": [],
+          "description": {
+            "en": "Space-separated values to preselect (honoured once, only if no box is checked by hand); then kept up to date by the group.",
+            "fr": "Les valeurs à présélectionner, séparées par des espaces (honoré une fois, seulement si aucune case n'est cochée à la main) ; tenu à jour ensuite par le groupe.",
+            "es": "Los valores a preseleccionar, separados por espacios (honrado una vez, solo si ninguna casilla está marcada a mano); luego el grupo lo mantiene al día."
+          }
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "values": [],
+          "description": {
+            "en": "Given to every box that has none: the values are submitted under this name.",
+            "fr": "Donné à chaque case qui n'en a pas : les valeurs partent sous ce nom.",
+            "es": "Dado a cada casilla que no tiene: los valores se envían bajo este nombre."
+          }
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "At least one box must be checked, or the form refuses to submit.",
+            "fr": "Au moins une case doit être cochée, sinon le formulaire refuse la soumission.",
+            "es": "Al menos una casilla debe estar marcada, o el formulario rechaza el envío."
+          }
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "Disables the whole group — descended on every box and the master.",
+            "fr": "Désactive tout le groupe — descendu sur chaque case et la maîtresse.",
+            "es": "Deshabilita todo el grupo — descendido a cada casilla y la maestra."
+          }
+        },
+        {
+          "name": "error",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "The requirement is not met and the form refused to submit (posed by the group, cleared by the next check).",
+            "fr": "L'exigence n'est pas remplie et le formulaire a refusé la soumission (posé par le groupe, levé à la prochaine coche).",
+            "es": "La exigencia no se cumple y el formulario rechazó el envío (puesto por el grupo, quitado al marcar de nuevo)."
+          }
+        },
+        {
+          "name": "success",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "The requirement is met, after a gesture.",
+            "fr": "L'exigence est remplie, après un geste.",
+            "es": "La exigencia se cumple, tras un gesto."
+          }
+        }
+      ],
+      "events": [
+        {
+          "name": "change",
+          "description": {
+            "en": "Bubbles from the toggled box (the group's `.value` is already up to date) — or is emitted by the group itself when the master toggles everything.",
+            "fr": "Bulle depuis la case basculée (le `.value` du groupe est déjà à jour) — ou est émis par le groupe lui-même quand la maîtresse bascule tout.",
+            "es": "Burbujea desde la casilla cambiada (el `.value` del grupo ya está al día) — o lo emite el propio grupo cuando la maestra cambia todo."
+          }
+        },
+        {
+          "name": "z-state",
+          "description": {
+            "en": "Emitted on every state change. detail: { states, changed, on }.",
+            "fr": "Émis à chaque changement d'état. detail : { states, changed, on }.",
+            "es": "Emitido en cada cambio de estado. detail: { states, changed, on }."
+          }
+        }
+      ],
+      "states": [
+        {
+          "name": "default",
+          "description": {}
+        },
+        {
+          "name": "over",
+          "description": {}
+        },
+        {
+          "name": "press",
+          "description": {}
+        },
+        {
+          "name": "release",
+          "description": {}
+        },
+        {
+          "name": "releaseOut",
+          "description": {}
+        },
+        {
+          "name": "drag",
+          "description": {}
+        },
+        {
+          "name": "focus",
+          "description": {}
+        },
+        {
+          "name": "enter",
+          "description": {}
+        },
+        {
+          "name": "exit",
+          "description": {}
+        },
+        {
+          "name": "current",
+          "description": {}
+        },
+        {
+          "name": "select",
+          "description": {}
+        },
+        {
+          "name": "unselect",
+          "description": {}
+        },
+        {
+          "name": "loading",
+          "description": {}
+        },
+        {
+          "name": "disabled",
+          "description": {}
+        },
+        {
+          "name": "error",
+          "description": {}
+        },
+        {
+          "name": "success",
+          "description": {}
+        }
+      ],
+      "layers": [
+        {
+          "part": "label",
+          "optional": true,
+          "description": {
+            "en": "The group's title, any native tag — it names the group (aria-labelledby).",
+            "fr": "L'intitulé du groupe, en balise native — il nomme le groupe (aria-labelledby).",
+            "es": "El título del grupo, en etiqueta nativa — nombra al grupo (aria-labelledby)."
+          },
+          "children": []
+        },
+        {
+          "part": "all",
+          "optional": true,
+          "description": {
+            "en": "The master z-checkbox: toggles every box, reflects the list (checked / indeterminate / none). Never submitted, never counted.",
+            "fr": "La z-checkbox maîtresse : bascule toutes les cases, reflète la liste (cochée / indéterminée / rien). Jamais envoyée, jamais comptée.",
+            "es": "La z-checkbox maestra: cambia todas las casillas, refleja la lista (marcada / indeterminada / nada). Nunca enviada, nunca contada."
+          },
+          "children": []
+        }
+      ],
+      "cssVars": [
+        {
+          "name": "--z-checkbox-group__count",
+          "description": {
+            "en": "Posed by the group: how many boxes are checked (an integer, for counter()).",
+            "fr": "Posée par le groupe : le nombre de cases cochées (un entier, pour counter()).",
+            "es": "Puesta por el grupo: el número de casillas marcadas (un entero, para counter())."
+          }
+        },
+        {
+          "name": "--z-checkbox-group__total",
+          "description": {
+            "en": "Posed by the group: how many boxes it holds (master excluded).",
+            "fr": "Posée par le groupe : le nombre de cases qu'il tient (maîtresse exclue).",
+            "es": "Puesta por el grupo: el número de casillas que contiene (maestra excluida)."
+          }
+        }
+      ],
+      "tokens": [
+        {
+          "name": "--z-checkbox-group--label__color",
+          "part": "label",
+          "property": "color"
+        },
+        {
+          "name": "--z-checkbox-group--label__font-size",
+          "part": "label",
+          "property": "font-size"
+        },
+        {
+          "name": "--z-checkbox-group--rule__color",
+          "part": "rule",
+          "property": "color"
+        },
+        {
+          "name": "--z-checkbox-group__align",
+          "part": null,
+          "property": "align"
+        },
+        {
+          "name": "--z-checkbox-group__count",
+          "part": null,
+          "property": "count"
+        },
+        {
+          "name": "--z-checkbox-group__direction",
+          "part": null,
+          "property": "direction"
+        },
+        {
+          "name": "--z-checkbox-group__gap",
+          "part": null,
+          "property": "gap"
+        },
+        {
+          "name": "--z-checkbox-group__total",
+          "part": null,
+          "property": "total"
+        }
+      ],
+      "members": [
+        {
+          "kind": "field",
+          "name": "value",
+          "type": "string[]",
+          "description": {
+            "en": "The checked values, in DOM order. Set it with an array or a space-separated string — silently (no `change`).",
+            "fr": "Les valeurs cochées, dans l'ordre du DOM. Se pose avec un tableau ou une chaîne à espaces — en silence (pas de `change`).",
+            "es": "Los valores marcados, en orden del DOM. Se asigna con un array o una cadena con espacios — en silencio (sin `change`)."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "checkboxes",
+          "type": "Element[]",
+          "description": {
+            "en": "The z-checkbox of this group — not the master, not those of a nested group.",
+            "fr": "Les z-checkbox de ce groupe — sans la maîtresse, sans celles d'un groupe imbriqué.",
+            "es": "Las z-checkbox de este grupo — sin la maestra, sin las de un grupo anidado."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "all",
+          "type": "Element | null",
+          "description": {
+            "en": "The master box ([part=all]), if any.",
+            "fr": "La maîtresse ([part=all]), s'il y en a une.",
+            "es": "La maestra ([part=all]), si la hay."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "count",
+          "type": "number",
+          "description": {
+            "en": "How many boxes are checked.",
+            "fr": "Le nombre de cases cochées.",
+            "es": "El número de casillas marcadas."
+          }
+        }
+      ],
+      "name": "z-checkbox-group"
+    },
+    {
       "tag": "z-code",
       "kind": "components",
       "className": "ZCode",
@@ -3430,8 +3773,8 @@
       "paths": {
         "js": "components/z-code/z-code.js",
         "css": "components/z-code/z-code.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-code/z-code.doc.md",
+        "demo": "components/z-code/z-code.demo.html",
         "lab": null
       },
       "attributes": [
@@ -3547,8 +3890,8 @@
               "optional": false,
               "description": {
                 "en": "Your code text.",
-                "fr": "Ton texte de code.",
-                "es": "Tu texto de código."
+                "fr": "Votre texte de code.",
+                "es": "Su texto de código."
               },
               "children": []
             }
@@ -3593,6 +3936,375 @@
       "name": "z-code"
     },
     {
+      "tag": "z-dialog",
+      "kind": "components",
+      "className": "ZDialog",
+      "attributeTool": false,
+      "summary": {
+        "en": "A modal box on the native <dialog> — adds states, animated open/close, declarative triggers (commandfor/command) and light-dismiss.",
+        "fr": "Une boîte modale sur le <dialog> natif — ajoute les états, l'ouverture/fermeture animées, les déclencheurs déclaratifs (commandfor/command) et le light-dismiss.",
+        "es": "Una caja modal sobre el <dialog> nativo — añade estados, apertura/cierre animados, disparadores declarativos (commandfor/command) y light-dismiss."
+      },
+      "example": "<z-dialog id=\"confirm\" light-dismiss>\n  <dialog>\n    <header part=\"header\"><h2>Supprimer ce fichier ?</h2></header>\n    <p part=\"body\">Cette action est définitive.</p>\n    <footer part=\"footer\">\n      <z-button type=\"button\" command=\"close\" tone=\"soft\">Annuler</z-button>\n      <z-button type=\"button\" command=\"close\" value=\"delete\" tone=\"danger\">Supprimer</z-button>\n    </footer>\n  </dialog>\n</z-dialog>\n<z-button type=\"button\" commandfor=\"confirm\" command=\"show-modal\">Supprimer…</z-button>",
+      "paths": {
+        "js": "components/z-dialog/z-dialog.js",
+        "css": "components/z-dialog/z-dialog.css",
+        "doc": "components/z-dialog/z-dialog.doc.md",
+        "demo": "components/z-dialog/z-dialog.demo.html",
+        "lab": null
+      },
+      "attributes": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "Open (modal). The source of truth: set by the component, settable by hand.",
+            "fr": "Ouverte (en modal). La source de vérité : posée par le composant, posable à la main.",
+            "es": "Abierto (modal). La fuente de verdad: puesta por el componente, se puede poner a mano."
+          }
+        },
+        {
+          "name": "light-dismiss",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "A click on the backdrop closes the box (through `cancel`, like Escape).",
+            "fr": "Un clic sur le fond ferme la boîte (via `cancel`, comme Échap).",
+            "es": "Un clic en el fondo cierra la caja (vía `cancel`, como Escape)."
+          }
+        },
+        {
+          "name": "placement",
+          "type": "\"center\" | \"top\" | \"bottom\" | \"left\" | \"right\"",
+          "values": [
+            {
+              "value": "center",
+              "note": {},
+              "default": false
+            },
+            {
+              "value": "top",
+              "note": {},
+              "default": false
+            },
+            {
+              "value": "bottom",
+              "note": {},
+              "default": false
+            },
+            {
+              "value": "left",
+              "note": {},
+              "default": false
+            },
+            {
+              "value": "right",
+              "note": {},
+              "default": false
+            }
+          ],
+          "description": {
+            "en": "Where the box sits — center (default) pops, the four edges slide in from their side.",
+            "fr": "Où la boîte se pose — center (défaut) surgit, les quatre bords glissent depuis leur côté.",
+            "es": "Dónde se coloca — center (por defecto) aparece, los cuatro bordes deslizan desde su lado."
+          }
+        }
+      ],
+      "events": [
+        {
+          "name": "open",
+          "description": {
+            "en": "Emitted once shown (bubbles).",
+            "fr": "Émis une fois ouverte (bulle).",
+            "es": "Emitido una vez abierto (burbujea)."
+          }
+        },
+        {
+          "name": "close",
+          "description": {
+            "en": "Emitted once closed, after the exit animation (bubbles). detail: { returnValue }.",
+            "fr": "Émis une fois fermée, après l'animation de sortie (bulle). detail : { returnValue }.",
+            "es": "Emitido una vez cerrado, tras la animación de salida (burbujea). detail: { returnValue }."
+          }
+        },
+        {
+          "name": "cancel",
+          "description": {
+            "en": "Escape, light-dismiss or request-close (bubbles, cancelable): preventDefault() keeps the box open.",
+            "fr": "Échap, light-dismiss ou request-close (bulle, annulable) : preventDefault() garde la boîte ouverte.",
+            "es": "Escape, light-dismiss o request-close (burbujea, cancelable): preventDefault() mantiene la caja abierta."
+          }
+        },
+        {
+          "name": "z-state",
+          "description": {
+            "en": "Emitted on every state change. detail: { states, changed, on }.",
+            "fr": "Émis à chaque changement d'état. detail : { states, changed, on }.",
+            "es": "Emitido en cada cambio de estado. detail: { states, changed, on }."
+          }
+        }
+      ],
+      "states": [
+        {
+          "name": "default",
+          "description": {}
+        },
+        {
+          "name": "over",
+          "description": {}
+        },
+        {
+          "name": "press",
+          "description": {}
+        },
+        {
+          "name": "release",
+          "description": {}
+        },
+        {
+          "name": "releaseOut",
+          "description": {}
+        },
+        {
+          "name": "drag",
+          "description": {}
+        },
+        {
+          "name": "focus",
+          "description": {}
+        },
+        {
+          "name": "enter",
+          "description": {}
+        },
+        {
+          "name": "exit",
+          "description": {}
+        },
+        {
+          "name": "current",
+          "description": {}
+        },
+        {
+          "name": "select",
+          "description": {}
+        },
+        {
+          "name": "unselect",
+          "description": {}
+        },
+        {
+          "name": "loading",
+          "description": {}
+        },
+        {
+          "name": "disabled",
+          "description": {}
+        },
+        {
+          "name": "error",
+          "description": {}
+        },
+        {
+          "name": "success",
+          "description": {}
+        },
+        {
+          "name": "open",
+          "description": {}
+        }
+      ],
+      "layers": [
+        {
+          "part": "header",
+          "optional": true,
+          "description": {
+            "en": "The title row — your heading, and a close button if you want one.",
+            "fr": "La ligne de titre — votre titre, et un bouton de fermeture si vous en voulez un.",
+            "es": "La fila de título — su encabezado, y un botón de cierre si lo desea."
+          },
+          "children": []
+        },
+        {
+          "part": "body",
+          "optional": true,
+          "description": {
+            "en": "The content.",
+            "fr": "Le contenu.",
+            "es": "El contenido."
+          },
+          "children": []
+        },
+        {
+          "part": "footer",
+          "optional": true,
+          "description": {
+            "en": "The actions — laid out in a row, pushed to the right.",
+            "fr": "Les actions — en ligne, poussées à droite.",
+            "es": "Las acciones — en fila, a la derecha."
+          },
+          "children": []
+        }
+      ],
+      "cssVars": [],
+      "tokens": [
+        {
+          "name": "--z-dialog--backdrop__background",
+          "part": "backdrop",
+          "property": "background"
+        },
+        {
+          "name": "--z-dialog--footer__border-color",
+          "part": "footer",
+          "property": "border-color"
+        },
+        {
+          "name": "--z-dialog--footer__gap",
+          "part": "footer",
+          "property": "gap"
+        },
+        {
+          "name": "--z-dialog--header__border-color",
+          "part": "header",
+          "property": "border-color"
+        },
+        {
+          "name": "--z-dialog--header__font-size",
+          "part": "header",
+          "property": "font-size"
+        },
+        {
+          "name": "--z-dialog__background",
+          "part": null,
+          "property": "background"
+        },
+        {
+          "name": "--z-dialog__border-color",
+          "part": null,
+          "property": "border-color"
+        },
+        {
+          "name": "--z-dialog__color",
+          "part": null,
+          "property": "color"
+        },
+        {
+          "name": "--z-dialog__gap",
+          "part": null,
+          "property": "gap"
+        },
+        {
+          "name": "--z-dialog__offset",
+          "part": null,
+          "property": "offset"
+        },
+        {
+          "name": "--z-dialog__padding",
+          "part": null,
+          "property": "padding"
+        },
+        {
+          "name": "--z-dialog__radius",
+          "part": null,
+          "property": "radius"
+        },
+        {
+          "name": "--z-dialog__shadow",
+          "part": null,
+          "property": "shadow"
+        },
+        {
+          "name": "--z-dialog__width",
+          "part": null,
+          "property": "width"
+        }
+      ],
+      "members": [
+        {
+          "kind": "method",
+          "name": "show()",
+          "type": "void",
+          "description": {
+            "en": "Opens modally (dialog.showModal()) and plays `enter`. Same as setting the `open` attribute.",
+            "fr": "Ouvre en modal (dialog.showModal()) et joue `enter`. Équivaut à poser l'attribut `open`.",
+            "es": "Abre en modal (dialog.showModal()) y reproduce `enter`. Equivale a poner el atributo `open`."
+          }
+        },
+        {
+          "kind": "method",
+          "name": "close(returnValue?)",
+          "type": "Promise<void>",
+          "description": {
+            "en": "Plays `exit`, THEN calls dialog.close(returnValue). Resolves once closed; fires `close`.",
+            "fr": "Joue `exit`, PUIS appelle dialog.close(returnValue). Rend la main une fois fermé ; émet `close`.",
+            "es": "Reproduce `exit`, LUEGO llama a dialog.close(returnValue). Resuelve al cerrarse; emite `close`."
+          }
+        },
+        {
+          "kind": "method",
+          "name": "requestClose()",
+          "type": "void",
+          "description": {
+            "en": "Closes the way Escape does: fires cancelable `cancel` first — preventDefault() keeps the dialog open.",
+            "fr": "Ferme comme Échap : émet d'abord `cancel` (annulable) — preventDefault() garde la boîte ouverte.",
+            "es": "Cierra como Escape: emite primero `cancel` (cancelable) — preventDefault() mantiene el diálogo abierto."
+          }
+        },
+        {
+          "kind": "method",
+          "name": "toggle()",
+          "type": "void",
+          "description": {
+            "en": "Opens if closed, closes if open.",
+            "fr": "Ouvre si fermée, ferme si ouverte.",
+            "es": "Abre si está cerrado, cierra si está abierto."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "open",
+          "type": "boolean",
+          "description": {
+            "en": "Open or closed — mirrors the attribute. Setting it goes through show() / close(), so it animates.",
+            "fr": "Ouverte ou fermée — reflet de l'attribut. La poser passe par show() / close(), donc ça s'anime.",
+            "es": "Abierto o cerrado — reflejo del atributo. Ponerlo pasa por show() / close(), así que se anima."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "returnValue",
+          "type": "string",
+          "description": {
+            "en": "The native dialog's returnValue — the `value` of the trigger that closed it.",
+            "fr": "Le returnValue du dialog natif — la `value` du déclencheur qui a fermé.",
+            "es": "El returnValue del dialog nativo — el `value` del disparador que cerró."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "placement",
+          "type": "\"center\" | \"top\" | \"bottom\" | \"left\" | \"right\"",
+          "description": {
+            "en": "Where the box sits (mirrors the attribute; default center).",
+            "fr": "Où la boîte se pose (reflet de l'attribut ; centre par défaut).",
+            "es": "Dónde se coloca la caja (reflejo del atributo; centro por defecto)."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "dialog",
+          "type": "HTMLDialogElement | null",
+          "description": {
+            "en": "The author's native <dialog> inside.",
+            "fr": "Le <dialog> natif de l'auteur, à l'intérieur.",
+            "es": "El <dialog> nativo del autor, dentro."
+          }
+        }
+      ],
+      "name": "z-dialog"
+    },
+    {
       "tag": "z-disclosure",
       "kind": "components",
       "className": "ZDisclosure",
@@ -3606,8 +4318,8 @@
       "paths": {
         "js": "components/z-disclosure/z-disclosure.js",
         "css": "components/z-disclosure/z-disclosure.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-disclosure/z-disclosure.doc.md",
+        "demo": "components/z-disclosure/z-disclosure.demo.html",
         "lab": null
       },
       "attributes": [
@@ -3619,6 +4331,16 @@
             "en": "Open: reveals the panel.",
             "fr": "Ouvert : révèle le panneau.",
             "es": "Abierto: revela el panel."
+          }
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "Disabled: the label no longer opens or closes (pointer and keyboard).",
+            "fr": "Désactivé : le label n'ouvre ni ne ferme plus (pointeur et clavier).",
+            "es": "Deshabilitado: la etiqueta ya no abre ni cierra (puntero y teclado)."
           }
         }
       ],
@@ -3772,8 +4494,8 @@
       "paths": {
         "js": "components/z-divider/z-divider.js",
         "css": "components/z-divider/z-divider.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-divider/z-divider.doc.md",
+        "demo": "components/z-divider/z-divider.demo.html",
         "lab": null
       },
       "attributes": [
@@ -3829,9 +4551,9 @@
             }
           ],
           "description": {
-            "en": "Size factor, from the socle variant (label and stroke follow in em).",
-            "fr": "Le facteur de taille, via le variant du socle (label et trait suivent en em).",
-            "es": "El factor de tamaño, mediante el variante del zócalo (etiqueta y trazo siguen en em)."
+            "en": "Size factor, from the socle variant: the label and the vertical stroke's length follow in em; the thickness stays --z-border-width.",
+            "fr": "Le facteur de taille, via le variant du socle : le label et la longueur du trait vertical suivent en em ; l'épaisseur reste --z-border-width.",
+            "es": "El factor de tamaño, mediante el variante del zócalo: la etiqueta y la longitud del trazo vertical siguen en em; el grosor sigue siendo --z-border-width."
           }
         }
       ],
@@ -3957,6 +4679,657 @@
       "name": "z-divider"
     },
     {
+      "tag": "z-drawer",
+      "kind": "components",
+      "className": "ZDrawer",
+      "attributeTool": false,
+      "summary": {
+        "en": "A modal side panel — a z-dialog glued to an edge: full height, slides in from its side. Same API, same triggers.",
+        "fr": "Un panneau latéral modal — un z-dialog collé à un bord : toute la hauteur, il glisse depuis son côté. Même API, mêmes déclencheurs.",
+        "es": "Un panel lateral modal — un z-dialog pegado a un borde: toda la altura, desliza desde su lado. Misma API, mismos disparadores."
+      },
+      "example": "<z-drawer id=\"menu\" light-dismiss>\n  <dialog>\n    <header part=\"header\">\n      <h2>Menu</h2>\n      <z-button type=\"button\" command=\"close\" tone=\"soft\">Fermer</z-button>\n    </header>\n    <nav part=\"body\">\n      <a href=\"#\">Accueil</a>\n      <a href=\"#\">Catalogue</a>\n      <a href=\"#\">Contact</a>\n    </nav>\n  </dialog>\n</z-drawer>\n<z-button type=\"button\" commandfor=\"menu\" command=\"show-modal\">Menu</z-button>",
+      "paths": {
+        "js": "components/z-drawer/z-drawer.js",
+        "css": "components/z-drawer/z-drawer.css",
+        "doc": "components/z-drawer/z-drawer.doc.md",
+        "demo": "components/z-drawer/z-drawer.demo.html",
+        "lab": null
+      },
+      "attributes": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "Open (modal). The source of truth: set by the component, settable by hand.",
+            "fr": "Ouverte (en modal). La source de vérité : posée par le composant, posable à la main.",
+            "es": "Abierto (modal). La fuente de verdad: puesta por el componente, se puede poner a mano."
+          }
+        },
+        {
+          "name": "light-dismiss",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "A click on the backdrop closes the box (through `cancel`, like Escape).",
+            "fr": "Un clic sur le fond ferme la boîte (via `cancel`, comme Échap).",
+            "es": "Un clic en el fondo cierra la caja (vía `cancel`, como Escape)."
+          }
+        },
+        {
+          "name": "placement",
+          "type": "\"right\" | \"left\" | \"top\" | \"bottom\"",
+          "values": [
+            {
+              "value": "right",
+              "note": {},
+              "default": false
+            },
+            {
+              "value": "left",
+              "note": {},
+              "default": false
+            },
+            {
+              "value": "top",
+              "note": {},
+              "default": false
+            },
+            {
+              "value": "bottom",
+              "note": {},
+              "default": false
+            }
+          ],
+          "description": {
+            "en": "The edge the panel is glued to (default right).",
+            "fr": "Le bord auquel le panneau est collé (right par défaut).",
+            "es": "El borde al que se pega el panel (right por defecto)."
+          }
+        }
+      ],
+      "events": [
+        {
+          "name": "open",
+          "description": {
+            "en": "Emitted once shown (bubbles).",
+            "fr": "Émis une fois ouverte (bulle).",
+            "es": "Emitido una vez abierto (burbujea)."
+          }
+        },
+        {
+          "name": "close",
+          "description": {
+            "en": "Emitted once closed, after the exit animation (bubbles). detail: { returnValue }.",
+            "fr": "Émis une fois fermée, après l'animation de sortie (bulle). detail : { returnValue }.",
+            "es": "Emitido una vez cerrado, tras la animación de salida (burbujea). detail: { returnValue }."
+          }
+        },
+        {
+          "name": "cancel",
+          "description": {
+            "en": "Escape, light-dismiss or request-close (bubbles, cancelable): preventDefault() keeps the box open.",
+            "fr": "Échap, light-dismiss ou request-close (bulle, annulable) : preventDefault() garde la boîte ouverte.",
+            "es": "Escape, light-dismiss o request-close (burbujea, cancelable): preventDefault() mantiene la caja abierta."
+          }
+        },
+        {
+          "name": "z-state",
+          "description": {
+            "en": "Emitted on every state change. detail: { states, changed, on }.",
+            "fr": "Émis à chaque changement d'état. detail : { states, changed, on }.",
+            "es": "Emitido en cada cambio de estado. detail: { states, changed, on }."
+          }
+        }
+      ],
+      "states": [
+        {
+          "name": "default",
+          "description": {}
+        },
+        {
+          "name": "over",
+          "description": {}
+        },
+        {
+          "name": "press",
+          "description": {}
+        },
+        {
+          "name": "release",
+          "description": {}
+        },
+        {
+          "name": "releaseOut",
+          "description": {}
+        },
+        {
+          "name": "drag",
+          "description": {}
+        },
+        {
+          "name": "focus",
+          "description": {}
+        },
+        {
+          "name": "enter",
+          "description": {}
+        },
+        {
+          "name": "exit",
+          "description": {}
+        },
+        {
+          "name": "current",
+          "description": {}
+        },
+        {
+          "name": "select",
+          "description": {}
+        },
+        {
+          "name": "unselect",
+          "description": {}
+        },
+        {
+          "name": "loading",
+          "description": {}
+        },
+        {
+          "name": "disabled",
+          "description": {}
+        },
+        {
+          "name": "error",
+          "description": {}
+        },
+        {
+          "name": "success",
+          "description": {}
+        },
+        {
+          "name": "open",
+          "description": {}
+        }
+      ],
+      "layers": [
+        {
+          "part": "header",
+          "optional": true,
+          "description": {
+            "en": "The title row — your heading, and a close button if you want one.",
+            "fr": "La ligne de titre — votre titre, et un bouton de fermeture si vous en voulez un.",
+            "es": "La fila de título — su encabezado, y un botón de cierre si lo desea."
+          },
+          "children": []
+        },
+        {
+          "part": "body",
+          "optional": true,
+          "description": {
+            "en": "The content.",
+            "fr": "Le contenu.",
+            "es": "El contenido."
+          },
+          "children": []
+        },
+        {
+          "part": "footer",
+          "optional": true,
+          "description": {
+            "en": "The actions — laid out in a row, pushed to the right.",
+            "fr": "Les actions — en ligne, poussées à droite.",
+            "es": "Las acciones — en fila, a la derecha."
+          },
+          "children": []
+        }
+      ],
+      "cssVars": [],
+      "tokens": [
+        {
+          "name": "--z-drawer__height",
+          "part": null,
+          "property": "height"
+        },
+        {
+          "name": "--z-drawer__width",
+          "part": null,
+          "property": "width"
+        }
+      ],
+      "members": [
+        {
+          "kind": "method",
+          "name": "show()",
+          "type": "void",
+          "description": {
+            "en": "Opens modally (dialog.showModal()) and plays `enter`. Same as setting the `open` attribute.",
+            "fr": "Ouvre en modal (dialog.showModal()) et joue `enter`. Équivaut à poser l'attribut `open`.",
+            "es": "Abre en modal (dialog.showModal()) y reproduce `enter`. Equivale a poner el atributo `open`."
+          }
+        },
+        {
+          "kind": "method",
+          "name": "close(returnValue?)",
+          "type": "Promise<void>",
+          "description": {
+            "en": "Plays `exit`, THEN calls dialog.close(returnValue). Resolves once closed; fires `close`.",
+            "fr": "Joue `exit`, PUIS appelle dialog.close(returnValue). Rend la main une fois fermé ; émet `close`.",
+            "es": "Reproduce `exit`, LUEGO llama a dialog.close(returnValue). Resuelve al cerrarse; emite `close`."
+          }
+        },
+        {
+          "kind": "method",
+          "name": "requestClose()",
+          "type": "void",
+          "description": {
+            "en": "Closes the way Escape does: fires cancelable `cancel` first — preventDefault() keeps the dialog open.",
+            "fr": "Ferme comme Échap : émet d'abord `cancel` (annulable) — preventDefault() garde la boîte ouverte.",
+            "es": "Cierra como Escape: emite primero `cancel` (cancelable) — preventDefault() mantiene el diálogo abierto."
+          }
+        },
+        {
+          "kind": "method",
+          "name": "toggle()",
+          "type": "void",
+          "description": {
+            "en": "Opens if closed, closes if open.",
+            "fr": "Ouvre si fermée, ferme si ouverte.",
+            "es": "Abre si está cerrado, cierra si está abierto."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "open",
+          "type": "boolean",
+          "description": {
+            "en": "Open or closed — mirrors the attribute. Setting it goes through show() / close(), so it animates.",
+            "fr": "Ouverte ou fermée — reflet de l'attribut. La poser passe par show() / close(), donc ça s'anime.",
+            "es": "Abierto o cerrado — reflejo del atributo. Ponerlo pasa por show() / close(), así que se anima."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "returnValue",
+          "type": "string",
+          "description": {
+            "en": "The native dialog's returnValue — the `value` of the trigger that closed it.",
+            "fr": "Le returnValue du dialog natif — la `value` du déclencheur qui a fermé.",
+            "es": "El returnValue del dialog nativo — el `value` del disparador que cerró."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "placement",
+          "type": "\"right\" | \"left\" | \"top\" | \"bottom\"",
+          "description": {
+            "en": "The edge the panel is glued to (mirrors the attribute; default right).",
+            "fr": "Le bord auquel le panneau est collé (reflet de l'attribut ; right par défaut).",
+            "es": "El borde al que se pega el panel (reflejo del atributo; right por defecto)."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "dialog",
+          "type": "HTMLDialogElement | null",
+          "description": {
+            "en": "The author's native <dialog> inside.",
+            "fr": "Le <dialog> natif de l'auteur, à l'intérieur.",
+            "es": "El <dialog> nativo del autor, dentro."
+          }
+        }
+      ],
+      "name": "z-drawer"
+    },
+    {
+      "tag": "z-field",
+      "kind": "components",
+      "className": "ZField",
+      "attributeTool": false,
+      "summary": {
+        "en": "A form field around a NATIVE control: links label, hint and error, mirrors its validity into error/success, poses filled. Nothing replaced, nothing injected.",
+        "fr": "Un champ de formulaire autour d'un contrôle NATIF : relie label, aide et erreur, reflète sa validité en error/success, pose filled. Rien remplacé, rien injecté.",
+        "es": "Un campo de formulario alrededor de un control NATIVO: enlaza etiqueta, ayuda y error, refleja su validez en error/success, pone filled. Nada reemplazado, nada inyectado."
+      },
+      "example": "<z-field>\n  <label>Adresse e-mail</label>\n  <input type=\"email\" name=\"email\" required placeholder=\"vous@exemple.fr\">\n  <small part=\"hint\">Nous ne la partagerons jamais.</small>\n  <small part=\"error\"></small>\n</z-field>",
+      "paths": {
+        "js": "components/z-field/z-field.js",
+        "css": "components/z-field/z-field.css",
+        "doc": "components/z-field/z-field.doc.md",
+        "demo": "components/z-field/z-field.demo.html",
+        "lab": null
+      },
+      "attributes": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "Disables the field: propagated to the native control (and removed with it).",
+            "fr": "Désactive le champ : propagé au contrôle natif (et retiré avec lui).",
+            "es": "Deshabilita el campo: propagado al control nativo (y retirado con él)."
+          }
+        },
+        {
+          "name": "counter",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "Writes « length / maxlength » at the end of [part=hint], in pure CSS (the hint must exist, empty is fine).",
+            "fr": "Écrit « longueur / maxlength » au bout de [part=hint], en CSS pur (l'aide doit exister, vide suffit).",
+            "es": "Escribe « longitud / maxlength » al final de [part=hint], en CSS puro (la ayuda debe existir, vacía basta)."
+          }
+        },
+        {
+          "name": "filled",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "Posed by the field: the control has a non-empty value (for a floating label in CSS).",
+            "fr": "Posé par le champ : le contrôle a une valeur non vide (pour un label flottant en CSS).",
+            "es": "Puesto por el campo: el control tiene un valor no vacío (para una etiqueta flotante en CSS)."
+          }
+        },
+        {
+          "name": "error",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "Posed by the field once judged and invalid — you may also set it by hand with your own [part=error] text.",
+            "fr": "Posé par le champ une fois jugé et invalide — vous pouvez aussi le poser à la main, avec votre texte dans [part=error].",
+            "es": "Puesto por el campo una vez juzgado e inválido — también puede ponerlo a mano, con su texto en [part=error]."
+          }
+        },
+        {
+          "name": "success",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "Posed by the field once judged, valid and non-empty.",
+            "fr": "Posé par le champ une fois jugé, valide et non vide.",
+            "es": "Puesto por el campo una vez juzgado, válido y no vacío."
+          }
+        }
+      ],
+      "events": [
+        {
+          "name": "input",
+          "description": {
+            "en": "The native control's — it bubbles through the field untouched.",
+            "fr": "Celui du contrôle natif — il bulle à travers le champ, intact.",
+            "es": "El del control nativo — burbujea a través del campo, intacto."
+          }
+        },
+        {
+          "name": "change",
+          "description": {
+            "en": "The native control's — it bubbles through the field untouched.",
+            "fr": "Celui du contrôle natif — il bulle à travers le champ, intact.",
+            "es": "El del control nativo — burbujea a través del campo, intacto."
+          }
+        },
+        {
+          "name": "z-state",
+          "description": {
+            "en": "Emitted on every state change (error, success, filled…). detail: { states, changed, on }.",
+            "fr": "Émis à chaque changement d'état (error, success, filled…). detail : { states, changed, on }.",
+            "es": "Emitido en cada cambio de estado (error, success, filled…). detail: { states, changed, on }."
+          }
+        }
+      ],
+      "states": [
+        {
+          "name": "default",
+          "description": {}
+        },
+        {
+          "name": "over",
+          "description": {}
+        },
+        {
+          "name": "press",
+          "description": {}
+        },
+        {
+          "name": "release",
+          "description": {}
+        },
+        {
+          "name": "releaseOut",
+          "description": {}
+        },
+        {
+          "name": "drag",
+          "description": {}
+        },
+        {
+          "name": "focus",
+          "description": {}
+        },
+        {
+          "name": "enter",
+          "description": {}
+        },
+        {
+          "name": "exit",
+          "description": {}
+        },
+        {
+          "name": "current",
+          "description": {}
+        },
+        {
+          "name": "select",
+          "description": {}
+        },
+        {
+          "name": "unselect",
+          "description": {}
+        },
+        {
+          "name": "loading",
+          "description": {}
+        },
+        {
+          "name": "disabled",
+          "description": {}
+        },
+        {
+          "name": "error",
+          "description": {}
+        },
+        {
+          "name": "success",
+          "description": {}
+        },
+        {
+          "name": "filled",
+          "description": {}
+        }
+      ],
+      "layers": [
+        {
+          "part": "label",
+          "optional": false,
+          "description": {
+            "en": "A native <label> — linked to the control (for/id) by the field.",
+            "fr": "Un <label> natif — relié au contrôle (for/id) par le champ.",
+            "es": "Un <label> nativo — enlazado al control (for/id) por el campo."
+          },
+          "children": []
+        },
+        {
+          "part": "control",
+          "optional": false,
+          "description": {
+            "en": "The native <input>, <textarea> or <select>, direct child — the only required piece, and the single source of truth (name, required, type, maxlength live on it).",
+            "fr": "Le <input>, <textarea> ou <select> natif, enfant direct — la seule pièce obligatoire, et l'unique source de vérité (name, required, type, maxlength vivent sur lui).",
+            "es": "El <input>, <textarea> o <select> nativo, hijo directo — la única pieza obligatoria, y la única fuente de verdad (name, required, type, maxlength viven en él)."
+          },
+          "children": []
+        },
+        {
+          "part": "hint",
+          "optional": true,
+          "description": {
+            "en": "Help text under the control (aria-describedby); the counter is written at its end.",
+            "fr": "L'aide sous le contrôle (aria-describedby) ; le compteur s'écrit à son bout.",
+            "es": "La ayuda bajo el control (aria-describedby); el contador se escribe al final."
+          },
+          "children": []
+        },
+        {
+          "part": "error",
+          "optional": true,
+          "description": {
+            "en": "The error message — shown only in :state(error). Left empty, the field writes the browser's validationMessage in it.",
+            "fr": "Le message d'erreur — visible seulement en :state(error). Laissé vide, le champ y écrit le validationMessage du navigateur.",
+            "es": "El mensaje de error — visible solo en :state(error). Dejado vacío, el campo escribe en él el validationMessage del navegador."
+          },
+          "children": []
+        }
+      ],
+      "cssVars": [
+        {
+          "name": "--z-field__length",
+          "description": {
+            "en": "Posed by the field: the value's length (an integer, for counter()).",
+            "fr": "Posée par le champ : la longueur de la valeur (un entier, pour counter()).",
+            "es": "Puesta por el campo: la longitud del valor (un entero, para counter())."
+          }
+        },
+        {
+          "name": "--z-field__max",
+          "description": {
+            "en": "Posed by the field: the control's maxlength (0 when none).",
+            "fr": "Posée par le champ : le maxlength du contrôle (0 s'il n'en a pas).",
+            "es": "Puesta por el campo: el maxlength del control (0 si no tiene)."
+          }
+        }
+      ],
+      "tokens": [
+        {
+          "name": "--z-field--control__background",
+          "part": "control",
+          "property": "background"
+        },
+        {
+          "name": "--z-field--control__border-color",
+          "part": "control",
+          "property": "border-color"
+        },
+        {
+          "name": "--z-field--control__color",
+          "part": "control",
+          "property": "color"
+        },
+        {
+          "name": "--z-field--control__font-size",
+          "part": "control",
+          "property": "font-size"
+        },
+        {
+          "name": "--z-field--control__padding",
+          "part": "control",
+          "property": "padding"
+        },
+        {
+          "name": "--z-field--control__radius",
+          "part": "control",
+          "property": "radius"
+        },
+        {
+          "name": "--z-field--counter__color",
+          "part": "counter",
+          "property": "color"
+        },
+        {
+          "name": "--z-field--error__color",
+          "part": "error",
+          "property": "color"
+        },
+        {
+          "name": "--z-field--hint__color",
+          "part": "hint",
+          "property": "color"
+        },
+        {
+          "name": "--z-field--hint__font-size",
+          "part": "hint",
+          "property": "font-size"
+        },
+        {
+          "name": "--z-field--label__color",
+          "part": "label",
+          "property": "color"
+        },
+        {
+          "name": "--z-field--label__font-size",
+          "part": "label",
+          "property": "font-size"
+        },
+        {
+          "name": "--z-field--label__font-weight",
+          "part": "label",
+          "property": "font-weight"
+        },
+        {
+          "name": "--z-field__gap",
+          "part": null,
+          "property": "gap"
+        },
+        {
+          "name": "--z-field__inline-size",
+          "part": null,
+          "property": "inline-size"
+        },
+        {
+          "name": "--z-field__length",
+          "part": null,
+          "property": "length"
+        },
+        {
+          "name": "--z-field__max",
+          "part": null,
+          "property": "max"
+        }
+      ],
+      "members": [
+        {
+          "kind": "field",
+          "name": "control",
+          "type": "HTMLElement | null",
+          "description": {
+            "en": "The native <input>, <textarea> or <select> the field wraps (read-only).",
+            "fr": "Le <input>, <textarea> ou <select> natif que le champ enveloppe (lecture seule).",
+            "es": "El <input>, <textarea> o <select> nativo que el campo envuelve (solo lectura)."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "valid",
+          "type": "boolean",
+          "description": {
+            "en": "The control's native validity, right now (read-only).",
+            "fr": "La validité native du contrôle, à l'instant (lecture seule).",
+            "es": "La validez nativa del control, ahora mismo (solo lectura)."
+          }
+        },
+        {
+          "kind": "method",
+          "name": "validate()",
+          "type": "boolean",
+          "description": {
+            "en": "Judges the field now — poses error/success and the message — and returns its validity.",
+            "fr": "Juge le champ maintenant — pose error/success et le message — et rend sa validité.",
+            "es": "Juzga el campo ahora — pone error/success y el mensaje — y devuelve su validez."
+          }
+        }
+      ],
+      "name": "z-field"
+    },
+    {
       "tag": "z-kbd",
       "kind": "components",
       "className": "ZKbd",
@@ -3970,8 +5343,8 @@
       "paths": {
         "js": "components/z-kbd/z-kbd.js",
         "css": "components/z-kbd/z-kbd.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-kbd/z-kbd.doc.md",
+        "demo": "components/z-kbd/z-kbd.demo.html",
         "lab": null
       },
       "attributes": [
@@ -4138,6 +5511,406 @@
       "name": "z-kbd"
     },
     {
+      "tag": "z-menu",
+      "kind": "components",
+      "className": "ZMenu",
+      "attributeTool": false,
+      "summary": {
+        "en": "An actions menu (ARIA menu button) on top of z-popover — roles, roving focus, arrow keys, type-ahead; activating an item fires cancelable `select` then closes.",
+        "fr": "Un menu d'actions (ARIA menu button) bâti sur z-popover — rôles, focus itinérant, flèches, saut à la lettre ; activer un item émet `select` (annulable) puis ferme.",
+        "es": "Un menú de acciones (ARIA menu button) sobre z-popover — roles, foco itinerante, flechas, salto por letra; activar un ítem emite `select` (cancelable) y luego cierra."
+      },
+      "example": "<z-menu>\n  <z-button part=\"trigger\" type=\"button\">Actions ▾</z-button>\n  <div part=\"panel\">\n    <button part=\"item\" value=\"rename\">Renommer</button>\n    <button part=\"item\" value=\"duplicate\">Dupliquer</button>\n    <hr part=\"separator\">\n    <button part=\"item\" value=\"delete\" tone=\"danger\">Supprimer</button>\n  </div>\n</z-menu>",
+      "paths": {
+        "js": "components/z-menu/z-menu.js",
+        "css": "components/z-menu/z-menu.css",
+        "doc": "components/z-menu/z-menu.doc.md",
+        "demo": "components/z-menu/z-menu.demo.html",
+        "lab": null
+      },
+      "attributes": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "Open: the panel is shown. The source of truth — set by click, show()/hide(), and synced when the browser closes it (light-dismiss, Escape).",
+            "fr": "Ouvert : le panneau est montré. La source de vérité — posé par le clic, show()/hide(), et resynchronisé quand le navigateur ferme seul (clic dehors, Échap).",
+            "es": "Abierto: el panel se muestra. La fuente de verdad — puesto por el clic, show()/hide(), y resincronizado cuando el navegador cierra solo (clic fuera, Escape)."
+          }
+        },
+        {
+          "name": "placement",
+          "type": "\"bottom\" | \"top\" | \"left\" | \"right\"",
+          "values": [
+            {
+              "value": "bottom",
+              "note": {},
+              "default": false
+            },
+            {
+              "value": "top",
+              "note": {},
+              "default": false
+            },
+            {
+              "value": "left",
+              "note": {},
+              "default": false
+            },
+            {
+              "value": "right",
+              "note": {},
+              "default": false
+            }
+          ],
+          "description": {
+            "en": "The side of the trigger the panel opens on (default bottom). Flipped to the opposite side when it would overflow the viewport.",
+            "fr": "Le côté du déclencheur où le panneau s'ouvre (défaut bottom). Retourné du côté opposé s'il déborderait de la fenêtre.",
+            "es": "El lado del disparador donde se abre el panel (por defecto bottom). Invertido al lado opuesto si desbordara la ventana."
+          }
+        },
+        {
+          "name": "align",
+          "type": "\"start\" | \"center\" | \"end\"",
+          "values": [
+            {
+              "value": "start",
+              "note": {},
+              "default": false
+            },
+            {
+              "value": "center",
+              "note": {},
+              "default": false
+            },
+            {
+              "value": "end",
+              "note": {},
+              "default": false
+            }
+          ],
+          "description": {
+            "en": "Which edge of the trigger the panel lines up with (default start).",
+            "fr": "Le bord du déclencheur sur lequel le panneau s'aligne (défaut start).",
+            "es": "El borde del disparador con el que se alinea el panel (por defecto start)."
+          }
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "Disabled: the trigger no longer opens it.",
+            "fr": "Désactivé : le déclencheur n'ouvre plus.",
+            "es": "Deshabilitado: el disparador ya no abre."
+          }
+        }
+      ],
+      "events": [
+        {
+          "name": "select",
+          "description": {
+            "en": "Emitted when an item is activated (click, Enter, Space). Bubbles, cancelable: preventDefault() keeps the menu open. detail: { value, item } — value is the item's `value` attribute, or its text.",
+            "fr": "Émis quand un item est activé (clic, Entrée, Espace). Bulle, annulable : preventDefault() garde le menu ouvert. detail : { value, item } — value est l'attribut `value` de l'item, ou son texte.",
+            "es": "Emitido al activar un ítem (clic, Enter, Espacio). Burbujea, cancelable: preventDefault() mantiene el menú abierto. detail: { value, item } — value es el atributo `value` del ítem, o su texto."
+          }
+        },
+        {
+          "name": "toggle",
+          "description": {
+            "en": "Emitted on every open/close, whoever caused it (click, API, light-dismiss, Escape). Bubbles. detail: { open }.",
+            "fr": "Émis à chaque ouverture/fermeture, quelle qu'en soit la cause (clic, API, clic dehors, Échap). Bulle. detail : { open }.",
+            "es": "Emitido en cada apertura/cierre, sea cual sea la causa (clic, API, clic fuera, Escape). Burbujea. detail: { open }."
+          }
+        },
+        {
+          "name": "z-state",
+          "description": {
+            "en": "Emitted on every state change. detail: { states, changed, on }.",
+            "fr": "Émis à chaque changement d'état. detail : { states, changed, on }.",
+            "es": "Emitido en cada cambio de estado. detail: { states, changed, on }."
+          }
+        }
+      ],
+      "states": [
+        {
+          "name": "default",
+          "description": {}
+        },
+        {
+          "name": "over",
+          "description": {}
+        },
+        {
+          "name": "press",
+          "description": {}
+        },
+        {
+          "name": "release",
+          "description": {}
+        },
+        {
+          "name": "releaseOut",
+          "description": {}
+        },
+        {
+          "name": "drag",
+          "description": {}
+        },
+        {
+          "name": "focus",
+          "description": {}
+        },
+        {
+          "name": "enter",
+          "description": {}
+        },
+        {
+          "name": "exit",
+          "description": {}
+        },
+        {
+          "name": "current",
+          "description": {}
+        },
+        {
+          "name": "select",
+          "description": {}
+        },
+        {
+          "name": "unselect",
+          "description": {}
+        },
+        {
+          "name": "loading",
+          "description": {}
+        },
+        {
+          "name": "disabled",
+          "description": {}
+        },
+        {
+          "name": "error",
+          "description": {}
+        },
+        {
+          "name": "success",
+          "description": {}
+        },
+        {
+          "name": "open",
+          "description": {}
+        }
+      ],
+      "layers": [
+        {
+          "part": "trigger",
+          "optional": false,
+          "description": {
+            "en": "The menu button — any focusable element. Gets aria-haspopup=\"menu\", aria-expanded, aria-controls.",
+            "fr": "Le bouton du menu — n'importe quel élément focusable. Reçoit aria-haspopup=\"menu\", aria-expanded, aria-controls.",
+            "es": "El botón del menú — cualquier elemento enfocable. Recibe aria-haspopup=\"menu\", aria-expanded, aria-controls."
+          },
+          "children": []
+        },
+        {
+          "part": "panel",
+          "optional": false,
+          "description": {
+            "en": "The list of actions (role=menu) — anchored, in the top layer, animated by z-popover.",
+            "fr": "La liste des actions (role=menu) — ancrée, en top layer, animée par z-popover.",
+            "es": "La lista de acciones (role=menu) — anclada, en top layer, animada por z-popover."
+          },
+          "children": [
+            {
+              "part": "item",
+              "optional": false,
+              "description": {
+                "en": "One action (role=menuitem, tabindex=-1) — a <button> or an <a href>. `value` names it in `select`; `disabled` / aria-disabled skips it.",
+                "fr": "Une action (role=menuitem, tabindex=-1) — un <button> ou un <a href>. `value` la nomme dans `select` ; `disabled` / aria-disabled la saute.",
+                "es": "Una acción (role=menuitem, tabindex=-1) — un <button> o un <a href>. `value` la nombra en `select`; `disabled` / aria-disabled la salta."
+              },
+              "children": []
+            },
+            {
+              "part": "separator",
+              "optional": true,
+              "description": {
+                "en": "A rule between two groups of actions (role=separator).",
+                "fr": "Un trait entre deux groupes d'actions (role=separator).",
+                "es": "Una línea entre dos grupos de acciones (role=separator)."
+              },
+              "children": []
+            }
+          ]
+        }
+      ],
+      "cssVars": [
+        {
+          "name": "--z-popover__x",
+          "description": {
+            "en": "Set on the panel by the inherited z-popover anchoring — its left edge in the viewport, a bare number of px.",
+            "fr": "Posée sur le panneau par l'ancrage hérité de z-popover — son bord gauche dans la fenêtre, un nombre nu de px.",
+            "es": "Puesta en el panel por el anclaje heredado de z-popover — su borde izquierdo en la ventana, un número sin unidad en px."
+          }
+        },
+        {
+          "name": "--z-popover__y",
+          "description": {
+            "en": "Set on the panel by the inherited z-popover anchoring — its top edge in the viewport, a bare number of px.",
+            "fr": "Posée sur le panneau par l'ancrage hérité de z-popover — son bord haut dans la fenêtre, un nombre nu de px.",
+            "es": "Puesta en el panel por el anclaje heredado de z-popover — su borde superior en la ventana, un número sin unidad en px."
+          }
+        }
+      ],
+      "tokens": [
+        {
+          "name": "--z-menu--item__background",
+          "part": "item",
+          "property": "background"
+        },
+        {
+          "name": "--z-menu--item__background-over",
+          "part": "item",
+          "property": "background-over"
+        },
+        {
+          "name": "--z-menu--item__color",
+          "part": "item",
+          "property": "color"
+        },
+        {
+          "name": "--z-menu--item__color-over",
+          "part": "item",
+          "property": "color-over"
+        },
+        {
+          "name": "--z-menu--item__gap",
+          "part": "item",
+          "property": "gap"
+        },
+        {
+          "name": "--z-menu--item__padding",
+          "part": "item",
+          "property": "padding"
+        },
+        {
+          "name": "--z-menu--item__radius",
+          "part": "item",
+          "property": "radius"
+        },
+        {
+          "name": "--z-menu--separator__color",
+          "part": "separator",
+          "property": "color"
+        },
+        {
+          "name": "--z-menu--separator__margin",
+          "part": "separator",
+          "property": "margin"
+        },
+        {
+          "name": "--z-menu__min-width",
+          "part": null,
+          "property": "min-width"
+        },
+        {
+          "name": "--z-menu__padding",
+          "part": null,
+          "property": "padding"
+        },
+        {
+          "name": "--z-menu__width",
+          "part": null,
+          "property": "width"
+        }
+      ],
+      "members": [
+        {
+          "kind": "field",
+          "name": "open",
+          "type": "boolean",
+          "description": {
+            "en": "Open or closed — mirrors the attribute.",
+            "fr": "Ouvert ou fermé — reflet de l'attribut.",
+            "es": "Abierto o cerrado — reflejo del atributo."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "placement",
+          "type": "\"bottom\" | \"top\" | \"left\" | \"right\"",
+          "description": {
+            "en": "The requested side (mirrors the attribute; default bottom). The effective side is `data-placement` on the panel.",
+            "fr": "Le côté demandé (reflet de l'attribut ; défaut bottom). Le côté effectif est `data-placement` sur le panneau.",
+            "es": "El lado pedido (reflejo del atributo; por defecto bottom). El lado efectivo es `data-placement` en el panel."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "align",
+          "type": "\"start\" | \"center\" | \"end\"",
+          "description": {
+            "en": "Which edge of the trigger the panel lines up with (mirrors the attribute; default start).",
+            "fr": "Le bord du déclencheur sur lequel le panneau s'aligne (reflet de l'attribut ; défaut start).",
+            "es": "El borde del disparador con el que se alinea el panel (reflejo del atributo; por defecto start)."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "trigger · panel",
+          "type": "Element | null",
+          "description": {
+            "en": "The `[part=trigger]` and `[part=panel]` children, resolved on connect.",
+            "fr": "Les enfants `[part=trigger]` et `[part=panel]`, résolus à la connexion.",
+            "es": "Los hijos `[part=trigger]` y `[part=panel]`, resueltos al conectar."
+          }
+        },
+        {
+          "kind": "method",
+          "name": "show()",
+          "type": "void",
+          "description": {
+            "en": "Opens (sets `open`).",
+            "fr": "Ouvre (pose `open`).",
+            "es": "Abre (pone `open`)."
+          }
+        },
+        {
+          "kind": "method",
+          "name": "hide()",
+          "type": "void",
+          "description": {
+            "en": "Closes (clears `open`); focus returns to the trigger if it was inside.",
+            "fr": "Ferme (retire `open`) ; le focus revient au déclencheur s'il était dedans.",
+            "es": "Cierra (quita `open`); el foco vuelve al disparador si estaba dentro."
+          }
+        },
+        {
+          "kind": "method",
+          "name": "toggle()",
+          "type": "void",
+          "description": {
+            "en": "Opens or closes.",
+            "fr": "Ouvre ou ferme.",
+            "es": "Abre o cierra."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "items",
+          "type": "Element[]",
+          "description": {
+            "en": "The `[part=item]` elements of THIS menu (not those of a nested menu), disabled ones included.",
+            "fr": "Les `[part=item]` de CE menu (pas ceux d'un menu imbriqué), désactivés compris.",
+            "es": "Los `[part=item]` de ESTE menú (no los de un menú anidado), deshabilitados incluidos."
+          }
+        }
+      ],
+      "name": "z-menu"
+    },
+    {
       "tag": "z-meter",
       "kind": "components",
       "className": "ZMeter",
@@ -4151,8 +5924,8 @@
       "paths": {
         "js": "components/z-meter/z-meter.js",
         "css": "components/z-meter/z-meter.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-meter/z-meter.doc.md",
+        "demo": "components/z-meter/z-meter.demo.html",
         "lab": null
       },
       "attributes": [
@@ -4211,9 +5984,9 @@
           "type": "number",
           "values": [],
           "description": {
-            "en": "Where the ideal sits — decides which side reads as good (success) or bad (danger).",
-            "fr": "Où se situe l'idéal — décide quel côté se lit comme bon (success) ou mauvais (danger).",
-            "es": "Dónde está el ideal — decide qué lado se lee como bueno (success) o malo (danger)."
+            "en": "Where the ideal sits — a value in the same zone is `optimum` (painted with the tone) instead of low/high.",
+            "fr": "Où se situe l'idéal — une valeur dans la même zone est `optimum` (peinte avec le ton) au lieu de low/high.",
+            "es": "Dónde está el ideal — un valor en la misma zona es `optimum` (pintado con el tono) en lugar de low/high."
           }
         }
       ],
@@ -4380,6 +6153,645 @@
       "name": "z-meter"
     },
     {
+      "tag": "z-pagination",
+      "kind": "components",
+      "className": "ZPagination",
+      "attributeTool": false,
+      "summary": {
+        "en": "SEO-correct pagination: you write real links, Zoé poses the meaning, the current page, the bounds, the window and the keyboard. Nothing generated.",
+        "fr": "Une pagination SEO-correcte : vous écrivez de vrais liens, Zoé pose le sens, la page courante, les bornes, la fenêtre et le clavier. Rien n'est généré.",
+        "es": "Una paginación correcta para SEO: usted escribe enlaces reales, Zoé pone el sentido, la página actual, los límites, la ventana y el teclado. Nada generado."
+      },
+      "example": "<z-pagination page=\"3\" siblings=\"1\" label=\"Pages des résultats\">\n  <a part=\"prev\" href=\"?p=2\">Précédent</a>\n  <a href=\"?p=1\">1</a>\n  <a href=\"?p=2\">2</a>\n  <a href=\"?p=3\">3</a>\n  <a href=\"?p=4\">4</a>\n  <a href=\"?p=5\">5</a>\n  <a href=\"?p=12\">12</a>\n  <a part=\"next\" href=\"?p=4\">Suivant</a>\n</z-pagination>",
+      "paths": {
+        "js": "components/z-pagination/z-pagination.js",
+        "css": "components/z-pagination/z-pagination.css",
+        "doc": "components/z-pagination/z-pagination.doc.md",
+        "demo": "components/z-pagination/z-pagination.demo.html",
+        "lab": null
+      },
+      "attributes": [
+        {
+          "name": "page",
+          "type": "number",
+          "values": [],
+          "description": {
+            "en": "The current page: the link whose text is this number is marked current. Absent, the link carrying aria-current=\"page\" is, else the first.",
+            "fr": "La page courante : le lien dont le texte est ce nombre est marqué courant. Absent, c'est le lien portant aria-current=\"page\", sinon le premier.",
+            "es": "La página actual: el enlace cuyo texto es este número se marca como actual. Ausente, lo es el enlace con aria-current=\"page\", si no el primero."
+          }
+        },
+        {
+          "name": "siblings",
+          "type": "number",
+          "values": [],
+          "description": {
+            "en": "How many pages stay visible on each side of the current one (default 1). Farther ones get `far`, the first and last always stay.",
+            "fr": "Combien de pages restent visibles de chaque côté de la courante (défaut 1). Les plus lointaines reçoivent `far`, la première et la dernière restent toujours.",
+            "es": "Cuántas páginas quedan visibles a cada lado de la actual (por defecto 1). Las más lejanas reciben `far`, la primera y la última siempre quedan."
+          }
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "values": [],
+          "description": {
+            "en": "The accessible name of the navigation (default « Pagination »).",
+            "fr": "Le nom accessible de la navigation (par défaut « Pagination »).",
+            "es": "El nombre accesible de la navegación (por defecto « Pagination »)."
+          }
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "Freezes the whole navigation.",
+            "fr": "Gèle toute la navigation.",
+            "es": "Congela toda la navegación."
+          }
+        }
+      ],
+      "events": [
+        {
+          "name": "change",
+          "description": {
+            "en": "A page, prev or next was clicked. detail: { page }. Cancelable: preventDefault() and the component poses `page` itself instead of letting the link navigate.",
+            "fr": "Une page, prev ou next a été cliqué. detail : { page }. Annulable : preventDefault() et le composant pose `page` lui-même au lieu de laisser le lien naviguer.",
+            "es": "Se hizo clic en una página, prev o next. detail: { page }. Cancelable: preventDefault() y el componente pone `page` por sí mismo en lugar de dejar navegar el enlace."
+          }
+        },
+        {
+          "name": "z-state",
+          "description": {
+            "en": "Emitted on every state change. detail: { states, changed, on }.",
+            "fr": "Émis à chaque changement d'état. detail : { states, changed, on }.",
+            "es": "Emitido en cada cambio de estado. detail: { states, changed, on }."
+          }
+        }
+      ],
+      "states": [
+        {
+          "name": "default",
+          "description": {}
+        },
+        {
+          "name": "over",
+          "description": {}
+        },
+        {
+          "name": "press",
+          "description": {}
+        },
+        {
+          "name": "release",
+          "description": {}
+        },
+        {
+          "name": "releaseOut",
+          "description": {}
+        },
+        {
+          "name": "drag",
+          "description": {}
+        },
+        {
+          "name": "focus",
+          "description": {}
+        },
+        {
+          "name": "enter",
+          "description": {}
+        },
+        {
+          "name": "exit",
+          "description": {}
+        },
+        {
+          "name": "current",
+          "description": {}
+        },
+        {
+          "name": "select",
+          "description": {}
+        },
+        {
+          "name": "unselect",
+          "description": {}
+        },
+        {
+          "name": "loading",
+          "description": {}
+        },
+        {
+          "name": "disabled",
+          "description": {}
+        },
+        {
+          "name": "error",
+          "description": {}
+        },
+        {
+          "name": "success",
+          "description": {}
+        }
+      ],
+      "layers": [
+        {
+          "part": "page",
+          "optional": false,
+          "description": {
+            "en": "A page link — any direct child without `part` (writing part=\"page\" is allowed). Its text is its number. The current one carries aria-current + current; hidden ones carry far; one preceded by a hole carries gap.",
+            "fr": "Un lien de page — tout enfant direct sans `part` (écrire part=\"page\" est permis). Son texte est son numéro. Le courant porte aria-current + current ; les cachés portent far ; celui qui suit un trou porte gap.",
+            "es": "Un enlace de página — cualquier hijo directo sin `part` (escribir part=\"page\" está permitido). Su texto es su número. El actual lleva aria-current + current; los ocultos llevan far; el que sigue a un hueco lleva gap."
+          },
+          "children": []
+        },
+        {
+          "part": "prev",
+          "optional": true,
+          "description": {
+            "en": "The « previous » link — disabled (aria-disabled + disabled) on the first page.",
+            "fr": "Le lien « précédent » — désactivé (aria-disabled + disabled) sur la première page.",
+            "es": "El enlace « anterior » — deshabilitado (aria-disabled + disabled) en la primera página."
+          },
+          "children": []
+        },
+        {
+          "part": "next",
+          "optional": true,
+          "description": {
+            "en": "The « next » link — disabled on the last page.",
+            "fr": "Le lien « suivant » — désactivé sur la dernière page.",
+            "es": "El enlace « siguiente » — deshabilitado en la última página."
+          },
+          "children": []
+        }
+      ],
+      "cssVars": [],
+      "tokens": [
+        {
+          "name": "--z-pagination--ellipsis__color",
+          "part": "ellipsis",
+          "property": "color"
+        },
+        {
+          "name": "--z-pagination--ellipsis__size",
+          "part": "ellipsis",
+          "property": "size"
+        },
+        {
+          "name": "--z-pagination--page__background",
+          "part": "page",
+          "property": "background"
+        },
+        {
+          "name": "--z-pagination--page__background-current",
+          "part": "page",
+          "property": "background-current"
+        },
+        {
+          "name": "--z-pagination--page__border-color",
+          "part": "page",
+          "property": "border-color"
+        },
+        {
+          "name": "--z-pagination--page__color",
+          "part": "page",
+          "property": "color"
+        },
+        {
+          "name": "--z-pagination--page__color-current",
+          "part": "page",
+          "property": "color-current"
+        },
+        {
+          "name": "--z-pagination--page__padding",
+          "part": "page",
+          "property": "padding"
+        },
+        {
+          "name": "--z-pagination--page__radius",
+          "part": "page",
+          "property": "radius"
+        },
+        {
+          "name": "--z-pagination--page__size",
+          "part": "page",
+          "property": "size"
+        },
+        {
+          "name": "--z-pagination__gap",
+          "part": null,
+          "property": "gap"
+        }
+      ],
+      "members": [
+        {
+          "kind": "field",
+          "name": "page",
+          "type": "number",
+          "description": {
+            "en": "The current page number. Setting it moves the current mark and the window (no `change`).",
+            "fr": "Le numéro de la page courante. Le poser déplace la marque courante et la fenêtre (sans `change`).",
+            "es": "El número de la página actual. Asignarlo mueve la marca actual y la ventana (sin `change`)."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "pages",
+          "type": "Element[]",
+          "description": {
+            "en": "The page links, in order — direct children without `part` (or part=page).",
+            "fr": "Les liens de page, dans l'ordre — les enfants directs sans `part` (ou part=page).",
+            "es": "Los enlaces de página, en orden — los hijos directos sin `part` (o part=page)."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "last",
+          "type": "number",
+          "description": {
+            "en": "The last page: the largest number read in the links (0 when none).",
+            "fr": "La dernière page : le plus grand nombre lu dans les liens (0 s'il n'y en a pas).",
+            "es": "La última página: el mayor número leído en los enlaces (0 si no hay)."
+          }
+        }
+      ],
+      "name": "z-pagination"
+    },
+    {
+      "tag": "z-popover",
+      "kind": "components",
+      "className": "ZPopover",
+      "attributeTool": false,
+      "summary": {
+        "en": "A floating panel anchored to its trigger — native Popover API (top layer, light-dismiss, Escape), JS anchoring that flips when it overflows, animated in and out.",
+        "fr": "Un panneau flottant ancré à son déclencheur — API Popover native (top layer, fermeture au clic dehors, Échap), ancrage JS qui se retourne s'il déborde, animé à l'entrée et à la sortie.",
+        "es": "Un panel flotante anclado a su disparador — API Popover nativa (top layer, cierre al clic fuera, Escape), anclaje JS que se invierte si desborda, animado al entrar y salir."
+      },
+      "example": "<z-popover placement=\"bottom\">\n  <z-button part=\"trigger\" type=\"button\">Options</z-button>\n  <div part=\"panel\">\n    <p>Contenu libre.</p>\n  </div>\n</z-popover>",
+      "paths": {
+        "js": "components/z-popover/z-popover.js",
+        "css": "components/z-popover/z-popover.css",
+        "doc": "components/z-popover/z-popover.doc.md",
+        "demo": "components/z-popover/z-popover.demo.html",
+        "lab": null
+      },
+      "attributes": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "Open: the panel is shown. The source of truth — set by click, show()/hide(), and synced when the browser closes it (light-dismiss, Escape).",
+            "fr": "Ouvert : le panneau est montré. La source de vérité — posé par le clic, show()/hide(), et resynchronisé quand le navigateur ferme seul (clic dehors, Échap).",
+            "es": "Abierto: el panel se muestra. La fuente de verdad — puesto por el clic, show()/hide(), y resincronizado cuando el navegador cierra solo (clic fuera, Escape)."
+          }
+        },
+        {
+          "name": "placement",
+          "type": "\"bottom\" | \"top\" | \"left\" | \"right\"",
+          "values": [
+            {
+              "value": "bottom",
+              "note": {},
+              "default": false
+            },
+            {
+              "value": "top",
+              "note": {},
+              "default": false
+            },
+            {
+              "value": "left",
+              "note": {},
+              "default": false
+            },
+            {
+              "value": "right",
+              "note": {},
+              "default": false
+            }
+          ],
+          "description": {
+            "en": "The side of the trigger the panel opens on (default bottom). Flipped to the opposite side when it would overflow the viewport.",
+            "fr": "Le côté du déclencheur où le panneau s'ouvre (défaut bottom). Retourné du côté opposé s'il déborderait de la fenêtre.",
+            "es": "El lado del disparador donde se abre el panel (por defecto bottom). Invertido al lado opuesto si desbordara la ventana."
+          }
+        },
+        {
+          "name": "align",
+          "type": "\"start\" | \"center\" | \"end\"",
+          "values": [
+            {
+              "value": "start",
+              "note": {},
+              "default": false
+            },
+            {
+              "value": "center",
+              "note": {},
+              "default": false
+            },
+            {
+              "value": "end",
+              "note": {},
+              "default": false
+            }
+          ],
+          "description": {
+            "en": "Which edge of the trigger the panel lines up with (default start).",
+            "fr": "Le bord du déclencheur sur lequel le panneau s'aligne (défaut start).",
+            "es": "El borde del disparador con el que se alinea el panel (por defecto start)."
+          }
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "Disabled: the trigger no longer opens it.",
+            "fr": "Désactivé : le déclencheur n'ouvre plus.",
+            "es": "Deshabilitado: el disparador ya no abre."
+          }
+        }
+      ],
+      "events": [
+        {
+          "name": "toggle",
+          "description": {
+            "en": "Emitted on every open/close, whoever caused it (click, API, light-dismiss, Escape). Bubbles. detail: { open }.",
+            "fr": "Émis à chaque ouverture/fermeture, quelle qu'en soit la cause (clic, API, clic dehors, Échap). Bulle. detail : { open }.",
+            "es": "Emitido en cada apertura/cierre, sea cual sea la causa (clic, API, clic fuera, Escape). Burbujea. detail: { open }."
+          }
+        },
+        {
+          "name": "z-state",
+          "description": {
+            "en": "Emitted on every state change. detail: { states, changed, on }.",
+            "fr": "Émis à chaque changement d'état. detail : { states, changed, on }.",
+            "es": "Emitido en cada cambio de estado. detail: { states, changed, on }."
+          }
+        }
+      ],
+      "states": [
+        {
+          "name": "default",
+          "description": {}
+        },
+        {
+          "name": "over",
+          "description": {}
+        },
+        {
+          "name": "press",
+          "description": {}
+        },
+        {
+          "name": "release",
+          "description": {}
+        },
+        {
+          "name": "releaseOut",
+          "description": {}
+        },
+        {
+          "name": "drag",
+          "description": {}
+        },
+        {
+          "name": "focus",
+          "description": {}
+        },
+        {
+          "name": "enter",
+          "description": {}
+        },
+        {
+          "name": "exit",
+          "description": {}
+        },
+        {
+          "name": "current",
+          "description": {}
+        },
+        {
+          "name": "select",
+          "description": {}
+        },
+        {
+          "name": "unselect",
+          "description": {}
+        },
+        {
+          "name": "loading",
+          "description": {}
+        },
+        {
+          "name": "disabled",
+          "description": {}
+        },
+        {
+          "name": "error",
+          "description": {}
+        },
+        {
+          "name": "success",
+          "description": {}
+        },
+        {
+          "name": "open",
+          "description": {}
+        }
+      ],
+      "layers": [
+        {
+          "part": "trigger",
+          "optional": false,
+          "description": {
+            "en": "What opens it — any focusable element (a z-button, a button). Gets aria-expanded + aria-controls.",
+            "fr": "Ce qui l'ouvre — n'importe quel élément focusable (un z-button, un button). Reçoit aria-expanded + aria-controls.",
+            "es": "Lo que lo abre — cualquier elemento enfocable (un z-button, un button). Recibe aria-expanded + aria-controls."
+          },
+          "children": []
+        },
+        {
+          "part": "panel",
+          "optional": false,
+          "description": {
+            "en": "What opens — your content. Gets popover=\"auto\", an id, and data-placement (the effective side).",
+            "fr": "Ce qui s'ouvre — votre contenu. Reçoit popover=\"auto\", un id, et data-placement (le côté effectif).",
+            "es": "Lo que se abre — su contenido. Recibe popover=\"auto\", un id y data-placement (el lado efectivo)."
+          },
+          "children": []
+        }
+      ],
+      "cssVars": [
+        {
+          "name": "--z-popover__x",
+          "description": {
+            "en": "Set by z-popover on the panel — its left edge in the viewport, a bare number of px (the CSS multiplies: `calc(var(--z-popover__x) * 1px)`).",
+            "fr": "Posée par z-popover sur le panneau — son bord gauche dans la fenêtre, un nombre nu de px (le CSS multiplie : `calc(var(--z-popover__x) * 1px)`).",
+            "es": "Puesta por z-popover en el panel — su borde izquierdo en la ventana, un número sin unidad en px (el CSS multiplica: `calc(var(--z-popover__x) * 1px)`)."
+          }
+        },
+        {
+          "name": "--z-popover__y",
+          "description": {
+            "en": "Set by z-popover on the panel — its top edge in the viewport, a bare number of px.",
+            "fr": "Posée par z-popover sur le panneau — son bord haut dans la fenêtre, un nombre nu de px.",
+            "es": "Puesta por z-popover en el panel — su borde superior en la ventana, un número sin unidad en px."
+          }
+        }
+      ],
+      "tokens": [
+        {
+          "name": "--z-popover--panel__translate",
+          "part": "panel",
+          "property": "translate"
+        },
+        {
+          "name": "--z-popover__background",
+          "part": null,
+          "property": "background"
+        },
+        {
+          "name": "--z-popover__border-color",
+          "part": null,
+          "property": "border-color"
+        },
+        {
+          "name": "--z-popover__color",
+          "part": null,
+          "property": "color"
+        },
+        {
+          "name": "--z-popover__max-height",
+          "part": null,
+          "property": "max-height"
+        },
+        {
+          "name": "--z-popover__max-width",
+          "part": null,
+          "property": "max-width"
+        },
+        {
+          "name": "--z-popover__offset",
+          "part": null,
+          "property": "offset"
+        },
+        {
+          "name": "--z-popover__padding",
+          "part": null,
+          "property": "padding"
+        },
+        {
+          "name": "--z-popover__radius",
+          "part": null,
+          "property": "radius"
+        },
+        {
+          "name": "--z-popover__shadow",
+          "part": null,
+          "property": "shadow"
+        },
+        {
+          "name": "--z-popover__travel",
+          "part": null,
+          "property": "travel"
+        },
+        {
+          "name": "--z-popover__width",
+          "part": null,
+          "property": "width"
+        },
+        {
+          "name": "--z-popover__x",
+          "part": null,
+          "property": "x"
+        },
+        {
+          "name": "--z-popover__y",
+          "part": null,
+          "property": "y"
+        }
+      ],
+      "members": [
+        {
+          "kind": "field",
+          "name": "open",
+          "type": "boolean",
+          "description": {
+            "en": "Open or closed — mirrors the attribute.",
+            "fr": "Ouvert ou fermé — reflet de l'attribut.",
+            "es": "Abierto o cerrado — reflejo del atributo."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "placement",
+          "type": "\"bottom\" | \"top\" | \"left\" | \"right\"",
+          "description": {
+            "en": "The requested side (mirrors the attribute; default bottom). The effective side is `data-placement` on the panel.",
+            "fr": "Le côté demandé (reflet de l'attribut ; défaut bottom). Le côté effectif est `data-placement` sur le panneau.",
+            "es": "El lado pedido (reflejo del atributo; por defecto bottom). El lado efectivo es `data-placement` en el panel."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "align",
+          "type": "\"start\" | \"center\" | \"end\"",
+          "description": {
+            "en": "Which edge of the trigger the panel lines up with (mirrors the attribute; default start).",
+            "fr": "Le bord du déclencheur sur lequel le panneau s'aligne (reflet de l'attribut ; défaut start).",
+            "es": "El borde del disparador con el que se alinea el panel (reflejo del atributo; por defecto start)."
+          }
+        },
+        {
+          "kind": "field",
+          "name": "trigger · panel",
+          "type": "Element | null",
+          "description": {
+            "en": "The `[part=trigger]` and `[part=panel]` children, resolved on connect.",
+            "fr": "Les enfants `[part=trigger]` et `[part=panel]`, résolus à la connexion.",
+            "es": "Los hijos `[part=trigger]` y `[part=panel]`, resueltos al conectar."
+          }
+        },
+        {
+          "kind": "method",
+          "name": "show()",
+          "type": "void",
+          "description": {
+            "en": "Opens (sets `open`).",
+            "fr": "Ouvre (pose `open`).",
+            "es": "Abre (pone `open`)."
+          }
+        },
+        {
+          "kind": "method",
+          "name": "hide()",
+          "type": "void",
+          "description": {
+            "en": "Closes (clears `open`); focus returns to the trigger if it was inside.",
+            "fr": "Ferme (retire `open`) ; le focus revient au déclencheur s'il était dedans.",
+            "es": "Cierra (quita `open`); el foco vuelve al disparador si estaba dentro."
+          }
+        },
+        {
+          "kind": "method",
+          "name": "toggle()",
+          "type": "void",
+          "description": {
+            "en": "Opens or closes.",
+            "fr": "Ouvre ou ferme.",
+            "es": "Abre o cierra."
+          }
+        }
+      ],
+      "name": "z-popover"
+    },
+    {
       "tag": "z-progress",
       "kind": "components",
       "className": "ZProgress",
@@ -4393,8 +6805,8 @@
       "paths": {
         "js": "components/z-progress/z-progress.js",
         "css": "components/z-progress/z-progress.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-progress/z-progress.doc.md",
+        "demo": "components/z-progress/z-progress.demo.html",
         "lab": null
       },
       "attributes": [
@@ -4880,8 +7292,8 @@
               "optional": false,
               "description": {
                 "en": "Your text.",
-                "fr": "Ton texte.",
-                "es": "Tu texto."
+                "fr": "Votre texte.",
+                "es": "Su texto."
               },
               "children": []
             }
@@ -5251,8 +7663,8 @@
       "paths": {
         "js": "components/z-rating/z-rating.js",
         "css": "components/z-rating/z-rating.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-rating/z-rating.doc.md",
+        "demo": "components/z-rating/z-rating.demo.html",
         "lab": null
       },
       "attributes": [
@@ -5539,8 +7951,8 @@
       "paths": {
         "js": "components/z-segmented/z-segmented.js",
         "css": "components/z-segmented/z-segmented.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-segmented/z-segmented.doc.md",
+        "demo": "components/z-segmented/z-segmented.demo.html",
         "lab": null
       },
       "attributes": [
@@ -5774,8 +8186,8 @@
       "paths": {
         "js": "components/z-skeleton/z-skeleton.js",
         "css": "components/z-skeleton/z-skeleton.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-skeleton/z-skeleton.doc.md",
+        "demo": "components/z-skeleton/z-skeleton.demo.html",
         "lab": null
       },
       "attributes": [
@@ -5785,8 +8197,8 @@
           "values": [],
           "description": {
             "en": "Convenience width (any CSS length, e.g. \"12em\"). You may style the box yourself instead.",
-            "fr": "Largeur de confort (toute longueur CSS, ex. \"12em\"). Tu peux aussi styler la boîte toi-même.",
-            "es": "Ancho de conveniencia (cualquier longitud CSS, ej. \"12em\"). También puedes estilizar la caja tú mismo."
+            "fr": "Largeur de confort (toute longueur CSS, ex. \"12em\"). Vous pouvez aussi styler la boîte vous-même.",
+            "es": "Ancho de conveniencia (cualquier longitud CSS, ej. \"12em\"). También puede estilizar la caja usted mismo."
           }
         },
         {
@@ -6486,8 +8898,8 @@
       "paths": {
         "js": "components/z-spinner/z-spinner.js",
         "css": "components/z-spinner/z-spinner.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-spinner/z-spinner.doc.md",
+        "demo": "components/z-spinner/z-spinner.demo.html",
         "lab": null
       },
       "attributes": [
@@ -6574,7 +8986,16 @@
           }
         }
       ],
-      "events": [],
+      "events": [
+        {
+          "name": "z-state",
+          "description": {
+            "en": "Emitted on every state change. detail: { states, changed, on }.",
+            "fr": "Émis à chaque changement d'état. detail : { states, changed, on }.",
+            "es": "Emitido en cada cambio de estado. detail: { states, changed, on }."
+          }
+        }
+      ],
       "states": [
         {
           "name": "default",
@@ -6683,8 +9104,8 @@
       "paths": {
         "js": "components/z-stat/z-stat.js",
         "css": "components/z-stat/z-stat.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-stat/z-stat.doc.md",
+        "demo": "components/z-stat/z-stat.demo.html",
         "lab": null
       },
       "attributes": [
@@ -6915,8 +9336,8 @@
       "paths": {
         "js": "components/z-stepper/z-stepper.js",
         "css": "components/z-stepper/z-stepper.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-stepper/z-stepper.doc.md",
+        "demo": "components/z-stepper/z-stepper.demo.html",
         "lab": null
       },
       "attributes": [
@@ -6938,6 +9359,26 @@
             "en": "Disables the − / + zones (the input keeps its own disabled state).",
             "fr": "Désactive les zones − / + (l'input garde son propre disabled).",
             "es": "Deshabilita las zonas − / + (el input conserva su propio disabled)."
+          }
+        },
+        {
+          "name": "at-min",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "Set by z-stepper (read-only): the value cannot go lower — the CSS greys the − zone.",
+            "fr": "Posé par z-stepper (lecture seule) : la valeur ne peut plus descendre — le CSS grise la zone −.",
+            "es": "Puesto por z-stepper (solo lectura): el valor no puede bajar más — el CSS atenúa la zona −."
+          }
+        },
+        {
+          "name": "at-max",
+          "type": "boolean",
+          "values": [],
+          "description": {
+            "en": "Set by z-stepper (read-only): the value cannot go higher — the CSS greys the + zone.",
+            "fr": "Posé par z-stepper (lecture seule) : la valeur ne peut plus monter — le CSS grise la zone +.",
+            "es": "Puesto por z-stepper (solo lectura): el valor no puede subir más — el CSS atenúa la zona +."
           }
         }
       ],
@@ -7033,18 +9474,7 @@
           "description": {}
         }
       ],
-      "layers": [
-        {
-          "part": "background",
-          "optional": false,
-          "description": {
-            "en": "The stepper surface — carries the frame and effects.",
-            "fr": "La surface de l'incrémenteur — porte le cadre et les effets.",
-            "es": "La superficie del incrementador — lleva el marco y los efectos."
-          },
-          "children": []
-        }
-      ],
+      "layers": [],
       "cssVars": [
         {
           "name": "--z-stepper__button-width",
@@ -7052,6 +9482,30 @@
             "en": "Width reserved for each − / + zone (match BUTTON_ZONE_EM if overridden).",
             "fr": "Largeur réservée à chaque zone − / + (accorder à BUTTON_ZONE_EM si modifiée).",
             "es": "Ancho reservado para cada zona − / + (acordar con BUTTON_ZONE_EM si se cambia)."
+          }
+        },
+        {
+          "name": "--z-stepper__field-width",
+          "description": {
+            "en": "Width of the native input in the middle.",
+            "fr": "Largeur de l'input natif au centre.",
+            "es": "Ancho del input nativo en el centro."
+          }
+        },
+        {
+          "name": "--z-stepper--background__color",
+          "description": {
+            "en": "The frame's background.",
+            "fr": "Le fond du cadre.",
+            "es": "El fondo del marco."
+          }
+        },
+        {
+          "name": "--z-stepper--button__color",
+          "description": {
+            "en": "Colour of the − / + signs at rest.",
+            "fr": "La couleur des signes − / + au repos.",
+            "es": "El color de los signos − / + en reposo."
           }
         }
       ],
@@ -7107,16 +9561,16 @@
       "className": "ZSwitch",
       "attributeTool": false,
       "summary": {
-        "en": "An on/off switch — inherits all z-element states, form-bound, painted by the skin. Immediate effect, unlike a checkbox you'll validate later.",
+        "en": "An on/off switch — inherits all z-element states, form-bound, painted by the skin. Immediate effect, unlike a checkbox validated later.",
         "fr": "Un interrupteur on/off — hérite tous les états de z-element, lié au formulaire, peint par la peau. Effet immédiat, contrairement à une case qu'on validera.",
-        "es": "Un interruptor on/off — hereda todos los estados de z-element, ligado al formulario, pintado por el tema. Efecto inmediato, a diferencia de una casilla que validarás."
+        "es": "Un interruptor on/off — hereda todos los estados de z-element, ligado al formulario, pintado por el tema. Efecto inmediato, a diferencia de una casilla que se validará más tarde."
       },
       "example": "<z-switch name=\"notifications\">Notifications</z-switch>\n<z-switch current>Mode sombre</z-switch>\n<z-switch disabled>Indisponible</z-switch>",
       "paths": {
         "js": "components/z-switch/z-switch.js",
         "css": "components/z-switch/z-switch.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-switch/z-switch.doc.md",
+        "demo": "components/z-switch/z-switch.demo.html",
         "lab": null
       },
       "attributes": [
@@ -7291,8 +9745,8 @@
               "optional": false,
               "description": {
                 "en": "Your text.",
-                "fr": "Ton texte.",
-                "es": "Tu texto."
+                "fr": "Votre texte.",
+                "es": "Su texto."
               },
               "children": []
             }
@@ -7385,8 +9839,8 @@
       "paths": {
         "js": "components/z-tabs/z-tabs.js",
         "css": "components/z-tabs/z-tabs.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-tabs/z-tabs.doc.md",
+        "demo": "components/z-tabs/z-tabs.demo.html",
         "lab": null
       },
       "attributes": [
@@ -7605,8 +10059,8 @@
       "paths": {
         "js": "components/z-tag/z-tag.js",
         "css": "components/z-tag/z-tag.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-tag/z-tag.doc.md",
+        "demo": "components/z-tag/z-tag.demo.html",
         "lab": null
       },
       "attributes": [
@@ -7812,8 +10266,8 @@
               "optional": false,
               "description": {
                 "en": "Your text.",
-                "fr": "Ton texte.",
-                "es": "Tu texto."
+                "fr": "Votre texte.",
+                "es": "Su texto."
               },
               "children": []
             }
@@ -7857,7 +10311,7 @@
         {
           "kind": "method",
           "name": "remove()",
-          "type": "void",
+          "type": "Promise<void>",
           "description": {
             "en": "Removes the tag: fires cancelable `zoe:remove`, then plays `exit` and detaches.",
             "fr": "Retire l'étiquette : émet `zoe:remove` (annulable), puis joue `exit` et se détache.",
@@ -7881,8 +10335,8 @@
       "paths": {
         "js": "components/z-toast/z-toast.js",
         "css": "components/z-toast/z-toast.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-toast/z-toast.doc.md",
+        "demo": "components/z-toast/z-toast.demo.html",
         "lab": null
       },
       "attributes": [
@@ -8110,8 +10564,8 @@
       "paths": {
         "js": "components/z-tooltip/z-tooltip.js",
         "css": "components/z-tooltip/z-tooltip.css",
-        "doc": null,
-        "demo": null,
+        "doc": "components/z-tooltip/z-tooltip.doc.md",
+        "demo": "components/z-tooltip/z-tooltip.demo.html",
         "lab": null
       },
       "attributes": [

@@ -2,9 +2,9 @@
 
 > **La loi, en une phrase :**
 > **Lu par Google → natif, habillé par la peau. Cliqué → `z-*`.**
-> La sémantique est TOUJOURS dans ce que tu écris, jamais dans ce que Zoé génère.
+> La sémantique est TOUJOURS dans ce que vous écrivez, jamais dans ce que Zoé génère.
 
-Tranché le 2026-07-24 avec Christophe. Ne pas re-débattre.
+Décision tranchée. Ne pas re-débattre.
 
 ## Pourquoi c'est déjà gagné (et pas un problème à résoudre)
 
@@ -40,13 +40,13 @@ ADR-0018 (« ce que tu écris est ce que tu debug » — Zoé n'injecte rien) et
 | `strong` `em` `code` `time` `cite` `section` `aside` | **FAIBLE** — nuance sémantique | Habille |
 | `button` `input` `select` · tabs, dialog, slider, toggle | **NUL** — action, pas contenu | Remplace par un widget `z-*` |
 
-**Habiller** = la peau style la balise native (couche « classless », à livrer) ; la
+**Habiller** = la peau style la balise native (couche « classless », portée dans la peau) ; la
 balise reste ce qu'elle est. De PRIMORDIAL à FAIBLE → Zoé habille. NUL → Zoé remplace.
 
 ## Habiller ≠ animer — deux couches, jamais confondues
 
 Le tableau ne parle que d'**habillage** (SEO + peau). **Animer** est un AUTRE sujet.
-Quand tu veux qu'un `<h1>` primordial *apparaisse en mouvement*, tu l'**encapsules** :
+Quand vous voulez qu'un `<h1>` primordial *apparaisse en mouvement*, vous l'**encapsulez** :
 
 ```html
 <z-reveal>
@@ -54,13 +54,12 @@ Quand tu veux qu'un `<h1>` primordial *apparaisse en mouvement*, tu l'**encapsul
 </z-reveal>
 ```
 
-Le `<h1>` reste écrit par toi, donc indexé ; `z-reveal` ne fait que l'animer. C'est
+Le `<h1>` reste écrit par vous, donc indexé ; `z-reveal` ne fait que l'animer. C'est
 l'exact opposé du `<z-text h1>` : l'un *enrobe* un `<h1>` présent (vivant), l'autre
 *crée* un `<h1>` absent du source (mort).
 
-## Le chantier concret qui reste
+## La couche classless
 
-Livrer la **couche classless** : écrire dans les peaux les règles qui habillent le
-natif — `h1`…`h6`, `p`, `a`, listes, `table`… Aujourd'hui les peaux ne stylent que
-les composants `z-*`, pas les balises natives. C'est ce qui rend le SEO indolore :
-on habille sans rien renommer.
+Chaque peau porte la **couche classless** : les règles qui habillent le natif —
+`h1`…`h6`, `p`, `a`, listes, `table`… Les peaux stylent les composants `z-*` et les
+balises natives. C'est ce qui rend le SEO indolore : on habille sans rien renommer.

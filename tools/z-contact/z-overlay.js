@@ -1,7 +1,7 @@
 /*
 	overlay.js — LA scène des effets de pointeur, au-dessus de TOUT (patron z-contact).
 
-	Modèle (ADR z-contact, insight Christophe 2026-07-14) : une RECETTE persistante
+	Modèle (ADR z-contact, décision du 2026-07-14) : une RECETTE persistante
 	(les attributs `fx`/`trail` sur une zone) ; le RENDU, lui, est répliqué dans un
 	overlay unique, plein écran, en `position:fixed` et `z-index` maximal.
 

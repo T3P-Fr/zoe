@@ -91,7 +91,7 @@ z-cursor {
    `size` et `tone` ne peignent rien : ils posent les réglages ci-dessus. Un mot dans le
    HTML, ou les réglages écrits à la main — au choix, et le résultat est le même.
 
-   Le `!important` n'est pas une rustine, c'est LA RÈGLE (2026-07-21, Christophe) :
+   Le `!important` n'est pas une rustine, c'est LA RÈGLE (décision du 2026-07-21) :
    « les attributs sont prioritaires sur le CSS chargé, comme le style en ligne ». Ce qui
    est écrit dans le HTML est plus près de l'élément, donc plus fort — et ça se retient
    sans rien apprendre. Une règle CSS ordinaire ne peut pas atteindre ce rang.

@@ -18,7 +18,7 @@ Un composant Zoé, c'est une pile de calques qui jouent chacun **un rôle**.
 </z-checkbox>
 ```
 
-## Grammaire commune, anatomie propre (tranché le 2026-07-20)
+## Grammaire commune, anatomie propre
 
 Ce qui est commun à tous les composants n'est **pas** un arbre unique — on n'imposera
 jamais à un bouton la structure d'une case. C'est :
@@ -35,7 +35,7 @@ api.layers`, et c'est ça que l'éditeur Zoé lit.
 z-button    background · infos(icon, label) · contact
 z-checkbox  background · marker(ring, dot) · infos(icon, label) · contact
 z-radio     les MÊMES mots que la case (forme ronde) → la même skin les peint
-z-field     son anatomie à lui (input, etc.) — quand on l'écrira
+z-field     label · control · hint · error — le champ natif, habillé
 ```
 
 C'est le **lexique partagé** qui permet à une skin de peindre un composant qu'elle ne

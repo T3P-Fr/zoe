@@ -9,7 +9,7 @@ là-bas — et **c'est le CSS qui décide** ce que la valeur pilote. Aucune clas
 ```
 
 Le canal ne fait qu'**une** chose : poser `--z-channel-{nom}` sur chacun de ses membres.
-Il ne peint rien lui-même — comme le reste de Zoé, il pose un token, ta peau s'en sert.
+Il ne peint rien lui-même — comme le reste de Zoé, il pose un token, votre peau s'en sert.
 
 ## L'exemple — un curseur pilote une barre, en CSS pur
 
@@ -30,12 +30,12 @@ un mot commun : `tempo`.
 </style>
 ```
 
-Tu glisses le curseur, la barre suit. Rien d'autre à écrire. La `<div>` ne « sait » pas
+Vous glissez le curseur, la barre suit. Rien d'autre à écrire. La `<div>` ne « sait » pas
 d'où vient la valeur : elle lit un token, comme elle lirait `--z-accent`.
 
 **Qui émet, qui lit ?** Jamais déclaré, toujours déduit. *Émettre* = avoir une valeur qui
 change et lever un événement (un `<input>`, un `z-slider`… leur nature suffit). *Lire* =
-gratuit et universel : le token est posé sur **tous** les membres, ton CSS s'en sert ou
+gratuit et universel : le token est posé sur **tous** les membres, votre CSS s'en sert ou
 pas. Pas de `channel-in` / `channel-out` — deux formes seraient deux choses à retenir.
 
 ## Multi-canal — un membre sur plusieurs noms, sans plafond

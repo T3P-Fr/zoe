@@ -36,9 +36,9 @@ CSS hérite, tout ce qu'il enveloppe les lit gratuitement — aussi profond que 
 </style>
 ```
 
-Tu bouges la souris, le halo suit. Rien d'autre à écrire. Le `<div>` ne « sait » pas d'où
+Vous bougez la souris, le halo suit. Rien d'autre à écrire. Le `<div>` ne « sait » pas d'où
 vient la valeur : il lit un token, comme il lirait `--z-accent`. **Aucune classe, aucun
-`addEventListener`, aucune ligne de JS de ta part.**
+`addEventListener`, aucune ligne de JS de votre part.**
 
 Et ça descend : un div **trois niveaux plus bas** reçoit exactement les mêmes nombres,
 sans que personne ne les lui passe. C'est l'héritage CSS qui travaille, pas nous.
@@ -54,7 +54,7 @@ séparateur double du pacte, `--z-{comp}--{part}__{prop}`.
 | `global` | la **fenêtre** — `0,0` = son coin haut-gauche | `--z-pointer--global__x` · `__y` (px) · `__rx` · `__ry` (0→1) |
 
 **Sans attribut, `local` seul** — c'est le cas courant, et le moins cher : l'écouteur est
-sur la boîte, pas sur le document. Demande `global` et la souris est suivie **partout**,
+sur la boîte, pas sur le document. Demandez `global` et la souris est suivie **partout**,
 même loin de la boîte : c'est ce qu'il faut pour une mire, ou une lumière à l'échelle de
 la page.
 
@@ -69,7 +69,7 @@ simplement négatif ou dépasse la boîte, ce qui est **juste** : la souris est 
 ## Un nombre, jamais une longueur
 
 Les tokens sont des **nombres nus** — `137.5`, pas `137.5px`. C'est délibéré : un nombre
-se **multiplie**, et devient ce que tu veux.
+se **multiplie**, et devient ce que vous voulez.
 
 ```css
 translate: calc(var(--z-pointer--local__x) * 1px);            /* une distance */
@@ -85,7 +85,7 @@ Les **ratios** `__rx` / `__ry` (0→1) valent souvent mieux que les pixels : ils
 dépendent pas de la taille de la boîte, donc la même règle tient sur un téléphone et sur
 un écran large.
 
-## Il traîne, si tu le demandes
+## Il traîne, si vous le demandez
 
 Les neuf nombres sont déclarés en `@property` comme des `<number>`. Un nombre **typé
 s'anime** — donc une transition sur la variable suffit à faire **traîner** un calque
@@ -128,7 +128,7 @@ Un outil, un rôle — et trois outils qui se ressemblent de loin :
 | [z-cursor](#z-cursor) | il **dessine** un curseur (le sillage, la traînée) |
 | [z-channel](#z-channel) | il relie deux éléments **distants** — `channel=` traverse la page, z-pointer ne descend que dans ses enfants |
 
-Besoin de la souris **ailleurs** que sous le `<z-pointer>` ? C'est le canal qu'il te faut,
+Besoin de la souris **ailleurs** que sous le `<z-pointer>` ? C'est le canal qu'il vous faut,
 pas cet outil.
 
 ## Le coût

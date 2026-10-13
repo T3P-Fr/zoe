@@ -27,7 +27,7 @@
 	  émettre = avoir une valeur qui change et lever un événement. Un <input>
 	           natif, un z-slider, un z-range : leur nature suffit.
 	  lire    = gratuit et universel. Le token est posé sur TOUS les membres ;
-	           ton CSS s'en sert ou pas. Un <div> vide ne fait que lire.
+	           votre CSS s'en sert ou pas. Un <div> vide ne fait que lire.
 
 	Aucun `channel-in` / `channel-out` : deux formes = mort (loi « une seule forme »).
 
@@ -41,7 +41,7 @@
 	l'autre sens un seul canal pilote autant de propriétés CSS que la peau veut :
 	largeur ET teinte ET rotation — c'est le CSS qui décide, donc la peau.
 
-	3. MULTI-PROPRIÉTÉ — la grammaire de Christophe, pas une nouvelle syntaxe
+	3. MULTI-PROPRIÉTÉ — la grammaire du pacte, pas une nouvelle syntaxe
 
 	Un z-range a DEUX sorties (low/high), un color-picker en a trois. On refuse
 	`channel="prix:low autre:high"` : ce serait une deuxième langue à apprendre,

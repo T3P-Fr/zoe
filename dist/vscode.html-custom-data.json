@@ -225,6 +225,10 @@
       ],
       "references": [
         {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-cursor"
+        },
+        {
           "name": "Demo",
           "url": "./tools/z-cursor/z-cursor.demo.html"
         }
@@ -415,7 +419,16 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-accordion"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-accordion/z-accordion.demo.html"
+        }
+      ]
     },
     {
       "name": "z-alert",
@@ -484,13 +497,22 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-alert"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-alert/z-alert.demo.html"
+        }
+      ]
     },
     {
       "name": "z-avatar",
       "description": {
         "kind": "markdown",
-        "value": "An identity chip — an image if given, otherwise the initials. role=img with an alt from name. Inherits tone/size.\n\n```html\n<z-avatar name=\"Ada Lovelace\">AL</z-avatar>\n<z-avatar name=\"Grace Hopper\" src=\"/img/grace.jpg\"></z-avatar>\n<z-avatar size=\"l\" tone=\"soft\">?</z-avatar>\n```"
+        "value": "An identity chip — an image if given, otherwise the initials. role=img with an alt from name. Inherits tone/size.\n\n```html\n<z-avatar name=\"Ada Lovelace\">AL</z-avatar>\n<z-avatar name=\"Grace Hopper\" src=\"/img/grace.jpg\"></z-avatar>\n<z-avatar name=\"Inconnu\" size=\"l\" tone=\"soft\">?</z-avatar>\n```"
       },
       "attributes": [
         {
@@ -556,13 +578,22 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-avatar"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-avatar/z-avatar.demo.html"
+        }
+      ]
     },
     {
       "name": "z-avatar-group",
       "description": {
         "kind": "markdown",
-        "value": "A stack of overlapping z-avatar, each ringed in the page colour to stand out. On hover, the avatar lifts and comes to the front. Nothing injected.\n\n```html\n<z-avatar-group max=\"3\">\n  <z-avatar name=\"Ada Lovelace\">AL</z-avatar>\n  <z-avatar name=\"Grace Hopper\">GH</z-avatar>\n  <z-avatar name=\"Margaret Hamilton\">MH</z-avatar>\n  <z-avatar tone=\"soft\">+4</z-avatar>\n</z-avatar-group>\n```"
+        "value": "A stack of overlapping z-avatar, each ringed in the page colour to stand out. On hover, the avatar lifts and comes to the front. Nothing injected.\n\n```html\n<z-avatar-group max=\"3\">\n  <z-avatar name=\"Ada Lovelace\">AL</z-avatar>\n  <z-avatar name=\"Grace Hopper\">GH</z-avatar>\n  <z-avatar name=\"Margaret Hamilton\">MH</z-avatar>\n  <z-avatar name=\"4 autres personnes\" tone=\"soft\">+4</z-avatar>\n</z-avatar-group>\n```"
       },
       "attributes": [
         {
@@ -624,7 +655,16 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-avatar-group"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-avatar-group/z-avatar-group.demo.html"
+        }
+      ]
     },
     {
       "name": "z-badge",
@@ -688,7 +728,16 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-badge"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-badge/z-badge.demo.html"
+        }
+      ]
     },
     {
       "name": "z-breadcrumb",
@@ -756,7 +805,16 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-breadcrumb"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-breadcrumb/z-breadcrumb.demo.html"
+        }
+      ]
     },
     {
       "name": "z-button",
@@ -933,7 +991,16 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-card"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-card/z-card.demo.html"
+        }
+      ]
     },
     {
       "name": "z-checkbox",
@@ -1047,6 +1114,107 @@
       ]
     },
     {
+      "name": "z-checkbox-group",
+      "description": {
+        "kind": "markdown",
+        "value": "A group of z-checkbox: a list value, a 'check all' master, 'at least one' required, one name for FormData.\n\n```html\n<z-checkbox-group name=\"topics\" required>\n  <span part=\"label\">Vos centres d'intérêt</span>\n  <z-checkbox part=\"all\">Tout cocher</z-checkbox>\n  <z-checkbox value=\"design\">Design</z-checkbox>\n  <z-checkbox value=\"code\" current>Code</z-checkbox>\n  <z-checkbox value=\"motion\">Motion</z-checkbox>\n</z-checkbox-group>\n```"
+      },
+      "attributes": [
+        {
+          "name": "value",
+          "description": "Space-separated values to preselect (honoured once, only if no box is checked by hand); then kept up to date by the group."
+        },
+        {
+          "name": "name",
+          "description": "Given to every box that has none: the values are submitted under this name."
+        },
+        {
+          "name": "required",
+          "description": "At least one box must be checked, or the form refuses to submit.",
+          "valueSet": "v"
+        },
+        {
+          "name": "disabled",
+          "description": "Disables the whole group — descended on every box and the master.",
+          "valueSet": "v"
+        },
+        {
+          "name": "error",
+          "description": "The requirement is not met and the form refused to submit (posed by the group, cleared by the next check).",
+          "valueSet": "v"
+        },
+        {
+          "name": "success",
+          "description": "The requirement is met, after a gesture.",
+          "valueSet": "v"
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-checkbox-group"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-checkbox-group/z-checkbox-group.demo.html"
+        }
+      ]
+    },
+    {
       "name": "z-code",
       "description": {
         "kind": "markdown",
@@ -1113,7 +1281,120 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-code"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-code/z-code.demo.html"
+        }
+      ]
+    },
+    {
+      "name": "z-dialog",
+      "description": {
+        "kind": "markdown",
+        "value": "A modal box on the native <dialog> — adds states, animated open/close, declarative triggers (commandfor/command) and light-dismiss.\n\n```html\n<z-dialog id=\"confirm\" light-dismiss>\n  <dialog>\n    <header part=\"header\"><h2>Supprimer ce fichier ?</h2></header>\n    <p part=\"body\">Cette action est définitive.</p>\n    <footer part=\"footer\">\n      <z-button type=\"button\" command=\"close\" tone=\"soft\">Annuler</z-button>\n      <z-button type=\"button\" command=\"close\" value=\"delete\" tone=\"danger\">Supprimer</z-button>\n    </footer>\n  </dialog>\n</z-dialog>\n<z-button type=\"button\" commandfor=\"confirm\" command=\"show-modal\">Supprimer…</z-button>\n```"
+      },
+      "attributes": [
+        {
+          "name": "open",
+          "description": "Open (modal). The source of truth: set by the component, settable by hand.",
+          "valueSet": "v"
+        },
+        {
+          "name": "light-dismiss",
+          "description": "A click on the backdrop closes the box (through `cancel`, like Escape).",
+          "valueSet": "v"
+        },
+        {
+          "name": "placement",
+          "description": "Where the box sits — center (default) pops, the four edges slide in from their side.",
+          "values": [
+            {
+              "name": "center"
+            },
+            {
+              "name": "top"
+            },
+            {
+              "name": "bottom"
+            },
+            {
+              "name": "left"
+            },
+            {
+              "name": "right"
+            }
+          ]
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-dialog"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-dialog/z-dialog.demo.html"
+        }
+      ]
     },
     {
       "name": "z-disclosure",
@@ -1125,6 +1406,11 @@
         {
           "name": "open",
           "description": "Open: reveals the panel.",
+          "valueSet": "v"
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled: the label no longer opens or closes (pointer and keyboard).",
           "valueSet": "v"
         },
         {
@@ -1182,7 +1468,16 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-disclosure"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-disclosure/z-disclosure.demo.html"
+        }
+      ]
     },
     {
       "name": "z-divider",
@@ -1205,7 +1500,7 @@
         },
         {
           "name": "size",
-          "description": "Size factor, from the socle variant (label and stroke follow in em).",
+          "description": "Size factor, from the socle variant: the label and the vertical stroke's length follow in em; the thickness stays --z-border-width.",
           "values": [
             {
               "name": "xs"
@@ -1258,7 +1553,215 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-divider"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-divider/z-divider.demo.html"
+        }
+      ]
+    },
+    {
+      "name": "z-drawer",
+      "description": {
+        "kind": "markdown",
+        "value": "A modal side panel — a z-dialog glued to an edge: full height, slides in from its side. Same API, same triggers.\n\n```html\n<z-drawer id=\"menu\" light-dismiss>\n  <dialog>\n    <header part=\"header\">\n      <h2>Menu</h2>\n      <z-button type=\"button\" command=\"close\" tone=\"soft\">Fermer</z-button>\n    </header>\n    <nav part=\"body\">\n      <a href=\"#\">Accueil</a>\n      <a href=\"#\">Catalogue</a>\n      <a href=\"#\">Contact</a>\n    </nav>\n  </dialog>\n</z-drawer>\n<z-button type=\"button\" commandfor=\"menu\" command=\"show-modal\">Menu</z-button>\n```"
+      },
+      "attributes": [
+        {
+          "name": "open",
+          "description": "Open (modal). The source of truth: set by the component, settable by hand.",
+          "valueSet": "v"
+        },
+        {
+          "name": "light-dismiss",
+          "description": "A click on the backdrop closes the box (through `cancel`, like Escape).",
+          "valueSet": "v"
+        },
+        {
+          "name": "placement",
+          "description": "The edge the panel is glued to (default right).",
+          "values": [
+            {
+              "name": "right"
+            },
+            {
+              "name": "left"
+            },
+            {
+              "name": "top"
+            },
+            {
+              "name": "bottom"
+            }
+          ]
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-drawer"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-drawer/z-drawer.demo.html"
+        }
+      ]
+    },
+    {
+      "name": "z-field",
+      "description": {
+        "kind": "markdown",
+        "value": "A form field around a NATIVE control: links label, hint and error, mirrors its validity into error/success, poses filled. Nothing replaced, nothing injected.\n\n```html\n<z-field>\n  <label>Adresse e-mail</label>\n  <input type=\"email\" name=\"email\" required placeholder=\"vous@exemple.fr\">\n  <small part=\"hint\">Nous ne la partagerons jamais.</small>\n  <small part=\"error\"></small>\n</z-field>\n```"
+      },
+      "attributes": [
+        {
+          "name": "disabled",
+          "description": "Disables the field: propagated to the native control (and removed with it).",
+          "valueSet": "v"
+        },
+        {
+          "name": "counter",
+          "description": "Writes « length / maxlength » at the end of [part=hint], in pure CSS (the hint must exist, empty is fine).",
+          "valueSet": "v"
+        },
+        {
+          "name": "filled",
+          "description": "Posed by the field: the control has a non-empty value (for a floating label in CSS).",
+          "valueSet": "v"
+        },
+        {
+          "name": "error",
+          "description": "Posed by the field once judged and invalid — you may also set it by hand with your own [part=error] text.",
+          "valueSet": "v"
+        },
+        {
+          "name": "success",
+          "description": "Posed by the field once judged, valid and non-empty.",
+          "valueSet": "v"
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-field"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-field/z-field.demo.html"
+        }
+      ]
     },
     {
       "name": "z-kbd",
@@ -1322,38 +1825,66 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-kbd"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-kbd/z-kbd.demo.html"
+        }
+      ]
     },
     {
-      "name": "z-meter",
+      "name": "z-menu",
       "description": {
         "kind": "markdown",
-        "value": "A gauge (role=meter): a scalar measurement within a range, coloured by low/high/optimum thresholds. Not a progress bar — it shows a state, not an advance.\n\n```html\n<z-meter value=\"72\"></z-meter>\n<z-meter value=\"15\" low=\"20\" high=\"80\" optimum=\"100\"></z-meter>\n<z-meter value=\"3\" max=\"5\"></z-meter>\n```"
+        "value": "An actions menu (ARIA menu button) on top of z-popover — roles, roving focus, arrow keys, type-ahead; activating an item fires cancelable `select` then closes.\n\n```html\n<z-menu>\n  <z-button part=\"trigger\" type=\"button\">Actions ▾</z-button>\n  <div part=\"panel\">\n    <button part=\"item\" value=\"rename\">Renommer</button>\n    <button part=\"item\" value=\"duplicate\">Dupliquer</button>\n    <hr part=\"separator\">\n    <button part=\"item\" value=\"delete\" tone=\"danger\">Supprimer</button>\n  </div>\n</z-menu>\n```"
       },
       "attributes": [
         {
-          "name": "value",
-          "description": "The measured amount (min…max)."
+          "name": "open",
+          "description": "Open: the panel is shown. The source of truth — set by click, show()/hide(), and synced when the browser closes it (light-dismiss, Escape).",
+          "valueSet": "v"
         },
         {
-          "name": "min",
-          "description": "Lower bound (default 0)."
+          "name": "placement",
+          "description": "The side of the trigger the panel opens on (default bottom). Flipped to the opposite side when it would overflow the viewport.",
+          "values": [
+            {
+              "name": "bottom"
+            },
+            {
+              "name": "top"
+            },
+            {
+              "name": "left"
+            },
+            {
+              "name": "right"
+            }
+          ]
         },
         {
-          "name": "max",
-          "description": "Upper bound (default 100)."
+          "name": "align",
+          "description": "Which edge of the trigger the panel lines up with (default start).",
+          "values": [
+            {
+              "name": "start"
+            },
+            {
+              "name": "center"
+            },
+            {
+              "name": "end"
+            }
+          ]
         },
         {
-          "name": "low",
-          "description": "Below this, the value is in the low segment."
-        },
-        {
-          "name": "high",
-          "description": "Above this, the value is in the high segment."
-        },
-        {
-          "name": "optimum",
-          "description": "Where the ideal sits — decides which side reads as good (success) or bad (danger)."
+          "name": "disabled",
+          "description": "Disabled: the trigger no longer opens it.",
+          "valueSet": "v"
         },
         {
           "name": "size",
@@ -1410,7 +1941,319 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-menu"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-menu/z-menu.demo.html"
+        }
+      ]
+    },
+    {
+      "name": "z-meter",
+      "description": {
+        "kind": "markdown",
+        "value": "A gauge (role=meter): a scalar measurement within a range, coloured by low/high/optimum thresholds. Not a progress bar — it shows a state, not an advance.\n\n```html\n<z-meter value=\"72\"></z-meter>\n<z-meter value=\"15\" low=\"20\" high=\"80\" optimum=\"100\"></z-meter>\n<z-meter value=\"3\" max=\"5\"></z-meter>\n```"
+      },
+      "attributes": [
+        {
+          "name": "value",
+          "description": "The measured amount (min…max)."
+        },
+        {
+          "name": "min",
+          "description": "Lower bound (default 0)."
+        },
+        {
+          "name": "max",
+          "description": "Upper bound (default 100)."
+        },
+        {
+          "name": "low",
+          "description": "Below this, the value is in the low segment."
+        },
+        {
+          "name": "high",
+          "description": "Above this, the value is in the high segment."
+        },
+        {
+          "name": "optimum",
+          "description": "Where the ideal sits — a value in the same zone is `optimum` (painted with the tone) instead of low/high."
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-meter"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-meter/z-meter.demo.html"
+        }
+      ]
+    },
+    {
+      "name": "z-pagination",
+      "description": {
+        "kind": "markdown",
+        "value": "SEO-correct pagination: you write real links, Zoé poses the meaning, the current page, the bounds, the window and the keyboard. Nothing generated.\n\n```html\n<z-pagination page=\"3\" siblings=\"1\" label=\"Pages des résultats\">\n  <a part=\"prev\" href=\"?p=2\">Précédent</a>\n  <a href=\"?p=1\">1</a>\n  <a href=\"?p=2\">2</a>\n  <a href=\"?p=3\">3</a>\n  <a href=\"?p=4\">4</a>\n  <a href=\"?p=5\">5</a>\n  <a href=\"?p=12\">12</a>\n  <a part=\"next\" href=\"?p=4\">Suivant</a>\n</z-pagination>\n```"
+      },
+      "attributes": [
+        {
+          "name": "page",
+          "description": "The current page: the link whose text is this number is marked current. Absent, the link carrying aria-current=\"page\" is, else the first."
+        },
+        {
+          "name": "siblings",
+          "description": "How many pages stay visible on each side of the current one (default 1). Farther ones get `far`, the first and last always stay."
+        },
+        {
+          "name": "label",
+          "description": "The accessible name of the navigation (default « Pagination »)."
+        },
+        {
+          "name": "disabled",
+          "description": "Freezes the whole navigation.",
+          "valueSet": "v"
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-pagination"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-pagination/z-pagination.demo.html"
+        }
+      ]
+    },
+    {
+      "name": "z-popover",
+      "description": {
+        "kind": "markdown",
+        "value": "A floating panel anchored to its trigger — native Popover API (top layer, light-dismiss, Escape), JS anchoring that flips when it overflows, animated in and out.\n\n```html\n<z-popover placement=\"bottom\">\n  <z-button part=\"trigger\" type=\"button\">Options</z-button>\n  <div part=\"panel\">\n    <p>Contenu libre.</p>\n  </div>\n</z-popover>\n```"
+      },
+      "attributes": [
+        {
+          "name": "open",
+          "description": "Open: the panel is shown. The source of truth — set by click, show()/hide(), and synced when the browser closes it (light-dismiss, Escape).",
+          "valueSet": "v"
+        },
+        {
+          "name": "placement",
+          "description": "The side of the trigger the panel opens on (default bottom). Flipped to the opposite side when it would overflow the viewport.",
+          "values": [
+            {
+              "name": "bottom"
+            },
+            {
+              "name": "top"
+            },
+            {
+              "name": "left"
+            },
+            {
+              "name": "right"
+            }
+          ]
+        },
+        {
+          "name": "align",
+          "description": "Which edge of the trigger the panel lines up with (default start).",
+          "values": [
+            {
+              "name": "start"
+            },
+            {
+              "name": "center"
+            },
+            {
+              "name": "end"
+            }
+          ]
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled: the trigger no longer opens it.",
+          "valueSet": "v"
+        },
+        {
+          "name": "size",
+          "description": "Size factor from the skin's scale — everything inside follows in em.",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "m"
+            },
+            {
+              "name": "l"
+            },
+            {
+              "name": "xl"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Importance / meaning — sets --z-tone__fill, --z-tone__ink, --z-tone__line.",
+          "values": [
+            {
+              "name": "main"
+            },
+            {
+              "name": "complement"
+            },
+            {
+              "name": "soft"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "danger"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "description": "auto (default) or full — takes the whole line.",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-popover"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-popover/z-popover.demo.html"
+        }
+      ]
     },
     {
       "name": "z-progress",
@@ -1487,7 +2330,16 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-progress"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-progress/z-progress.demo.html"
+        }
+      ]
     },
     {
       "name": "z-radio",
@@ -1767,7 +2619,16 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-rating"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-rating/z-rating.demo.html"
+        }
+      ]
     },
     {
       "name": "z-segmented",
@@ -1840,7 +2701,16 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-segmented"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-segmented/z-segmented.demo.html"
+        }
+      ]
     },
     {
       "name": "z-skeleton",
@@ -1924,7 +2794,16 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-skeleton"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-skeleton/z-skeleton.demo.html"
+        }
+      ]
     },
     {
       "name": "z-slider",
@@ -2125,7 +3004,16 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-spinner"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-spinner/z-spinner.demo.html"
+        }
+      ]
     },
     {
       "name": "z-stat",
@@ -2201,7 +3089,16 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-stat"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-stat/z-stat.demo.html"
+        }
+      ]
     },
     {
       "name": "z-stepper",
@@ -2217,6 +3114,16 @@
         {
           "name": "disabled",
           "description": "Disables the − / + zones (the input keeps its own disabled state).",
+          "valueSet": "v"
+        },
+        {
+          "name": "at-min",
+          "description": "Set by z-stepper (read-only): the value cannot go lower — the CSS greys the − zone.",
+          "valueSet": "v"
+        },
+        {
+          "name": "at-max",
+          "description": "Set by z-stepper (read-only): the value cannot go higher — the CSS greys the + zone.",
           "valueSet": "v"
         },
         {
@@ -2274,13 +3181,22 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-stepper"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-stepper/z-stepper.demo.html"
+        }
+      ]
     },
     {
       "name": "z-switch",
       "description": {
         "kind": "markdown",
-        "value": "An on/off switch — inherits all z-element states, form-bound, painted by the skin. Immediate effect, unlike a checkbox you'll validate later.\n\n```html\n<z-switch name=\"notifications\">Notifications</z-switch>\n<z-switch current>Mode sombre</z-switch>\n<z-switch disabled>Indisponible</z-switch>\n```"
+        "value": "An on/off switch — inherits all z-element states, form-bound, painted by the skin. Immediate effect, unlike a checkbox validated later.\n\n```html\n<z-switch name=\"notifications\">Notifications</z-switch>\n<z-switch current>Mode sombre</z-switch>\n<z-switch disabled>Indisponible</z-switch>\n```"
       },
       "attributes": [
         {
@@ -2356,7 +3272,16 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-switch"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-switch/z-switch.demo.html"
+        }
+      ]
     },
     {
       "name": "z-tabs",
@@ -2424,7 +3349,16 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-tabs"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-tabs/z-tabs.demo.html"
+        }
+      ]
     },
     {
       "name": "z-tag",
@@ -2493,7 +3427,16 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-tag"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-tag/z-tag.demo.html"
+        }
+      ]
     },
     {
       "name": "z-toast",
@@ -2566,7 +3509,16 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-toast"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-toast/z-toast.demo.html"
+        }
+      ]
     },
     {
       "name": "z-tooltip",
@@ -2646,7 +3598,16 @@
           ]
         }
       ],
-      "references": []
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "./docs/index.html#z-tooltip"
+        },
+        {
+          "name": "Demo",
+          "url": "./components/z-tooltip/z-tooltip.demo.html"
+        }
+      ]
     }
   ]
 }

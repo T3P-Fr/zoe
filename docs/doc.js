@@ -2,18 +2,23 @@
 	============================================================
 	doc.js — LE VIEWER de la doc officielle (multilingue)
 	------------------------------------------------------------
-	Il ne DÉCRIT rien à la main : il charge la liste des composants (le manifeste),
-	importe chaque module, et lit l'API BRUTE de la classe vivante (`Class.api`) — dont
-	les descriptions peuvent être `{ en, fr, es }`. Un sélecteur de langue bascule TOUT
-	côté client (comme le sélecteur de peau). Les libellés de la doc sont dans I18N ;
-	l'API, dans les `static api`. Anglais par défaut.
+	Il ne DÉCRIT rien à la main : il charge l'index généré (dist/zoe.json — attributs,
+	événements, états, calques, variables, tokens lus dans le CSS, membres JS, exemple,
+	chemins des fichiers, en trois langues), importe chaque module pour que les éléments
+	soient DÉFINIS (les exemples se rendent en vrai), et met en page. Un sélecteur de
+	langue bascule TOUT côté client (comme le sélecteur de peau). Les libellés de la doc
+	sont dans I18N ; l'API, dans les `static api` du code — une source.
+
+	L'ordre d'une fiche : le BESOIN (le summary, écrit comme une promesse), puis l'ESSAI
+	(l'exemple rendu en vrai, son code juste à côté — jamais une démo sans son code), puis
+	le narratif (.doc.md), puis SEULEMENT le technique (attributs, événements, états,
+	calques, variables, API JS).
 	(Commentaires en français = langue de travail ; l'API publiée, elle, est en anglais.)
 	============================================================
 */
 
 import "../examples/skin-switch.js";   /* le pacte : sélecteur de peau */
 import { discoverContactEffects } from "../tools/z-contact/z-contact-effect.js";   /* les effets que la peau déclare */
-import { api as CHANNEL_API } from "../tools/z-channel/z-channel.js";   /* le canal : un tool-attribut, absent du manifeste (pas de balise) */
 
 const ROOT = new URL("../", import.meta.url).href;   /* …/zoé/ */
 
@@ -24,9 +29,42 @@ const UTILITY = ["current", "loading", "disabled", "error", "success"];        /
 /* Langue courante + dictionnaire de l'UI de la doc (l'API vit dans les static api). */
 let LANG = new URLSearchParams(location.search).get("lang") || localStorage.getItem("zoe-lang") || "en";
 const I18N = {
-	en: { attributesHint: "Written on THIS element, in the HTML. A named shortcut: one word, and the component knows what to do.", eventsHint: "What the component signals. Listen with addEventListener.", statesHint: "They HAPPEN — on gesture, or set by code. You don't set them here, you paint them: z-button:state(over) { … }", cssVarsHint: "Written in CSS, and flows DOWN to everything inside. The fine-grained setting; an attribute is a shortcut that sets several at once.", core: "core", tools: "tools", components: "components", attributes: "Attributes", type: "Type", values: "Values", boolPresent: "present / absent", role: "Role", events: "Events", event: "Event", states: "States :state()", cssVars: "CSS variables", variable: "Variable", tryme: "Try me", hint: "Hover, press, DRAG it (drop inside / outside) — the « mouse » dots follow.", mouse: "Mouse — on gesture", utility: "Utility — on click", seealso: "Same states as z-element — try them above.", clickState: "click to set this state", promisePre: "States · interaction · animation: ", promiseBold: "zero JS to manage.", promisePost: " Write this HTML — and the CSS for :state().", default: "default" },
-	fr: { attributesHint: "S'écrit sur CET élément, dans le HTML. Un raccourci nommé : un mot, et le composant sait quoi faire.", eventsHint: "Ce que le composant signale. À écouter avec addEventListener.", statesHint: "Ils ARRIVENT — au geste, ou posés par le code. On ne les règle pas ici, on les peint : z-button:state(over) { … }", cssVarsHint: "S'écrit en CSS, et descend sur tout le contenu. Le réglage fin ; un attribut n'est qu'un raccourci qui en pose plusieurs d'un coup.", core: "noyau", tools: "tools", components: "composants", attributes: "Attributs", type: "Type", values: "Valeurs", boolPresent: "présent / absent", role: "Rôle", events: "Événements", event: "Événement", states: "États :state()", cssVars: "Variables CSS", variable: "Variable", tryme: "Testez-moi", hint: "Survolez, pressez, GLISSEZ-le (lâchez dedans / dehors) — les points « souris » suivent.", mouse: "Souris — au geste", utility: "Utilitaires — au clic", seealso: "Mêmes états que z-element — voir plus haut.", clickState: "clic pour poser cet état", promisePre: "États · interaction · animation : ", promiseBold: "zéro JS à gérer.", promisePost: " Le HTML à écrire — et le CSS pour :state().", default: "défaut" },
-	es: { attributesHint: "Se escribe en ESTE elemento, en el HTML. Un atajo con nombre: una palabra, y el componente sabe qué hacer.", eventsHint: "Lo que el componente señala. Escúchelo con addEventListener.", statesHint: "OCURREN — con el gesto, o puestos por el código. No se ajustan aquí, se pintan: z-button:state(over) { … }", cssVarsHint: "Se escribe en CSS, y BAJA a todo lo que hay dentro. El ajuste fino; un atributo solo es un atajo que pone varios de una vez.", core: "núcleo", tools: "herramientas", components: "componentes", attributes: "Atributos", type: "Tipo", values: "Valores", boolPresent: "presente / ausente", role: "Función", events: "Eventos", event: "Evento", states: "Estados :state()", cssVars: "Variables CSS", variable: "Variable", tryme: "Pruébame", hint: "Pase el ratón, presione, ARRÁSTRELO (suelte dentro / fuera) — los puntos « ratón » siguen.", mouse: "Ratón — al gesto", utility: "Utilitarios — al clic", seealso: "Mismos estados que z-element — ver más arriba.", clickState: "clic para poner este estado", promisePre: "Estados · interacción · animación: ", promiseBold: "cero JS que gestionar.", promisePost: " El HTML a escribir — y el CSS para :state().", default: "predeterminado" }
+	en: {
+		attributesHint: "Written on THIS element, in the HTML. A named shortcut: one word, and the component knows what to do.",
+		eventsHint: "What the component signals. Listen with addEventListener.",
+		statesHint: "They HAPPEN — on gesture, or set by code. You don't set them here, you paint them: z-button:state(over) { … }",
+		cssVarsHint: "Written in CSS, and flows DOWN to everything inside. The fine-grained setting; an attribute is a shortcut that sets several at once. Tokens follow the pact: --z-{component}[--{part}]__{css-property}.",
+		layersHint: "The pieces YOU write, as <z-layer part=\"…\"> (or native tags carrying part=\"…\"). Zoé never generates them. Same word, same meaning in every component.",
+		membersHint: "The JavaScript surface, when you want to drive the element from code. HTML and CSS never require it.",
+		exampleHint: "Rendered live, with the exact HTML that produced it. Change the skin (top right): the rendering follows, the HTML does not move.",
+		core: "core", tools: "tools", components: "components", attributes: "Attributes", type: "Type", values: "Values", boolPresent: "present / absent", role: "Role", events: "Events", event: "Event", states: "States :state()", cssVars: "CSS variables", variable: "Variable", layers: "Layers", layer: "Part", optional: "optional", members: "JS API", member: "Member", example: "Example", demo: "Full demo", lab: "Lab", source: "Source",
+		paints: (property, part) => (part ? `Paints \`${property}\` of the \`${part}\` part.` : `Paints \`${property}\` of the element.`),
+		tryme: "Try me", hint: "Hover, press, DRAG it (drop inside / outside) — the « mouse » dots follow.", mouse: "Mouse — on gesture", utility: "Utility — on click", seealso: "Same states as z-element — try them above.", clickState: "click to set this state", default: "default"
+	},
+	fr: {
+		attributesHint: "S'écrit sur CET élément, dans le HTML. Un raccourci nommé : un mot, et le composant sait quoi faire.",
+		eventsHint: "Ce que le composant signale. À écouter avec addEventListener.",
+		statesHint: "Ils ARRIVENT — au geste, ou posés par le code. On ne les règle pas ici, on les peint : z-button:state(over) { … }",
+		cssVarsHint: "S'écrit en CSS, et descend sur tout le contenu. Le réglage fin ; un attribut n'est qu'un raccourci qui en pose plusieurs d'un coup. Les tokens suivent le pacte : --z-{composant}[--{pièce}]__{propriété-css}.",
+		layersHint: "Les pièces que VOUS écrivez, en <z-layer part=\"…\"> (ou en balises natives portant part=\"…\"). Zoé ne les génère jamais. Un même mot, un même sens dans tous les composants.",
+		membersHint: "La surface JavaScript, pour piloter l'élément depuis du code. Le HTML et le CSS ne l'exigent jamais.",
+		exampleHint: "Rendu en direct, avec le HTML exact qui le produit. Changez la peau (en haut à droite) : le rendu suit, le HTML ne bouge pas.",
+		core: "noyau", tools: "outils", components: "composants", attributes: "Attributs", type: "Type", values: "Valeurs", boolPresent: "présent / absent", role: "Rôle", events: "Événements", event: "Événement", states: "États :state()", cssVars: "Variables CSS", variable: "Variable", layers: "Calques", layer: "Pièce", optional: "optionnel", members: "API JS", member: "Membre", example: "Exemple", demo: "Démo complète", lab: "Lab", source: "Source",
+		paints: (property, part) => (part ? `Peint \`${property}\` de la pièce \`${part}\`.` : `Peint \`${property}\` de l'élément.`),
+		tryme: "Testez-moi", hint: "Survolez, pressez, GLISSEZ-le (lâchez dedans / dehors) — les points « souris » suivent.", mouse: "Souris — au geste", utility: "Utilitaires — au clic", seealso: "Mêmes états que z-element — voir plus haut.", clickState: "clic pour poser cet état", default: "défaut"
+	},
+	es: {
+		attributesHint: "Se escribe en ESTE elemento, en el HTML. Un atajo con nombre: una palabra, y el componente sabe qué hacer.",
+		eventsHint: "Lo que el componente señala. Escúchelo con addEventListener.",
+		statesHint: "OCURREN — con el gesto, o puestos por el código. No se ajustan aquí, se pintan: z-button:state(over) { … }",
+		cssVarsHint: "Se escribe en CSS, y BAJA a todo lo que hay dentro. El ajuste fino; un atributo solo es un atajo que pone varios de una vez. Los tokens siguen el pacto: --z-{componente}[--{pieza}]__{propiedad-css}.",
+		layersHint: "Las piezas que USTED escribe, como <z-layer part=\"…\"> (o etiquetas nativas con part=\"…\"). Zoé nunca las genera. Misma palabra, mismo significado en todos los componentes.",
+		membersHint: "La superficie JavaScript, para dirigir el elemento desde código. El HTML y el CSS nunca la exigen.",
+		exampleHint: "Renderizado en vivo, con el HTML exacto que lo produce. Cambie la piel (arriba a la derecha): el renderizado sigue, el HTML no se mueve.",
+		core: "núcleo", tools: "herramientas", components: "componentes", attributes: "Atributos", type: "Tipo", values: "Valores", boolPresent: "presente / ausente", role: "Función", events: "Eventos", event: "Evento", states: "Estados :state()", cssVars: "Variables CSS", variable: "Variable", layers: "Capas", layer: "Pieza", optional: "opcional", members: "API JS", member: "Miembro", example: "Ejemplo", demo: "Demo completa", lab: "Laboratorio", source: "Fuente",
+		paints: (property, part) => (part ? `Pinta \`${property}\` de la pieza \`${part}\`.` : `Pinta \`${property}\` del elemento.`),
+		tryme: "Pruébame", hint: "Pase el ratón, presione, ARRÁSTRELO (suelte dentro / fuera) — los puntos « ratón » siguen.", mouse: "Ratón — al gesto", utility: "Utilitarios — al clic", seealso: "Mismos estados que z-element — ver más arriba.", clickState: "clic para poner este estado", default: "predeterminado"
+	}
 };
 const t = (k) => I18N[LANG]?.[k] ?? I18N.en[k] ?? k;
 /* résout une description : string (anglais) OU { en, fr, es } → la langue courante. */
@@ -34,13 +72,10 @@ const desc = (v) => (typeof v === "string" ? v : (v && (v[LANG] || v.en || Objec
 
 /*
 	L'ACCUEIL — L'ESSAI ROUTIER, pas le capot. Un visiteur ne doit pas tomber sur des
-	tableaux ni sur une preuve de plomberie (« regarde, au survol ça ne fuit pas » = « elle
-	roule » : toute voiture roule). Il doit VOIR le résultat : une application entière,
-	vivante, qui se transforme sous sa main pour presque rien d'écrit. On MONTRE la voiture
-	en train de rouler — la démo « cinq nombres », en vrai, incrustée à la porte. Le
-	mécanisme (le geste, le « avant/après ») descend sous le capot, pour qui veut le voir.
-	(Recadré avec Christophe le 2026-07-22 : « ne me dis pas qu'elle roule, fais-moi
-	l'essai. » Comparaisons Flash retirées : trop datées pour un visiteur.)
+	tableaux ni sur une preuve de plomberie. Il doit VOIR le résultat : une application
+	entière, vivante, qui se transforme sous sa main pour presque rien d'écrit. La démo
+	« cinq nombres », en vrai, incrustée à la porte. Le mécanisme (le « avant/après »)
+	descend sous le capot, pour qui veut le voir.
 */
 const DEMO = `${ROOT}examples/trois-variables.html`;   /* la voiture — on l'incruste, on ne la décrit pas */
 
@@ -54,16 +89,16 @@ const HOME = {
 	},
 	fr: {
 		menu: "l'essai", title: "Cinq nombres. Une interface entière.",
-		tagline: "Ce n'est pas une capture — attrape-la. Pousse un curseur, et toute la page se ré-harmonise. Pas une seule palette écrite.",
+		tagline: "Ce n'est pas une capture — attrapez-la. Poussez un curseur, et toute la page se ré-harmonise. Pas une seule palette écrite.",
 		caption: "Tout ce qui est au-dessus — fonds, cartes, filets — descend de cinq nombres. Aucun gris, aucune palette, aucun fichier « mode sombre ». C'est ça, Zoé.",
-		underHood: "Sous le capot — le code que tu n'écris plus",
+		underHood: "Sous le capot — le code que vous n'écrivez plus",
 		before: "À la main — sur chaque composant", after: "Avec Zoé"
 	},
 	es: {
 		menu: "la prueba", title: "Cinco números. Una interfaz entera.",
-		tagline: "No es una captura — agárrala. Empuja un control, y toda la página se re-armoniza. Ni una sola paleta escrita.",
+		tagline: "No es una captura — agárrela. Empuje un control, y toda la página se re-armoniza. Ni una sola paleta escrita.",
 		caption: "Todo lo de arriba — fondos, tarjetas, filetes — desciende de cinco números. Sin grises, sin paleta, sin archivo « modo oscuro ». Eso es Zoé.",
-		underHood: "Bajo el capó — el código que ya no escribes",
+		underHood: "Bajo el capó — el código que ya no escribe",
 		before: "A mano — en cada componente", after: "Con Zoé"
 	}
 };
@@ -86,7 +121,7 @@ z-element:state(press) { transform: scale(.97); }`;
 */
 const CDEMO = {
 	en: { target: "Click here — or anywhere in the zone", hint: "The effect is born where the pointer touches. Move a slider: it replays live.", effect: "Effect — from the skin", belongsToSkin: "These are the effects THIS skin declares (@property --z-contact__fx--…). Switch skin (top-right) and the list changes. The page never hard-codes them.", write: "Write as", modeAttr: "attribute", modeCss: "CSS", size: "Size", thickness: "Thickness", duration: "Duration", color: "Colour", css: "Same result, two ways to write it — flip « attribute / CSS » above. That's the point: attribute OR CSS, your choice." },
-	fr: { target: "Cliquez ici — ou n'importe où dans la zone", hint: "L'effet naît là où le pointeur touche. Bougez un curseur : il se rejoue en direct.", effect: "Effet — fourni par la peau", belongsToSkin: "Ce sont les effets que CETTE peau déclare (@property --z-contact__fx--…). Bascule la peau (en haut à droite) et la liste change. La page ne les fige jamais.", write: "Écrire en", modeAttr: "attribut", modeCss: "CSS", size: "Taille", thickness: "Épaisseur", duration: "Durée", color: "Couleur", css: "Même résultat, deux façons de l'écrire — basculez « attribut / CSS » au-dessus. C'est ça, la force : attribut OU CSS, au choix." },
+	fr: { target: "Cliquez ici — ou n'importe où dans la zone", hint: "L'effet naît là où le pointeur touche. Bougez un curseur : il se rejoue en direct.", effect: "Effet — fourni par la peau", belongsToSkin: "Ce sont les effets que CETTE peau déclare (@property --z-contact__fx--…). Basculez la peau (en haut à droite) et la liste change. La page ne les fige jamais.", write: "Écrire en", modeAttr: "attribut", modeCss: "CSS", size: "Taille", thickness: "Épaisseur", duration: "Durée", color: "Couleur", css: "Même résultat, deux façons de l'écrire — basculez « attribut / CSS » au-dessus. C'est ça, la force : attribut OU CSS, au choix." },
 	es: { target: "Pulse aquí — o en cualquier parte de la zona", hint: "El efecto nace donde el puntero toca. Mueva un control: se repite en directo.", effect: "Efecto — de la piel", belongsToSkin: "Son los efectos que ESTA piel declara (@property --z-contact__fx--…). Cambie la piel (arriba a la derecha) y la lista cambia. La página nunca los fija.", write: "Escribir como", modeAttr: "atributo", modeCss: "CSS", size: "Tamaño", thickness: "Grosor", duration: "Duración", color: "Color", css: "Mismo resultado, dos formas de escribirlo — cambie « atributo / CSS » arriba. Esa es la fuerza: atributo O CSS, a su elección." }
 };
 /* Les réglages vivants : `key` nomme le libellé (CDEMO[lang][key]), `token` la variable
@@ -98,36 +133,36 @@ const CDEMO_CTLS = [
 ];
 const CDEMO_SWATCHES = ["var(--z-accent)", "#e0662c", "#22a06b", "#c4562f", "#7b61ff"];
 
-addLink(`${ROOT}tools/z-motion/z-motion.css`);
+/* Les éléments dont l'exemple ne se rend PAS dans la doc : ils agissent sur toute la page
+   (un ruban qui suit la souris, le défilement de la page) ou sont déjà présents (z-contact).
+   Leur essai, c'est leur page de lab, incrustée. */
+const PAGE_WIDE = new Set(["z-cursor", "z-contact", "z-scroll", "z-pointer", "z-inview", "z-size", "z-drag", "z-channel", "z-lint", "z-motion"]);
+
+addLink(`${ROOT}zoe.css`);   /* la bibliothèque entière : les exemples se peignent */
 
 /* Style du narratif rendu (.doc-md) — minimal, il s'appuie sur les tokens de la peau. */
 const mdStyle = document.createElement("style");
 mdStyle.textContent = ".doc-md{margin:1.6rem 0;line-height:1.6}.doc-md h3{margin:1.6rem 0 .5rem}.doc-md h4{margin:1.2rem 0 .4rem}.doc-md pre{overflow-x:auto;padding:.8rem 1rem;border-radius:8px;background:var(--z-surface,#f4f0ea)}.doc-md code{font-size:.92em}.doc-md table.md-table{border-collapse:collapse;margin:1rem 0;width:100%}.doc-md .md-table th,.doc-md .md-table td{border:1px solid var(--z-line);padding:.45rem .7rem;text-align:left;vertical-align:top}.doc-md blockquote{margin:1rem 0;padding:.3rem 1rem;border-left:3px solid var(--z-line);color:var(--z-ink-soft)}.doc-md ul{margin:.6rem 0;padding-left:1.3rem}";
 document.head.append(mdStyle);
 
-const manifest = await (await fetch(`${ROOT}dist/custom-elements.json`)).json();
-const entries = manifest.modules.map((m) => ({ path: m.path, tag: m.declarations[0]?.tagName })).filter((e) => e.tag);
-
-/* importe chaque module (définit l'élément + expose son static api), injecte le CSS
-   des composants, et lit l'API BRUTE (multilingue) sur la classe vivante. */
+/* L'INDEX GÉNÉRÉ — une source. Puis on importe chaque module : les balises se DÉFINISSENT,
+   et les exemples se rendent pour de vrai. */
+const index = await (await fetch(`${ROOT}dist/zoe.json`)).json();
+const entries = index.elements;
 for (const e of entries) {
-	await import(`${ROOT}${e.path}`);
-	if (e.path.startsWith("components/")) addLink(`${ROOT}${e.path.replace(/\.js$/, ".css")}`);
-	e.api = rawApi(e.tag);
+	if (!e.paths.js) continue;
+	try { await import(`${ROOT}${e.paths.js}`); }
+	catch (error) { console.warn(`doc : ${e.tag} ne s'importe pas —`, error); }
 }
 
-/* z-channel n'est pas une balise (c'est l'attribut channel=), donc absent du manifeste
-   des custom elements. On l'ajoute à la main, à sa place dans « tools » — même contrat. */
-entries.push({ path: "tools/z-channel/z-channel.js", tag: "z-channel", api: normalizeApi(CHANNEL_API) });
-
-/* LE NARRATIF vit dans le .doc.md du composant — UNE source (le structuré, lui, vient du
-   static api). On le charge ici pour que le viewer l'AFFICHE enfin : jusqu'ici il était
-   écrit à la main puis jamais montré, en doublon du static api. Absent = pas de narratif. */
+/* LE NARRATIF vit dans le .doc.md de l'élément — UNE source (le structuré vient du static
+   api). Absent = la fiche se contente de l'api. */
 for (const e of entries) {
+	if (!e.paths.doc) continue;
 	try {
-		const res = await fetch(`${ROOT}${e.path.replace(/\.js$/, ".doc.md")}`);
-		if (res.ok) e.api.narrative = await res.text();
-	} catch { /* pas de .doc.md : la fiche se contente du static api */ }
+		const res = await fetch(`${ROOT}${e.paths.doc}`);
+		if (res.ok) e.narrative = await res.text();
+	} catch { /* pas de .doc.md lisible : la fiche se contente du static api */ }
 }
 
 mountLangSwitch();
@@ -161,7 +196,7 @@ if (location.hash === "#selftest") try {
 	[...sec.querySelectorAll(".viz-row.clickable")].find((b) => b.textContent.trim() === "loading")?.click();
 	await new Promise((r) => requestAnimationFrame(r));
 	const util = inst.matches(":state(loading)") && rowOn("loading");
-	const res = el("div", { text: `SELF-TEST : drag=${dragging ? "✅" : "❌"} · bouge=${moved ? "✅" : "❌"} · releaseOut(dehors)=${releasedOut ? "✅" : "❌"} · retour centre=${back ? "✅" : "❌"} · utilitaire(clic loading)=${util ? "✅" : "❌"}` });
+	const res = el("div", { text: `SELF-TEST : drag=${dragging ? "✅" : "❌"} · bouge=${moved ? "✅" : "❌"} · dragDot=${dragDot ? "✅" : "❌"} · releaseOut(dehors)=${releasedOut ? "✅" : "❌"} · retour centre=${back ? "✅" : "❌"} · utilitaire(clic loading)=${util ? "✅" : "❌"}` });
 	res.style.cssText = "position:fixed;bottom:0;left:0;right:0;padding:.6rem 1rem;background:#1a1a1a;color:#fff;font:13px ui-monospace,monospace;z-index:99999";
 	document.body.append(res);
 } catch (err) {
@@ -171,36 +206,6 @@ if (location.hash === "#selftest") try {
 }
 
 /* ── rendu ─────────────────────────────────────────────────── */
-
-/* Lit l'API BRUTE (multilingue) d'une classe vivante et la normalise pour le rendu. */
-/* Normalise une API BRUTE (celle d'un composant OU celle d'un tool-attribut) vers la
-   forme que le rendu attend. `attributeTool` / `example` ne concernent que les tools
-   sans balise (z-channel) ; ils valent false/null pour un composant. */
-function normalizeApi(api) {
-	return {
-		tagName: api.tag,
-		summary: api.summary,
-		attributeTool: api.attributeTool || false,
-		example: api.example || null,
-		attributes: (api.attributes || []).map((a) => ({ name: a.name, type: { text: a.type || "string" }, values: a.values || null, description: a.description })),
-		events: (api.events || []).map((ev) => ({ name: ev.name, description: ev.description })),
-		cssStates: (api.states || []).map((s) => ({ name: s })),
-		cssProperties: (api.cssVars || []).map((v) => ({ name: v.name, description: v.description }))
-	};
-}
-
-function rawApi(tag) {
-	const api = customElements.get(tag)?.api;
-	if (!api) return null;
-	return normalizeApi(api);
-}
-
-function groupOf(path) {
-	if (path.startsWith("core/")) return "core";
-	if (path.startsWith("tools/")) return "tools";
-	if (path.startsWith("components/")) return "components";
-	return "other";
-}
 
 function render() {
 	const menu = document.getElementById("menu");
@@ -214,25 +219,21 @@ function render() {
 	homeLink.style.fontWeight = "600";
 	menu.append(homeLink);
 	/* L'INTRO — la page « le socle » (docs/intro.html) : la synthèse du modèle, écrite en
-	   HTML natif habillé par la peau. Un lien de navigation (on quitte le viewer, on revient
-	   par « ← la doc »). Placé juste sous l'essai : c'est la porte conceptuelle. */
+	   HTML natif habillé par la peau. Placée juste sous l'essai : c'est la porte conceptuelle. */
 	menu.append(el("a", { href: "./intro.html", text: LANG === "en" ? "the base" : LANG === "es" ? "el zócalo" : "le socle" }));
-	/* L'atelier de thème — un thème entier déduit de curseurs (z-channel + CSS). L'essai
-	   routier : bouge un curseur, toute l'interface se ré-harmonise. */
+	menu.append(el("a", { href: "./GRAMMAR.md", text: LANG === "en" ? "the grammar" : LANG === "es" ? "la gramática" : "la grammaire" }));
 	menu.append(el("a", { href: "../examples/theme-builder.html", text: LANG === "en" ? "the theme lab" : LANG === "es" ? "el taller de tema" : "l'atelier de thème" }));
-	/* NB : l'éditeur « l'établi » a quitté Zoé — c'est devenu relookr, un produit à part
-	   (client de Zoé, pas une démo du moteur). Zoé ne connaît pas relookr : pas de lien ici. */
 	main.append(homeSection());
 
 	const groups = { core: [], tools: [], components: [] };
-	for (const e of entries) (groups[groupOf(e.path)] ||= []).push(e);
+	for (const e of entries) (groups[e.kind] ||= []).push(e);
 
 	for (const [key, list] of Object.entries(groups)) {
 		if (!list.length) continue;
 		menu.append(el("div", { class: "group", text: t(key) }));
 		for (const e of list) {
-			menu.append(el("a", { href: `#${e.api.tagName}`, text: e.api.attributeTool ? e.api.tagName : `<${e.api.tagName}>` }));
-			main.append(entrySection(e.api, key));
+			menu.append(el("a", { href: `#${e.tag}`, text: e.attributeTool ? e.tag : `<${e.tag}>` }));
+			main.append(entrySection(e));
 		}
 	}
 }
@@ -240,7 +241,6 @@ function render() {
 /*
 	L'ACCUEIL : l'essai routier, dans l'ordre où l'œil doit le prendre.
 	① LA VOITURE QUI ROULE — la vraie démo « cinq nombres » incrustée en live (iframe).
-	   On ne la décrit pas, on la fait rouler sous la main du visiteur. C'est la porte.
 	② LA LÉGENDE — ce qu'il vient de voir, en une phrase.
 	③ SOUS LE CAPOT — le « avant/après » : le moteur, pour qui veut le voir APRÈS l'essai.
 */
@@ -249,27 +249,27 @@ function homeSection() {
 	const sec = el("section", { class: "entry home", id: "home" });
 	sec.append(el("h2", { text: h.title }));
 	sec.append(el("p", { class: "summary", text: h.tagline }));
-
-	/* ① la voiture qui roule — la démo, en vrai, cadrée comme un écran vivant */
-	const screen = el("div", { class: "hero-screen" });
-	const bar = el("div", { class: "hero-bar" });
-	bar.append(el("span", { class: "hero-live" }), el("span", { class: "hero-url", text: "examples/trois-variables.html" }));
-	const frame = document.createElement("iframe");
-	frame.className = "hero-frame";
-	frame.src = DEMO;
-	frame.loading = "lazy";
-	frame.title = h.title;
-	screen.append(bar, frame);
-	sec.append(screen);
+	sec.append(screen(DEMO, "examples/trois-variables.html", h.title));
 	sec.append(el("p", { class: "hero-caption", text: h.caption }));
-
-	/* ③ sous le capot — le avant/après */
 	sec.append(el("h3", { text: h.underHood }));
 	const cmp = el("div", { class: "avapres" });
 	cmp.append(codeCol(h.before, AVANT, "avant"), codeCol(h.after, APRES, "apres"));
 	sec.append(cmp);
-
 	return sec;
+}
+
+/* Un « écran vivant » : une barre allumée + une page qui tourne pour de vrai dedans. */
+function screen(src, label, title) {
+	const box = el("div", { class: "hero-screen" });
+	const bar = el("div", { class: "hero-bar" });
+	bar.append(el("span", { class: "hero-live" }), el("span", { class: "hero-url", text: label }));
+	const frame = document.createElement("iframe");
+	frame.className = "hero-frame";
+	frame.src = src;
+	frame.loading = "lazy";
+	frame.title = title;
+	box.append(bar, frame);
+	return box;
 }
 
 /* Une colonne de code du « avant/après » : un titre + le bloc, tel quel. */
@@ -284,48 +284,97 @@ function codeCol(title, source, cls) {
 	return box;
 }
 
-function entrySection(d, group) {
-	const sec = el("section", { class: "entry", id: d.tagName });
-	/* Un tool-attribut (z-channel) n'est PAS une balise : on montre son nom, pas <z-channel>. */
-	sec.append(el("h2", { text: d.attributeTool ? d.tagName : `<${d.tagName}>` }));
-	sec.append(el("p", { class: "summary", text: desc(d.summary) }));
+/* La fiche d'un élément : besoin → essai → narratif → technique. */
+function entrySection(e) {
+	const sec = el("section", { class: "entry", id: e.tag });
+	/* Un outil-attribut (z-channel, z-lint) ou 100 % CSS (z-motion) n'est PAS une balise. */
+	sec.append(el("h2", { text: e.attributeTool ? e.tag : `<${e.tag}>` }));
+	sec.append(el("p", { class: "summary", text: desc(e.summary) }));
+	sec.append(linksRow(e));
 
-	/*
-		L'ordre d'une fiche : le BESOIN (le summary, écrit comme une promesse), puis l'ESSAI
-		(on manipule), puis SEULEMENT le technique (les tables) plus bas. z-contact a sa
-		vraie zone de démo avec sélecteur d'effet — pas un renvoi. Les autres gardent leur
-		aperçu ; le bloc « ce que tu écris » ne s'affiche que là où il aide encore.
-	*/
-	const isContact = d.tagName === "z-contact";
-	/* Le bloc « ce que tu écris » suppose une balise <tag> ; le narratif du .doc.md, s'il
-	   existe, porte déjà le pitch et les exemples → on ne le double pas. */
-	if (!isContact && !d.attributeTool && !d.narrative) sec.append(usageBlock(d));
+	if (e.tag === "z-element") sec.append(visualizer(e));
+	else if (e.tag === "z-contact") sec.append(contactDemo(e));
+	else if (PAGE_WIDE.has(e.tag) && (e.paths.lab || e.paths.demo)) sec.append(screen(`${ROOT}${e.paths.lab || e.paths.demo}`, e.paths.lab || e.paths.demo, e.tag));
+	if (e.example) sec.append(exampleBlock(e));
 
-	/* Le visualiseur draggable « Testez-moi » n'a de sens que pour z-element (la base
-	   VIVANTE, qui porte les états). z-layer est core aussi, mais c'est une PIÈCE
-	   (position:absolute) : le rendre draggable ne veut rien dire → il se contente de son
-	   narratif (son anatomie y est expliquée). */
-	if (d.tagName === "z-element") sec.append(visualizer(d));
-	else if (isContact) sec.append(contactDemo(d));
-	else if (d.example) sec.append(liveExample(d));   /* l'essai incrusté, comme l'accueil */
-	else if (group === "components") sec.append(preview(d));
-	else if (!d.narrative) sec.append(el("p", { class: "seealso", text: t("seealso") }));
+	if (e.narrative) sec.append(narrativeBlock(e.narrative));
 
-	/* Le NARRATIF (source unique du texte) — enfin affiché, sous la démo, avant les tables. */
-	if (d.narrative) sec.append(narrativeBlock(d.narrative));
-
-	if (d.attributes?.length) sec.append(heading(t("attributes"), t("attributesHint")), attributesTable(d.attributes));
-	if (d.events?.length) sec.append(heading(t("events"), t("eventsHint")), table([t("event"), t("role")],
-		d.events.map((ev) => [code(ev.name), desc(ev.description)])));
-	if (d.cssStates?.length) { sec.append(heading(t("states"), t("statesHint"))); sec.append(chips(d.cssStates.map((s) => s.name))); }
-	if (d.cssProperties?.length) sec.append(heading(t("cssVars"), t("cssVarsHint")), table([t("variable"), t("role")],
-		d.cssProperties.map((v) => [code(v.name), desc(v.description)])));
+	if (e.attributes?.length) sec.append(heading(t("attributes"), t("attributesHint")), attributesTable(e.attributes));
+	if (e.events?.length) sec.append(heading(t("events"), t("eventsHint")), table([t("event"), t("role")], e.events.map((ev) => [code(ev.name), desc(ev.description)])));
+	if (e.states?.length) { sec.append(heading(t("states"), t("statesHint"))); sec.append(chips(e.states.map((s) => s.name))); }
+	if (e.layers?.length) sec.append(heading(t("layers"), t("layersHint")), layersTable(e.layers));
+	const variables = variablesRows(e);
+	if (variables.length) sec.append(heading(t("cssVars"), t("cssVarsHint")), table([t("variable"), t("role")], variables));
+	if (e.members?.length) sec.append(heading(t("members"), t("membersHint")), table([t("member"), t("type"), t("role")], e.members.map((m) => [code(m.name), m.type ? code(m.type) : "", desc(m.description)])));
 	return sec;
+}
+
+/* La ligne des portes : la démo complète, le lab, la source — là où l'œil arrive, pas en bas. */
+function linksRow(e) {
+	const row = el("p", { class: "links" });
+	const add = (label, href) => { if (href) row.append(el("a", { href: `${ROOT}${href}`, text: `${label} →` })); };
+	add(t("demo"), e.paths.demo);
+	add(t("lab"), e.paths.lab);
+	add(t("source"), e.paths.js || e.paths.css);
+	return row.childElementCount ? row : document.createDocumentFragment();
+}
+
+/*
+	L'EXEMPLE — rendu en vrai à gauche, son HTML exact à droite (loi : jamais une démo sans
+	son code, juste à côté). Les éléments qui agissent sur toute la page (sillage,
+	défilement…) ne se rendent pas ici : leur essai est leur page de lab, au-dessus ; on
+	garde seulement le code.
+*/
+function exampleBlock(e) {
+	const wrap = el("div", { class: "example" });
+	const renderable = e.kind === "components" || e.tag === "z-layer";
+	if (renderable) {
+		const stage = el("div", { class: "example-render" });
+		stage.innerHTML = e.example;
+		wrap.append(stage);
+	} else {
+		wrap.classList.add("code-only");
+	}
+	const pre = document.createElement("pre");
+	pre.className = "example-code";
+	const c = document.createElement("code");
+	c.textContent = e.example;
+	pre.append(c);
+	wrap.append(pre);
+	const box = document.createDocumentFragment();
+	box.append(heading(t("example"), renderable ? t("exampleHint") : null), wrap);
+	return box;
+}
+
+/* Les calques, à plat, chaque enfant décalé sous son parent. */
+function layersTable(layers) {
+	const rows = [];
+	const walk = (list, depth) => {
+		for (const layer of list) {
+			const cell = el("span", { class: `depth-${depth}` });
+			if (depth) cell.append(el("span", { class: "tree", text: "↳ " }));
+			cell.append(code(layer.part));
+			if (layer.optional) cell.append(el("span", { class: "val-def", text: t("optional") }));
+			rows.push([cell, desc(layer.description)]);
+			walk(layer.children || [], depth + 1);
+		}
+	};
+	walk(layers, 0);
+	return table([t("layer"), t("role")], rows);
+}
+
+/* Les variables : celles que l'élément POSE (cssVars, décrites), puis les tokens du pacte
+   qu'il LIT dans son CSS (déduits ; la description dit ce qu'ils peignent). */
+function variablesRows(e) {
+	const declared = (e.cssVars || []).map((v) => [code(v.name), desc(v.description)]);
+	const declaredNames = new Set((e.cssVars || []).map((v) => v.name));
+	const read = (e.tokens || []).filter((token) => !declaredNames.has(token.name)).map((token) => [code(token.name), t("paints")(token.property, token.part)]);
+	return [...declared, ...read];
 }
 
 /*
 	Mini-rendu Markdown — juste le sous-ensemble qu'on écrit dans les .doc.md (titres,
-	paragraphes, gras, code, blocs de code, tables, citations, listes, liens). Aucune
+	paragraphes, gras, code, blocs de code, tables, citations, listes, liens, filets). Aucune
 	dépendance (ODE2JS : on n'embarque pas une lib pour ça). Le contenu est le NÔTRE (un
 	fichier du repo), donc innerHTML est sûr ici.
 	@param {string} md
@@ -383,10 +432,11 @@ function renderMarkdown(md) {
 			out.push(`<ul>${buf.map((b) => `<li>${inline(b)}</li>`).join("")}</ul>`);
 			continue;
 		}
+		if (/^\s*---+\s*$/.test(line)) { out.push("<hr>"); i++; continue; }   /* filet */
 		if (!line.trim()) { i++; continue; }                 /* ligne vide */
 
 		const buf = [];                                      /* paragraphe */
-		while (i < lines.length && lines[i].trim() && !/^(#{1,4}\s|```|>|\s*[-*]\s|\s*\|)/.test(lines[i])) buf.push(lines[i++]);
+		while (i < lines.length && lines[i].trim() && !/^(#{1,4}\s|```|>|\s*[-*]\s|\s*\||\s*---+\s*$)/.test(lines[i])) buf.push(lines[i++]);
 		out.push(`<p>${inline(buf.join(" "))}</p>`);
 	}
 	return out.join("\n");
@@ -401,24 +451,6 @@ function narrativeBlock(md) {
 }
 
 /*
-	L'ESSAI INCRUSTÉ d'un tool-attribut (z-channel) : sa page lab, en vrai, dans le même
-	cadre « écran vivant » que l'accueil. On ne le décrit pas, on le fait tourner sous la
-	main du visiteur (curseur → barre, point 2D, tune()). Réutilise le style hero-*.
-*/
-function liveExample(d) {
-	const screen = el("div", { class: "hero-screen" });
-	const bar = el("div", { class: "hero-bar" });
-	bar.append(el("span", { class: "hero-live" }), el("span", { class: "hero-url", text: d.example }));
-	const frame = document.createElement("iframe");
-	frame.className = "hero-frame";
-	frame.src = `${ROOT}${d.example}`;
-	frame.loading = "lazy";
-	frame.title = d.tagName;
-	screen.append(bar, frame);
-	return screen;
-}
-
-/*
 	LA DÉMO DE z-contact — la vraie, pas un renvoi. Une zone où l'on clique, un sélecteur
 	d'effet, et l'effet naît sous le pointeur (répliqué dans l'overlay, comme en vrai). On
 	branche les vrais fichiers : la base z-contact.css positionne la scène, et une « recette »
@@ -427,7 +459,6 @@ function liveExample(d) {
 */
 function contactDemo(d) {
 	const c = CDEMO[LANG] || CDEMO.en;
-	addLink(`${ROOT}tools/z-contact/z-contact.css`);   /* la base : positionne l'overlay/les parts */
 
 	/* la SOURCE déclarée (invisible) : elle dit au moteur « le contact tourne sur cette page ». */
 	let src = document.getElementById("doc-contact-src");
@@ -489,7 +520,7 @@ function contactDemo(d) {
 
 	/* Le sélecteur d'effet — DYNAMIQUE : rempli par ce que la PEAU DÉCLARE (découverte des
 	   @property --z-contact__fx--*). HighTech → implode/explode/morph ; Claude → ink. La page
-	   ne fige rien : change de peau, la liste change (la doc se reconstruit sur « zoe:skin »). */
+	   ne fige rien : changez de peau, la liste change (la doc se reconstruit sur « zoe:skin »). */
 	const effects = discoverContactEffects();
 	const skinDefault = getComputedStyle(document.documentElement).getPropertyValue("--z-contact-fx").trim();
 	const fxRow = el("div", { class: "cdemo-params" });
@@ -569,7 +600,7 @@ function contactDemo(d) {
 function visualizer(d) {
 	const box = el("div", { class: "viz" });
 	const stage = el("div", { class: "viz-stage" });
-	const inst = document.createElement(d.tagName);
+	const inst = document.createElement(d.tag);
 	inst.className = "viz-instance";
 	inst.textContent = t("tryme");
 	stage.append(inst);
@@ -603,7 +634,7 @@ function visualizer(d) {
 	inst.addEventListener("pointerup", drop);
 	inst.addEventListener("pointercancel", drop);
 
-	const has = new Set((d.cssStates || []).map((s) => s.name));
+	const has = new Set((d.states || []).map((s) => s.name));
 	const dots = new Map();
 	const panel = el("div", { class: "viz-panel" });
 	panel.append(group(t("mouse"), MOUSE.filter((n) => has.has(n)), false, inst, dots));
@@ -633,38 +664,6 @@ function group(title, names, clickable, inst, dots) {
 	return g;
 }
 
-/* Le bloc « ce que tu écris » : le HTML minimal + la promesse zéro JS. */
-function usageBlock(d) {
-	const wrap = el("div", { class: "usage" });
-	const pre = document.createElement("pre");
-	const code = document.createElement("code");
-	const lines = [`<${d.tagName}>Exemple</${d.tagName}>`];
-	const attr = (d.attributes || [])[0];
-	if (attr) lines.push(`<${d.tagName} ${attr.name}>…</${d.tagName}>`);
-	code.textContent = lines.join("\n");
-	pre.append(code);
-	const promise = el("p", { class: "promise" });
-	promise.append(document.createTextNode(t("promisePre")));
-	promise.append(el("b", { text: t("promiseBold") }));
-	promise.append(document.createTextNode(t("promisePost")));
-	wrap.append(pre, promise);
-	return wrap;
-}
-
-/* Aperçu d'un COMPOSANT : l'instance stylée dans quelques états (pas le tester). */
-function preview(d) {
-	const box = el("div", { class: "preview" });
-	const has = new Set((d.cssStates || []).map((s) => s.name));
-	const show = ["", ...["loading", "error", "disabled"].filter((s) => has.has(s))];
-	for (const s of show) {
-		const inst = document.createElement(d.tagName);
-		if (s) inst.setAttribute(s, "");
-		inst.textContent = s || t("default");
-		box.append(inst);
-	}
-	return box;
-}
-
 /* Le sélecteur de langue (EN/FR/ES), en haut à gauche — il rebâtit la doc à la volée. */
 function mountLangSwitch() {
 	const box = el("div");
@@ -672,6 +671,7 @@ function mountLangSwitch() {
 	const label = el("span", { text: "lang" });
 	label.style.cssText = "opacity:.7;text-transform:uppercase;letter-spacing:.1em";
 	const select = document.createElement("select");
+	select.setAttribute("aria-label", "Language");
 	select.style.cssText = "font:inherit;color:#fff;background:#2a2320;border:1px solid #4a4038;border-radius:6px;padding:.35rem .5rem;cursor:pointer";
 	for (const [id, name] of [["en", "English"], ["fr", "Français"], ["es", "Español"]]) {
 		const o = el("option", { text: name }); o.value = id; select.append(o);
@@ -694,11 +694,9 @@ function el(tag, { class: cls, id, href, text } = {}) {
 /*
 	Un titre de section, avec sa LÉGENDE. Sans elle, « Attributs » et « Variables CSS »
 	se lisent comme deux façons de faire la même chose — c'est la question qui revient.
-	La légende dit en une ligne ce qui les sépare : l'attribut se pose sur CET élément et
-	c'est un raccourci nommé ; le token se pose en CSS, il descend sur tout ce qui suit,
-	et c'est le réglage fin.
+	La légende dit en une ligne ce qui les sépare.
 	@param {string} text   le titre
-	@param {string} [hint] la légende (une phrase, ou rien)
+	@param {string|null} [hint] la légende (une phrase, ou rien)
 */
 function heading(text, hint) {
 	const titre = el("h3", { text });
@@ -763,18 +761,18 @@ function attributesTable(attrs) {
 	return tbl;
 }
 
-/* Décompose un attribut en lignes { valueNode, def, role } — une par valeur. */
+/* Décompose un attribut (forme zoe.json : values = [{ value, note, default }]) en lignes
+   { valueNode, def, role } — une par valeur. */
 function valueRows(a) {
 	if (a.values?.length) {
-		const norm = a.values.map((v) => (typeof v === "string" ? { value: v } : v));
-		const described = norm.some((v) => v.note);
-		return norm.map((v, i) => ({
+		const described = a.values.some((v) => desc(v.note));
+		return a.values.map((v, i) => ({
 			valueNode: code(v.value),
 			def: v.default,
-			role: described ? (v.note ? desc(v.note) : "") : (i === 0 ? desc(a.description) : "")
+			role: described ? (desc(v.note) || "") : (i === 0 ? desc(a.description) : "")
 		}));
 	}
-	const plain = a.type?.text === "boolean" ? t("boolPresent") : "—";
+	const plain = a.type === "boolean" ? t("boolPresent") : "—";
 	return [{ valueNode: el("span", { class: "val-plain", text: plain }), role: desc(a.description) }];
 }
 function chips(names) {

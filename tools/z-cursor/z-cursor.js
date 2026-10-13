@@ -294,7 +294,7 @@ function mtLoop() {
 
 /*
 	trail="click" — LE SILLAGE en clic→clic, avec LE MÊME MOTEUR que le move (« un effet
-	pour 2 », Christophe). On ne recompose RIEN : on nourrit le ruban d'un point FANTÔME
+	pour 2 », décision produit). On ne recompose RIEN : on nourrit le ruban d'un point FANTÔME
 	qui voyage du clic précédent (A) au nouveau (B), puis on le RELÂCHE. Dès qu'on cesse de
 	bouger `mtTarget`, la queue vieillit et meurt exactement comme quand la souris s'arrête
 	en move → la mort organique NOIRE que tu aimes, gratuite. La vitesse (px/ms) fixe la

@@ -150,7 +150,7 @@
 }
 .solde[data-vient-de-changer] { animation: battement 260ms cubic-bezier(.2, .8, .25, 1.2); }
 
-/* Le solde à zéro s'alarme — l'information « tu n'as plus de clics » ne doit pas être à lire. */
+/* Le solde à zéro s'alarme — l'information « vous n'avez plus de clics » ne doit pas être à lire. */
 .solde[data-vide] { color: var(--z-color--danger, #a33); }
 
 /*
@@ -181,7 +181,7 @@
       <h1>Memory — et le compte de clics offerts</h1>
       <p class="chapo">
         Chaque carte retournée coûte <strong>un clic</strong>. Le solde est une dotation :
-        il ne repart pas à zéro quand tu recharges la page — le jeu s'en souvient.
+        il ne repart pas à zéro quand vous rechargez la page — le jeu s'en souvient.
       </p>
 
       <!-- LE PUPITRE : ce qui reste, et de quoi relancer. Au-dessus du plateau, pas dans un coin. -->
@@ -383,7 +383,7 @@
 
       /* Trois refus silencieux, dans l'ordre où ils peuvent arriver. */
       if (jeu.verrou || !carte || carte.appariee || carte.face === "endroit") return;
-      if (jeu.solde <= 0) { dire("Plus un seul clic. Recharge la dotation pour continuer."); return; }
+      if (jeu.solde <= 0) { dire("Plus un seul clic. Rechargez la dotation pour continuer."); return; }
 
       poserSolde(jeu.solde - 1);
       carte.face = "endroit";
@@ -403,7 +403,7 @@
         rendreCarte(a);
         rendreCarte(b);
         if (compter() === SYMBOLES.length) {
-          dire(`Plateau vide — il te restait ${jeu.solde} clic${jeu.solde > 1 ? "s" : ""}. Ils restent à toi.`);
+          dire(`Plateau vide — il vous restait ${jeu.solde} clic${jeu.solde > 1 ? "s" : ""}. Ils restent à vous.`);
         }
         return;
       }
@@ -415,7 +415,7 @@
         jeu.verrou = false;
         rendreCarte(a);
         rendreCarte(b);
-        if (jeu.solde === 0) dire("Plus un seul clic. Recharge la dotation pour continuer.");
+        if (jeu.solde === 0) dire("Plus un seul clic. Rechargez la dotation pour continuer.");
       }, 900);
     };
 

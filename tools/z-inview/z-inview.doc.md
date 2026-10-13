@@ -21,8 +21,8 @@ z-inview h2 {
 ```
 
 Aucune classe posée par du JS, aucun nom d'animation à retenir : **l'apparition est écrite
-en CSS**, dans la peau, comme le reste de Zoé. Et comme c'est du CSS, elle est à toi —
-change la durée, la courbe, la direction, sans rien demander à personne.
+en CSS**, dans la peau, comme le reste de Zoé. Et comme c'est du CSS, elle est à vous —
+changez la durée, la courbe, la direction, sans rien demander à personne.
 
 ## Ce qu'il pose
 
@@ -81,6 +81,6 @@ l'élément est visible**, et débranché dès qu'il sort — puis figé au bord
 franchir, `0` en bas, `1` en haut, pour qu'un décor ne reste jamais coincé à mi-course.
 **Un élément hors de l'écran ne coûte rien.**
 
-> **Accessibilité.** Une entrée en scène est une animation : pense à la couper pour qui
+> **Accessibilité.** Une entrée en scène est une animation : pensez à la couper pour qui
 > n'en veut pas. `@media (prefers-reduced-motion: reduce) { transition: none }` — l'outil
-> ne le fait pas à ta place, parce que c'est la peau qui décide ce qui bouge.
+> ne le fait pas à votre place, parce que c'est la peau qui décide ce qui bouge.

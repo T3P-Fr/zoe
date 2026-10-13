@@ -1,7 +1,7 @@
 # z-contact — l'effet au point de contact
 
 Le clic laisse une trace **là où le doigt a touché**. Un seul écouteur global, **zéro
-câblage par composant** : tu écris la recette **une fois**, à plat, et toute la page
+câblage par composant** : vous écrivez la recette **une fois**, à plat, et toute la page
 répond.
 
 ```html

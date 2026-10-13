@@ -3,12 +3,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Zoé — le socle</title>
-<meta name="description" content="Le socle de Zoé : tu écris le sens, Zoé fait le dessin, le vivant et la veille. HTML pour Google, CSS pour l'œil.">
+<meta name="description" content="Le socle de Zoé : vous écrivez le sens en HTML, Zoé porte les états, vous peignez par la peau. Light DOM, zéro dépendance, lisible par les moteurs et par les IA.">
 
 <script>
 	if (location.protocol === "file:") document.write(
 		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 system-ui,sans-serif">' +
-		'<b>Ouverte en file://.</b> Lance <code>node scripts/serve.mjs 5173</code> puis ' +
+		'<b>Ouverte en file://.</b> Lancez <code>npm run dev</code> puis ' +
 		'<code>http://localhost:5173/docs/intro.html</code>.</div>'
 	);
 </script>
@@ -17,7 +17,7 @@
 
 <style>
 	/* Décor minimal — le corps de l'article est habillé par la PEAU (couche classless).
-	   Ici, juste le cadre de page + le bandeau, inline pour ne rien emprunter à l'article. */
+	   Ici, juste le cadre de page + le lien de retour, inline pour ne rien emprunter à l'article. */
 	body { margin: 0; padding: 3.5rem 1.5rem 6rem; background: var(--z-page); }
 	.back {
 		display: inline-block; max-width: 42rem; margin: 0 auto 2rem; padding: 0;
@@ -26,107 +26,156 @@
 	.back-wrap { max-width: 42rem; margin: 0 auto; }
 </style>
 
-<div class="back-wrap"><a class="back" href="./">← la doc · les composants</a></div>
+<div class="back-wrap"><a class="back" href="./">← la documentation</a></div>
 
 <!-- ================= L'INTRO — 100 % HTML natif, habillé par la peau ================= -->
 <article>
 	<h1>Zoé — le socle</h1>
 	<p class="lead">
-		<strong>Tu écris le sens. Zoé fait le reste.</strong> Trois mots dans ton HTML, et tu
-		obtiens un élément complet — beau, animé, cliquable, indexable. Cette page en est la
-		preuve : elle est écrite en HTML nu, et c'est la <em>peau</em> qui l'habille.
+		<strong>Vous écrivez le sens. Zoé porte les états. La peau peint.</strong> Trois mots dans
+		votre HTML, et vous obtenez un élément complet — vivant, accessible, animé, indexable.
+		Cette page en est la preuve : elle est écrite en HTML nu, et c'est la <em>peau</em> qui
+		l'habille.
 	</p>
 
 	<h2>La promesse, en une ligne</h2>
-	<pre><code>&lt;z-button&gt;Envoyer&lt;/z-button&gt;</code></pre>
+	<pre><code>&lt;z-checkbox name="lettre"&gt;Recevoir la lettre&lt;/z-checkbox&gt;</code></pre>
 	<p>
-		Pas de <code>&lt;div&gt;</code> de structure, pas de JavaScript à câbler. Le bouton
-		réagit (survol, appui, focus, chargement), il part dans un <code>&lt;form&gt;</code>,
-		il se laisse habiller par n'importe quelle peau. Tu n'as écrit que le <strong>sens</strong>.
+		Pas de <code>&lt;div&gt;</code> de structure, pas de JavaScript à câbler. La case réagit
+		(survol, appui, focus, cochée), elle part dans un <code>&lt;form&gt;</code>, elle se laisse
+		habiller par n'importe quelle peau. Vous n'avez écrit que le <strong>sens</strong>.
 	</p>
 
 	<h2>Le partage : HTML · CSS · Zoé</h2>
 	<p>Toute Zoé tient dans cette répartition. Chacun son rôle, jamais l'un dans l'autre :</p>
 	<table>
-		<thead><tr><th>La couche</th><th>Porte…</th><th>Lu par Google ?</th></tr></thead>
+		<thead><tr><th>La couche</th><th>Porte…</th><th>Lue par les moteurs ?</th></tr></thead>
 		<tbody>
-			<tr><td><strong>HTML</strong></td><td>le <strong>sens</strong> (le texte, le rôle)</td><td>oui</td></tr>
-			<tr><td><strong>CSS</strong></td><td>le <strong>dessin</strong> (les couches, le mouvement)</td><td>non</td></tr>
-			<tr><td><strong>Zoé</strong></td><td>le <strong>vivant</strong> (les états), pose les couches, <strong>veille</strong></td><td>—</td></tr>
+			<tr><td><strong>HTML</strong></td><td>le <strong>sens</strong> (le texte, le rôle, les pièces que vous écrivez)</td><td>oui</td></tr>
+			<tr><td><strong>CSS</strong></td><td>le <strong>dessin</strong> (la peau, le mouvement)</td><td>non</td></tr>
+			<tr><td><strong>Zoé</strong></td><td>le <strong>vivant</strong> (les états), l'accessibilité, le formulaire</td><td>—</td></tr>
 		</tbody>
 	</table>
 	<blockquote>
-		<p>Le HTML est pour Google. Le CSS est pour l'œil. Zoé fait tenir les deux.</p>
+		<p>Le HTML est pour les moteurs. Le CSS est pour l'œil. Zoé fait tenir les deux.</p>
 	</blockquote>
 
-	<h2>Le SEO est un acquis, pas un combat</h2>
+	<h2>Le référencement est un acquis, pas un combat</h2>
 	<p>
-		Le contenu reste <strong>natif</strong> : un titre est un <code>&lt;h1&gt;</code>, un
-		lien un <code>&lt;a href&gt;</code>, un paragraphe un <code>&lt;p&gt;</code>. Google les
-		lit tout de suite, sans JavaScript — c'est le <a href="./contrat-seo.md">Light DOM</a>.
-		La peau les <strong>habille</strong>, elle ne les remplace jamais.
+		Le contenu reste <strong>natif</strong> : un titre est un <code>&lt;h1&gt;</code>, un lien
+		un <code>&lt;a href&gt;</code>, un paragraphe un <code>&lt;p&gt;</code>. Les moteurs — et
+		les IA qui lisent le HTML source — les voient tout de suite, sans JavaScript. C'est le
+		<a href="./contrat-seo.md">light DOM</a> : Zoé n'enferme rien dans un shadow root et
+		n'injecte aucune balise. La peau <strong>habille</strong> le natif, elle ne le remplace
+		jamais.
 	</p>
 	<p>
-		Seuls les <strong>widgets</strong> — boutons, curseurs, onglets, ce qui n'a aucune valeur
-		pour l'index — deviennent des <code>z-*</code>. La règle tient en une bascule :
+		Seuls les <strong>widgets</strong> — boutons, cases, curseurs, onglets, boîtes de dialogue,
+		ce qui n'a aucune valeur pour l'index — deviennent des <code>z-*</code>. La règle tient en
+		une bascule :
 	</p>
 	<blockquote>
-		<p>Lu par Google → natif, habillé par la peau. Cliqué → <code>z-*</code>.</p>
+		<p>Lu par les moteurs → natif, habillé par la peau. Cliqué → <code>z-*</code>.</p>
 	</blockquote>
 
-	<h2>Les couches : le nom dit la place</h2>
+	<h2>Les états : des mots que le navigateur connaît</h2>
 	<p>
-		Sous un composant, le dessin est fait de <strong>couches</strong> — des <code>&lt;div&gt;</code>
-		muets, nommés par leur <strong>rôle</strong>. Et le rôle porte sa position :
+		Chaque élément Zoé pose lui-même ce qui lui arrive — <code>over</code>, <code>press</code>,
+		<code>release</code>, <code>releaseOut</code>, <code>drag</code>, <code>focus</code>,
+		<code>current</code>, <code>loading</code>, <code>error</code>, <code>success</code>… — en
+		<code>:state()</code>, le sélecteur natif prévu pour les custom elements. Vous ne gérez
+		rien ; vous peignez :
 	</p>
+	<pre><code>z-button:state(over)    { --z-button--background__color: var(--z-accent-soft); }
+z-button:state(press)   { scale: .97; }
+z-button:state(loading) { opacity: .6; }</code></pre>
+	<p>
+		Les états durables sont des <strong>attributs</strong> : <code>&lt;z-button loading&gt;</code>
+		en HTML, <code>btn.setState("loading")</code> en JavaScript, <code>:state(loading)</code> en
+		CSS — une seule vérité, trois façons de la lire.
+	</p>
+
+	<h2>Les calques : ce que vous écrivez, Zoé le peint</h2>
+	<p>
+		Un composant s'écrit de deux façons. <strong>Court</strong>, une ligne, le CSS peint l'hôte.
+		<strong>En calques</strong>, chaque pièce est un <code>&lt;z-layer part="…"&gt;</code> que
+		vous écrivez vous-même — donc chaque pièce peut bouger seule :
+	</p>
+	<pre><code>&lt;z-checkbox&gt;
+  &lt;z-layer part="background"&gt;&lt;/z-layer&gt;
+  &lt;z-layer part="marker"&gt;
+    &lt;z-layer part="ring"&gt;&lt;/z-layer&gt;
+    &lt;z-layer part="dot"&gt;&lt;/z-layer&gt;
+  &lt;/z-layer&gt;
+  &lt;z-layer part="infos"&gt;
+    &lt;z-layer part="label"&gt;Recevoir la lettre&lt;/z-layer&gt;
+  &lt;/z-layer&gt;
+  &lt;z-layer part="contact"&gt;&lt;/z-layer&gt;
+&lt;/z-checkbox&gt;</code></pre>
+	<p>
+		Les deux formes lisent les mêmes tokens et se comportent pareil. Le <strong>lexique est
+		partagé</strong> : <code>background</code>, <code>marker</code>, <code>ring</code>,
+		<code>dot</code>, <code>infos</code>, <code>label</code>, <code>contact</code> veulent dire
+		la même chose dans chaque composant — c'est ce qui permet à une peau de peindre un composant
+		qu'elle ne connaît pas. Zoé ne génère <strong>jamais</strong> un calque : ce que vous
+		écrivez est ce que vous déboguez.
+	</p>
+
+	<h2>Le pacte : une grammaire, pas un dictionnaire</h2>
+	<pre><code>--z-{composant}[--{pièce}]__{propriété-css}      ce que l'on peint
+z-{composant}:state({état})                      quand</code></pre>
+	<p>
+		Les frontières sont <strong>doublées</strong> (<code>--</code> entre le composant et la pièce,
+		<code>__</code> avant la propriété), les mots restent simples. Le nom de n'importe quoi se
+		<strong>déduit</strong>, il ne se mémorise pas — pour vous comme pour une IA. Un état ne
+		repeint pas : il <strong>redéfinit une swatch</strong>, et tout ce qui la boit suit, sans
+		fuir vers les voisins.
+	</p>
+	<pre><code>z-checkbox:state(current) { --z-checkbox--marker__background-checked: #ff2d55; }</code></pre>
+
+	<h2>La peau : un fichier, tout change</h2>
+	<p>
+		Une peau est un fichier CSS de tokens (<code>--z-accent</code>, <code>--z-surface</code>,
+		<code>--z-radius</code>, <code>--z-font</code>…) posés sur <code>:root</code>, plus la couche
+		qui habille le HTML natif. Changer de peau, c'est changer un <code>&lt;link&gt;</code>. Deux
+		peaux sont livrées — <em>HighTech</em>, la planche d'ingénieur, et <em>Claude</em>, l'encre
+		chaude — et le sélecteur en haut à droite de chaque page les échange en direct.
+	</p>
+
+	<h2>Les outils : des nombres donnés au CSS</h2>
 	<ul>
-		<li><code>.z-background</code> → au <strong>fond</strong></li>
-		<li><code>.z-label</code> → le <strong>contenu</strong>, au milieu</li>
-		<li><code>.z-hitArea</code> → <strong>devant</strong>, capte le geste</li>
-	</ul>
-	<p>
-		Tu n'écris jamais ces couches dans le HTML. <strong>C'est le CSS qui les réclame</strong> :
-		dès qu'une règle vise <code>.z-background</code>, Zoé la lit, crée la couche et la pose à
-		sa place. Tu inventes un rôle à toi — <code>.z-cacahuete</code> ? Elle le crée aussi, mais
-		en neutre, et te dit gentiment de lui donner sa place. <strong>Aucun plafond.</strong>
-	</p>
-	<p>
-		Un exemple qui bouge — un carré derrière, une icône qui rebondit à l'apparition, et en
-		chargement le texte s'efface pour ne laisser que l'icône. <strong>Tout est en CSS ; le
-		HTML n'a pas bougé d'un mot :</strong>
-	</p>
-	<pre><code>z-button &gt; .z-background     { background: var(--z-accent); border-radius: 8px; }
-z-button &gt; .z-icon           { content: "✈"; z-index: 4; }
-
-z-button:state(enter) &gt; .z-icon   { animation: boing .55s var(--z-ease-spring); }
-z-button:state(loading) &gt; .z-label { opacity: 0; }        /* le texte part */
-z-button:state(loading) &gt; .z-icon  { animation: spin 1s linear infinite; }</code></pre>
-
-	<h2>Ce que le socle garantit</h2>
-	<p>Sur cette base, tu composes des éléments :</p>
-	<ul>
-		<li><strong>visuels</strong> — les couches et le CSS dessinent tout ;</li>
-		<li><strong>animés</strong> — les états (<code>:state(over)</code>, <code>:state(loading)</code>…) et les mouvements partagés, chaque pièce à son horloge ;</li>
-		<li><strong>interconnectés</strong> — le <strong><code>z-channel</code></strong> : un élément pilote une valeur qui <strong>traverse</strong> jusqu'à un autre. Un curseur repeint une carte à l'autre bout de la page, <em>sans une ligne de JavaScript de câblage</em>.</li>
+		<li><strong><code>&lt;z-contact&gt;</code></strong> — une balise dans la page, et chaque clic reçoit l'effet signé par la peau, au point de contact.</li>
+		<li><strong><code>channel="nom"</code></strong> — deux éléments reliés par un nom : ce qui change ici arrive là-bas, en variable CSS. C'est le CSS qui décide quoi en faire.</li>
+		<li><strong>les capteurs</strong> — <code>&lt;z-pointer&gt;</code>, <code>&lt;z-scroll&gt;</code>, <code>&lt;z-inview&gt;</code>, <code>&lt;z-size&gt;</code>, <code>&lt;z-drag&gt;</code> posent des <strong>nombres nus</strong> ; un nombre se multiplie en distance, en angle, en opacité.</li>
+		<li><strong><code>z-motion</code></strong> — les mouvements partagés (<code>pop</code>, <code>shake</code>, <code>ripple</code>…), à brancher sur n'importe quel état.</li>
 	</ul>
 
-	<h2>Le pacte</h2>
+	<h2>Pour les IA, et pour l'éditeur</h2>
 	<p>
-		Cette base est <strong>figée</strong>. On ne la re-dessine pas — on <strong>compose
-		par-dessus</strong>. C'est le deal : le socle porte tout ce que tu imagines, à condition
-		qu'on le laisse tranquille et qu'on bâtisse dessus plutôt que de le refaire.
+		Tout ce qui précède est <strong>généré depuis le code</strong>, jamais maintenu à la main :
+		la <a href="./GRAMMAR.md">grammaire</a>, le <a href="../llms.txt">llms.txt</a> à la racine,
+		le manifeste standard, l'autocomplétion VS Code — et un <strong>serveur MCP</strong> qui
+		donne à un agent la fiche de chaque élément, une recherche dans le vocabulaire et un
+		vérificateur. En développement, <code>z-lint</code> signale dans la console toute balise,
+		attribut, état ou token mal écrit, avec le nom valide le plus proche.
+	</p>
+
+	<h2>Le pacte, côté socle</h2>
+	<p>
+		Cette base est <strong>figée</strong>. On ne la redessine pas — on <strong>compose
+		par-dessus</strong>. Le socle porte tout ce que vous imaginez, à condition qu'on le laisse
+		tranquille et qu'on bâtisse dessus plutôt que de le refaire.
 	</p>
 	<hr>
 	<p>
 		<small>
-			Sous le capot, Zoé tient en peu de fichiers — CSS : <code>tokens</code> (les valeurs) ·
-			<code>layers</code> (les places) · <code>motion</code> (les mouvements). JS :
-			<code>z-element</code> (le vivant) · <code>zoé-layers</code> (les couches) ·
-			<code>zoé-console</code> (la veille). Chaque composant, lui, reste maigre : il dit
-			seulement « je suis un bouton ».
+			Sous le capot, le socle tient en peu de fichiers — <code>core/z-element</code> (le
+			vivant : états, formulaire, déclencheurs) · <code>core/z-layer</code> (le calque) ·
+			<code>zoe.css</code> et <code>zoe.js</code> (les points d'entrée). Chaque composant,
+			lui, reste maigre : il dit seulement « je suis un bouton ».
 		</small>
 	</p>
-	<p><a href="./">→ Voir les composants dans la doc</a></p>
+	<p><a href="./">→ Voir les éléments dans la documentation</a></p>
 </article>
 
 <script type="module" src="../examples/skin-switch.js"></script>

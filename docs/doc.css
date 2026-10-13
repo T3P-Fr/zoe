@@ -158,14 +158,27 @@ body { margin: 0; background: var(--z-page); color: var(--z-ink);
 .dot.on { background: var(--z-accent); border-color: var(--z-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 25%, transparent); }
 .viz-row:has(.dot.on) { color: var(--z-ink); font-weight: 600; }
 
-/* ── « ce que tu écris » : le HTML minimal + la promesse zéro JS ── */
-.usage { margin-bottom: 1.2rem; }
-.usage pre { background: color-mix(in srgb, var(--z-ink) 92%, #000); color: var(--z-page); padding: .9rem 1.1rem; border-radius: var(--z-radius, 8px); overflow-x: auto; font-size: .85rem; line-height: 1.7; margin: 0 0 .6rem; }
-.usage pre code { font-family: ui-monospace, monospace; }
-.promise { margin: 0; font-size: .95rem; color: var(--z-ink-soft); }
-.promise b { color: var(--z-accent); }
-/* aperçu d'un composant (quelques états, pas le tester) */
-.preview { display: flex; gap: 1.2rem; flex-wrap: wrap; align-items: center; padding: 1.8rem; border: 1px solid var(--z-line-soft); border-radius: var(--z-radius, 8px); background: var(--z-surface-raised); margin-bottom: 1.4rem; }
+/*
+	── L'EXEMPLE : le rendu à gauche, son HTML exact à droite ──
+	La cause et l'effet dans le même regard (loi de la vue). Pour un élément qui agit sur
+	toute la page, pas de rendu : le code seul (.code-only), l'essai est au-dessus.
+	Styleguide docs.example
+*/
+.links { display: flex; gap: 1.1rem; flex-wrap: wrap; margin: -.8rem 0 1.4rem; font: 500 .78rem/1 var(--doc-mono); }
+.links a { color: var(--z-ink-soft); text-decoration: none; border-bottom: 1px solid var(--z-line-soft); padding-bottom: 2px; transition: color .12s, border-color .12s; }
+.links a:hover { color: var(--z-accent); border-color: var(--z-accent); }
+.example { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; align-items: start; margin: .3rem 0 1.4rem; }
+.example.code-only { grid-template-columns: 1fr; }
+.example-render { display: flex; flex-direction: column; align-items: flex-start; gap: .9rem; padding: 1.4rem; min-height: 5rem;
+	border: 1px solid var(--z-line-soft); border-radius: var(--z-radius, 8px); background: var(--z-surface-raised);
+	font-family: var(--z-font); font-size: var(--z-font-size, 14px); color: var(--z-ink); }
+.example-render form { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+.example-code { margin: 0; padding: .9rem 1.1rem; border-radius: var(--z-radius, 8px); overflow-x: auto; min-width: 0;
+	background: color-mix(in srgb, var(--z-ink) 92%, #000); color: var(--z-page); font: .78rem/1.65 var(--doc-mono); white-space: pre; tab-size: 2; }
+@media (max-width: 900px) { .example { grid-template-columns: 1fr; } }
+/* les calques : les enfants décalés sous leur parent */
+.depth-1 { padding-left: 1.1rem; } .depth-2 { padding-left: 2.2rem; } .depth-3 { padding-left: 3.3rem; }
+.tree { color: var(--z-ink-soft); }
 /* Le renvoi « mêmes états que z-element » : une note propre, filet d'accent, pas une boîte morte en pointillés. */
 .seealso { padding: .85rem 1.1rem; border-left: 3px solid var(--z-accent); border-radius: 0 8px 8px 0;
 	background: var(--z-surface-raised); color: var(--z-ink); opacity: .85; font-size: .95rem; margin: .4rem 0 1.4rem; }
