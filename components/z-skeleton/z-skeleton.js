@@ -4,8 +4,9 @@
 	------------------------------------------------------------
 	Le placeholder gris qui occupe la place d'un contenu pas encore arrivé, avec un
 	reflet qui balaye (shimmer) pour dire « ça charge, ne pars pas ». `ZSkeleton extends
-	ZElement` lui donne la grammaire d'états (dont `enter`, pour ne jamais poper sec) ;
-	il n'ajoute quasi rien — c'est un composant d'AFFICHAGE pur, peint par z-skeleton.css.
+	ZElement` lui donne la grammaire d'états — `enter` et `exit` sont peints en fondu, pour
+	ne jamais poper sec ni disparaître d'un coup quand le vrai contenu arrive ; il n'ajoute
+	quasi rien — c'est un composant d'AFFICHAGE pur, peint par z-skeleton.css.
 
 	    <z-skeleton></z-skeleton>                       (un bloc)
 	    <z-skeleton radius="pill" h="1em"></z-skeleton>  (une ligne de texte)
@@ -19,7 +20,7 @@
 	Les tailles `w`/`h` sont des RACCOURCIS de confort : l'auteur peut tout aussi bien
 	styler la boîte lui-même (width/height en CSS). On ne pose que ce qui est fourni.
 
-	Doc narrative : z-skeleton.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-skeleton.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 18.0
 	============================================================
 */
@@ -38,7 +39,7 @@ export class ZSkeleton extends ZElement {
 			es: "Un marcador de carga que brilla (skeleton). Puramente visual y aria-hidden — un señuelo que ocupa el lugar hasta que llega el contenido real."
 		},
 		attributes: [
-			{ name: "w", type: "string", description: { en: "Convenience width (any CSS length, e.g. \"12em\"). You may style the box yourself instead.", fr: "Largeur de confort (toute longueur CSS, ex. \"12em\"). Tu peux aussi styler la boîte toi-même.", es: "Ancho de conveniencia (cualquier longitud CSS, ej. \"12em\"). También puedes estilizar la caja tú mismo." } },
+			{ name: "w", type: "string", description: { en: "Convenience width (any CSS length, e.g. \"12em\"). You may style the box yourself instead.", fr: "Largeur de confort (toute longueur CSS, ex. \"12em\"). Vous pouvez aussi styler la boîte vous-même.", es: "Ancho de conveniencia (cualquier longitud CSS, ej. \"12em\"). También puede estilizar la caja usted mismo." } },
 			{ name: "h", type: "string", description: { en: "Convenience height (any CSS length, e.g. \"1em\").", fr: "Hauteur de confort (toute longueur CSS, ex. \"1em\").", es: "Altura de conveniencia (cualquier longitud CSS, ej. \"1em\")." } },
 			{ name: "radius", type: "\"pill\" | \"circle\"", description: { en: "\"pill\" for a text line, \"circle\" for an avatar. Default: the skin's radius.", fr: "\"pill\" pour une ligne de texte, \"circle\" pour un avatar. Défaut : le rayon de la peau.", es: "\"pill\" para una línea de texto, \"circle\" para un avatar. Predeterminado: el radio del tema." } }
 		],

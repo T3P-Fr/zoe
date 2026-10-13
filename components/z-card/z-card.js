@@ -19,7 +19,7 @@
 	    relâché (sans faire défiler la page) ; les deux émettent un vrai `click`.
 	Sans `interactive`, aucun de ces branchements — la carte reste un conteneur inerte.
 
-	Doc narrative : z-card.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-card.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 15.0
 	============================================================
 */

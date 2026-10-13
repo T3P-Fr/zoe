@@ -18,7 +18,7 @@
 	Purement informatif : ça se lit, ça ne se clique pas. L'ordre HTML (label → value →
 	delta) fait aussi l'ordre de lecture ; le CSS ne fait que l'espacer et le colorer.
 
-	Doc narrative : z-stat.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-stat.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 22.0
 	============================================================
 */

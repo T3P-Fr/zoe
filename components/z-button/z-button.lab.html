@@ -27,7 +27,7 @@
 		ESSAI — une variable peut-elle APPARTENIR à un composant,
 		sans Shadow DOM ?
 		------------------------------------------------------------
-		LA QUESTION (Christophe, 2026-07-20) : « faut-il un Shadow pour y stocker
+		LA QUESTION : « faut-il un Shadow pour y stocker
 		des --x-mouse par composant, des --this-width appartenant au composant ? »
 
 		CE QUE CETTE PAGE MONTRE, dans l'ordre :
@@ -73,7 +73,7 @@
 
 		Trois nombres, et le dessin du dégradé suit. La page a aussi des curseurs qui
 		écrivent ces trois valeurs en direct : le fichier donne le POINT DE DÉPART, les
-		curseurs servent à chercher. Quand tu as trouvé, tu recopies les chiffres ici.
+		curseurs servent à chercher. Quand vous avez trouvé, vous recopiez les chiffres ici.
 	*/
 	:root {
 		/* Le rayon de la tache. Petit = un point qui suit le doigt ; grand = le bouton
@@ -88,7 +88,7 @@
 		   baisser à 40 % donne un disque net, avec un bord franc. */
 		--halo__bord: 100%;
 
-		/* La couleur. Par défaut celle de la peau — mets une couleur en dur pour t'en
+		/* La couleur. Par défaut celle de la peau — mettez une couleur en dur pour vous en
 		   détacher (le swap de peau ne la suivra plus). */
 		--halo__couleur: var(--z-accent);
 	}
@@ -270,20 +270,20 @@
 
 <h1><code>z-button</code> — une variable peut-elle appartenir au composant ?</h1>
 <p class="lead">
-	Sans Shadow DOM. <b>Survole les boutons</b> : la tache de lumière suit ta souris, et
-	c'est une variable CSS posée sur le bouton qui la déplace. Change la peau en haut à
+	Sans Shadow DOM. <b>Survolez les boutons</b> : la tache de lumière suit votre souris, et
+	c'est une variable CSS posée sur le bouton qui la déplace. Changez la peau en haut à
 	droite — tout suit.
 </p>
 
 <h2>0 · Le pupitre — <b>tous</b> ses paramètres, en direct</h2>
-<z-button id="pupitre-sujet">Touche les réglages, je réagis</z-button>
+<z-button id="pupitre-sujet">Touchez les réglages, je réagis</z-button>
 <p class="note">
 	Il n'est pas écrit à la main : il est <b>généré depuis la fiche du composant</b> — la
 	même source que la doc et l'autocomplétion. Un paramètre ajouté au code apparaît ici
 	tout seul, et il ne peut jamais en manquer un. Les <b>attributs</b> sont des raccourcis
 	(un mot pose plusieurs réglages) ; les <b>variables CSS</b> sont le réglage fin, écrit
 	sur la balise. Les <b>états</b>, en bas, ne se règlent pas : ils s'allument quand ils
-	arrivent (survole, presse, lâche dehors).
+	arrivent (survolez, pressez, lâchez dehors).
 </p>
 
 <h2>1 · Trois boutons, trois valeurs — aucune capsule</h2>
@@ -328,7 +328,7 @@
 </p>
 
 <h2>1 bis · Les variants — <code>size</code>, <code>tone</code>, <code>width</code></h2>
-<p class="note">Aucun JS : ce sont des attributs lus par des sélecteurs CSS. Change la peau — HighTech resserre l'échelle, Claude l'étale.</p>
+<p class="note">Aucun JS : ce sont des attributs lus par des sélecteurs CSS. Changez la peau — HighTech resserre l'échelle, Claude l'étale.</p>
 
 <div class="row" style="align-items:baseline">
 	<z-button size="xs">xs</z-button>
@@ -406,7 +406,7 @@
 </div>
 
 <p class="verdict">
-	Regarde les <b>écarts entre les blocs</b>, pas seulement les blocs : ils grandissent
+	Regardez les <b>écarts entre les blocs</b>, pas seulement les blocs : ils grandissent
 	aussi. Un cran de <code>size</code> ne grossit pas un texte — il fait <b>respirer tout
 	un ensemble</b>, texte, cadres et vides compris.
 </p>
@@ -448,7 +448,7 @@
 <h2>2 · La fuite — et la ligne qui l'arrête</h2>
 <p class="note">
 	Les deux cartes posent <b>leurs propres coordonnées</b> (comme le ferait un composant
-	parent). Survole la <b>carte</b>, pas le bouton, puis regarde le bouton.
+	parent). Survolez la <b>carte</b>, pas le bouton, puis regardez le bouton.
 </p>
 
 <div class="row" style="align-items:stretch">

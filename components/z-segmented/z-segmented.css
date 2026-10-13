@@ -92,6 +92,13 @@ z-segmented {
 		box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 40%, transparent);
 	}
 
+	/* Un seul segment coupé (<button disabled>) : `color: inherit` plus haut efface le
+	   gris natif du bouton — sans cette règle, rien ne le distinguerait de ses voisins. */
+	> [part=segment]:disabled {
+		color: var(--z-disabled);
+		cursor: not-allowed;
+	}
+
 	/*
 		═══ COMMUN ═══
 		Styleguide 26.1.3

@@ -11,10 +11,10 @@
 	    <z-spinner label="Envoi en cours…"></z-spinner>
 
 	`label` = le texte d'accessibilité (défaut « Chargement… »). Visuellement, il n'y a que
-	l'anneau ; un lecteur d'écran, lui, annonce l'attente. On verra le LOOK ensemble plus
-	tard — ici, la structure et l'accessibilité d'abord.
+	l'anneau ; un lecteur d'écran, lui, annonce l'attente. Le look (vitesse, épaisseur)
+	appartient au CSS et à la peau — ici, la structure et l'accessibilité.
 
-	Doc narrative : z-spinner.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-spinner.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 10.0
 	============================================================
 */
@@ -38,7 +38,9 @@ export class ZSpinner extends ZElement {
 			{ name: "tone", type: "\"main\" | \"complement\" | \"soft\" | \"success\" | \"danger\"", description: { en: "Colour, from the socle variant.", fr: "La couleur, via le variant du socle.", es: "El color, mediante el variante del zócalo." } },
 			{ name: "size", type: "\"xs\" | \"s\" | \"m\" | \"l\" | \"xl\"", description: { en: "Size factor, from the socle variant.", fr: "Le facteur de taille, via le variant du socle.", es: "El factor de tamaño, mediante el variante del zócalo." } }
 		],
-		events: [],
+		events: [
+			{ name: "z-state", description: { en: "Emitted on every state change. detail: { states, changed, on }.", fr: "Émis à chaque changement d'état. detail : { states, changed, on }.", es: "Emitido en cada cambio de estado. detail: { states, changed, on }." } }
+		],
 		states: ZElement.api.states,
 		layers: [{ part: "marker", description: { en: "The spinning ring.", fr: "L'anneau qui tourne.", es: "El anillo que gira." } }]
 	};

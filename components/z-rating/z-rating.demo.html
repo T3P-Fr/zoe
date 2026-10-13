@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <title>z-rating — démo</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+      'puis passe par <code>http://localhost:5173/</code>.</div>'
+    );
+  </script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+  <style>
+    /* REPEINT PAR LE PACTE — la taille des étoiles et la couleur des pleines. */
+    .grande { --z-rating__size: 2.2em; --z-rating--full__color: var(--z-danger); }
+
+    /*
+      LA PREUVE DES CALQUES — le fond est une pièce : il apparaît sous la rangée au
+      focus clavier, en s'étirant. En forme courte, la rangée n'a pas de fond à part.
+    */
+    .fond > [part=background] {
+      --z-layer--background__bleed: .3em;
+      border-radius: var(--z-radius-pill);
+      background: var(--z-accent-soft);
+      scale: .6 1;
+      opacity: 0;
+      transition: scale var(--z-dur-select) var(--z-ease-spring), opacity var(--z-dur) var(--z-ease);
+    }
+    .fond:state(focus) > [part=background] { scale: 1; opacity: 1; }
+  </style>
+
+  <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+  <z-contact></z-contact>
+
+  <h1><code>z-rating</code></h1>
+  <p class="lead">Une note en étoiles. Le JS traduit le geste en un <b>entier</b> et publie deux nombres (<code>--z-rating__value</code>, <code>--z-rating__stars</code>) ; le CSS écrit les étoiles — aucun nœud injecté. Changez la peau en haut à droite — tout suit.</p>
+
+  <h2>1 · Forme courte</h2>
+  <div class="stack" data-code>
+    <z-rating value="3" aria-label="Votre note"></z-rating>
+    <z-rating value="4" max="5" name="note" aria-label="Votre note"></z-rating>
+    <z-rating value="2" readonly aria-label="Note moyenne"></z-rating>
+    <z-rating value="0" aria-label="Pas encore notée"></z-rating>
+    <z-rating value="3" disabled aria-label="Indisponible"></z-rating>
+  </div>
+  <p class="note">Cliquez une étoile : elle devient la note. Au clavier, <kbd>→</kbd> <kbd>↑</kbd> ajoutent, <kbd>←</kbd> <kbd>↓</kbd> retirent, <kbd>Début</kbd> / <kbd>Fin</kbd> vont aux bornes. <code>readonly</code> se lit sans se modifier ; <code>disabled</code> coupe tout.</p>
+
+  <h2>2 · En calques — <code class="tag">background</code> · <code class="tag">marker</code> · <code class="tag">contact</code></h2>
+  <div class="stack" data-code>
+    <z-rating value="3" aria-label="Votre note, en calques">
+      <z-layer part="background"></z-layer>
+      <z-layer part="marker"></z-layer>
+      <z-layer part="contact"></z-layer>
+    </z-rating>
+    <z-rating class="fond" value="4" aria-label="Au focus, le fond apparaît">
+      <z-layer part="background"></z-layer>
+      <z-layer part="marker"></z-layer>
+      <z-layer part="contact"></z-layer>
+    </z-rating>
+  </div>
+  <p class="note">Même rendu que la forme courte : les étoiles vivent dans <code>marker</code>. La seconde rangée fait apparaître son <b>fond</b> au focus (<kbd>Tab</kbd>) — une pièce à part, impossible à viser en forme courte.</p>
+
+  <h2>3 · Échelle, taille, couleur</h2>
+  <div class="stack" data-code>
+    <z-rating value="7" max="10" aria-label="Sur dix"></z-rating>
+    <z-rating value="2" max="3" aria-label="Sur trois"></z-rating>
+    <z-rating class="grande" value="4" aria-label="Grande, en rouge"></z-rating>
+  </div>
+  <pre class="z-code-manuel">.grande { --z-rating__size: 2.2em; --z-rating--full__color: var(--z-danger); }</pre>
+  <p class="note"><code>max</code> est le nombre d'étoiles — la chaîne publiée en compte autant. La taille et les deux couleurs (vides, pleines) sont des tokens.</p>
+
+  <h2>4 · Vivante — la note s'écrit à côté</h2>
+  <div class="stack" data-code>
+    <z-rating id="avis" value="0" aria-label="Votre avis"></z-rating>
+  </div>
+  <pre class="z-code-manuel">avis.addEventListener("input", () => { dit.textContent = `${avis.value} / ${avis.max}`; });
+avis.addEventListener("change", () => { dit.textContent += " — geste terminé"; });</pre>
+  <p class="note" id="dit">Aucune note. <code>input</code> suit chaque cran, <code>change</code> clôt le geste (clic posé, touche relevée).</p>
+
+  <h2>5 · Elle part dans le formulaire</h2>
+  <form id="formulaire" class="stack" data-code="bloc">
+    <z-rating name="qualite" required aria-label="Qualité (requise)"></z-rating>
+    <z-rating name="livraison" value="4" aria-label="Livraison"></z-rating>
+    <fieldset disabled style="border:1px solid var(--z-line);border-radius:var(--z-radius);padding:.7rem 1rem">
+      <legend style="font-size:.8rem;color:var(--z-ink-soft)">fieldset désactivé</legend>
+      <z-rating name="service" value="3" aria-label="Service"></z-rating>
+    </fieldset>
+    <div style="display:flex;gap:.6rem">
+      <button type="submit">Envoyer</button>
+      <button type="reset">Réinitialiser</button>
+    </div>
+  </form>
+  <p class="note" id="envoi">Rien envoyé pour l'instant. La première note est <code>required</code> : à 0, le formulaire refuse.</p>
+
+  <script type="module">
+    import "../../examples/skin-switch.js";
+    import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+    import "../../tools/z-contact/z-contact.js";
+    import "../../core/z-layer/z-layer.js";
+    import "./z-rating.js";
+
+    /* La note vivante : on écoute `input` et `change`, on écrit une phrase. */
+    const avis = document.querySelector("#avis");
+    const dit = document.querySelector("#dit");
+    avis.addEventListener("input", () => { dit.textContent = `${avis.value} / ${avis.max}`; });
+    avis.addEventListener("change", () => { dit.textContent = `${avis.value} / ${avis.max} — geste terminé`; });
+
+    /* Le formulaire : on montre ce qui PART vraiment, à côté du bouton (loi de la vue). */
+    const formulaire = document.querySelector("#formulaire");
+    const envoi = document.querySelector("#envoi");
+    formulaire.addEventListener("submit", (evenement) => {
+      evenement.preventDefault();
+      const donnees = [...new FormData(formulaire)].map(([cle, valeur]) => `${cle}=${valeur}`);
+      envoi.textContent = donnees.length ? `Envoyé : ${donnees.join(" · ")}` : "Envoyé : rien du tout.";
+    });
+    formulaire.addEventListener("reset", () => { envoi.textContent = "Remis à zéro — chaque note revient à son HTML d'origine."; });
+  </script>
+
+</html>

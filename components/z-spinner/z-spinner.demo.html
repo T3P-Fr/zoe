@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-spinner — démo</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+  if (location.protocol === "file:") document.write(
+    '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+    '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+    'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+    'puis passe par <code>http://localhost:5173/</code>.</div>'
+  );
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+  /* Le retour se lit JUSTE À CÔTÉ du bouton qui l'a déclenché — jamais à l'autre bout. */
+  .attente { display: inline-flex; align-items: center; gap: .5em; color: var(--z-ink-soft); }
+</style>
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact></z-contact>
+
+<h1><code>z-spinner</code></h1>
+<p class="lead">Un indicateur d'attente réduit à l'essentiel : un anneau qui tourne en CSS, et un libellé que seul le lecteur d'écran entend (<code>role="status"</code>). Changez la peau en haut à droite — tout suit.</p>
+
+<h2>1 · Forme courte — <code class="tag">&lt;z-spinner&gt;</code></h2>
+<div class="stack" data-code>
+  <z-spinner></z-spinner>
+  <z-spinner label="Chargement des commandes"></z-spinner>
+</div>
+<p class="note">Rien à écrire : le CSS peint l'hôte, un <code>::before</code> fait l'anneau. <code>label</code> devient <code>aria-label</code> — sans lui, le spinner annonce « Chargement… ».</p>
+
+<h2>2 · Forme en calques — <code class="tag">&lt;z-layer part="marker"&gt;</code></h2>
+<div class="stack" data-code>
+  <z-spinner label="Envoi en cours…">
+    <z-layer part="marker"></z-layer>
+  </z-spinner>
+</div>
+<p class="note">Même rendu, même vitesse : l'anneau est une pièce que votre CSS peut viser sans pseudo-élément (<code>z-spinner &gt; [part=marker]</code>).</p>
+
+<h2>3 · Cinq tailles, cinq tons</h2>
+<div class="stack" data-code>
+  <div class="rangee">
+    <z-spinner size="xs"></z-spinner>
+    <z-spinner size="s"></z-spinner>
+    <z-spinner></z-spinner>
+    <z-spinner size="l"></z-spinner>
+    <z-spinner size="xl"></z-spinner>
+  </div>
+  <div class="rangee">
+    <z-spinner tone="main"></z-spinner>
+    <z-spinner tone="complement"></z-spinner>
+    <z-spinner tone="soft"></z-spinner>
+    <z-spinner tone="success"></z-spinner>
+    <z-spinner tone="danger"></z-spinner>
+  </div>
+</div>
+<p class="note">Un seul réglage : la taille du texte — la boîte (1,4 em) et le trait (.16 em) suivent. La couleur boit <code>--z-tone__fill</code>, à défaut l'accent de la peau ; <code>complement</code> et <code>soft</code>, sans surface, prennent l'encre du ton — un trait transparent n'existerait plus.</p>
+
+<h2>4 · Dans la phrase, puis dans l'attente</h2>
+<div class="stack">
+  <p style="margin:0">Vos commandes arrivent <z-spinner size="s" label="Chargement des commandes"></z-spinner> dans un instant.</p>
+  <div class="rangee">
+    <z-button id="charger">Charger les commandes</z-button>
+    <span class="attente" id="attente" hidden><z-spinner label="Chargement des commandes"></z-spinner> chargement…</span>
+    <span class="note" id="resultat" style="margin:0"></span>
+  </div>
+</div>
+<pre class="z-code-manuel">attente.hidden = false;          // le spinner apparaît à côté du bouton
+const commandes = await charge();
+attente.hidden = true;           // et disparaît : le résultat prend sa place</pre>
+<p class="note">En ligne, il se cale sur la hauteur du texte (<code>vertical-align: middle</code>). Cliquez : le retour naît à côté du bouton, là où l'œil est déjà.</p>
+
+<h2>5 · Mouvement réduit</h2>
+<div class="stack" data-code>
+  <z-spinner label="Chargement…" style="--z-spinner__speed: 2s"></z-spinner>
+</div>
+<p class="note">C'est ce que voit qui demande moins de mouvement (<code>prefers-reduced-motion</code>) : l'anneau <b>ralentit</b> à 2 s par tour, il ne disparaît pas — une attente invisible serait un mensonge. Ici forcé par le token pour le regarder.</p>
+
+<script type="module">
+  import "../../examples/skin-switch.js";
+  import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+  import "../../tools/z-contact/z-contact.js";
+  import "../../core/z-layer/z-layer.js";
+  import "../z-button/z-button.js";
+  import "./z-spinner.js";
+
+  /* L'attente simulée : deux lignes d'auteur, le spinner ne sait rien de ce qu'il attend. */
+  const charger = document.querySelector("#charger");
+  const attente = document.querySelector("#attente");
+  const resultat = document.querySelector("#resultat");
+  charger.addEventListener("click", async () => {
+    if (!attente.hidden) return;
+    resultat.textContent = "";
+    attente.hidden = false;
+    await new Promise((fini) => setTimeout(fini, 1800));
+    attente.hidden = true;
+    resultat.textContent = "12 commandes chargées.";
+  });
+</script>
+</html>

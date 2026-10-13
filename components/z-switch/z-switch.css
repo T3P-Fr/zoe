@@ -84,9 +84,13 @@ z-switch {
 
 	/*
 		═══ FORME EN CALQUES — marker = piste, dot = pastille ═══
+		`z-layer[part=…]` et pas `[part=…]` : la règle d'ancrage générique de z-layer.css
+		(`z-layer[part="marker"] > z-layer[part="dot"]` : left 50 %, translate −50 %) est
+		plus spécifique qu'un simple `[part]` et gagnerait — la pastille partirait au centre
+		de la piste et déborderait à droite une fois allumée.
 		Styleguide 8.1.2
 	*/
-	> [part=marker] {
+	> z-layer[part=marker] {
 		flex: none;
 		width: var(--z-switch--track__width);
 		height: var(--z-switch--track__height);
@@ -96,7 +100,7 @@ z-switch {
 		position: relative;
 		transition: background var(--z-dur, .24s) var(--z-ease, ease);
 	}
-	> [part=marker] > [part=dot] {
+	> z-layer[part=marker] > z-layer[part=dot] {
 		position: absolute;
 		left: var(--z-switch--thumb__inset);
 		top: 50%;
@@ -108,14 +112,14 @@ z-switch {
 		translate: 0 -50%;
 		transition: translate var(--z-dur, .24s) var(--z-ease-spring, ease-out);
 	}
-	&:has(z-layer):state(current) > [part=marker] {
+	&:has(z-layer):state(current) > z-layer[part=marker] {
 		background: var(--z-switch--track__on, var(--z-accent));
 		border-color: var(--z-switch--track__on, var(--z-accent));
 	}
-	&:has(z-layer):state(current) > [part=marker] > [part=dot] {
+	&:has(z-layer):state(current) > z-layer[part=marker] > z-layer[part=dot] {
 		translate: calc(var(--z-switch--track__width) - var(--z-switch--thumb__size) - 2 * var(--z-switch--thumb__inset)) -50%;
 	}
-	&:has(z-layer):state(focus) > [part=marker] {
+	&:has(z-layer):state(focus) > z-layer[part=marker] {
 		box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-state__color, var(--z-accent)) 40%, transparent);
 	}
 

@@ -7,17 +7,17 @@
 	<z-avatar> dedans ; Zoé n'injecte rien (ADR-0018), il ne fait que composer.
 
 	    <z-avatar-group max="4" aria-label="L'équipe">
-	      <z-avatar name="Christophe Rousseau">CR</z-avatar>
-	      <z-avatar name="Zoé" src="/img/zoe.jpg"></z-avatar>
 	      <z-avatar name="Ada Lovelace">AL</z-avatar>
-	      <z-avatar>+3</z-avatar>
+	      <z-avatar name="Grace Hopper" src="/img/grace.jpg"></z-avatar>
+	      <z-avatar name="Margaret Hamilton">MH</z-avatar>
+	      <z-avatar name="3 autres personnes">+3</z-avatar>
 	    </z-avatar-group>
 
 	`max` est un REPÈRE pour l'auteur, pas un moteur : au-delà de `max` visages, il pose
 	lui-même un dernier <z-avatar>+3</z-avatar> qui compte le reste. Zoé ne génère jamais
 	ce nœud (ADR-0018) — il n'y a pas de « donnée » derrière un composant de vue.
 
-	Doc narrative : z-avatar-group.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-avatar-group.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 23.0
 	============================================================
 */
@@ -32,7 +32,7 @@ export class ZAvatarGroup extends ZElement {
   <z-avatar name="Ada Lovelace">AL</z-avatar>
   <z-avatar name="Grace Hopper">GH</z-avatar>
   <z-avatar name="Margaret Hamilton">MH</z-avatar>
-  <z-avatar tone="soft">+4</z-avatar>
+  <z-avatar name="4 autres personnes" tone="soft">+4</z-avatar>
 </z-avatar-group>`,
 		summary: {
 			en: "A stack of overlapping z-avatar, each ringed in the page colour to stand out. On hover, the avatar lifts and comes to the front. Nothing injected.",
@@ -40,7 +40,7 @@ export class ZAvatarGroup extends ZElement {
 			es: "Una pila de z-avatar superpuestos, cada uno con un aro del color de página para destacar. Al pasar el cursor, el avatar sube y pasa al frente. Nada inyectado."
 		},
 		attributes: [
-			{ name: "max", type: "number", description: { en: "Author's guide: past this many faces, add a final <z-avatar>+N</z-avatar> yourself (no node is generated).", fr: "Repère pour l'auteur : au-delà de ce nombre de visages, ajoute toi-même un dernier <z-avatar>+N</z-avatar> (aucun nœud généré).", es: "Guía para el autor: pasado este número de caras, añade tú mismo un último <z-avatar>+N</z-avatar> (no se genera ningún nodo)." } }
+			{ name: "max", type: "number", description: { en: "Author's guide: past this many faces, add a final <z-avatar>+N</z-avatar> yourself (no node is generated).", fr: "Repère pour l'auteur : au-delà de ce nombre de visages, ajoutez vous-même un dernier <z-avatar>+N</z-avatar> (aucun nœud généré).", es: "Guía para el autor: pasado este número de caras, añada usted mismo un último <z-avatar>+N</z-avatar> (no se genera ningún nodo)." } }
 		],
 		events: [
 			{ name: "z-state", description: { en: "Emitted on every state change. detail: { states, changed, on }.", fr: "Émis à chaque changement d'état. detail : { states, changed, on }.", es: "Emitido en cada cambio de estado. detail: { states, changed, on }." } }

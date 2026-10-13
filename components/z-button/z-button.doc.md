@@ -52,7 +52,7 @@ exactement comme le natif (et l'espace ne fait pas défiler la page au passage).
 |---|---|
 | `submit` | **le défaut** — soumet le formulaire, validation comprise |
 | `reset` | le remet à son état d'origine |
-| `button` | rien : à toi de brancher un `click` |
+| `button` | rien : à vous de brancher un `click` |
 
 La soumission passe par `requestSubmit()`, pas `submit()` : lui seul déclenche la
 **validation** et l'événement `submit`. `submit()` saute les deux, en silence.
@@ -90,5 +90,5 @@ btn.setState("success", true);     // → un dev l'appelle à la fin d'un envoi
 
 ## Skin
 
-Change la peau (le fichier de tokens) : couleurs, forme, mouvement suivent. Le bouton
+Changez la peau (le fichier de tokens) : couleurs, forme, mouvement suivent. Le bouton
 ne bouge pas d'une ligne. Démo : `z-button.demo.html` (+ sélecteur de peau).

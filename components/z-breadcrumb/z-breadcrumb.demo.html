@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-breadcrumb — démo</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis passe par <code>http://localhost:5173/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+	/* Section 2 — le séparateur et son espace, par les deux tokens du composant. */
+	.slash { --z-breadcrumb__separator: "/"; --z-breadcrumb__gap: .8em; }
+	.point { --z-breadcrumb__separator: "•"; --z-breadcrumb__gap: .6em; }
+	.fleche { --z-breadcrumb__separator: "→"; }
+
+	/* Section 3 — une colonne étroite, pour voir le fil se replier. */
+	.etroit { max-width: 16rem; }
+</style>
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact></z-contact>
+
+<h1><code>z-breadcrumb</code></h1>
+<p class="lead">Vous écrivez les liens ; Zoé pose le sens (une navigation nommée) et le rythme
+	(le « › » peint par le CSS). Survolez un maillon, parcourez-les au <kbd>Tab</kbd>. Changez
+	la peau en haut à droite — tout suit.</p>
+
+<h2>1 · Le fil — <code class="tag">&lt;z-breadcrumb&gt;</code></h2>
+<div class="stack" data-code>
+	<z-breadcrumb label="Vous êtes ici">
+		<a href="#">Accueil</a>
+		<a href="#">Boutique</a>
+		<span aria-current="page">Chaussures</span>
+	</z-breadcrumb>
+</div>
+<p class="note">Des liens <b>natifs</b> — lus par les moteurs de recherche, suivis au clavier.
+	Le séparateur n'est pas dans votre DOM : un lecteur d'écran ne le lit pas. Le dernier
+	maillon est la destination : encre pleine, gras, plus cliquable.</p>
+
+<h2>2 · Le séparateur — <code class="tag">--z-breadcrumb__separator</code></h2>
+<div class="stack" data-code>
+	<z-breadcrumb class="slash">
+		<a href="#">Documentation</a>
+		<a href="#">Composants</a>
+		<span aria-current="page">z-breadcrumb</span>
+	</z-breadcrumb>
+	<z-breadcrumb class="point">
+		<a href="#">Documentation</a>
+		<a href="#">Composants</a>
+		<span aria-current="page">z-breadcrumb</span>
+	</z-breadcrumb>
+	<z-breadcrumb class="fleche">
+		<a href="#">Documentation</a>
+		<a href="#">Composants</a>
+		<span aria-current="page">z-breadcrumb</span>
+	</z-breadcrumb>
+</div>
+<pre class="z-code-manuel">.slash  { --z-breadcrumb__separator: "/"; --z-breadcrumb__gap: .8em; }
+.point  { --z-breadcrumb__separator: "•"; --z-breadcrumb__gap: .6em; }
+.fleche { --z-breadcrumb__separator: "→"; }</pre>
+<p class="note">Une chaîne, entre guillemets. L'espace vit <b>dans</b> le séparateur
+	(<code>gap: 0</code> sur la rangée) : il reste centré entre deux maillons, quelle que
+	soit la peau.</p>
+
+<h2>3 · Un fil long se replie</h2>
+<div class="stack" data-code>
+	<z-breadcrumb class="etroit">
+		<a href="#">Accueil</a>
+		<a href="#">Catalogue</a>
+		<a href="#">Vêtements</a>
+		<a href="#">Femme</a>
+		<a href="#">Manteaux et vestes</a>
+		<span aria-current="page">Trench en gabardine de coton</span>
+	</z-breadcrumb>
+</div>
+<p class="note">Dans une colonne de 16 rem, les maillons passent à la ligne <b>avec</b> leur
+	séparateur. La taille est celle du texte de service : le fil s'efface devant le titre qui le suit.</p>
+
+<h2>4 · Le sens, posé par Zoé</h2>
+<div class="stack" data-code>
+	<z-breadcrumb>
+		<a href="#">Compte</a>
+		<span aria-current="page">Sécurité</span>
+	</z-breadcrumb>
+	<z-breadcrumb label="Chemin du dossier">
+		<a href="#">Projets</a>
+		<a href="#">Zoé</a>
+		<span aria-current="page">components</span>
+	</z-breadcrumb>
+</div>
+<p class="note">Au montage, le fil reçoit <code>role="navigation"</code> et un
+	<code>aria-label</code> — « Fil d'Ariane » par défaut, ou votre <code>label</code>. Rien
+	à recopier : ce que vous écrivez, c'est ce qui est montré ici.</p>
+
+<script type="module">
+	import "../../examples/skin-switch.js";
+	import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+	import "../../tools/z-contact/z-contact.js";
+	import "../../core/z-layer/z-layer.js";
+	import "./z-breadcrumb.js";
+</script>
+</html>

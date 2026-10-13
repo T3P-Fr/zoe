@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <title>z-skeleton — démo</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+      'puis passe par <code>http://localhost:5173/</code>.</div>'
+    );
+  </script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+  <style>
+    /* Les blocs pleine largeur prennent celle de leur colonne (la grille du code les
+       laisserait sinon à zéro : un leurre n'a pas de contenu pour se mesurer). */
+    .stack > z-skeleton { width: var(--z-skeleton__width, 100%); }
+
+    /* REPEINT PAR LE PACTE — la surface prend l'accent adouci. */
+    .accent { --z-skeleton__base: var(--z-accent-soft); }
+
+    /* Le décor d'une carte : du natif, rien de Zoé. */
+    .carte { display: flex; gap: 1rem; align-items: flex-start; width: 100%; max-width: 28rem; padding: 1rem; border: 1px solid var(--z-line); border-radius: var(--z-radius); background: var(--z-surface); }
+    .carte .lignes { display: grid; gap: .6rem; flex: 1; }
+    .carte .avatar { width: 3em; height: 3em; border-radius: 50%; background: var(--z-accent); color: var(--z-accent-ink); display: grid; place-items: center; font-weight: var(--z-font-weight-strong); }
+    .carte h3, .carte p { margin: 0; }
+  </style>
+
+  <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+  <z-contact></z-contact>
+
+  <h1><code>z-skeleton</code></h1>
+  <p class="lead">Un leurre de chargement : un bloc neutre traversé d'un reflet qui dit « ça charge ». Invisible pour l'assistance (<code>aria-hidden</code>). Changez la peau en haut à droite — tout suit.</p>
+
+  <h2>1 · Forme courte — <code class="tag">w</code> · <code class="tag">h</code> · <code class="tag">radius</code></h2>
+  <div class="stack" data-code>
+    <z-skeleton h="6em"></z-skeleton>
+    <z-skeleton radius="pill" h="1em" w="60%"></z-skeleton>
+    <z-skeleton radius="circle" w="3em" h="3em"></z-skeleton>
+  </div>
+  <p class="note">Un bloc, une ligne de texte, un avatar. <code>w</code>/<code>h</code> sont des raccourcis (posés en variables inline) ; <code>radius="circle"</code> force le carré. Vous pouvez tout aussi bien styler la boîte en CSS.</p>
+
+  <h2>2 · En calques — <code class="tag">background</code></h2>
+  <div class="stack" data-code>
+    <z-skeleton h="3em">
+      <z-layer part="background"></z-layer>
+    </z-skeleton>
+  </div>
+  <p class="note">Un seul rôle : la surface qui scintille. Même rendu que la forme courte — utile quand une peau veut superposer plusieurs surfaces animées.</p>
+
+  <h2>3 · Composer un leurre</h2>
+  <div class="stack" data-code="bloc">
+    <article class="carte" aria-busy="true">
+      <z-skeleton radius="circle" w="3em" h="3em"></z-skeleton>
+      <div class="lignes">
+        <z-skeleton radius="pill" h="1.1em" w="55%"></z-skeleton>
+        <z-skeleton radius="pill" h=".8em" w="90%"></z-skeleton>
+        <z-skeleton radius="pill" h=".8em" w="70%"></z-skeleton>
+      </div>
+    </article>
+  </div>
+  <p class="note">Une carte en attente = plusieurs leurres disposés comme le vrai contenu, pour que rien ne bouge quand il arrive. <code>aria-busy</code> sur le conteneur est à vous : le leurre, lui, se tait.</p>
+
+  <h2>4 · Vivante — le vrai contenu arrive</h2>
+  <div class="stack">
+    <div class="rangee">
+      <z-button id="charger">Charger</z-button>
+      <span class="note" id="dit">en attente</span>
+    </div>
+    <article class="carte" id="carte" aria-busy="true">
+      <z-skeleton radius="circle" w="3em" h="3em"></z-skeleton>
+      <div class="lignes">
+        <z-skeleton radius="pill" h="1.1em" w="55%"></z-skeleton>
+        <z-skeleton radius="pill" h=".8em" w="90%"></z-skeleton>
+        <z-skeleton radius="pill" h=".8em" w="70%"></z-skeleton>
+      </div>
+    </article>
+  </div>
+  <pre class="z-code-manuel">const leurres = [...carte.querySelectorAll("z-skeleton")];
+await Promise.all(leurres.map((leurre) => leurre.play("exit")));   // ils fondent (--z-dur-exit)
+carte.replaceChildren(contenu);
+carte.removeAttribute("aria-busy");</pre>
+  <p class="note">Cliquez : les leurres <b>fondent</b> (<code>exit</code>, attendable), puis le contenu prend leur place — même grille, mêmes tailles. Un second clic remet les leurres : ils naissent en fondu (<code>enter</code>).</p>
+
+  <h2>5 · Repeint par le pacte</h2>
+  <div class="stack" data-code>
+    <z-skeleton class="accent" radius="pill" h="1.2em" w="40%"></z-skeleton>
+  </div>
+  <pre class="z-code-manuel">.accent { --z-skeleton__base: var(--z-accent-soft); }</pre>
+  <p class="note">La surface, le reflet et le rayon sont des tokens. Sous <code>prefers-reduced-motion</code>, le reflet se fige — le bloc reste.</p>
+
+  <script type="module">
+    import "../../examples/skin-switch.js";
+    import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+    import "../../tools/z-contact/z-contact.js";
+    import "../../core/z-layer/z-layer.js";
+    import "../z-button/z-button.js";
+    import "./z-skeleton.js";
+
+    /*
+      Le vrai contenu arrive : on attend la sortie des leurres (le socle rend `exit`
+      attendable), puis on remplace. Le second clic remet les leurres — des éléments
+      neufs, donc `enter` rejoue le fondu d'entrée.
+    */
+    const carte = document.querySelector("#carte");
+    const charger = document.querySelector("#charger");
+    const dit = document.querySelector("#dit");
+    const leurreHTML = carte.innerHTML;
+    const contenuHTML = `
+      <div class="avatar" aria-hidden="true">ZO</div>
+      <div class="lignes">
+        <h3>Zoé, bibliothèque de composants</h3>
+        <p>HTML d'abord, light DOM, une peau = un fichier de tokens. Le leurre a tenu la place : rien n'a bougé.</p>
+      </div>`;
+
+    let charge = false;
+    charger.addEventListener("click", async () => {
+      if (charger.states.includes("loading")) return;
+      if (!charge) {
+        charger.setState("loading");
+        dit.textContent = "les leurres fondent…";
+        const leurres = [...carte.querySelectorAll("z-skeleton")];
+        await Promise.all(leurres.map((leurre) => leurre.play("exit")));
+        carte.innerHTML = contenuHTML;
+        carte.removeAttribute("aria-busy");
+        charger.setState("loading", false);
+        charger.textContent = "Recharger";
+        dit.textContent = "contenu arrivé";
+      } else {
+        carte.innerHTML = leurreHTML;
+        carte.setAttribute("aria-busy", "true");
+        charger.textContent = "Charger";
+        dit.textContent = "en attente — les leurres sont nés en fondu";
+      }
+      charge = !charge;
+    });
+  </script>
+
+</html>

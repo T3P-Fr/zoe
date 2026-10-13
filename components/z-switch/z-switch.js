@@ -20,7 +20,7 @@
 	Différence avec z-checkbox, tranchée à l'usage : pas d'`indeterminate` (un interrupteur
 	est allumé ou éteint, jamais « peut-être »), et `role="switch"` au lieu de `checkbox`.
 
-	Doc narrative : z-switch.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-switch.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 8.0
 	============================================================
 */
@@ -38,9 +38,9 @@ export class ZSwitch extends ZElement {
 			{ kind: "field", name: "value", type: "string", description: { en: "What is submitted when on (default \"on\").", fr: "Ce qui part quand il est allumé (défaut « on »).", es: "Lo que se envía al estar encendido (por defecto «on»)." } }
 		],
 		summary: {
-			en: "An on/off switch — inherits all z-element states, form-bound, painted by the skin. Immediate effect, unlike a checkbox you'll validate later.",
+			en: "An on/off switch — inherits all z-element states, form-bound, painted by the skin. Immediate effect, unlike a checkbox validated later.",
 			fr: "Un interrupteur on/off — hérite tous les états de z-element, lié au formulaire, peint par la peau. Effet immédiat, contrairement à une case qu'on validera.",
-			es: "Un interruptor on/off — hereda todos los estados de z-element, ligado al formulario, pintado por el tema. Efecto inmediato, a diferencia de una casilla que validarás."
+			es: "Un interruptor on/off — hereda todos los estados de z-element, ligado al formulario, pintado por el tema. Efecto inmediato, a diferencia de una casilla que se validará más tarde."
 		},
 		attributes: [
 			{ name: "current", type: "boolean", description: { en: "On: a durable state set by the component (click / Space).", fr: "Allumé : état durable posé par le composant (clic / Espace).", es: "Encendido: estado duradero puesto por el componente (clic / Espacio)." } },

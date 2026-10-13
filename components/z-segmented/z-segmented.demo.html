@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <title>z-segmented — démo</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+      'puis passe par <code>http://localhost:5173/</code>.</div>'
+    );
+  </script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+  <style>
+    /* REPEINT PAR LE PACTE — l'indicateur prend l'accent, le segment courant son encre. */
+    .pleine {
+      --z-segmented--indicator__color: var(--z-accent);
+      --z-segmented--segment__ink: var(--z-accent-ink);
+    }
+    /* Un rendu « onglets » : pas de fond, pas d'ombre, un indicateur discret. */
+    .sobre {
+      --z-segmented--background__color: transparent;
+      --z-segmented--indicator__color: var(--z-accent-soft);
+      --z-segmented--indicator__shadow: none;
+      --z-segmented__gap: .25em;
+    }
+  </style>
+
+  <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+  <z-contact></z-contact>
+
+  <h1><code>z-segmented</code></h1>
+  <p class="lead">Un choix unique parmi 2 à 5 options, en pilule. Vos <code>&lt;button part="segment"&gt;</code>, et un indicateur qui <b>glisse</b> sous le choix — le mouvement dit quand ça a changé. Changez la peau en haut à droite — tout suit.</p>
+
+  <h2>1 · Vos boutons, une pilule</h2>
+  <div class="stack" data-code>
+    <z-segmented value="mois" aria-label="Période">
+      <button part="segment" value="jour">Jour</button>
+      <button part="segment" value="mois">Mois</button>
+      <button part="segment" value="an">Année</button>
+    </z-segmented>
+    <z-segmented value="liste" aria-label="Affichage">
+      <button part="segment" value="liste">Liste</button>
+      <button part="segment" value="grille">Grille</button>
+    </z-segmented>
+    <z-segmented aria-label="Taille">
+      <button part="segment" value="xs">XS</button>
+      <button part="segment" value="s">S</button>
+      <button part="segment" value="m">M</button>
+      <button part="segment" value="l">L</button>
+      <button part="segment" value="xl">XL</button>
+    </z-segmented>
+  </div>
+  <p class="note">Des <code>&lt;button&gt;</code> natifs : ils savent déjà recevoir le focus et le clic. <code>value</code> sur l'hôte présélectionne ; sans lui, rien n'est choisi et l'indicateur n'a rien à montrer. Au clavier : <kbd>Tab</kbd> une fois, puis <kbd>←</kbd> <kbd>→</kbd> — naviguer, c'est choisir.</p>
+
+  <h2>2 · Vivante — le choix change la page</h2>
+  <div class="stack" data-code>
+    <z-segmented id="periode" value="mois" aria-label="Période du rapport">
+      <button part="segment" value="jour">Jour</button>
+      <button part="segment" value="semaine">Semaine</button>
+      <button part="segment" value="mois">Mois</button>
+      <button part="segment" value="an">Année</button>
+    </z-segmented>
+  </div>
+  <pre class="z-code-manuel">periode.addEventListener("change", (e) => {
+  dit.textContent = `Rapport par ${e.detail.value}`;   // e.detail.value ⟺ periode.value
+});</pre>
+  <p class="note" id="dit">Rapport par mois. <code>change</code> bulle avec <code>{ value }</code> — seulement pour un geste qui change le choix.</p>
+
+  <h2>3 · Désactivé — tout, ou un seul segment</h2>
+  <div class="stack" data-code>
+    <z-segmented value="mois" disabled aria-label="Période (indisponible)">
+      <button part="segment" value="jour">Jour</button>
+      <button part="segment" value="mois">Mois</button>
+      <button part="segment" value="an">Année</button>
+    </z-segmented>
+    <z-segmented value="jour" aria-label="Période (année indisponible)">
+      <button part="segment" value="jour">Jour</button>
+      <button part="segment" value="mois">Mois</button>
+      <button part="segment" value="an" disabled>Année</button>
+    </z-segmented>
+  </div>
+  <p class="note"><code>disabled</code> sur l'hôte : plus de clic, plus de clavier, tout s'éteint. Sur un seul <code>&lt;button disabled&gt;</code> : les flèches le sautent, le navigateur refuse déjà son clic.</p>
+
+  <h2>4 · Repeint par le pacte</h2>
+  <div class="stack" data-code>
+    <z-segmented class="pleine" value="mois" aria-label="Période, indicateur plein">
+      <button part="segment" value="jour">Jour</button>
+      <button part="segment" value="mois">Mois</button>
+      <button part="segment" value="an">Année</button>
+    </z-segmented>
+    <z-segmented class="sobre" value="mois" aria-label="Période, sobre">
+      <button part="segment" value="jour">Jour</button>
+      <button part="segment" value="mois">Mois</button>
+      <button part="segment" value="an">Année</button>
+    </z-segmented>
+  </div>
+  <pre class="z-code-manuel">.pleine { --z-segmented--indicator__color: var(--z-accent); --z-segmented--segment__ink: var(--z-accent-ink); }
+.sobre  { --z-segmented--background__color: transparent; --z-segmented--indicator__color: var(--z-accent-soft); --z-segmented--indicator__shadow: none; --z-segmented__gap: .25em; }</pre>
+  <p class="note">Le fond de la pilule, l'indicateur, son ombre, l'encre du courant, les marges : des tokens. Le glissé, lui, ne change pas — il vient de <code>--z-dur-select</code> et <code>--z-ease-spring</code>, donc de la peau.</p>
+
+  <h2>5 · Tailles</h2>
+  <div class="stack" data-code>
+    <div class="rangee">
+      <z-segmented size="s" value="b" aria-label="Petite">
+        <button part="segment" value="a">A</button>
+        <button part="segment" value="b">B</button>
+      </z-segmented>
+      <z-segmented value="b" aria-label="Défaut">
+        <button part="segment" value="a">A</button>
+        <button part="segment" value="b">B</button>
+      </z-segmented>
+      <z-segmented size="l" value="b" aria-label="Grande">
+        <button part="segment" value="a">A</button>
+        <button part="segment" value="b">B</button>
+      </z-segmented>
+    </div>
+  </div>
+  <p class="note">Un seul réglage, la taille du texte : padding et rayon suivent en <code>em</code>, et l'indicateur est <b>mesuré</b> — il épouse le segment quelle que soit la taille.</p>
+
+  <script type="module">
+    import "../../examples/skin-switch.js";
+    import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+    import "../../tools/z-contact/z-contact.js";
+    import "./z-segmented.js";
+
+    /* La pilule vivante : on écoute `change`, on écrit une phrase. Rien d'autre. */
+    const periode = document.querySelector("#periode");
+    const dit = document.querySelector("#dit");
+    periode.addEventListener("change", (evenement) => {
+      dit.textContent = `Rapport par ${evenement.detail.value} — .value = "${periode.value}"`;
+    });
+  </script>
+
+</html>

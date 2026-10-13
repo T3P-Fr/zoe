@@ -7,7 +7,9 @@
 	`overflow: hidden` + `min-height: 0` pour se laisser tailler. Aucun px magique, aucun
 	max-height à deviner — ça marche quelle que soit la hauteur du contenu.
 
-	Le chevron du label tourne à l'ouverture. Le look reste sobre — on l'affinera ensemble.
+	Le chevron du label tourne à l'ouverture. Aucun token propre : le dépli boit directement
+	la peau (filet, encre, durées) — pour le repeindre, on vise ses pièces (`> [part=label]`,
+	`> [part=panel]`) depuis l'hôte.
 	Requiert : une peau (tokens) + core/z-layer.
 	Styleguide 12.1
 	============================================================
@@ -54,6 +56,11 @@ z-disclosure:state(open) > [part=label]::before {
 z-disclosure > [part=label]:focus-visible {
 	box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 40%, transparent);
 	border-radius: 4px;
+}
+/* Désactivé : le JS ignore le geste, le label le dit (encre éteinte, curseur interdit). */
+z-disclosure:state(disabled) > [part=label] {
+	color: var(--z-disabled);
+	cursor: not-allowed;
 }
 
 /* Le panneau : il se laisse tailler par la grille (min-height 0 + overflow hidden). */

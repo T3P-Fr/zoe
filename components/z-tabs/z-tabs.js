@@ -30,7 +30,7 @@
 	se volent leurs onglets — tout est SCOPÉ au z-tabs le plus proche (comme #owns dans
 	z-element, `closest("z-tabs") === this`).
 
-	Doc narrative : z-tabs.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-tabs.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 28.0
 	============================================================
 */
@@ -117,7 +117,13 @@ export class ZTabs extends ZElement {
 
 	attributeChangedCallback(name, previous, value) {
 		if (ZTabs.#BEHAVIOR_ATTRS.includes(name)) {
-			if (name === "value" && value !== null) this.#select(this.#tabByValue(value), false);
+			/* `setAttribute` rappelle ce callback MÊME si la valeur n'a pas changé : on ne
+			   resélectionne que si l'onglet visé n'est pas déjà l'actif — sinon #select
+			   réécrirait `value`, qui rappellerait ici, à l'infini. */
+			if (name === "value" && value !== null) {
+				const tab = this.#tabByValue(value);
+				if (tab && tab !== this.selectedTab) this.#select(tab, false);
+			}
 			return;
 		}
 		super.attributeChangedCallback(name, previous, value);
@@ -227,7 +233,10 @@ export class ZTabs extends ZElement {
 			const panel = this.#panelFor(one);
 			if (panel) panel.hidden = !active;
 		}
-		if (this.hasAttribute("value")) this.setAttribute("value", tab.getAttribute("value") ?? String(tabs.indexOf(tab)));
+		/* L'attribut `value` de l'hôte suit le choix — réécrit SEULEMENT s'il change : une
+		   écriture à l'identique rappellerait attributeChangedCallback pour rien. */
+		const next = tab.getAttribute("value") ?? String(tabs.indexOf(tab));
+		if (this.hasAttribute("value") && this.getAttribute("value") !== next) this.setAttribute("value", next);
 
 		this.#moveIndicator();
 		if (emit && changed) this.dispatchEvent(new Event("change", { bubbles: true }));

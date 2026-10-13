@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <title>z-kbd — démo</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+      'puis passe par <code>http://localhost:5173/</code>.</div>'
+    );
+  </script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+  <style>
+    /* REPEINT PAR LE PACTE — deux tokens : la surface du capuchon et son filet. */
+    .accent {
+      --z-kbd--background__color: var(--z-accent-soft);
+      --z-kbd--background__border: var(--z-accent);
+    }
+
+    /*
+      LA PREUVE DES CALQUES — le capuchon est une pièce : il s'enfonce au survol sans
+      emmener la légende. Impossible en forme courte, où fond et texte sont le même élément.
+    */
+    .touche > [part=background] { transition: translate var(--z-dur) var(--z-ease), box-shadow var(--z-dur) var(--z-ease); }
+    .touche:state(over) > [part=background] { translate: 0 .12em; box-shadow: 0 0 0 var(--z-line), inset 0 .08em 0 var(--z-surface-raised); }
+  </style>
+
+  <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+  <z-contact></z-contact>
+
+  <h1><code>z-kbd</code></h1>
+  <p class="lead">Un capuchon de touche : monospace, filet, un léger relief. Affichage pur — il montre, il ne presse pas. Changez la peau en haut à droite — tout suit.</p>
+
+  <h2>1 · Dans une phrase</h2>
+  <div class="stack" data-code>
+    <p>Appuyez sur <z-kbd>Ctrl</z-kbd> + <z-kbd>K</z-kbd> pour chercher.</p>
+    <p><z-kbd>⌘</z-kbd> <z-kbd>⇧</z-kbd> <z-kbd>P</z-kbd> ouvre la palette de commandes.</p>
+    <p>Quittez avec <z-kbd>Échap</z-kbd>.</p>
+  </div>
+  <p class="note">Le <code>+</code> est votre texte : le composant ne compose rien. Une touche seule garde la carrure d'un capuchon (<code>min-width: 1.6em</code>) — un « K » ne devient pas un timbre-poste.</p>
+
+  <h2>2 · En calques — <code class="tag">background</code> + <code class="tag">infos › label</code></h2>
+  <div class="stack" data-code>
+    <z-kbd>
+      <z-layer part="background"></z-layer>
+      <z-layer part="infos"><z-layer part="label">Ctrl</z-layer></z-layer>
+    </z-kbd>
+    <z-kbd class="touche">
+      <z-layer part="background"></z-layer>
+      <z-layer part="infos"><z-layer part="label">Survolez-moi</z-layer></z-layer>
+    </z-kbd>
+  </div>
+  <p class="note">Même rendu que la forme courte. La seconde touche s'<b>enfonce</b> au survol : son capuchon bouge, sa légende reste — c'est ce que les calques permettent.</p>
+
+  <h2>3 · Tailles</h2>
+  <div class="stack" data-code>
+    <div class="rangee">
+      <z-kbd size="xs">xs</z-kbd>
+      <z-kbd size="s">s</z-kbd>
+      <z-kbd>défaut</z-kbd>
+      <z-kbd size="l">l</z-kbd>
+      <z-kbd size="xl">xl</z-kbd>
+    </div>
+  </div>
+  <p class="note">Un seul réglage : la taille du texte. Padding, rayon et relief sont en <code>em</code> et suivent.</p>
+
+  <h2>4 · Repeint par le pacte</h2>
+  <div class="stack" data-code>
+    <p>Enregistrez avec <z-kbd class="accent">Ctrl</z-kbd> + <z-kbd class="accent">S</z-kbd>.</p>
+  </div>
+  <pre class="z-code-manuel">.accent {
+  --z-kbd--background__color: var(--z-accent-soft);
+  --z-kbd--background__border: var(--z-accent);
+}</pre>
+  <p class="note">Deux tokens, et rien d'autre : la surface du capuchon et la couleur de son filet. Le relief lit la peau.</p>
+
+  <h2>5 · Ce que vous tapez</h2>
+  <div class="stack">
+    <p>Dernière touche pressée : <z-kbd id="touche" size="l">?</z-kbd></p>
+  </div>
+  <pre class="z-code-manuel">window.addEventListener("keydown", (e) => {
+  touche.textContent = e.key === " " ? "Espace" : e.key;
+});</pre>
+  <p class="note">Appuyez sur une touche. Le contenu <b>est</b> la touche : on écrit du texte, le capuchon suit.</p>
+
+  <script type="module">
+    import "../../examples/skin-switch.js";
+    import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+    import "../../tools/z-contact/z-contact.js";
+    import "../../core/z-layer/z-layer.js";
+    import "./z-kbd.js";
+
+    /* La touche vivante : on écrit du texte, c'est tout. */
+    const touche = document.querySelector("#touche");
+    window.addEventListener("keydown", (evenement) => {
+      touche.textContent = evenement.key === " " ? "Espace" : evenement.key;
+    });
+  </script>
+
+</html>

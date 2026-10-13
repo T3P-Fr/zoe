@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-tabs — démo</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+  if (location.protocol === "file:") document.write(
+    '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+    '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+    'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+    'puis passe par <code>http://localhost:5173/</code>.</div>'
+  );
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+  /* Le retour se lit JUSTE SOUS les onglets qui l'ont produit — jamais à l'autre bout. */
+  .echo { font-size: .85rem; margin-top: .5rem; }
+  .echo b { color: var(--z-accent); }
+  /* Un z-tabs prend la ligne : dans la grille des exemples, on lui laisse toute sa colonne. */
+  .stack > z-tabs { align-self: stretch; min-width: 18rem; }
+</style>
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact></z-contact>
+
+<h1><code>z-tabs</code></h1>
+<p class="lead">Vous écrivez les onglets et les panneaux ; z-tabs donne les rôles ARIA, le clavier (<kbd>←</kbd> <kbd>→</kbd> naviguent <i>et</i> activent, <b>une seule</b> tabulation pour la barre) et fait glisser l'indicateur. Changez la peau en haut à droite — tout suit.</p>
+
+<h2>1 · La forme canonique — associés par <code class="tag">value</code></h2>
+<div class="stack" data-code>
+  <z-tabs id="livraison" value="livraison">
+    <div part="tablist">
+      <button part="tab" value="livraison">Livraison</button>
+      <button part="tab" value="retours">Retours</button>
+      <button part="tab" value="garantie">Garantie</button>
+    </div>
+    <div part="panel" value="livraison">Sous 48 h en France métropolitaine, 5 jours en Europe.</div>
+    <div part="panel" value="retours">30 jours pour changer d'avis, sans justificatif.</div>
+    <div part="panel" value="garantie">Deux ans, pièces et main-d'œuvre.</div>
+  </z-tabs>
+</div>
+<p class="echo">Onglet actif : <b id="echo-livraison">—</b></p>
+<p class="note">Un <code>value</code> partagé relie l'onglet à son panneau. Tabulez jusqu'ici : <b>un seul</b> arrêt, puis les flèches — elles bouclent. <code>change</code> ne part que sur un geste.</p>
+
+<h2>2 · Par l'ordre — sans <code class="tag">value</code></h2>
+<div class="stack" data-code>
+  <z-tabs>
+    <div part="tablist">
+      <button part="tab">Description</button>
+      <button part="tab">Composition</button>
+    </div>
+    <div part="panel">Une chemise en lin lavé, coupe droite.</div>
+    <div part="panel">100 % lin européen, boutons en corozo.</div>
+  </z-tabs>
+</div>
+<p class="note">Pas de <code>value</code> : le premier onglet ouvre le premier panneau, le second le second. <code>.value</code> renvoie alors l'index en chaîne (<code>"0"</code>, <code>"1"</code>).</p>
+
+<h2>3 · Un onglet coupé</h2>
+<div class="stack" data-code>
+  <z-tabs value="mois">
+    <div part="tablist">
+      <button part="tab" value="jour">Jour</button>
+      <button part="tab" value="semaine" disabled>Semaine</button>
+      <button part="tab" value="mois">Mois</button>
+    </div>
+    <div part="panel" value="jour">Les ventes du jour.</div>
+    <div part="panel" value="semaine">Indisponible.</div>
+    <div part="panel" value="mois">Les ventes du mois.</div>
+  </z-tabs>
+</div>
+<p class="note">Un <code>&lt;button disabled&gt;</code> n'émet plus de clic — le navigateur s'en charge — et les flèches le sautent. C'est pourquoi un onglet s'écrit en <code>&lt;button&gt;</code>.</p>
+
+<h2>4 · Imbriqués — ils ne se volent rien</h2>
+<div class="stack" data-code>
+  <z-tabs value="compte">
+    <div part="tablist">
+      <button part="tab" value="compte">Compte</button>
+      <button part="tab" value="securite">Sécurité</button>
+    </div>
+    <div part="panel" value="compte">
+      <z-tabs value="profil">
+        <div part="tablist">
+          <button part="tab" value="profil">Profil</button>
+          <button part="tab" value="facturation">Facturation</button>
+        </div>
+        <div part="panel" value="profil">Nom, adresse, langue.</div>
+        <div part="panel" value="facturation">Moyens de paiement.</div>
+      </z-tabs>
+    </div>
+    <div part="panel" value="securite">Mot de passe, double authentification.</div>
+  </z-tabs>
+</div>
+<p class="note">Tout est <b>scopé</b> au z-tabs le plus proche : une flèche tapée dans l'intérieur ne bouge pas l'extérieur, et chacun garde son indicateur.</p>
+
+<h2>5 · Piloté par le code — silencieux</h2>
+<div class="stack">
+  <div class="rangee">
+    <z-button id="vers-retours" tone="soft">Choisir « Retours » par la valeur</z-button>
+    <z-button id="vers-index" tone="soft">Revenir au premier par l'index</z-button>
+  </div>
+</div>
+<pre class="z-code-manuel">tabs.value = "retours";      // choisit l'onglet de la section 1… sans émettre change
+tabs.selectedIndex = 0;      // par l'index, même silence
+tabs.selectedTab;            // → le &lt;button&gt; actif</pre>
+<p class="note">Cliquez, puis regardez la section 1 : l'onglet a changé, l'indicateur a glissé — et l'écho n'a pas bougé. Le programme ne déclenche pas <code>change</code> : c'est l'utilisateur qu'on écoute, pas soi-même.</p>
+
+<script type="module">
+  import "../../examples/skin-switch.js";
+  import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+  import "../../tools/z-contact/z-contact.js";
+  import "../z-button/z-button.js";
+  import "./z-tabs.js";
+
+  /* Le retour s'écrit sous les onglets (la VUE d'abord). On lit .value du z-tabs. */
+  const livraison = document.querySelector("#livraison");
+  const echo = document.querySelector("#echo-livraison");
+  const montre = () => { echo.textContent = livraison.value || "—"; };
+  livraison.addEventListener("change", montre);
+  montre();
+
+  /* Piloter : le programme choisit, le composant ne crie pas. */
+  document.querySelector("#vers-retours").addEventListener("click", () => { livraison.value = "retours"; });
+  document.querySelector("#vers-index").addEventListener("click", () => { livraison.selectedIndex = 0; });
+</script>
+</html>

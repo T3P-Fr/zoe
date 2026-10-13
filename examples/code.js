@@ -24,7 +24,10 @@
 */
 
 /* Ce que les composants ajoutent d'eux-mêmes : jamais à recopier, donc jamais montré. */
-const AUTO = ["role", "tabindex", "aria-checked", "aria-disabled", "aria-busy", "aria-invalid", "aria-valuenow", "aria-valuemin", "aria-valuemax", "aria-orientation", "aria-label"];
+const AUTO = ["role", "tabindex", "aria-checked", "aria-disabled", "aria-busy", "aria-invalid", "aria-valuenow", "aria-valuemin", "aria-valuemax", "aria-orientation", "aria-label", "aria-expanded", "aria-controls", "aria-haspopup", "aria-describedby", "aria-labelledby", "aria-required", "aria-current", "aria-selected", "popover", "inert", "hidden", "current", "far", "gap", "at-min", "at-max"];
+
+/* Les ids que les composants se donnent (`z-tab-3`, `z-popover-panel-2`) : jamais écrits par l'auteur. */
+const AUTO_ID = /^z-[a-z-]+-\d+$/;
 
 const CSS = `
 	/*
@@ -64,7 +67,11 @@ function propre(element) {
 	const copie = element.cloneNode(true);
 	for (const noeud of [copie, ...copie.querySelectorAll("*")]) {
 		AUTO.forEach((attribut) => noeud.removeAttribute(attribut));
-		if (noeud.getAttribute("style") === "") noeud.removeAttribute("style");
+		if (AUTO_ID.test(noeud.id)) noeud.removeAttribute("id");
+		/* Un `style` qui ne porte que des variables `--z-…` est posé par un composant (un
+		   nombre publié), pas par l'auteur. */
+		const style = noeud.getAttribute("style");
+		if (style !== null && style.replace(/--z-[\w-]+\s*:\s*[^;]+;?/g, "").trim() === "") noeud.removeAttribute("style");
 	}
 	return copie;
 }
@@ -86,8 +93,31 @@ function indente(element, niveau) {
 	/* Un élément sans enfant élément tient sur une ligne : l'exemple doit rester court. */
 	if (!element.children.length) return `${ouvrante}${echappe(element.textContent.trim())}${fermante}`;
 
+	/*
+		Contenu MIXTE — du texte autour d'éléments (« Appuyez sur <z-kbd>Ctrl</z-kbd> ») :
+		la ligne est rendue telle qu'écrite, texte compris. La mise en colonne perdrait les
+		mots entre les balises, et le code montré ne serait plus celui qu'on a tapé.
+	*/
+	if (mixte(element)) {
+		const dedans = [...element.childNodes].map((noeud) => {
+			if (noeud.nodeType === Node.TEXT_NODE) return echappe(noeud.textContent.replace(/\s+/g, " "));
+			if (noeud.nodeType === Node.ELEMENT_NODE) return indente(noeud, 0);
+			return "";
+		}).join("").trim();
+		return `${ouvrante}${dedans}${fermante}`;
+	}
+
 	const dedans = [...element.children].map((enfant) => indente(enfant, niveau + 1)).join("\n");
 	return `${ouvrante}\n${dedans}\n${marge}${fermante}`;
+}
+
+/*
+	Un élément dont le texte DIRECT porte des mots — pas seulement l'espace de l'indentation.
+	@param {Element} element
+	@returns {boolean}
+*/
+function mixte(element) {
+	return [...element.childNodes].some((noeud) => noeud.nodeType === Node.TEXT_NODE && noeud.textContent.trim());
 }
 
 /* @param {string} texte @returns {string} */
@@ -131,7 +161,8 @@ function monte() {
 	}
 }
 
-/* Après le parsing ET après la définition des composants (le module est importé en
-   dernier dans les pages) : on lit un DOM complet. */
+/* Après le parsing (un module est différé) : on lit un DOM complet. Importé AVANT les
+   composants d'une page, il montre le HTML tel que tapé ; importé APRÈS, les attributs
+   qu'ils se posent tout seuls sont retirés (AUTO) — les deux ordres donnent le même code. */
 if (document.readyState === "loading") window.addEventListener("DOMContentLoaded", monte);
 else monte();

@@ -16,7 +16,7 @@
 	lecteur d'écran lit son texte comme du contenu — c'est voulu (« 3 messages » doit se
 	lire). Si le nombre change en direct, l'auteur pose `role="status"` sur son conteneur.
 
-	Doc narrative : z-badge.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-badge.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 6.0
 	============================================================
 */

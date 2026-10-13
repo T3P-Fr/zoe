@@ -7,15 +7,15 @@
 	monospace au fil du texte, comme un <code>). `ZCode extends ZElement` pour la
 	cohérence de la famille ; c'est un composant d'AFFICHAGE, peint par z-code.css.
 
-	    <z-code>npm install zoe</z-code>              (un bloc)
-	    Tape <z-code inline>npm i</z-code> pour lancer. (une puce en ligne)
+	    <z-code>npm install zoe</z-code>                (un bloc)
+	    Tapez <z-code inline>npm i</z-code> pour lancer. (une puce en ligne)
 
 	Le CONTENU est le code — Zoé n'injecte rien (ADR-0018), n'échappe rien, ne colore pas
-	la syntaxe : ce que tu écris est ce qui s'affiche. Pas de rôle ARIA particulier (du
+	la syntaxe : ce que vous écrivez est ce qui s'affiche. Pas de rôle ARIA particulier (du
 	texte reste du texte pour un lecteur d'écran) ; l'auteur qui veut la sémantique native
 	imbrique un vrai <pre><code> à l'intérieur, c'est son droit.
 
-	Doc narrative : z-code.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-code.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 19.0
 	============================================================
 */

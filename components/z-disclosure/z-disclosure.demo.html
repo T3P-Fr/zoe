@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <title>z-disclosure — démo</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+      'puis passe par <code>http://localhost:5173/</code>.</div>'
+    );
+  </script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+  <style>
+    /* Les déplis prennent la largeur de leur colonne : la grille du code les laisse
+       sinon à la largeur de leur titre. */
+    z-disclosure { width: 100%; }
+
+    /*
+      REPEINT PAR LE PACTE — aucun token propre au dépli : on vise ses pièces depuis
+      l'hôte. Le chevron devient une croix, le label prend l'accent une fois ouvert.
+    */
+    .accent:state(open) > [part=label] { color: var(--z-accent); }
+    .accent:state(open) > [part=label]::before { rotate: 135deg; }
+  </style>
+
+  <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+  <z-contact></z-contact>
+
+  <h1><code>z-disclosure</code></h1>
+  <p class="lead">Un titre qui agit comme un bouton, un panneau qui se révèle <b>en glissant</b>. Vous écrivez les deux pièces, Zoé pose la sémantique (<code>aria-expanded</code>, <code>inert</code>). Changez la peau en haut à droite — tout suit.</p>
+
+  <h2>1 · Deux pièces — <code class="tag">label</code> et <code class="tag">panel</code></h2>
+  <div class="stack" data-code>
+    <z-disclosure>
+      <z-layer part="label">Ce que Zoé garde natif</z-layer>
+      <z-layer part="panel">Titres, paragraphes, liens — lus par les moteurs de recherche. Le dépli ne fait que les cacher ou les montrer.</z-layer>
+    </z-disclosure>
+    <z-disclosure open>
+      <z-layer part="label">Déjà ouvert — <code>open</code></z-layer>
+      <z-layer part="panel">L'attribut est la source de vérité : <code>:state(open)</code> le reflète, <code>.open</code> le lit et l'écrit.</z-layer>
+    </z-disclosure>
+    <z-disclosure disabled>
+      <z-layer part="label">Désactivé</z-layer>
+      <z-layer part="panel">Ce panneau ne s'ouvrira pas : <code>disabled</code> coupe le geste.</z-layer>
+    </z-disclosure>
+  </div>
+  <p class="note">Cliquez le titre, ou <kbd>Tab</kbd> puis <kbd>Entrée</kbd> / <kbd>Espace</kbd>. La hauteur <b>glisse</b> (une grille <code>0fr → 1fr</code>) : aucun <code>max-height</code> à deviner, quelle que soit la longueur du contenu.</p>
+
+  <h2>2 · Le contenu reste natif</h2>
+  <div class="stack" data-code>
+    <z-disclosure>
+      <z-layer part="label">Livraison et retours</z-layer>
+      <z-layer part="panel">
+        <p>Expédition sous <b>48 h</b>, retours gratuits pendant 30 jours.</p>
+        <ul>
+          <li>France métropolitaine : 4,90 €</li>
+          <li>Union européenne : 9,90 €</li>
+        </ul>
+        <p><a href="#">Toutes les conditions</a></p>
+      </z-layer>
+    </z-disclosure>
+  </div>
+  <p class="note">Paragraphes, liste, lien : du HTML que les moteurs lisent (contrat SEO). Fermé, le panneau est <code>inert</code> — hors tabulation <b>et</b> hors lecture d'écran — sans que l'animation en souffre (<code>hidden</code> la tuerait).</p>
+
+  <h2>3 · Repeint par le pacte</h2>
+  <div class="stack" data-code>
+    <z-disclosure class="accent" open>
+      <z-layer part="label">Le chevron devient une croix, le titre prend l'accent</z-layer>
+      <z-layer part="panel">Aucun token propre au dépli : on vise ses pièces depuis l'hôte — <code>z-disclosure:state(open) &gt; [part=label]</code>. Le <code>&gt;</code> protège un dépli imbriqué du CSS de son parent.</z-layer>
+    </z-disclosure>
+  </div>
+  <pre class="z-code-manuel">.accent:state(open) &gt; [part=label] { color: var(--z-accent); }
+.accent:state(open) &gt; [part=label]::before { rotate: 135deg; }</pre>
+  <p class="note">Deux lignes de CSS, zéro JS : l'état <code>open</code> est un sélecteur natif, les pièces ont un nom.</p>
+
+  <h2>4 · Piloté en JS — une FAQ</h2>
+  <div class="stack">
+    <div class="rangee">
+      <z-button id="tout" tone="soft">Tout ouvrir</z-button>
+      <span class="note" id="dit">rien n'a bougé</span>
+    </div>
+    <div class="stack" id="faq" style="align-items:stretch;gap:0">
+      <z-disclosure>
+        <z-layer part="label">Puis-je changer de peau sans toucher au HTML ?</z-layer>
+        <z-layer part="panel">Oui : une peau est un fichier de tokens. Le dépli ne bouge pas d'une ligne.</z-layer>
+      </z-disclosure>
+      <z-disclosure>
+        <z-layer part="label">Un dépli peut-il en contenir un autre ?</z-layer>
+        <z-layer part="panel">
+          Oui — chaque dépli cherche ses pièces en enfants directs.
+          <z-disclosure>
+            <z-layer part="label">La preuve</z-layer>
+            <z-layer part="panel">Un dépli dans un dépli : le parent ne repeint pas l'enfant.</z-layer>
+          </z-disclosure>
+        </z-layer>
+      </z-disclosure>
+      <z-disclosure>
+        <z-layer part="label">Comment n'en garder qu'un seul ouvert ?</z-layer>
+        <z-layer part="panel">Avec <code>z-accordion</code>, qui coordonne. Seul, un dépli ne connaît pas ses voisins.</z-layer>
+      </z-disclosure>
+    </div>
+  </div>
+  <pre class="z-code-manuel">const plis = [...faq.querySelectorAll(":scope > z-disclosure")];
+tout.addEventListener("click", () => {
+  const ouvrir = plis.some((pli) => !pli.open);
+  plis.forEach((pli) => { pli.open = ouvrir; });   // par API : pas d'événement `toggle`
+});
+faq.addEventListener("toggle", (e) => dit.textContent = `${e.target.open ? "ouvert" : "fermé"} : ${e.target.querySelector("[part=label]").textContent}`);</pre>
+  <p class="note">Le bouton pose <code>.open</code> : pas d'événement, c'est le programme qui parle. Un clic sur un titre, lui, émet <code>toggle</code> — la phrase à droite du bouton le dit.</p>
+
+  <script type="module">
+    import "../../examples/skin-switch.js";
+    import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+    import "../../tools/z-contact/z-contact.js";
+    import "../../core/z-layer/z-layer.js";
+    import "../z-button/z-button.js";
+    import "./z-disclosure.js";
+
+    /* La FAQ : trois lignes d'auteur. Le dépli ne connaît pas ses voisins. */
+    const faq = document.querySelector("#faq");
+    const tout = document.querySelector("#tout");
+    const dit = document.querySelector("#dit");
+    const plis = [...faq.querySelectorAll(":scope > z-disclosure")];
+
+    tout.addEventListener("click", () => {
+      const ouvrir = plis.some((pli) => !pli.open);
+      plis.forEach((pli) => { pli.open = ouvrir; });
+      tout.textContent = ouvrir ? "Tout replier" : "Tout ouvrir";
+      dit.textContent = ouvrir ? "ouverts par API — aucun toggle émis" : "repliés par API — aucun toggle émis";
+    });
+
+    faq.addEventListener("toggle", (evenement) => {
+      const pli = evenement.target;
+      const titre = pli.querySelector(":scope > [part=label]").textContent.trim();
+      dit.textContent = `${pli.open ? "ouvert" : "fermé"} : ${titre}`;
+      tout.textContent = plis.some((p) => !p.open) ? "Tout ouvrir" : "Tout replier";
+    });
+  </script>
+
+</html>

@@ -2,7 +2,7 @@
 
 Une case à cocher bâtie sur [`z-element`](../../core/z-element/z-element.doc.md) — le
 **premier composant à anatomie**, et il s'écrit de **deux façons**. Zoé n'injecte
-**aucune balise** (ADR-0018) : c'est toi — ou l'éditeur Zoé — qui choisis le niveau de
+**aucune balise** (ADR-0018) : c'est vous — ou l'éditeur Zoé — qui choisissez le niveau de
 détail.
 
 **Forme courte** — le CSS peint l'hôte, un `::before` fait la case :
@@ -44,7 +44,7 @@ fait jamais peindre par le parent.
 | ↳ `dot` | la marque qui apparaît une fois cochée |
 | `infos` | ce qui informe — déplacé, caché ou animé d'un bloc |
 | ↳ `icon` | optionnel, avant le label |
-| ↳ `label` | ton texte |
+| ↳ `label` | votre texte |
 | `contact` | ce qui reçoit le geste — invisible, il déborde la case (viser 1.15em au doigt, c'est dur) |
 
 Les deux formes lisent **exactement les mêmes tokens** : une skin écrite pour l'une
@@ -83,10 +83,10 @@ Deux règles, les mêmes que la case native :
   devient cochée ;
 - l'**API** ne tranche pas : `box.checked = false` ne lève pas l'indétermination. Les
   deux sont indépendants, sinon un « tout cocher » qui recalcule ses enfants s'effacerait
-  lui-même selon l'ordre de tes deux lignes.
+  lui-même selon l'ordre de vos deux lignes.
 
 Le composant **ne connaît pas ses enfants** (zéro logique métier) : relier une case au
-groupe qu'elle commande, c'est trois lignes chez toi — voir la démo, section 4.
+groupe qu'elle commande, c'est trois lignes chez vous — voir la démo, section 4.
 
 ## Dans un formulaire
 
@@ -109,7 +109,7 @@ Elle part comme un `<input type="checkbox">`, sans wrapper ni champ caché :
 | `<fieldset disabled>` | la coupe, et tous ses visuels d'état suivent |
 | reset du formulaire | elle revient à son HTML d'origine |
 
-Le message de refus est en anglais comme le reste de l'API — remplace-le d'une ligne :
+Le message de refus est en anglais comme le reste de l'API — remplacez-le d'une ligne :
 `box.setValidity("Coche cette case")`. Toute la plomberie vit dans
 [`z-element`](../../core/z-element/z-element.doc.md) : ici, la case décide seulement de
 **ce qu'elle envoie**.
@@ -134,7 +134,7 @@ Chaque part se peint par un token à **double séparateur** — c'est ce que z-b
 | `--z-checkbox--icon__color` | l'icône optionnelle |
 | `--z-checkbox--contact__bleed` | de combien la zone touchable déborde |
 | `--z-checkbox--halo__color` | l'onde au clic (accent par défaut) |
-| `--z-checkbox--label__weight` · `__emphasis` | le poids du label cochée (vrai gras, ou faux-bold sans saut) |
+| `--z-checkbox--label__weight` · `__emphasis` | le poids du label coché (vrai gras, ou faux-bold sans saut) |
 
 Défauts qui **consomment la peau** (`--z-accent`, `--z-line`, `--z-radius`…) : marche
 sur HighTech comme sur Claude sans une ligne de plus.

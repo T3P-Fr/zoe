@@ -60,6 +60,10 @@ z-card {
 	/* Le contenu passe AU-DESSUS du calque de fond. */
 	> [part=media],
 	> [part=infos] { position: relative; z-index: 1; }
+	/* `infos` est ici un BLOC de contenu (titre, texte, actions), pas la ligne icône +
+	   texte des petits composants : on reprend l'inline-flex universel, sinon le titre et
+	   le paragraphe se rangeraient côte à côte. */
+	> [part=infos] { display: block; }
 
 	/* ═══ MEDIA — un visuel en tête, collé aux bords, coins hauts arrondis ═══ Styleguide 15.1.3 */
 	> [part=media] {

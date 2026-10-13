@@ -19,7 +19,7 @@
 	l'aide en atteignant le déclencheur. Échap masque la bulle (on retire le focus). Le
 	montré/caché au survol et au focus se fait en CSS (:hover / :focus-within).
 
-	Doc narrative : z-tooltip.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-tooltip.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 14.0
 	============================================================
 */

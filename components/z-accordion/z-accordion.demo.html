@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-accordion — démo</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis passe par <code>http://localhost:5173/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+	/* Décor de CETTE page : un accordéon prend la colonne — réduit à son contenu, il
+	   n'aurait pas l'air d'un accordéon. `width` et pas `align-self` : une fois la pile
+	   passée en grille (code.js), align-self étirerait la HAUTEUR sur celle du code. */
+	.stack > z-accordion { width: 100%; }
+
+	/* Section 5 — l'écart entre les déplis, par le seul token du composant. */
+	.aere { --z-accordion__gap: .6em; }
+</style>
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact></z-contact>
+
+<h1><code>z-accordion</code></h1>
+<p class="lead">Un groupe de <code>z-disclosure</code>, et une seule règle en plus : en
+	<code class="tag">exclusive</code>, ouvrir l'un ferme les autres. Cliquez les titres,
+	naviguez au <kbd>Tab</kbd> puis <kbd>Entrée</kbd>. Changez la peau en haut à droite — tout suit.</p>
+
+<h2>1 · Exclusif — <code class="tag">&lt;z-accordion exclusive&gt;</code></h2>
+<div class="stack" data-code>
+	<z-accordion exclusive>
+		<z-disclosure open>
+			<z-layer part="label">Livraison</z-layer>
+			<z-layer part="panel">Sous 48 h en France métropolitaine.</z-layer>
+		</z-disclosure>
+		<z-disclosure>
+			<z-layer part="label">Retours</z-layer>
+			<z-layer part="panel">30 jours, sans justificatif.</z-layer>
+		</z-disclosure>
+		<z-disclosure>
+			<z-layer part="label">Paiement</z-layer>
+			<z-layer part="panel">Carte, virement, ou en trois fois sans frais.</z-layer>
+		</z-disclosure>
+	</z-accordion>
+</div>
+<p class="note">Ouvrez « Retours » : « Livraison » se ferme <b>en même temps</b>. Le groupe
+	pose <code>.open = false</code> sur les autres — jamais un clic simulé, donc aucune onde
+	sur les déplis que vous n'avez pas touchés.</p>
+
+<h2>2 · Libre — sans <code class="tag">exclusive</code>, les déplis s'ignorent</h2>
+<div class="stack" data-code>
+	<z-accordion>
+		<z-disclosure open>
+			<z-layer part="label">Ce que Zoé garde natif</z-layer>
+			<z-layer part="panel">Titres, paragraphes, liens, images — lus par les moteurs de recherche.</z-layer>
+		</z-disclosure>
+		<z-disclosure open>
+			<z-layer part="label">Ce que Zoé prend en charge</z-layer>
+			<z-layer part="panel">Les widgets : boutons, onglets, déplis, curseurs.</z-layer>
+		</z-disclosure>
+	</z-accordion>
+</div>
+<p class="note">Deux déplis ouverts à la fois, et ça reste vrai au clic : l'accordéon n'est
+	alors qu'un cadre qui empile.</p>
+
+<h2>3 · Le verrou se pose à chaud</h2>
+<div class="stack">
+	<z-checkbox id="verrou">Un seul ouvert à la fois (<code>exclusive</code>)</z-checkbox>
+	<z-accordion id="vivant">
+		<z-disclosure open>
+			<z-layer part="label">Taille</z-layer>
+			<z-layer part="panel">S · M · L · XL</z-layer>
+		</z-disclosure>
+		<z-disclosure open>
+			<z-layer part="label">Couleur</z-layer>
+			<z-layer part="panel">Sable · Encre · Cobalt</z-layer>
+		</z-disclosure>
+		<z-disclosure>
+			<z-layer part="label">Matière</z-layer>
+			<z-layer part="panel">Lin · Coton · Laine</z-layer>
+		</z-disclosure>
+	</z-accordion>
+	<span class="note" id="dit">deux déplis ouverts, groupe libre</span>
+</div>
+<pre class="z-code-manuel">verrou.addEventListener("change", () => { accordeon.exclusive = verrou.checked; });
+
+accordeon.addEventListener("toggle", (evenement) => {
+  /* les autres sont DÉJÀ fermés quand l'événement vous arrive */
+  const ouverts = accordeon.disclosures.filter((depli) => depli.open).length;
+  dit.textContent = `${evenement.target.textContent} — ${ouverts} ouvert(s)`;
+});</pre>
+<p class="note">Cochez la case : l'invariant « au plus un ouvert » s'applique aussitôt — le
+	<b>premier</b> ouvert gagne, comme deux <code>current</code> écrits à la main dans un
+	groupe de radios. L'événement <code>toggle</code> bulle depuis le dépli qui a bougé.</p>
+
+<h2>4 · Scopé — un accordéon dans un dépli</h2>
+<div class="stack" data-code>
+	<z-accordion exclusive>
+		<z-disclosure open>
+			<z-layer part="label">Compte</z-layer>
+			<z-layer part="panel">
+				<z-accordion exclusive>
+					<z-disclosure open>
+						<z-layer part="label">Identité</z-layer>
+						<z-layer part="panel">Nom, prénom, adresse de courriel.</z-layer>
+					</z-disclosure>
+					<z-disclosure>
+						<z-layer part="label">Sécurité</z-layer>
+						<z-layer part="panel">Mot de passe, double authentification.</z-layer>
+					</z-disclosure>
+				</z-accordion>
+			</z-layer>
+		</z-disclosure>
+		<z-disclosure>
+			<z-layer part="label">Notifications</z-layer>
+			<z-layer part="panel">Courriel, mobile, résumé hebdomadaire.</z-layer>
+		</z-disclosure>
+	</z-accordion>
+</div>
+<p class="note">Chaque accordéon ne voit que les déplis dont il est <b>le plus proche</b> :
+	ouvrir « Sécurité » ne ferme pas « Compte ». <code>disclosures</code> filtre par
+	<code>closest("z-accordion")</code>.</p>
+
+<h2>5 · L'écart — <code class="tag">--z-accordion__gap</code></h2>
+<div class="stack" data-code>
+	<z-accordion class="aere">
+		<z-disclosure open>
+			<z-layer part="label">Un dépli</z-layer>
+			<z-layer part="panel">Les filets ne se touchent plus.</z-layer>
+		</z-disclosure>
+		<z-disclosure>
+			<z-layer part="label">Un autre</z-layer>
+			<z-layer part="panel">Le cadre, lui, ne bouge pas.</z-layer>
+		</z-disclosure>
+	</z-accordion>
+</div>
+<pre class="z-code-manuel">.aere { --z-accordion__gap: .6em; }</pre>
+<p class="note">Le seul token du composant. Tout le reste — cadre, coins, fond — est celui de
+	la peau : changez-la, l'accordéon suit sans une ligne.</p>
+
+<script type="module">
+	import "../../examples/skin-switch.js";
+	import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+	import "../../tools/z-contact/z-contact.js";
+	import "../../core/z-layer/z-layer.js";
+	import "../z-disclosure/z-disclosure.js";
+	import "../z-checkbox/z-checkbox.js";
+	import "./z-accordion.js";
+
+	/* Section 3 — le verrou et l'écoute : du code d'auteur, quelques lignes. */
+	const verrou = document.querySelector("#verrou");
+	const accordeon = document.querySelector("#vivant");
+	const dit = document.querySelector("#dit");
+
+	verrou.addEventListener("change", () => { accordeon.exclusive = verrou.checked; });
+
+	accordeon.addEventListener("toggle", (evenement) => {
+		const ouverts = accordeon.disclosures.filter((depli) => depli.open).length;
+		const titre = evenement.target.querySelector("[part=label]").textContent;
+		dit.textContent = `${titre} — ${ouverts} ouvert(s), groupe ${accordeon.exclusive ? "exclusif" : "libre"}`;
+	});
+</script>
+</html>

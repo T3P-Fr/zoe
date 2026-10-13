@@ -6,14 +6,15 @@
 	sous l'option courante — le mouvement dit QUAND ça a changé, là où la couleur ne
 	suffit pas. L'auteur écrit les segments lui-même (Zoé n'injecte rien — ADR-0018) :
 
-	    <z-segmented>
+	    <z-segmented value="mois">
 	      <button part="segment" value="jour">Jour</button>
-	      <button part="segment" value="mois" aria-current="true">Mois</button>
+	      <button part="segment" value="mois">Mois</button>
 	      <button part="segment" value="an">Année</button>
 	    </z-segmented>
 
 	CE QUE CE FICHIER APPORTE, ET RIEN D'AUTRE (zéro logique métier) :
-	  1. EXCLUSIVITÉ — un seul segment courant à la fois (aria-checked + aria-current).
+	  1. EXCLUSIVITÉ — un seul segment courant à la fois (aria-checked + aria-current,
+	     posés par le composant ; `value` sur l'hôte présélectionne).
 	  2. CLAVIER — ← → se promènent et choisissent, Home / End vont aux extrémités
 	     (convention ARIA radiogroup), avec un roving tabindex : UNE tabulation pour tout
 	     le contrôle, pas une par segment.
@@ -25,7 +26,7 @@
 	`role="radiogroup"` sur l'hôte, `role="radio"` posé sur chaque segment : c'est bien
 	un choix unique, et les lecteurs d'écran l'annoncent déjà bien.
 
-	Doc narrative : z-segmented.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-segmented.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 26.0
 	============================================================
 */

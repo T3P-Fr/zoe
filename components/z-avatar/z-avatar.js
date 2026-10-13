@@ -7,14 +7,15 @@
 	(ADR-0018) : l'image est posée en `background-image` sur l'hôte (une propriété de
 	style, pas une balise), les initiales sont le contenu que l'auteur a écrit.
 
-	    <z-avatar name="Christophe Rousseau">CR</z-avatar>
-	    <z-avatar name="Zoé" src="/img/zoe.jpg"></z-avatar>
-	    <z-avatar size="l">?</z-avatar>
+	    <z-avatar name="Ada Lovelace">AL</z-avatar>
+	    <z-avatar name="Grace Hopper" src="/img/grace.jpg"></z-avatar>
+	    <z-avatar name="Inconnu" size="l">?</z-avatar>
 
 	`name` = l'alternative textuelle (role="img" + aria-label) : une image d'identité doit
-	toujours pouvoir se dire. Sans `src`, les initiales suffisent et restent lisibles.
+	toujours pouvoir se dire — même sans `src`, car role="img" ne lit pas ses enfants, donc
+	les initiales seules ne nomment rien pour un lecteur d'écran.
 
-	Doc narrative : z-avatar.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-avatar.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 11.0
 	============================================================
 */
@@ -26,7 +27,7 @@ export class ZAvatar extends ZElement {
 		tag: "z-avatar",
 		example: `<z-avatar name="Ada Lovelace">AL</z-avatar>
 <z-avatar name="Grace Hopper" src="/img/grace.jpg"></z-avatar>
-<z-avatar size="l" tone="soft">?</z-avatar>`,
+<z-avatar name="Inconnu" size="l" tone="soft">?</z-avatar>`,
 		members: [
 			{ kind: "field", name: "src", type: "string", description: { en: "The image URL (mirrors the attribute).", fr: "L'URL de l'image (reflet de l'attribut).", es: "La URL de la imagen (reflejo del atributo)." } },
 			{ kind: "field", name: "name", type: "string", description: { en: "The accessible name (mirrors the attribute).", fr: "Le nom accessible (reflet de l'attribut).", es: "El nombre accesible (reflejo del atributo)." } }
@@ -87,7 +88,7 @@ export class ZAvatar extends ZElement {
 	}
 
 	/*
-		Pose l'image en fond (pas d'<img> injecté) et l'alternative accessible. La classe
+		Pose l'image en fond (pas d'<img> injecté) et l'alternative accessible. L'attribut
 		`has-image` dit au CSS de masquer les initiales quand une image les recouvre.
 	*/
 	#sync() {

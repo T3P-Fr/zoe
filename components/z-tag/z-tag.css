@@ -82,6 +82,14 @@ z-tag {
 		box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-accent) 40%, transparent);
 	}
 
-	/* ═══ COMMUN — apparition douce. Styleguide 7.1.4 */
+	/* ═══ COMMUN — entrée et sortie douces. Styleguide 7.1.4
+	   L'entrée est posée par le socle au montage ; la sortie par remove(), qui ATTEND la
+	   fin (--z-dur-exit) avant de retirer le nœud — sans quoi elle serait invisible. */
 	&:state(enter) { animation: pop var(--z-dur-enter, .3s) var(--z-ease-spring, ease-out); }
+	&:state(exit)  { animation: z-tag-out var(--z-dur-exit, .24s) var(--z-ease, ease-in) forwards; }
+}
+
+@keyframes z-tag-out {
+	from { opacity: 1; scale: 1; }
+	to   { opacity: 0; scale: .8; }
 }

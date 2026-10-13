@@ -48,7 +48,7 @@ z-badge {
 	/* ═══ FORME COURTE — le CSS peint l'hôte ═══ Styleguide 6.1.1 */
 	&:not(:has(z-layer)) {
 		background: var(--z-badge--background__color, var(--z-tone__fill, var(--z-surface)));
-		border: var(--z-border-width, 1px) solid var(--z-tone__line, var(--z-line));
+		border: var(--z-border-width, 1px) solid var(--z-badge--background__border, var(--z-tone__line, var(--z-line)));
 	}
 
 	/* ═══ FORME EN CALQUES — le fond est une PIÈCE ═══ Styleguide 6.1.2 */

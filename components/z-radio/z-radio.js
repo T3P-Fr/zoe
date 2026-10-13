@@ -2,7 +2,7 @@
 	============================================================
 	z-radio — un bouton radio, bâti SUR z-element (Chemin A)
 	------------------------------------------------------------
-	Même anatomie que z-checkbox — un marker (le rond) + un label (TON texte), zéro
+	Même anatomie que z-checkbox — un marker (le rond) + un label (VOTRE texte), zéro
 	balise injectée — mais une LOI d'usage différente : une radio ne se DÉ-sélectionne
 	pas elle-même. On en choisit une AUTRE. C'est le groupe qui éteint la précédente
 	(voir z-radio-group) ; seule, une z-radio ne sait que s'allumer.

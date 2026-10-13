@@ -18,10 +18,10 @@
 	survol ET le focus METTENT LE TIMER EN PAUSE — on ne rate pas un message qu'on est en
 	train de lire ou de sélectionner ; il reprend là où il en était à la sortie.
 
-	Elle ne gère PAS son placement à l'écran (une pile/un conteneur viendra) — juste la
-	carte : son entrée, sa vie, sa sortie.
+	Elle ne gère PAS son placement à l'écran : la PAGE pose la pile (un conteneur fixe où
+	les cartes s'empilent) — z-toast n'est que la carte : son entrée, sa vie, sa sortie.
 
-	Doc narrative : z-toast.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-toast.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 29.0
 	============================================================
 */

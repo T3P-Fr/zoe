@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-alert — démo</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis passe par <code>http://localhost:5173/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+	/* Section 2 — ce que les calques permettent : le fond respire, le texte ne bouge pas.
+	   Rien ici ne touche au composant : un rôle et un preset de z-motion. */
+	.vive > z-layer[part="background"] { animation: pulse 1.6s ease-in-out infinite; }
+</style>
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact></z-contact>
+
+<h1><code>z-alert</code></h1>
+<p class="lead">Une bannière qui dit ce qui vient de se passer. Le <b>ton</b> fait la couleur
+	et l'annonce, <code class="tag">dismissible</code> ajoute la croix. Cliquez-la, ou
+	<kbd>Tab</kbd> puis <kbd>Suppr</kbd>. Changez la peau en haut à droite — tout suit.</p>
+
+<h2>1 · Le ton fait le message</h2>
+<div class="stack" data-code>
+	<z-alert>Une information, sans ton : surface et filet de la peau.</z-alert>
+	<z-alert tone="success">Vos modifications sont enregistrées.</z-alert>
+	<z-alert tone="danger">Le paiement a été refusé.</z-alert>
+	<z-alert tone="main">Nouvelle version disponible.</z-alert>
+	<z-alert tone="soft">Une note, à peine cadrée.</z-alert>
+</div>
+<p class="note">Un mot dans le HTML. Le variant <code>tone</code> pose trois swatches, la
+	bannière les boit : la surface est le ton mélangé à 12 % dans le fond, le filet gauche
+	l'ancre. <code>danger</code> passe aussi l'annonce en <code>role="alert"</code>.</p>
+
+<h2>2 · La même chose, <b>en calques</b></h2>
+<div class="stack" data-code>
+	<z-alert tone="success">
+		<z-layer part="background"></z-layer>
+		<z-layer part="infos">
+			<z-layer part="icon">✓</z-layer>
+			<z-layer part="label">Vos modifications sont enregistrées.</z-layer>
+		</z-layer>
+	</z-alert>
+	<z-alert tone="danger" class="vive">
+		<z-layer part="background"></z-layer>
+		<z-layer part="infos">
+			<z-layer part="icon">!</z-layer>
+			<z-layer part="label">Le fond respire, le texte ne bouge pas.</z-layer>
+		</z-layer>
+	</z-alert>
+</div>
+<pre class="z-code-manuel">.vive > z-layer[part="background"] { animation: pulse 1.6s ease-in-out infinite; }</pre>
+<p class="note">Pas de <code>marker</code>, pas de <code>contact</code> : on n'écrit que les
+	rôles qu'on a. L'icône prend la couleur du ton. Et le fond, devenu une pièce, peut
+	<b>pulser seul</b> — impossible quand fond et texte sont le même élément.</p>
+
+<h2>3 · Fermable — <code class="tag">dismissible</code></h2>
+<div class="stack">
+	<div class="stack" id="zone" style="align-self:stretch">
+		<z-alert tone="danger" dismissible>Le paiement a été refusé. Cliquez la croix, ou <kbd>Tab</kbd> puis <kbd>Suppr</kbd>.</z-alert>
+	</div>
+	<div class="rangee">
+		<z-button id="remettre" tone="soft">Remettre la bannière</z-button>
+		<span class="note" id="dit">la bannière est là</span>
+	</div>
+	<z-alert id="tenace" tone="main" dismissible>Celle-ci refuse de partir : la page annule <code>zoe:dismiss</code>.</z-alert>
+</div>
+<pre class="z-code-manuel">/* fermer : émet zoe:dismiss (annulable), joue `exit`, retire le nœud */
+alerte.addEventListener("zoe:dismiss", () => { dit.textContent = "partie — après son fondu"; });
+
+/* garder la main : preventDefault() et la bannière reste */
+tenace.addEventListener("zoe:dismiss", (evenement) => evenement.preventDefault());
+
+/* remettre : un nouveau nœud, et il entre en popant (état `enter`) */
+zone.append(Object.assign(document.createElement("z-alert"), { textContent: "…" }));</pre>
+<p class="note">La croix est <b>peinte</b> (un <code>::after</code>), rien dans votre DOM ;
+	sa zone fait 2,2 em au bord droit. La sortie <b>fond</b> le temps de
+	<code>--z-dur-exit</code> avant que le nœud ne parte — jamais de disparition sèche.</p>
+
+<h2>4 · Taille et largeur</h2>
+<div class="stack" data-code>
+	<z-alert size="s" tone="success">Petite : tout est en em, le filet et la croix suivent.</z-alert>
+	<z-alert size="l" tone="success" dismissible>Grande, et fermable.</z-alert>
+	<z-alert width="full" tone="main">Pleine largeur — pour une bannière de page.</z-alert>
+</div>
+<p class="note">Un seul réglage à l'intérieur, la taille du texte ; le reste est en
+	<code>em</code>. Les facteurs appartiennent à la peau.</p>
+
+<script type="module">
+	import "../../examples/skin-switch.js";
+	import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+	import "../../tools/z-contact/z-contact.js";
+	import "../../core/z-layer/z-layer.js";
+	import "../z-button/z-button.js";
+	import "./z-alert.js";
+
+	/* Section 3 — fermer, refuser, remettre : du code d'auteur, et rien d'autre. */
+	const zone = document.querySelector("#zone");
+	const dit = document.querySelector("#dit");
+	const remettre = document.querySelector("#remettre");
+	const tenace = document.querySelector("#tenace");
+
+	/* zoe:dismiss bulle : on l'écoute sur la zone, la bannière peut être recréée. */
+	zone.addEventListener("zoe:dismiss", () => { dit.textContent = "partie — après son fondu"; });
+
+	remettre.addEventListener("click", () => {
+		if (zone.querySelector("z-alert")) return;
+		const alerte = document.createElement("z-alert");
+		alerte.setAttribute("tone", "danger");
+		alerte.toggleAttribute("dismissible", true);
+		alerte.textContent = "Le paiement a été refusé. Cliquez la croix, ou Tab puis Suppr.";
+		zone.append(alerte);
+		dit.textContent = "revenue — elle entre en popant";
+	});
+
+	tenace.addEventListener("zoe:dismiss", (evenement) => {
+		evenement.preventDefault();
+		dit.textContent = "fermeture refusée par la page (preventDefault)";
+	});
+</script>
+</html>

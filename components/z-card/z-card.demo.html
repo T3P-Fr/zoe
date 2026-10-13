@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-card — démo</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis passe par <code>http://localhost:5173/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+	/* Décor de CETTE page : une carte seule prend la colonne — réduite à son texte, elle
+	   n'aurait pas l'air d'une carte. Dans une rangée, elles se partagent la place. */
+	.stack > z-card { width: 100%; }   /* pas align-self : en grille, il étirerait la hauteur */
+	.rangee > z-card { flex: 1 1 5rem; }
+
+	/* Le contenu natif d'une carte : ses marges par défaut sont celles du navigateur. */
+	z-card > h3, z-card [part="label"] { margin: 0 0 .4em; font-size: 1.1em; font-family: var(--z-font-title, inherit); }
+	z-card > p, z-card [part="infos"] > p { margin: 0; color: var(--z-ink-soft); }
+
+	/* Section 2 — un dégradé tient lieu d'image. */
+	.visuel { height: 5em; background: linear-gradient(135deg, var(--z-accent), var(--z-line)); }
+</style>
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact></z-contact>
+
+<h1><code>z-card</code></h1>
+<p class="lead">Une surface qui contient votre HTML, libre. Avec <code class="tag">interactive</code>,
+	la carte entière devient un bouton : survolez, pressez, <kbd>Tab</kbd> puis <kbd>Entrée</kbd>.
+	Changez la peau en haut à droite — tout suit.</p>
+
+<h2>1 · Forme courte — <code class="tag">&lt;z-card&gt;…&lt;/z-card&gt;</code></h2>
+<div class="stack" data-code>
+	<z-card>
+		<h3>Titre de la carte</h3>
+		<p>Contenu libre : texte, images, autres composants. La carte ne pose que le cadre.</p>
+	</z-card>
+	<z-card tone="soft">
+		<h3>Une note discrète</h3>
+		<p>Ni fond ni filet : du contenu à peine cadré.</p>
+	</z-card>
+</div>
+<p class="note">Un fond, un filet, des coins, un padding. Tout le reste est à vous — des
+	balises natives, lues par les moteurs de recherche.</p>
+
+<h2>2 · La même chose, <b>en calques</b> — avec un visuel de tête</h2>
+<div class="stack" data-code>
+	<z-card>
+		<z-layer part="background"></z-layer>
+		<z-layer part="media" class="visuel"></z-layer>
+		<z-layer part="infos">
+			<z-layer part="label">Titre de la carte</z-layer>
+			<p>Le visuel colle aux bords et reprend les coins hauts. Ici, un dégradé tient lieu d'image.</p>
+		</z-layer>
+	</z-card>
+</div>
+<p class="note">Trois rôles : le <b>fond</b> (une pièce, qui peut s'élever seule), le
+	<b>media</b> optionnel, et <b>infos</b>, le bloc de contenu. Pas de <code>marker</code> ni
+	de <code>contact</code> : on n'écrit que les rôles qu'on a.</p>
+
+<h2>3 · Interactive — la carte entière est un bouton</h2>
+<div class="stack">
+	<z-card interactive id="cliquable">
+		<h3>Cliquez-moi, ou <kbd>Tab</kbd> puis <kbd>Entrée</kbd></h3>
+		<p id="compte">Aucun clic pour l'instant.</p>
+	</z-card>
+</div>
+<pre class="z-code-manuel">carte.addEventListener("click", () => { compte.textContent = `${++clics} clic(s)`; });
+// Entrée et Espace émettent un vrai `click` — rien de plus à écrire</pre>
+<p class="note">Survol : filet accent, ombre, légère montée. Appui : elle redescend. Focus
+	clavier : un anneau. <code>role="button"</code> et <code>tabindex</code> sont posés par
+	le composant — et retirés si l'attribut part. Zéro logique métier : elle émet, vous décidez.</p>
+
+<h2>4 · Ton et taille</h2>
+<div class="stack" data-code>
+	<div class="rangee">
+		<z-card tone="complement">complement</z-card>
+		<z-card tone="success">success</z-card>
+		<z-card tone="danger">danger</z-card>
+	</div>
+	<div class="rangee">
+		<z-card size="s">size s</z-card>
+		<z-card>défaut</z-card>
+		<z-card size="l">size l</z-card>
+	</div>
+</div>
+<p class="note">Le ton colore surface et filet ; la taille règle le texte, et padding, filet,
+	coins suivent en <code>em</code>.</p>
+
+<h2>5 · Composée — d'autres composants dedans</h2>
+<div class="stack" data-code>
+	<z-card>
+		<h3>Commande n° 4821</h3>
+		<p>Trois articles, livraison sous 48 h.</p>
+		<div class="rangee">
+			<z-badge tone="success">payée</z-badge>
+			<z-button size="s">Suivre le colis</z-button>
+			<z-button size="s" tone="soft">Facture</z-button>
+		</div>
+	</z-card>
+</div>
+<p class="note">Une carte <b>non</b> interactive, et des actions dedans : c'est la bonne
+	répartition. Une carte-bouton qui contiendrait des boutons, l'assistance ne saurait plus
+	qui on active.</p>
+
+<script type="module">
+	import "../../examples/skin-switch.js";
+	import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+	import "../../tools/z-contact/z-contact.js";
+	import "../../core/z-layer/z-layer.js";
+	import "../z-button/z-button.js";
+	import "../z-badge/z-badge.js";
+	import "./z-card.js";
+
+	/* Section 3 — la carte émet `click`, la page compte : du code d'auteur, une ligne. */
+	const carte = document.querySelector("#cliquable");
+	const compte = document.querySelector("#compte");
+	let clics = 0;
+	carte.addEventListener("click", () => { compte.textContent = `${++clics} clic${clics > 1 ? "s" : ""} — à la souris ou au clavier.`; });
+</script>
+</html>

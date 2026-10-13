@@ -22,8 +22,8 @@ montage.
 
 <kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd> se promènent **et choisissent**
 (convention ARIA : dans un radiogroup, naviguer *c'est* choisir), circulairement.
-<kbd>Home</kbd> / <kbd>End</kbd> vont aux extrémités. Les deux axes marchent — que tu
-poses tes radios en colonne ou en ligne.
+<kbd>Home</kbd> / <kbd>End</kbd> vont aux extrémités. Les deux axes marchent — que vous
+posiez vos radios en colonne ou en ligne.
 
 **Roving tabindex** : le groupe est **un seul** arrêt de tabulation. Le choix courant
 porte le focus, les autres sortent du chemin. Sans ça, 6 choix = 6 tabulations.
@@ -40,7 +40,7 @@ group.addEventListener("change", () => console.log(group.value));
 ```
 
 Le groupe **n'invente pas d'événement** : le `change` de la radio choisie bulle à
-travers lui, et comme il écoute en *capture*, `.value` est déjà à jour quand ton
+travers lui, et comme il écoute en *capture*, `.value` est déjà à jour quand votre
 écouteur se déclenche.
 
 L'attribut `value` en HTML = **présélection déclarative**, honorée tant que rien n'est

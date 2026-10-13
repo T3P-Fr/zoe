@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <title>z-meter — démo</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+      'puis passe par <code>http://localhost:5173/</code>.</div>'
+    );
+  </script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+  <style>
+    /* Les jauges prennent la largeur de leur colonne (la grille du code les laisserait
+       sinon à zéro : une barre vide n'a pas de contenu pour se mesurer). */
+    .stack > z-meter, .stack > z-slider { width: 100%; }
+
+    /* ÉCHELLE INVERSÉE — « bas = bon » : la zone haute est repeinte en danger d'une ligne. */
+    .pollution:state(high) { --z-meter--fill__color: var(--z-danger); }
+
+    /* REPEINT PAR LE PACTE — une piste plus épaisse, un remplissage à l'encre. */
+    .epaisse { --z-meter--track__height: 1.1em; --z-meter--fill__color: var(--z-ink); }
+  </style>
+
+  <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+  <z-contact></z-contact>
+
+  <h1><code>z-meter</code></h1>
+  <p class="lead">Une jauge de <b>mesure</b> (<code>role="meter"</code>) : une valeur dans une plage, colorée par ses seuils. Le JS publie un pourcentage, le CSS dessine. Changez la peau en haut à droite — tout suit.</p>
+
+  <h2>1 · Forme courte</h2>
+  <div class="stack" data-code>
+    <z-meter value="72" aria-label="Remplissage"></z-meter>
+    <z-meter value="3" max="5" aria-label="Note sur cinq"></z-meter>
+    <z-meter value="0" aria-label="Vide"></z-meter>
+  </div>
+  <p class="note">Sans seuil, la jauge reste neutre (accent). <code>value</code> est bornée à <code>[min, max]</code> ; <code>max</code> vaut 100 par défaut.</p>
+
+  <h2>2 · Les seuils — <code class="tag">low</code> · <code class="tag">high</code> · <code class="tag">optimum</code></h2>
+  <div class="stack" data-code>
+    <z-meter value="15" low="20" high="80" optimum="100" aria-label="Batterie faible"></z-meter>
+    <z-meter value="50" low="20" high="80" optimum="100" aria-label="Batterie moyenne"></z-meter>
+    <z-meter value="92" low="20" high="80" optimum="100" aria-label="Batterie pleine"></z-meter>
+    <z-meter value="92" low="20" high="80" aria-label="Zone haute sans idéal"></z-meter>
+  </div>
+  <p class="note">Une batterie : sous <code>low</code> → <code>:state(low)</code>, danger. Entre les deux : neutre. Dans la zone de <code>optimum</code> → <code>:state(optimum)</code>, le ton (accent). Sans <code>optimum</code>, la zone haute est <code>:state(high)</code>, succès.</p>
+
+  <h2>3 · L'idéal prend le ton ; l'échelle inversée se repeint</h2>
+  <div class="stack" data-code>
+    <z-meter value="92" low="20" high="80" optimum="100" tone="success" aria-label="Batterie pleine, en vert"></z-meter>
+    <z-meter class="pollution" value="12" low="20" high="80" optimum="0" aria-label="Pollution faible"></z-meter>
+    <z-meter class="pollution" value="88" low="20" high="80" optimum="0" aria-label="Pollution forte"></z-meter>
+  </div>
+  <pre class="z-code-manuel">.pollution:state(high) { --z-meter--fill__color: var(--z-danger); }</pre>
+  <p class="note"><code>tone="success"</code> peint l'idéal en vert. Pour un taux de pollution (« bas = bon »), <code>optimum="0"</code> rend la zone basse idéale ; la zone haute reste <code>:state(high)</code> — une ligne de CSS la repeint en danger.</p>
+
+  <h2>4 · En calques — <code class="tag">background</code> + <code class="tag">marker</code></h2>
+  <div class="stack" data-code>
+    <z-meter value="72" aria-label="Remplissage, en calques">
+      <z-layer part="background"></z-layer>
+      <z-layer part="marker"></z-layer>
+    </z-meter>
+    <z-meter class="epaisse" value="40" aria-label="Piste épaisse">
+      <z-layer part="background"></z-layer>
+      <z-layer part="marker"></z-layer>
+    </z-meter>
+  </div>
+  <pre class="z-code-manuel">.epaisse { --z-meter--track__height: 1.1em; --z-meter--fill__color: var(--z-ink); }</pre>
+  <p class="note">Même rendu que la forme courte : la piste est <code>background</code>, le remplissage <code>marker</code>. Les tokens <code>--track</code> / <code>--fill</code> les peignent dans les deux formes.</p>
+
+  <h2>5 · Vivante — un curseur la pilote</h2>
+  <div class="stack" data-code>
+    <z-slider id="pilote" value="55" label="under" aria-label="Niveau"></z-slider>
+    <z-meter id="jauge" value="55" low="20" high="80" optimum="100" aria-label="Niveau mesuré"></z-meter>
+  </div>
+  <pre class="z-code-manuel">pilote.addEventListener("input", (e) => {
+  jauge.value = e.target.value;                           // l'attribut suit, le CSS redessine
+  dit.textContent = jauge.states.find((s) => ["low", "high", "optimum"].includes(s)) ?? "neutre";
+});</pre>
+  <p class="note" id="dit">zone : neutre</p>
+
+  <script type="module">
+    import "../../examples/skin-switch.js";
+    import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+    import "../../tools/z-contact/z-contact.js";
+    import "../../core/z-layer/z-layer.js";
+    import "../z-slider/z-slider.js";
+    import "./z-meter.js";
+
+    /* Le curseur pilote la jauge : on écoute `input`, on pose `.value`. La zone se lit
+       dans `.states` — le composant l'a déjà posée quand l'écouteur se réveille. */
+    const pilote = document.querySelector("#pilote");
+    const jauge = document.querySelector("#jauge");
+    const dit = document.querySelector("#dit");
+    const zone = () => jauge.states.find((s) => ["low", "high", "optimum"].includes(s)) ?? "neutre";
+
+    pilote.addEventListener("input", (evenement) => {
+      jauge.value = evenement.target.value;
+      dit.textContent = `zone : ${zone()} — ${jauge.value} / ${jauge.max}`;
+    });
+    dit.textContent = `zone : ${zone()} — ${jauge.value} / ${jauge.max}`;
+  </script>
+
+</html>

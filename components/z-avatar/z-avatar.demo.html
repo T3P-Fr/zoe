@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-avatar — démo</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis passe par <code>http://localhost:5173/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+	/* Section 2 — ce que les calques permettent : le disque tourne au survol, les
+	   initiales restent droites. Rien ici ne touche au composant : un rôle, un état. */
+	.tourne > z-layer[part="background"] { transition: rotate .5s var(--z-ease-spring, ease-out); }
+	.tourne:state(over) > z-layer[part="background"] { rotate: 180deg; }
+	.tourne > z-layer[part="background"] {
+		background: conic-gradient(var(--z-accent) 0 25%, var(--z-line) 25% 50%, var(--z-accent) 50% 75%, var(--z-line) 75%);
+	}
+</style>
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact></z-contact>
+
+<h1><code>z-avatar</code></h1>
+<p class="lead">Une pastille d'identité : une <b>image</b> si vous en donnez une, sinon les
+	<b>initiales</b> que vous avez écrites. Rien d'injecté — l'image est un fond, le nom est
+	un <code>aria-label</code>. Changez la peau en haut à droite — tout suit.</p>
+
+<h2>1 · Initiales, image, inconnu</h2>
+<div class="stack" data-code>
+	<z-avatar name="Ada Lovelace">AL</z-avatar>
+	<z-avatar name="Grace Hopper" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='%23b8744a'/%3E%3Ccircle cx='4' cy='3.2' r='1.5' fill='%23f6e9da'/%3E%3Cpath d='M1 8a3 2.4 0 0 1 6 0z' fill='%23f6e9da'/%3E%3C/svg%3E"></z-avatar>
+	<z-avatar name="Inconnu" tone="soft">?</z-avatar>
+</div>
+<p class="note">L'image est posée en <b>fond</b> de l'hôte (<code>--z-avatar__image</code>),
+	jamais en <code>&lt;img&gt;</code>. Donnez <code>name</code> même sans image : un
+	<code>role="img"</code> ne lit pas ses enfants, les initiales seules ne nomment rien.</p>
+
+<h2>2 · La même chose, <b>en calques</b></h2>
+<div class="stack" data-code>
+	<z-avatar name="Ada Lovelace">
+		<z-layer part="background"></z-layer>
+		<z-layer part="label">AL</z-layer>
+	</z-avatar>
+	<z-avatar name="Ada Lovelace" class="tourne">
+		<z-layer part="background"></z-layer>
+		<z-layer part="label">AL</z-layer>
+	</z-avatar>
+</div>
+<pre class="z-code-manuel">.tourne:state(over) > z-layer[part="background"] { rotate: 180deg; }</pre>
+<p class="note">Deux pièces, le disque et ce qu'il porte. Survolez le second : le <b>disque
+	tourne</b>, les initiales restent droites — impossible quand fond et texte sont le même
+	élément.</p>
+
+<h2>3 · Taille et ton</h2>
+<div class="stack" data-code>
+	<div class="rangee">
+		<z-avatar name="Ada Lovelace" size="xs">AL</z-avatar>
+		<z-avatar name="Ada Lovelace" size="s">AL</z-avatar>
+		<z-avatar name="Ada Lovelace">AL</z-avatar>
+		<z-avatar name="Ada Lovelace" size="l">AL</z-avatar>
+		<z-avatar name="Ada Lovelace" size="xl">AL</z-avatar>
+	</div>
+	<div class="rangee">
+		<z-avatar name="Grace Hopper" tone="main">GH</z-avatar>
+		<z-avatar name="Grace Hopper" tone="complement">GH</z-avatar>
+		<z-avatar name="Grace Hopper" tone="soft">GH</z-avatar>
+		<z-avatar name="Grace Hopper" tone="success">GH</z-avatar>
+		<z-avatar name="Grace Hopper" tone="danger">GH</z-avatar>
+	</div>
+</div>
+<p class="note">Le disque fait <code>2.4em</code> : <code>size</code> ne règle que la taille du
+	texte, et tout suit. <code>tone</code> colore la surface sans image.</p>
+
+<h2>4 · L'image arrive, les initiales s'effacent</h2>
+<div class="stack">
+	<div class="rangee">
+		<z-avatar id="portrait" name="Margaret Hamilton" size="l">MH</z-avatar>
+		<z-button id="photo" tone="soft">Charger la photo</z-button>
+		<span class="note" id="dit">initiales</span>
+	</div>
+</div>
+<pre class="z-code-manuel">avatar.src = "/img/margaret.jpg";   // l'image recouvre, les initiales s'effacent
+avatar.src = "";                    // elles reviennent — elles n'ont jamais quitté le DOM</pre>
+<p class="note">Cliquez : <code>src</code> se pose et se retire à chaud. Le composant marque
+	l'hôte <code>has-image</code> ; le CSS cache les initiales sans les enlever.</p>
+
+<script type="module">
+	import "../../examples/skin-switch.js";
+	import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+	import "../../tools/z-contact/z-contact.js";
+	import "../../core/z-layer/z-layer.js";
+	import "../z-button/z-button.js";
+	import "./z-avatar.js";
+
+	/* Section 4 — poser et retirer l'image : du code d'auteur, deux lignes. */
+	const IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='%235b6b8a'/%3E%3Ccircle cx='4' cy='3.2' r='1.5' fill='%23f6e9da'/%3E%3Cpath d='M1 8a3 2.4 0 0 1 6 0z' fill='%23f6e9da'/%3E%3C/svg%3E";
+	const portrait = document.querySelector("#portrait");
+	const photo = document.querySelector("#photo");
+	const dit = document.querySelector("#dit");
+
+	photo.addEventListener("click", () => {
+		const avecImage = Boolean(portrait.src);
+		portrait.src = avecImage ? "" : IMAGE;
+		photo.textContent = avecImage ? "Charger la photo" : "Retirer la photo";
+		dit.textContent = avecImage ? "initiales" : "image — les initiales sont toujours dans le DOM";
+	});
+</script>
+</html>

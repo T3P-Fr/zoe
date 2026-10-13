@@ -26,9 +26,9 @@
 <z-contact></z-contact>
 
 <h1><code>z-button</code></h1>
-<p class="lead">Un bouton bâti sur <code>z-element</code> : il hérite tous les états. Survole,
-	presse, lâche <b>dehors</b> (releaseOut), navigue au <kbd>Tab</kbd> puis <kbd>Entrée</kbd>.
-	Change la peau en haut à droite — tout suit.</p>
+<p class="lead">Un bouton bâti sur <code>z-element</code> : il hérite tous les états. Survolez,
+	pressez, lâchez <b>dehors</b> (releaseOut), naviguez au <kbd>Tab</kbd> puis <kbd>Entrée</kbd>.
+	Changez la peau en haut à droite — tout suit.</p>
 
 <h2>1 · Les états, posés à la main</h2>
 <div class="stack" data-code>
@@ -87,7 +87,7 @@
 // …à la fin de l'envoi :
 btn.setState("loading", false);
 btn.setState("success");     // le CSS sait qu'on ARRIVE de loading : :state(success):state(from-loading)</pre>
-<p class="note">Clique : il part en chargement, puis bascule en validé. Le socle pose au
+<p class="note">Cliquez : il part en chargement, puis bascule en validé. Le socle pose au
 	passage un état de <b>provenance</b> — une séquence est une combinaison, pas une
 	animation écrite à la main.</p>
 

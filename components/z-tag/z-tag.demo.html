@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-tag — démo</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+  if (location.protocol === "file:") document.write(
+    '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+    '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+    'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+    'puis passe par <code>http://localhost:5173/</code>.</div>'
+  );
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+  /* Le retour se lit JUSTE SOUS la liste qui l'a produit — jamais à l'autre bout. */
+  .echo { font-size: .85rem; margin-top: .5rem; }
+  .echo b { color: var(--z-accent); }
+</style>
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact></z-contact>
+
+<h1><code>z-tag</code></h1>
+<p class="lead">Une étiquette pour ce que l'<b>humain</b> pose — un mot-clé, un filtre, une catégorie — et qu'il doit pouvoir retirer. Elle hérite <code>tone</code> et <code>size</code> ; <code>removable</code> ajoute la croix. Changez la peau en haut à droite — tout suit.</p>
+
+<h2>1 · Forme courte — <code class="tag">&lt;z-tag&gt;texte&lt;/z-tag&gt;</code></h2>
+<div class="stack" data-code>
+  <div class="rangee">
+    <z-tag>design</z-tag>
+    <z-tag tone="main">urgent</z-tag>
+    <z-tag tone="complement">archive</z-tag>
+    <z-tag tone="soft">brouillon</z-tag>
+    <z-tag tone="success">publié</z-tag>
+    <z-tag tone="danger">bloqué</z-tag>
+  </div>
+</div>
+<p class="note">Rien à écrire : le CSS peint l'hôte. Le <code>tone</code> colore fond, encre et filet ; sans lui, l'étiquette se pose sur la surface de la peau.</p>
+
+<h2>2 · Forme en calques — le fond est une pièce</h2>
+<div class="stack" data-code>
+  <z-tag removable>
+    <z-layer part="background"></z-layer>
+    <z-layer part="infos">
+      <z-layer part="icon">#</z-layer>
+      <z-layer part="label">design</z-layer>
+    </z-layer>
+  </z-tag>
+</div>
+<p class="note">Même rendu : la structure change, la peau ne bouge pas. L'icône est optionnelle, avant le label. La croix, elle, reste un <code>::after</code> de l'hôte dans les deux formes.</p>
+
+<h2>3 · Les tailles</h2>
+<div class="stack" data-code>
+  <div class="rangee">
+    <z-tag size="xs">xs</z-tag>
+    <z-tag size="s">s</z-tag>
+    <z-tag>défaut</z-tag>
+    <z-tag size="l">l</z-tag>
+    <z-tag size="xl">xl</z-tag>
+  </div>
+</div>
+<p class="note">Une étiquette est écrite à .85 em du texte autour — toujours un peu plus petite que ce qu'elle qualifie. <code>size</code> ajoute son facteur par-dessus.</p>
+
+<h2>4 · Retirables — le retrait se prévient, et s'annule</h2>
+<div class="stack" data-code>
+  <div class="rangee" id="filtres">
+    <z-tag tone="main" removable>rouge</z-tag>
+    <z-tag tone="main" removable>coton</z-tag>
+    <z-tag tone="main" removable>taille M</z-tag>
+    <z-tag tone="complement" removable data-obligatoire>en stock</z-tag>
+  </div>
+</div>
+<pre class="z-code-manuel">filtres.addEventListener("zoe:remove", (event) => {
+  if (event.target.hasAttribute("data-obligatoire")) event.preventDefault();   // celui-là reste
+});</pre>
+<p class="echo">Dernier événement : <b id="echo-filtres">—</b></p>
+<p class="note">Cliquez la <b>×</b> (le bord droit — cliquer le mot ne retire rien), ou tabulez jusqu'à une étiquette puis <kbd>Suppr</kbd>. Chaque retrait émet <code>zoe:remove</code>, annulable : « en stock » refuse. Les autres jouent leur sortie puis quittent le DOM.</p>
+
+<script type="module">
+  import "../../examples/skin-switch.js";
+  import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+  import "../../tools/z-contact/z-contact.js";
+  import "../../core/z-layer/z-layer.js";
+  import "./z-tag.js";
+
+  /*
+    On écoute la LISTE, pas chaque étiquette : l'événement bulle, et une étiquette ne
+    connaît pas la liste qui la contient (zéro logique métier). Le veto est du code d'auteur.
+  */
+  const filtres = document.querySelector("#filtres");
+  const echo = document.querySelector("#echo-filtres");
+  filtres.addEventListener("zoe:remove", (event) => {
+    const mot = event.target.textContent.trim();
+    if (event.target.hasAttribute("data-obligatoire")) {
+      event.preventDefault();
+      echo.textContent = `zoe:remove « ${mot} » — refusé (preventDefault)`;
+      return;
+    }
+    echo.textContent = `zoe:remove « ${mot} » — retirée`;
+  });
+</script>
+</html>

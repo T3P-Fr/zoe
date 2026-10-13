@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-badge — démo</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis passe par <code>http://localhost:5173/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+	/* Section 2 — ce que les calques permettent : le fond pulse, le chiffre reste net.
+	   Rien ici ne touche au composant : un rôle et un preset de z-motion. */
+	.notif > z-layer[part="background"] { animation: pulse 1.4s ease-in-out infinite; }
+</style>
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact></z-contact>
+
+<h1><code>z-badge</code></h1>
+<p class="lead">Une pastille de statut ou de compteur. Elle n'ajoute presque rien : le
+	<b>ton</b> et la <b>taille</b> viennent du socle, la peau fait le reste. Changez la peau
+	en haut à droite — tout suit.</p>
+
+<h2>1 · Le ton — <code class="tag">tone</code></h2>
+<div class="stack" data-code>
+	<div class="rangee">
+		<z-badge>Nouveau</z-badge>
+		<z-badge tone="main">main</z-badge>
+		<z-badge tone="complement">complement</z-badge>
+		<z-badge tone="soft">soft</z-badge>
+		<z-badge tone="success">payé</z-badge>
+		<z-badge tone="danger">3</z-badge>
+	</div>
+</div>
+<p class="note">Sans ton, la pastille est discrète : surface et filet de la peau. Avec, elle
+	boit les trois swatches du variant. Un chiffre seul reste un <b>rond</b>, un mot une
+	gélule — et le rayon est celui de la peau (HighTech garde ses angles).</p>
+
+<h2>2 · La même chose, <b>en calques</b></h2>
+<div class="stack" data-code>
+	<div class="rangee">
+		<z-badge tone="danger">
+			<z-layer part="background"></z-layer>
+			<z-layer part="infos">
+				<z-layer part="label">3</z-layer>
+			</z-layer>
+		</z-badge>
+		<z-badge tone="danger" class="notif">
+			<z-layer part="background"></z-layer>
+			<z-layer part="infos">
+				<z-layer part="label">3</z-layer>
+			</z-layer>
+		</z-badge>
+	</div>
+</div>
+<pre class="z-code-manuel">.notif > z-layer[part="background"] { animation: pulse 1.4s ease-in-out infinite; }</pre>
+<p class="note">Deux rôles, pas plus : le fond et ce qui informe. Le second <b>pulse</b> — c'est le
+	fond qui respire, le chiffre ne bouge pas. Impossible quand fond et texte sont le même
+	élément.</p>
+
+<h2>3 · La taille — <code class="tag">size</code></h2>
+<div class="stack" data-code>
+	<div class="rangee">
+		<z-badge size="xs" tone="main">xs</z-badge>
+		<z-badge size="s" tone="main">s</z-badge>
+		<z-badge tone="main">défaut</z-badge>
+		<z-badge size="l" tone="main">l</z-badge>
+		<z-badge size="xl" tone="main">xl</z-badge>
+	</div>
+</div>
+<p class="note">Un badge fait <code>.75em</code> de son contexte, et <code>size</code> ajoute son
+	cran. Tout l'intérieur est en <code>em</code> : padding, filet, rayon suivent.</p>
+
+<h2>4 · Dans un bouton — les facteurs se composent</h2>
+<div class="stack">
+	<div class="rangee">
+		<z-button>Messages <z-badge tone="danger">3</z-badge></z-button>
+		<z-button size="l">Messages <z-badge tone="danger">3</z-badge></z-button>
+		<z-button tone="soft">Brouillons <z-badge>12</z-badge></z-button>
+	</div>
+</div>
+<pre class="z-code-manuel">&lt;z-button&gt;Messages &lt;z-badge tone="danger"&gt;3&lt;/z-badge&gt;&lt;/z-button&gt;
+&lt;z-button size="l"&gt;Messages &lt;z-badge tone="danger"&gt;3&lt;/z-badge&gt;&lt;/z-button&gt;
+&lt;z-button tone="soft"&gt;Brouillons &lt;z-badge&gt;12&lt;/z-badge&gt;&lt;/z-button&gt;</pre>
+<p class="note">Le badge grandit avec le bouton <code>size="l"</code> sans qu'on lui dise rien :
+	<code>em</code> s'hérite, donc les facteurs se multiplient. C'est voulu — un badge dans
+	un gros bouton doit être gros aussi.</p>
+
+<h2>5 · Le nombre change, la pastille repope</h2>
+<div class="stack">
+	<div class="rangee" role="status">
+		<z-button id="plus" tone="soft">+1 message</z-button>
+		<z-badge id="compteur" tone="danger">0</z-badge>
+		<span class="note" id="dit">aucun message</span>
+	</div>
+</div>
+<pre class="z-code-manuel">compteur.textContent = ++total;
+compteur.play("enter");   // rejoue l'entrée : le chiffre repope, là où est l'œil</pre>
+<p class="note">Cliquez : le chiffre monte et la pastille <b>repope</b> — une ligne, l'état
+	<code>enter</code> rejoué. Le <code>role="status"</code> est sur la <b>rangée</b>, pas sur le
+	badge : c'est le contexte qui s'annonce.</p>
+
+<script type="module">
+	import "../../examples/skin-switch.js";
+	import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+	import "../../tools/z-contact/z-contact.js";
+	import "../../core/z-layer/z-layer.js";
+	import "../z-button/z-button.js";
+	import "./z-badge.js";
+
+	/* Section 5 — le compteur : du code d'auteur, deux lignes. */
+	const plus = document.querySelector("#plus");
+	const compteur = document.querySelector("#compteur");
+	const dit = document.querySelector("#dit");
+	let total = 0;
+
+	plus.addEventListener("click", () => {
+		compteur.textContent = String(++total);
+		compteur.play("enter");
+		dit.textContent = `${total} message${total > 1 ? "s" : ""}`;
+	});
+</script>
+</html>

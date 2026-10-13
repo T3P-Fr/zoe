@@ -10,11 +10,12 @@
 	    <z-kbd>Ctrl</z-kbd> + <z-kbd>C</z-kbd>
 	    <z-kbd size="s">Échap</z-kbd>
 
-	Le contenu EST la touche. Sémantiquement c'est un `<kbd>` : on pose donc le rôle
-	implicite via la balise HTML native voisine côté auteur si besoin ; ici on reste un
-	simple élément d'affichage lu tel quel par l'assistance (le texte « Ctrl » se lit).
+	Le contenu EST la touche. Aucun rôle ARIA n'est posé : l'assistance lit le texte tel
+	quel (« Ctrl »), ce qui suffit à une touche. La sémantique native `<kbd>` reste celle
+	de l'auteur (contrat SEO : lu par les moteurs → natif, habillé par la peau) ; z-kbd
+	sert l'INTERFACE (raccourcis d'un menu, d'une infobulle), pas le contenu éditorial.
 
-	Doc narrative : z-kbd.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-kbd.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 17.0
 	============================================================
 */

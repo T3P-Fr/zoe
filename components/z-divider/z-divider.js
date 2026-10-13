@@ -14,7 +14,7 @@
 	vide → une ligne continue ; avec du texte (ou un `[part=label]`) → deux lignes qui
 	poussent de part et d'autre du label centré. Le JS ne fait que la sémantique ARIA.
 
-	Doc narrative : z-divider.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-divider.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 16.0
 	============================================================
 */
@@ -37,7 +37,7 @@ export class ZDivider extends ZElement {
 		},
 		attributes: [
 			{ name: "orientation", type: "\"horizontal\" | \"vertical\"", description: { en: "Direction of the rule: horizontal (default) or vertical (a short 1em stroke).", fr: "Le sens du filet : horizontal (défaut) ou vertical (un court trait d'1em).", es: "La dirección del filete: horizontal (predeterminado) o vertical (un trazo corto de 1em)." } },
-			{ name: "size", type: "\"xs\" | \"s\" | \"m\" | \"l\" | \"xl\"", description: { en: "Size factor, from the socle variant (label and stroke follow in em).", fr: "Le facteur de taille, via le variant du socle (label et trait suivent en em).", es: "El factor de tamaño, mediante el variante del zócalo (etiqueta y trazo siguen en em)." } }
+			{ name: "size", type: "\"xs\" | \"s\" | \"m\" | \"l\" | \"xl\"", description: { en: "Size factor, from the socle variant: the label and the vertical stroke's length follow in em; the thickness stays --z-border-width.", fr: "Le facteur de taille, via le variant du socle : le label et la longueur du trait vertical suivent en em ; l'épaisseur reste --z-border-width.", es: "El factor de tamaño, mediante el variante del zócalo: la etiqueta y la longitud del trazo vertical siguen en em; el grosor sigue siendo --z-border-width." } }
 		],
 		events: [{ name: "z-state", description: { en: "Emitted on every state change. detail: { states, changed, on }.", fr: "Émis à chaque changement d'état. detail : { states, changed, on }.", es: "Emitido en cada cambio de estado. detail: { states, changed, on }." } }],
 		states: ZElement.api.states,
@@ -65,8 +65,10 @@ export class ZDivider extends ZElement {
 	}
 
 	attributeChangedCallback(name, previous, value) {
+		/* `orientation` n'est pas un état : on l'intercepte AVANT le socle, sinon celui-ci
+		   poserait un :state(orientation) sans objet (il reflète tout attribut observé). */
+		if (name === "orientation") { this.#syncOrientation(); return; }
 		super.attributeChangedCallback(name, previous, value);
-		if (name === "orientation") this.#syncOrientation();
 	}
 
 	/* L'orientation du filet. @returns {"horizontal"|"vertical"} */

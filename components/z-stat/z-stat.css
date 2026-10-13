@@ -11,10 +11,10 @@
 	balise injectée (ADR-0018) : la flèche est un ::before décoratif. Pièces en enfant
 	DIRECT (`> [part=…]`) : une tuile dans une tuile ne se fait pas repeindre.
 
-	⚠ tone/size : pour que les variants `tone`/`size` du socle PEIGNENT z-stat, la balise
-	`z-stat` doit figurer dans la liste `:is(…)` de core/z-element/z-element.css (non
-	modifiée ici). Sans ça, la grammaire d'états marche, mais tone reste sans effet.
-	Requiert : une peau (tokens).
+	tone/size : les variants viennent du socle — `z-stat` figure dans la liste `:is(…)` de
+	core/z-element/z-element.css, qui pose --z-tone__fill/ink/line ; ce fichier ne fait
+	que les boire. Retirer la balise de cette liste rendrait `tone` muet ici.
+	Requiert : une peau (tokens) + core/z-element.
 	Styleguide 22.1
 	============================================================
 */
@@ -100,5 +100,21 @@ z-stat[trend="down"] > [part=delta]::before {
 	content: "\2193";   /* ↓ */
 }
 
-/* Apparition douce (loi Zoé : rien ne pope sec). Styleguide 22.1.5 */
+/*
+	z-stat — sur un ton, les pièces secondaires lisent l'encre DU TON
+	Sur un aplat d'accent, l'encre de la page (ink-soft, success, danger) serait
+	illisible. L'intitulé et la variation neutre s'atténuent par transparence ; sur un
+	aplat (main, success, danger), la variation fléchée prend l'encre pleine — c'est la
+	flèche qui porte le sens, pas la couleur.
+	Styleguide 22.1.5
+*/
+z-stat[tone] > [part=label],
+z-stat[tone]:not([trend]) > [part=delta] {
+	color: color-mix(in srgb, var(--z-tone__ink, var(--z-ink)) 75%, transparent);
+}
+z-stat:is([tone="main"], [tone="success"], [tone="danger"])[trend] > [part=delta] {
+	color: var(--z-tone__ink, var(--z-ink));
+}
+
+/* Apparition douce (loi Zoé : rien ne pope sec). Styleguide 22.1.6 */
 z-stat:state(enter) { animation: pop var(--z-dur-enter, .3s) var(--z-ease-spring, ease-out); }

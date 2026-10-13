@@ -7,17 +7,19 @@
 	montage), la sortie sur `:state(exit)` (posé par dismiss() AVANT de retirer le nœud) :
 	c'est ce qui rend la disparition visible au lieu d'un arrachage.
 
-	Le ton : z-toast n'est pas dans la liste `[tone]` partagée du socle, alors on pose ses
-	propres --z-tone__fill/line ici — la carte reste lisible sur clair comme sur sombre
-	(color-mix avec le fond de la peau). Elle ne gère PAS son placement : un conteneur/pile
-	viendra positionner l'ensemble.
+	Le ton : le socle (core/z-element/z-element.css) pose --z-tone__fill/line pour chaque
+	`tone="…"`, mais RIEN pour une carte SANS tone (main est le défaut, sans règle). Or la
+	carte mélange toujours ce token à son fond (color-mix) : sans valeur, pas de fond. On
+	pose donc ici un défaut neutre (--z-line) et on redit chaque ton, pour que la carte ait
+	toujours une couleur à mélanger — lisible sur clair comme sur sombre. Elle ne gère PAS
+	son placement : la page pose la pile.
 
 	Requiert : une peau (tokens) + core/z-layer.
 	Styleguide 29.1
 	============================================================
 */
 
-/* ═══ LE TON — posé localement (z-toast hors de la liste [tone] du socle) ═══ 29.1.0 */
+/* ═══ LE TON — un défaut neutre, et chaque ton redit (voir l'en-tête) ═══ 29.1.0 */
 z-toast { --z-tone__fill: var(--z-line); --z-tone__line: var(--z-line); }
 z-toast[tone="main"]       { --z-tone__fill: var(--z-accent);  --z-tone__line: var(--z-accent); }
 z-toast[tone="complement"] { --z-tone__fill: var(--z-surface); --z-tone__line: var(--z-line); }
@@ -41,7 +43,7 @@ z-toast {
 	line-height: 1.5;
 	color: var(--z-ink);
 	outline: none;
-	/* Elle flotte : une ombre douce la décolle du fond (une pile la posera où il faut). */
+	/* Elle flotte : une ombre douce la décolle du fond (la pile de la page la pose où il faut). */
 	box-shadow: 0 .5em 1.5em -0.5em color-mix(in srgb, var(--z-ink) 35%, transparent);
 
 	/* La surface : le ton mélangé au fond + un filet d'accent à gauche pour l'ancrer. */

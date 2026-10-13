@@ -23,7 +23,7 @@
 	SCOPÉ : il ne voit que les z-disclosure dont il est l'accordéon LE PLUS PROCHE —
 	imbriquer un accordéon dans un dépli ne les mélange pas (même loi que z-radio-group).
 
-	Doc narrative : z-accordion.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-accordion.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 27.0
 	============================================================
 */

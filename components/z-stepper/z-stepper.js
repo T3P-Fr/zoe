@@ -23,7 +23,7 @@
 	`at-max` sur l'hôte pour que le CSS les grise. On déclenche un vrai événement `input`
 	(et `change`) sur l'input à chaque cran, pour que tout écouteur natif suive.
 
-	Doc narrative : z-stepper.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-stepper.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 25.0
 	============================================================
 */
@@ -50,7 +50,9 @@ export class ZStepper extends ZElement {
 		},
 		attributes: [
 			{ name: "aria-label", type: "string", description: { en: "Names the group for assistive tech (e.g. \"Quantity\").", fr: "Nomme le groupe pour les technologies d'assistance (ex. « Quantité »).", es: "Nombra el grupo para tecnologías de asistencia (p. ej. «Cantidad»)." } },
-			{ name: "disabled", type: "boolean", description: { en: "Disables the − / + zones (the input keeps its own disabled state).", fr: "Désactive les zones − / + (l'input garde son propre disabled).", es: "Deshabilita las zonas − / + (el input conserva su propio disabled)." } }
+			{ name: "disabled", type: "boolean", description: { en: "Disables the − / + zones (the input keeps its own disabled state).", fr: "Désactive les zones − / + (l'input garde son propre disabled).", es: "Deshabilita las zonas − / + (el input conserva su propio disabled)." } },
+			{ name: "at-min", type: "boolean", description: { en: "Set by z-stepper (read-only): the value cannot go lower — the CSS greys the − zone.", fr: "Posé par z-stepper (lecture seule) : la valeur ne peut plus descendre — le CSS grise la zone −.", es: "Puesto por z-stepper (solo lectura): el valor no puede bajar más — el CSS atenúa la zona −." } },
+			{ name: "at-max", type: "boolean", description: { en: "Set by z-stepper (read-only): the value cannot go higher — the CSS greys the + zone.", fr: "Posé par z-stepper (lecture seule) : la valeur ne peut plus monter — le CSS grise la zone +.", es: "Puesto por z-stepper (solo lectura): el valor no puede subir más — el CSS atenúa la zona +." } }
 		],
 		events: [
 			{ name: "input", description: { en: "Fired ON THE INNER INPUT at each step, so native listeners follow.", fr: "Émis SUR L'INPUT INTERNE à chaque cran, pour que les écouteurs natifs suivent.", es: "Emitido EN EL INPUT INTERNO en cada paso, para que los oyentes nativos sigan." } },
@@ -59,11 +61,13 @@ export class ZStepper extends ZElement {
 		],
 		states: ZElement.api.states,
 		cssVars: [
-			{ name: "--z-stepper__button-width", description: { en: "Width reserved for each − / + zone (match BUTTON_ZONE_EM if overridden).", fr: "Largeur réservée à chaque zone − / + (accorder à BUTTON_ZONE_EM si modifiée).", es: "Ancho reservado para cada zona − / + (acordar con BUTTON_ZONE_EM si se cambia)." } }
-		],
-		layers: [
-			{ part: "background", description: { en: "The stepper surface — carries the frame and effects.", fr: "La surface de l'incrémenteur — porte le cadre et les effets.", es: "La superficie del incrementador — lleva el marco y los efectos." } }
+			{ name: "--z-stepper__button-width", description: { en: "Width reserved for each − / + zone (match BUTTON_ZONE_EM if overridden).", fr: "Largeur réservée à chaque zone − / + (accorder à BUTTON_ZONE_EM si modifiée).", es: "Ancho reservado para cada zona − / + (acordar con BUTTON_ZONE_EM si se cambia)." } },
+			{ name: "--z-stepper__field-width", description: { en: "Width of the native input in the middle.", fr: "Largeur de l'input natif au centre.", es: "Ancho del input nativo en el centro." } },
+			{ name: "--z-stepper--background__color", description: { en: "The frame's background.", fr: "Le fond du cadre.", es: "El fondo del marco." } },
+			{ name: "--z-stepper--button__color", description: { en: "Colour of the − / + signs at rest.", fr: "La couleur des signes − / + au repos.", es: "El color de los signos − / + en reposo." } }
 		]
+		/* Pas de `layers` : l'anatomie est l'<input> natif que l'auteur écrit (Chemin B),
+		   les deux boutons sont des pseudo-éléments — aucune pièce `z-layer` n'est peinte. */
 	};
 
 	/* L'input natif qu'on pilote — trouvé à la connexion, jamais créé (Chemin B). */

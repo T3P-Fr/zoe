@@ -9,7 +9,12 @@
 
 	  · FORME COURTE — <z-alert>…</z-alert> : le CSS peint l'hôte.
 	  · FORME EN CALQUES — background = la surface (elle peut pulser sur une alerte).
-	Requiert : une peau (tokens) + core/z-layer.
+
+	Aucun token propre : la bannière boit les swatches du ton (--z-tone__fill/line) et
+	les tokens globaux de la peau. Repeindre une alerte = changer son `tone`, ou cibler
+	`z-alert > [part=background]` dans la forme en calques.
+	Entrée sur `enter` (pop), sortie sur `exit` (fondu, posé par dismiss() AVANT le retrait).
+	Requiert : une peau (tokens) + core/z-layer + tools/z-motion (pop, fadeOut).
 	Styleguide 13.1
 	============================================================
 */
@@ -71,4 +76,8 @@ z-alert {
 
 	/* Apparition douce (loi Zoé). */
 	&:state(enter) { animation: pop var(--z-dur-enter, .3s) var(--z-ease-spring, ease-out); }
+
+	/* Sortie : `forwards`, sinon la bannière réapparaîtrait une frame avant son retrait —
+	   dismiss() attend la fin de --z-dur-exit avant d'enlever le nœud. */
+	&:state(exit) { animation: fadeOut var(--z-dur-exit, .2s) var(--z-ease, ease-in) forwards; }
 }

@@ -43,16 +43,16 @@
 
 <h1><code>z-checkbox</code> — le lab</h1>
 <p class="lead">
-	L'établi de la case à cocher. Change la peau en haut à droite : une case qui casse au
+	L'établi de la case à cocher. Changez la peau en haut à droite : une case qui casse au
 	changement se voit à l'instant.
 </p>
 
 <h2>0 · Le pupitre — <b>tous</b> ses paramètres, en direct</h2>
-<z-checkbox id="pupitre-sujet">Touche les réglages, je réagis</z-checkbox>
+<z-checkbox id="pupitre-sujet">Touchez les réglages, je réagis</z-checkbox>
 <p class="note">
 	Généré depuis la fiche du composant, jamais écrit à la main. Les <b>attributs</b> sont
 	des raccourcis, les <b>variables CSS</b> le réglage fin — et tout s'écrit sur la balise,
-	exactement comme tu le ferais dans ton CSS.
+	exactement comme vous le feriez dans votre CSS.
 </p>
 
 <h2>1 · Les deux écritures, côte à côte</h2>
@@ -78,7 +78,7 @@
 
 <h2>2 · Pourquoi <code>z-layer</code> et pas un <code>div</code></h2>
 <p class="note">
-	<b>Survole le carré, puis le texte</b> — séparément. Chaque pièce répond pour elle :
+	<b>Survolez le carré, puis le texte</b> — séparément. Chaque pièce répond pour elle :
 	le marqueur grossit sans que le texte bouge, le texte se décale sans que le marqueur
 	bouge. Un calque porte les <b>mêmes états</b> que son hôte, et il ne s'éveille que si
 	le CSS le rend touchable — une ligne, aucun JS.
@@ -91,7 +91,7 @@
 			<z-layer part="dot"></z-layer>
 		</z-layer>
 		<z-layer part="infos">
-			<z-layer part="label">Survole le carré, puis le texte</z-layer>
+			<z-layer part="label">Survolez le carré, puis le texte</z-layer>
 		</z-layer>
 		<z-layer part="contact"></z-layer>
 	</z-checkbox>
@@ -99,7 +99,7 @@
 
 <h2>3 · Trois horloges dans une case</h2>
 <p class="note">
-	<b>Coche-la, puis change de peau et recommence.</b> Trois pièces partent ensemble et
+	<b>Cochez-la, puis changez de peau et recommencez.</b> Trois pièces partent ensemble et
 	arrivent séparément — et <b>chaque peau a son geste</b> : sec et net chez HighTech,
 	ample et rebondi chez Claude. Impossible en forme courte : là-bas tout tient dans un
 	seul <code>::before</code>, donc un seul mouvement possible.
@@ -114,7 +114,7 @@
 			<z-layer part="dot"></z-layer>
 		</z-layer>
 		<z-layer part="infos">
-			<z-layer part="label">Coche-moi et regarde le point arriver</z-layer>
+			<z-layer part="label">Cochez-moi et regardez le point arriver</z-layer>
 		</z-layer>
 		<z-layer part="contact"></z-layer>
 	</z-checkbox>

@@ -3,8 +3,9 @@
 	z-spinner.css — le rendu de z-spinner
 	------------------------------------------------------------
 	Un anneau qui tourne. La couleur suit le ton (--z-tone__fill, sinon l'accent) ; la
-	taille suit le socle (tout est en em). Un seul mouvement : une rotation continue —
-	le LOOK définitif (vitesse, forme de la traîne) viendra plus tard, avec Christophe.
+	taille suit le socle (tout est en em). Un seul mouvement : une rotation continue,
+	dont la vitesse et l'épaisseur du trait sont deux tokens (--z-spinner__speed,
+	--z-spinner--ring__width).
 
 	  · FORME COURTE — <z-spinner> : ::before = l'anneau.
 	  · FORME EN CALQUES — marker = l'anneau (si l'auteur veut le viser seul).
@@ -33,6 +34,15 @@ z-spinner {
 		border-right-color: transparent;
 		animation: z-spinner-spin var(--z-spinner__speed, .7s) linear infinite;
 	}
+
+	/*
+		complement / soft : le socle y pose une surface neutre ou transparente — pour un
+		TRAIT ce serait l'invisible (un anneau transparent n'existe plus). L'anneau prend
+		alors l'encre du ton : --z-ink pour complement, --z-ink-soft pour soft.
+		Styleguide 10.1.2
+	*/
+	&[tone="complement"],
+	&[tone="soft"] { color: var(--z-tone__ink, var(--z-ink)); }
 }
 
 @keyframes z-spinner-spin {

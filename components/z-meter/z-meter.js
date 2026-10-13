@@ -16,12 +16,15 @@
 	ici et exposée en état :state(low|high|optimum) que le CSS peint. Zoé n'injecte rien
 	(ADR-0018) : la jauge est peinte (::before ou calque `marker`), jamais ajoutée.
 
-	Sémantique des seuils = celle de <meter> HTML : `optimum` situe la zone idéale ; selon
-	qu'il tombe dans le segment bas, moyen ou haut, une valeur « du même côté » est bonne
-	(success) et une valeur du côté opposé est mauvaise (danger). Un simple reflet des
-	règles du web, pas une invention.
+	Les seuils découpent la plage comme ceux de <meter> HTML : `low` et `high` font trois
+	zones (basse, moyenne, haute) ; `optimum` désigne la zone idéale. Une valeur sous `low`
+	est :state(low) (danger), au-dessus de `high` :state(high) (success) ; une valeur dans
+	la zone de `optimum` est :state(optimum) (le ton) et gagne sur les deux autres. Ce
+	n'est PAS la coloration complète du <meter> natif (optimum / sub-optimum / even less
+	good) : la zone haute reste peinte en success quel que soit l'idéal — pour une échelle
+	inversée (« bas = bon »), l'auteur repeint `:state(high)` via le pacte.
 
-	Doc narrative : z-meter.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-meter.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 20.0
 	============================================================
 */
@@ -49,7 +52,7 @@ export class ZMeter extends ZElement {
 			{ name: "max", type: "number", description: { en: "Upper bound (default 100).", fr: "Borne haute (défaut 100).", es: "Límite superior (predeterminado 100)." } },
 			{ name: "low", type: "number", description: { en: "Below this, the value is in the low segment.", fr: "En dessous, la valeur est dans le segment bas.", es: "Por debajo, el valor está en el segmento bajo." } },
 			{ name: "high", type: "number", description: { en: "Above this, the value is in the high segment.", fr: "Au-dessus, la valeur est dans le segment haut.", es: "Por encima, el valor está en el segmento alto." } },
-			{ name: "optimum", type: "number", description: { en: "Where the ideal sits — decides which side reads as good (success) or bad (danger).", fr: "Où se situe l'idéal — décide quel côté se lit comme bon (success) ou mauvais (danger).", es: "Dónde está el ideal — decide qué lado se lee como bueno (success) o malo (danger)." } }
+			{ name: "optimum", type: "number", description: { en: "Where the ideal sits — a value in the same zone is `optimum` (painted with the tone) instead of low/high.", fr: "Où se situe l'idéal — une valeur dans la même zone est `optimum` (peinte avec le ton) au lieu de low/high.", es: "Dónde está el ideal — un valor en la misma zona es `optimum` (pintado con el tono) en lugar de low/high." } }
 		],
 		events: [{ name: "z-state", description: { en: "Emitted on every state change. detail: { states, changed, on }.", fr: "Émis à chaque changement d'état. detail : { states, changed, on }.", es: "Emitido en cada cambio de estado. detail: { states, changed, on }." } }],
 		states: [...ZElement.api.states, "low", "high", "optimum"],
@@ -117,9 +120,7 @@ export class ZMeter extends ZElement {
 
 	/*
 		Publie le pourcentage pour le CSS, tient l'ARIA à jour, et pose l'état de SEGMENT
-		(low/high/optimum) que le CSS colore. Le segment suit les règles de <meter> :
-		l'idéal (`optimum`) désigne le « bon côté » ; une valeur du même côté que l'optimum
-		est bonne, du côté opposé mauvaise, entre les deux neutre.
+		(low/high/optimum) que le CSS colore — voir #applySegment pour la règle.
 	*/
 	#sync() {
 		const { min, max, value } = this;
@@ -137,12 +138,14 @@ export class ZMeter extends ZElement {
 	/*
 		Pose l'état de segment que le CSS colore. `low`/`high` (facultatifs) découpent la
 		plage en trois zones : basse, moyenne, haute. On expose la zone où tombe la valeur :
-		  · :state(low)  = sous `low`  → la peau la peint en danger par défaut ;
-		  · :state(high) = au-dessus de `high` → en success par défaut ;
+		  · :state(low)  = sous `low`  → z-meter.css la peint en danger ;
+		  · :state(high) = au-dessus de `high` → en success ;
 		  · :state(optimum) = la valeur est dans la MÊME zone que `optimum` → l'idéal, peint
-		    en accent/success. optimum GAGNE sur low/high : c'est ainsi qu'on gère l'inversion
-		    (batterie « pleine = bon » vs qualité de l'air « basse = bon ») sans logique en dur
-		    dans la peau — l'auteur place l'idéal dans la zone qui doit briller.
+		    avec le ton (--z-tone__fill, accent par défaut). optimum GAGNE sur low/high : une
+		    batterie pleine (optimum="100") n'est donc pas « success » mais « idéale ».
+		Les deux autres zones gardent leur couleur de POSITION (bas = danger, haut =
+		success) quel que soit l'idéal : pour une échelle inversée (« bas = bon »), l'auteur
+		repeint `:state(high)` via --z-meter--fill__color.
 		Sans aucun seuil, aucun état de segment : la jauge reste neutre (accent).
 		@param {number} value la valeur déjà bornée à [min…max]
 	*/

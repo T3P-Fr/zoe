@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-toast — démo</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+  if (location.protocol === "file:") document.write(
+    '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+    '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+    'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+    'puis passe par <code>http://localhost:5173/</code>.</div>'
+  );
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+  /*
+    LA PILE — le placement est l'affaire de la PAGE, pas de la carte : z-toast ne se
+    place pas. Un conteneur fixe en bas à droite, les cartes s'y empilent.
+  */
+  .pile {
+    position: fixed; right: 1rem; bottom: 1rem; z-index: 1000;
+    display: flex; flex-direction: column; gap: .6rem;
+  }
+  /* Le retour se lit JUSTE SOUS les boutons qui l'ont produit — jamais à l'autre bout. */
+  .echo { font-size: .85rem; margin-top: .5rem; }
+  .echo b { color: var(--z-accent); }
+</style>
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact></z-contact>
+
+<h1><code>z-toast</code></h1>
+<p class="lead">Une notification <b>éphémère</b> : elle entre, se lit, s'efface seule (<code>duration</code>), fait pause quand on la survole, et sort en s'animant. Changez la peau en haut à droite — tout suit.</p>
+
+<h2>1 · Les tons — <code class="tag">duration="0"</code> pour qu'elles restent ici</h2>
+<div class="stack" data-code>
+  <z-toast duration="0">Un message neutre.</z-toast>
+  <z-toast tone="main" duration="0">Nouvelle version disponible.</z-toast>
+  <z-toast tone="success" duration="0">Enregistré.</z-toast>
+  <z-toast tone="danger" duration="0">Le paiement a échoué.</z-toast>
+  <z-toast tone="complement" duration="0">Brouillon restauré.</z-toast>
+  <z-toast tone="soft" duration="0">Astuce : glissez pour réordonner.</z-toast>
+</div>
+<p class="note">Sans <code>duration="0"</code>, chacune serait partie au bout de 4 s. Le <code>tone</code> donne la couleur ; <code>danger</code> passe aussi <code>role="alert"</code> (annonce immédiate) au lieu de <code>status</code>.</p>
+
+<h2>2 · Forme en calques — surface et information</h2>
+<div class="stack" data-code>
+  <z-toast tone="success" duration="0">
+    <z-layer part="background"></z-layer>
+    <z-layer part="infos">
+      <z-layer part="icon">✓</z-layer>
+      <z-layer part="label">Enregistré.</z-layer>
+    </z-layer>
+  </z-toast>
+</div>
+<p class="note">Même rendu. L'icône est optionnelle et prend la couleur du <code>tone</code> ; le fond est une pièce qui peut bouger sans emmener le texte.</p>
+
+<h2>3 · Fermable — <code class="tag">dismissible</code>, et le veto</h2>
+<div class="stack" data-code>
+  <z-toast tone="danger" dismissible duration="0">Le paiement a échoué. Vérifiez votre carte.</z-toast>
+  <z-toast tone="main" dismissible duration="0" id="protege">Protégé : la première fermeture est refusée.</z-toast>
+</div>
+<pre class="z-code-manuel">protege.addEventListener("zoe:dismiss", (event) => {
+  if (!dejaRefuse) { dejaRefuse = true; event.preventDefault(); }   // la carte reste
+});</pre>
+<p class="note">La croix (le bord droit), <kbd>Suppr</kbd> ou <kbd>Retour arrière</kbd> au focus, <code>dismiss()</code> : un seul chemin, qui <b>prévient d'abord</b> par <code>zoe:dismiss</code>. Fermée, une carte part pour de bon — rechargez pour la revoir.</p>
+
+<h2>4 · Vivantes — une pile en bas à droite</h2>
+<div class="stack">
+  <div class="rangee">
+    <z-button id="ok">Enregistrer</z-button>
+    <z-button id="ko" tone="complement">Échouer</z-button>
+    <z-button id="lent" tone="soft">Lente (8 s) — survolez-la pour la retenir</z-button>
+  </div>
+</div>
+<pre class="z-code-manuel">const toast = document.createElement("z-toast");
+toast.setAttribute("tone", "success");
+toast.textContent = "Enregistré.";
+pile.append(toast);                       // entre en glissant, vit 4 s, sort en glissant
+
+pile.addEventListener("zoe:dismiss", (e) => console.log("part :", e.target.textContent));</pre>
+<p class="echo">Dernier événement : <b id="echo-pile">—</b></p>
+<p class="note">Regardez en bas à droite. « Enregistrer » vit 4 s ; « Échouer » reste (<code>duration="0"</code>, fermable) ; la lente vit 8 s — survolez-la : le minuteur <b>s'arrête</b>, et reprend là où il en était quand vous partez.</p>
+
+<div class="pile" id="pile"></div>
+
+<script type="module">
+  import "../../examples/skin-switch.js";
+  import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+  import "../../tools/z-contact/z-contact.js";
+  import "../../core/z-layer/z-layer.js";
+  import "../z-button/z-button.js";
+  import "./z-toast.js";
+
+  /* Le veto : du code d'auteur. La carte prévient, la page décide. */
+  const protege = document.querySelector("#protege");
+  let dejaRefuse = false;
+  protege.addEventListener("zoe:dismiss", (event) => {
+    if (dejaRefuse) return;
+    dejaRefuse = true;
+    event.preventDefault();
+    protege.textContent = "Refusé une fois — fermez-moi encore.";
+  });
+
+  /* La pile : créer une carte, c'est créer un élément. Elle sait entrer, vivre et sortir. */
+  const pile = document.querySelector("#pile");
+  const echo = document.querySelector("#echo-pile");
+  const toaste = (tone, texte, attributs = {}) => {
+    const toast = document.createElement("z-toast");
+    toast.setAttribute("tone", tone);
+    for (const [nom, valeur] of Object.entries(attributs)) toast.setAttribute(nom, valeur);
+    toast.textContent = texte;
+    pile.append(toast);
+    echo.textContent = `ajoutée « ${texte} »`;
+  };
+  document.querySelector("#ok").addEventListener("click", () => toaste("success", "Enregistré."));
+  document.querySelector("#ko").addEventListener("click", () => toaste("danger", "Le paiement a échoué.", { dismissible: "", duration: "0" }));
+  document.querySelector("#lent").addEventListener("click", () => toaste("main", "Je pars dans 8 s — sauf si vous me survolez.", { duration: "8000" }));
+  pile.addEventListener("zoe:dismiss", (event) => { echo.textContent = `zoe:dismiss « ${event.target.textContent} »`; });
+</script>
+</html>

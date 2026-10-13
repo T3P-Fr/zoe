@@ -8,8 +8,8 @@
 	rien ne pope sec (loi Zoé).
 
 	Deux sources de bulle : la pièce `[part=tip]` (accessible) ou l'attribut `tip` (::after,
-	`content: attr(tip)`). Le positionnement reste simple (centré au-dessus) — on affinera
-	les débordements de bord ensemble plus tard.
+	`content: attr(tip)`). Le positionnement reste simple (centré au-dessus ou au-dessous) :
+	les débordements de bord de fenêtre ne sont pas détectés.
 	Requiert : une peau (tokens).
 	Styleguide 14.1
 	============================================================

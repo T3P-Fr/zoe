@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <title>z-divider — démo</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+      'puis passe par <code>http://localhost:5173/</code>.</div>'
+    );
+  </script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+  <style>
+    /* Les séparateurs prennent la largeur de leur colonne (la grille du code les
+       laisserait sinon à zéro : un filet vide n'a pas de contenu pour se mesurer). */
+    .stack > z-divider { width: 100%; }
+
+    /* REPEINT PAR LE PACTE — un seul token, la couleur des filets. */
+    .accent { --z-divider__color: var(--z-accent); }
+
+    /* Le décor d'une « carte » de connexion : du natif habillé, rien de Zoé. */
+    .carte { display: grid; gap: .8rem; padding: 1.2rem; width: 100%; max-width: 20rem; border: 1px solid var(--z-line); border-radius: var(--z-radius); background: var(--z-surface); }
+    .carte button { padding: .5em 1em; font: inherit; }
+  </style>
+
+  <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+  <z-contact></z-contact>
+
+  <h1><code>z-divider</code></h1>
+  <p class="lead">Un filet, ou deux filets autour d'un mot — avec leur sémantique (<code>role="separator"</code>). Le rendu se décide sur ce que vous écrivez, sans JS. Changez la peau en haut à droite — tout suit.</p>
+
+  <h2>1 · Vide, ou avec un mot</h2>
+  <div class="stack" data-code>
+    <z-divider></z-divider>
+    <z-divider>ou</z-divider>
+    <z-divider><z-layer part="label">ou bien</z-layer></z-divider>
+  </div>
+  <p class="note">Vide : les deux filets se rejoignent en une ligne. Un mot au milieu : l'écart s'ouvre et les filets l'encadrent — ce sont deux pseudo-éléments qui <b>poussent</b>, pas des pièces. <code>[part=label]</code> nomme le mot (jamais coupé).</p>
+
+  <h2>2 · Vertical — dans une ligne</h2>
+  <div class="stack" data-code>
+    <p>Fichier <z-divider orientation="vertical"></z-divider> Édition <z-divider orientation="vertical"></z-divider> Affichage</p>
+  </div>
+  <p class="note">L'hôte <b>devient</b> le filet : un trait d'<code>1em</code>, aligné sur le milieu de la ligne. <code>aria-orientation="vertical"</code> suit.</p>
+
+  <h2>3 · Taille et couleur</h2>
+  <div class="stack" data-code>
+    <z-divider size="xs">xs</z-divider>
+    <z-divider size="l">l</z-divider>
+    <z-divider size="xl">xl</z-divider>
+    <z-divider class="accent">repeint</z-divider>
+  </div>
+  <pre class="z-code-manuel">.accent { --z-divider__color: var(--z-accent); }</pre>
+  <p class="note"><code>size</code> règle le texte ; l'épaisseur du filet reste celle de la peau (<code>--z-border-width</code>) — un filet ne grossit pas avec le mot. Un seul token à peindre : la couleur des filets.</p>
+
+  <h2>4 · En situation</h2>
+  <div class="stack" data-code="bloc">
+    <div class="carte">
+      <button type="button">Continuer avec Google</button>
+      <z-divider>ou</z-divider>
+      <input type="email" placeholder="vous@exemple.fr">
+      <button type="button">Créer un compte</button>
+    </div>
+  </div>
+  <p class="note">Le « ou » d'un écran de connexion : le lecteur d'écran entend un séparateur, pas un mot perdu entre deux boutons.</p>
+
+  <script type="module">
+    import "../../examples/skin-switch.js";
+    import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+    import "../../tools/z-contact/z-contact.js";
+    import "../../core/z-layer/z-layer.js";
+    import "./z-divider.js";
+  </script>
+
+</html>

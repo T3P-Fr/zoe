@@ -21,7 +21,7 @@
 	le DOM de l'auteur pour rien. `> * + *::before` le dessine entre les maillons, un
 	trait de la peau, effaçable en une variable.
 
-	Doc narrative : z-breadcrumb.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-breadcrumb.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 21.0
 	============================================================
 */
@@ -39,7 +39,7 @@ export class ZBreadcrumb extends ZElement {
 		summary: {
 			en: "A breadcrumb trail — you write the links, Zoé adds the meaning (nav + label) and the « › » separators in CSS. Nothing injected.",
 			fr: "Un fil d'Ariane — vous écrivez les liens, Zoé pose le sens (nav + libellé) et les séparateurs « › » en CSS. Rien d'injecté.",
-			es: "Una miga de pan — tú escribes los enlaces, Zoé pone el sentido (nav + etiqueta) y los separadores « › » en CSS. Nada inyectado."
+			es: "Una miga de pan — usted escribe los enlaces, Zoé pone el sentido (nav + etiqueta) y los separadores « › » en CSS. Nada inyectado."
 		},
 		attributes: [
 			{ name: "label", type: "string", description: { en: "The accessible name of the navigation (defaults to « Fil d'Ariane »).", fr: "Le nom accessible de la navigation (par défaut « Fil d'Ariane »).", es: "El nombre accesible de la navegación (por defecto « Fil d'Ariane »)." } }

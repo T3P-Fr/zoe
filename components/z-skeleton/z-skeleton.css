@@ -14,6 +14,9 @@
 	`radius` (pill/circle) et les raccourcis `w`/`h` (posés en variables inline par le JS)
 	ne font que régler la boîte. `prefers-reduced-motion` FIGE le reflet : on garde le bloc
 	gris (l'info « ça charge » reste), on retire seulement le mouvement.
+
+	Entrée et sortie en FONDU (opacity, pas une animation : la propriété `animation` est
+	déjà prise par le reflet, et deux animations sur la même boîte se chasseraient).
 	Requiert : une peau (tokens) + core/z-layer.
 	Styleguide 18.1
 	============================================================
@@ -30,6 +33,8 @@ z-skeleton {
 	border-radius: var(--z-skeleton--background__radius, var(--z-radius, .4em));
 	overflow: hidden;
 	user-select: none;
+	/* le fondu d'entrée/sortie (Styleguide 18.1.5) ; `exit` raccourcit la durée plus bas. */
+	transition: opacity var(--z-dur-enter, .3s) var(--z-ease, ease);
 
 	/* Le reflet : un dégradé oblique 3x plus large que la boîte, qu'on fait glisser. Il
 	   est défini ICI (commun) pour que les deux formes le partagent. */
@@ -72,6 +77,15 @@ z-skeleton {
 		width: var(--z-skeleton__width, var(--z-skeleton__height, 3em));
 		aspect-ratio: 1;
 	}
+
+	/* ═══ ENTRÉE / SORTIE — en fondu (loi Zoé : rien ne pope sec) ═══ Styleguide 18.1.5 */
+
+	/* `enter` est posé au montage puis retiré par le socle après --z-dur-enter : la boîte
+	   naît invisible et la transition (déclarée sur l'hôte, plus haut) l'amène à 1. `exit`
+	   (joué par qui retire : `await el.play("exit")`) la ramène à 0 sur --z-dur-exit, la
+	   même horloge que la promesse. */
+	&:state(enter) { opacity: 0; }
+	&:state(exit) { opacity: 0; transition-duration: var(--z-dur-exit, .2s); }
 }
 
 /* Le balayage : on anime la POSITION du dégradé (background-position), jamais la boîte —

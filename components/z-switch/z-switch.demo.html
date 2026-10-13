@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-switch — démo</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+  if (location.protocol === "file:") document.write(
+    '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+    '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+    'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+    'puis passe par <code>http://localhost:5173/</code>.</div>'
+  );
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+  /* Le retour se lit JUSTE SOUS l'interrupteur qui l'a produit — jamais à l'autre bout. */
+  .echo { font-size: .85rem; margin-top: .5rem; }
+  .echo b { color: var(--z-accent); }
+
+  /*
+    LA PREUVE DES CALQUES — une skin locale qui n'anime QUE des pièces, chacune à sa
+    façon. Impossible sur la forme courte : là-bas, piste et pastille sont deux
+    pseudo-éléments du même hôte. Rien ici ne touche au composant : des tokens et des rôles.
+  */
+  .large { --z-switch--track__width: 3.2em; --z-switch--track__height: 1.4em; --z-switch--thumb__size: 1.1em; --z-switch--thumb__inset: .15em; }
+  /* la pastille s'étire pendant l'appui, comme pressée sous le doigt… */
+  .large:state(press) > z-layer[part="marker"] > z-layer[part="dot"] { scale: 1.3 1; }
+  /* …et la piste respire d'un halo une fois allumée. */
+  .large:state(current) > z-layer[part="marker"] { box-shadow: 0 0 0 .3em color-mix(in srgb, var(--z-accent) 18%, transparent); }
+</style>
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact></z-contact>
+
+<h1><code>z-switch</code></h1>
+<p class="lead">La cousine <b>active</b> de la case : même mécanique (<code>current</code>, clic ou <kbd>Espace</kbd>, formulaire), mais un interrupteur agit <b>tout de suite</b> — <code>role="switch"</code>, deux valeurs, jamais « peut-être ». Changez la peau en haut à droite — tout suit.</p>
+
+<h2>1 · Forme courte — <code class="tag">&lt;z-switch&gt;texte&lt;/z-switch&gt;</code></h2>
+<div class="stack" data-code>
+  <z-switch>Notifications</z-switch>
+  <z-switch current>Mode sombre</z-switch>
+  <z-switch error>Synchronisation (erreur)</z-switch>
+  <z-switch success>Sauvegarde (succès)</z-switch>
+  <z-switch disabled>Indisponible</z-switch>
+  <z-switch current disabled>Allumé, verrouillé</z-switch>
+</div>
+<p class="note">Rien à apprendre : le CSS peint l'hôte — la piste en <code>::before</code>, la pastille en <code>::after</code>. Zoé n'injecte <b>aucune</b> balise.</p>
+
+<h2>2 · Forme en calques — un <code class="tag">&lt;z-layer part="…"&gt;</code> par rôle</h2>
+<div class="stack" data-code>
+  <z-switch>
+    <z-layer part="background"></z-layer>
+    <z-layer part="marker">
+      <z-layer part="dot"></z-layer>
+    </z-layer>
+    <z-layer part="infos">
+      <z-layer part="label">Notifications</z-layer>
+    </z-layer>
+    <z-layer part="contact"></z-layer>
+  </z-switch>
+  <z-switch current>
+    <z-layer part="background"></z-layer>
+    <z-layer part="marker">
+      <z-layer part="dot"></z-layer>
+    </z-layer>
+    <z-layer part="infos">
+      <z-layer part="label">Mode sombre</z-layer>
+    </z-layer>
+    <z-layer part="contact"></z-layer>
+  </z-switch>
+</div>
+<p class="note">Exactement le même rendu que la forme courte — c'est le but : la structure change, la peau ne bouge pas. La piste est <code>marker</code>, la pastille <code>dot</code> : les mêmes mots qu'une case.</p>
+
+<h2>3 · Ce que les calques permettent (et que la forme courte ne peut pas)</h2>
+<div class="stack" data-code>
+  <z-switch class="large">
+    <z-layer part="background"></z-layer>
+    <z-layer part="marker">
+      <z-layer part="dot"></z-layer>
+    </z-layer>
+    <z-layer part="infos">
+      <z-layer part="label">Pressez : la pastille s'étire sous le doigt, la piste respire une fois allumée</z-layer>
+    </z-layer>
+    <z-layer part="contact"></z-layer>
+  </z-switch>
+</div>
+<p class="note">Deux pièces, deux mouvements, deux états — <b>un</b> interrupteur. Aucune ligne de JS : des rôles, des tokens (<code>--z-switch--track__width</code>…) et deux <code>:state()</code>.</p>
+
+<h2>4 · Il agit tout de suite — <code class="tag">change</code></h2>
+<div class="stack" data-code>
+  <z-switch id="vivant">Lecture automatique</z-switch>
+</div>
+<pre class="z-code-manuel">sw.addEventListener("change", () => console.log(sw.checked));   // un GESTE a basculé
+sw.checked = true;                                              // le programme : pas de change</pre>
+<p class="echo">Lecture automatique : <b id="echo-vivant">—</b></p>
+<p class="note">Clic ou <kbd>Espace</kbd> : il bascule et émet <code>change</code> — lisez <code>.checked</code>. <code>aria-checked</code> suit tout seul.</p>
+
+<h2>5 · Il part dans le formulaire</h2>
+<form id="formulaire" class="stack" data-code="bloc">
+  <z-switch name="newsletter" value="hebdo" current>Recevoir la lettre</z-switch>
+  <z-switch name="sms">Alertes par SMS</z-switch>
+  <fieldset disabled style="border:1px solid var(--z-line);border-radius:var(--z-radius);padding:.7rem 1rem">
+    <legend style="font-size:.8rem;color:var(--z-ink-soft)">fieldset désactivé</legend>
+    <z-switch name="beta" current>Coupé par son fieldset</z-switch>
+  </fieldset>
+  <div class="rangee">
+    <z-button type="submit">Envoyer</z-button>
+    <z-button type="reset" tone="soft">Réinitialiser</z-button>
+  </div>
+</form>
+<p class="note" id="envoi">Rien envoyé pour l'instant.</p>
+
+<script type="module">
+  import "../../examples/skin-switch.js";
+  import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+  import "../../tools/z-contact/z-contact.js";
+  import "../../core/z-layer/z-layer.js";
+  import "../z-button/z-button.js";
+  import "./z-switch.js";
+
+  /* Le retour s'écrit sous l'interrupteur (la VUE d'abord : action → écho à côté). */
+  const vivant = document.querySelector("#vivant");
+  const echo = document.querySelector("#echo-vivant");
+  const montre = () => { echo.textContent = vivant.checked ? "activée" : "désactivée"; };
+  vivant.addEventListener("change", montre);
+  montre();
+
+  /* Le formulaire : on montre ce qui PART vraiment, à côté du bouton (loi de la vue). */
+  const formulaire = document.querySelector("#formulaire");
+  const envoi = document.querySelector("#envoi");
+  formulaire.addEventListener("submit", (evenement) => {
+    evenement.preventDefault();
+    const donnees = [...new FormData(formulaire)].map(([cle, valeur]) => `${cle}=${valeur}`);
+    envoi.textContent = donnees.length ? `Envoyé : ${donnees.join(" · ")}` : "Envoyé : rien du tout.";
+  });
+  formulaire.addEventListener("reset", () => { envoi.textContent = "Remis à zéro."; });
+</script>
+</html>

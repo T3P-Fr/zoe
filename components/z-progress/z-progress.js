@@ -17,7 +17,7 @@
 	Zoé n'injecte rien (ADR-0018) : la barre est peinte (::before ou calque `marker`),
 	jamais ajoutée. Pas de logique métier ici — on affiche un nombre, c'est tout.
 
-	Doc narrative : z-progress.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-progress.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 9.0
 	============================================================
 */

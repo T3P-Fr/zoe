@@ -27,7 +27,7 @@
 	le reset la ramène à la note écrite dans le HTML d'origine. La plomberie vit dans
 	z-element ; ici on décide seulement CE QU'ON ENVOIE.
 
-	Doc narrative : z-rating.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-rating.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 24.0
 	============================================================
 */
@@ -114,11 +114,13 @@ export class ZRating extends ZElement {
 	}
 
 	attributeChangedCallback(name, previous, value) {
+		/* Nos trois attributs sont traités ICI et ne descendent pas au socle : lui reflète
+		   tout attribut observé en :state(), et `value`/`max`/`readonly` n'en sont pas. */
+		if (name === "readonly") { this.setAttribute("aria-readonly", value !== null ? "true" : "false"); return; }
+		/* value/max déplacent la note ou l'échelle : on re-borne et on republie tout. */
+		if (name === "value" || name === "max") { this.#apply(this.value, { silent: true }); return; }
 		super.attributeChangedCallback(name, previous, value);
 		if (name === "disabled") this.tabIndex = value !== null ? -1 : 0;
-		if (name === "readonly") this.setAttribute("aria-readonly", value !== null ? "true" : "false");
-		/* value/max déplacent la note ou l'échelle : on re-borne et on republie tout. */
-		if (name === "value" || name === "max") this.#apply(this.value, { silent: true });
 	}
 
 	/* ── API PUBLIQUE ── */

@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="fr">
+  <meta charset="utf-8">
+  <title>z-progress — démo</title>
+
+  <!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+  <script>
+    if (location.protocol === "file:") document.write(
+      '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+      'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+      'puis passe par <code>http://localhost:5173/</code>.</div>'
+    );
+  </script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+  <style>
+    /* Les barres prennent la largeur de leur colonne (la grille du code les laisserait
+       sinon à zéro : une barre vide n'a pas de contenu pour se mesurer). */
+    .stack > z-progress, .stack > z-slider { width: 100%; }
+
+    /* REPEINT PAR LE PACTE — une piste épaisse, un remplissage à l'encre. */
+    .epaisse { --z-progress--track__height: 1em; --z-progress--fill__color: var(--z-ink); }
+
+    /*
+      LA PREUVE DES CALQUES — le remplissage est une pièce : il pulse seul, la piste ne
+      bouge pas. En forme courte, le remplissage est un ::before — impossible à viser
+      depuis une peau sans connaître le composant.
+    */
+    .vivante > [part=marker] { animation: pulse 1.2s var(--z-ease) infinite; }
+  </style>
+
+  <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+  <z-contact></z-contact>
+
+  <h1><code>z-progress</code></h1>
+  <p class="lead">Une barre de progression (<code>role="progressbar"</code>) : <code>value / max</code> devient un pourcentage que le CSS dessine — et un mode « inconnu » qui balaye. Changez la peau en haut à droite — tout suit.</p>
+
+  <h2>1 · Forme courte</h2>
+  <div class="stack" data-code>
+    <z-progress value="40" aria-label="Envoi"></z-progress>
+    <z-progress value="3" max="5" aria-label="Étape 3 sur 5"></z-progress>
+    <z-progress value="100" aria-label="Terminé"></z-progress>
+  </div>
+  <p class="note"><code>value</code> sur <code>max</code> (100 par défaut). Le JS pose <code>--z-progress__value</code> ; le CSS en fait une largeur, il ne calcule rien.</p>
+
+  <h2>2 · Inconnu — <code class="tag">indeterminate</code></h2>
+  <div class="stack" data-code>
+    <z-progress indeterminate aria-label="Chargement"></z-progress>
+  </div>
+  <p class="note">Quand on ne sait pas combien : un segment balaye la piste, <code>aria-valuenow</code> est retiré (on ne prétend pas connaître une valeur qu'on n'a pas). État durable : attribut, <code>:state(indeterminate)</code> et <code>.indeterminate</code> disent la même chose.</p>
+
+  <h2>3 · Tons et tailles</h2>
+  <div class="stack" data-code>
+    <z-progress value="60" tone="success" aria-label="Succès"></z-progress>
+    <z-progress value="60" tone="danger" aria-label="Danger"></z-progress>
+    <z-progress value="60" size="s" aria-label="Petite"></z-progress>
+    <z-progress value="60" size="xl" aria-label="Très grande"></z-progress>
+  </div>
+  <p class="note"><code>tone</code> colore le remplissage via <code>--z-tone__fill</code> ; <code>size</code> règle le texte, la hauteur de la piste (<code>.5em</code>) suit.</p>
+
+  <h2>4 · En calques — <code class="tag">background</code> + <code class="tag">marker</code></h2>
+  <div class="stack" data-code>
+    <z-progress value="40" aria-label="Envoi, en calques">
+      <z-layer part="background"></z-layer>
+      <z-layer part="marker"></z-layer>
+    </z-progress>
+    <z-progress class="epaisse vivante" value="65" aria-label="Piste épaisse, remplissage qui pulse">
+      <z-layer part="background"></z-layer>
+      <z-layer part="marker"></z-layer>
+    </z-progress>
+  </div>
+  <pre class="z-code-manuel">.epaisse { --z-progress--track__height: 1em; --z-progress--fill__color: var(--z-ink); }
+.vivante &gt; [part=marker] { animation: pulse 1.2s var(--z-ease) infinite; }</pre>
+  <p class="note">Même rendu que la forme courte. La seconde barre fait <b>pulser son remplissage seul</b> — la piste ne bouge pas : c'est ce que les calques permettent.</p>
+
+  <h2>5 · Vivante — un curseur, puis un envoi simulé</h2>
+  <div class="stack" data-code>
+    <z-slider id="pilote" value="40" label="under" aria-label="Avancement"></z-slider>
+    <z-progress id="barre" value="40" aria-label="Avancement"></z-progress>
+  </div>
+  <div class="stack">
+    <div class="rangee">
+      <z-button id="envoi">Simuler un envoi</z-button>
+      <span class="note" id="dit">au repos</span>
+    </div>
+  </div>
+  <pre class="z-code-manuel">pilote.addEventListener("input", (e) => { barre.value = e.target.value; });
+
+envoi.addEventListener("click", async () => {
+  barre.indeterminate = true;            // on ne sait pas encore combien
+  await attendre(900);
+  barre.indeterminate = false;
+  for (let pas = 0; pas <= 100; pas += 10) { barre.value = pas; await attendre(120); }
+});</pre>
+  <p class="note">Le curseur pose <code>.value</code>, la largeur glisse. L'envoi commence <b>inconnu</b> (balayage) puis avance par paliers de 10 — sans sauter : la transition fait le reste.</p>
+
+  <script type="module">
+    import "../../examples/skin-switch.js";
+    import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+    import "../../tools/z-contact/z-contact.js";
+    import "../../core/z-layer/z-layer.js";
+    import "../z-slider/z-slider.js";
+    import "../z-button/z-button.js";
+    import "./z-progress.js";
+
+    const pilote = document.querySelector("#pilote");
+    const barre = document.querySelector("#barre");
+    const envoi = document.querySelector("#envoi");
+    const dit = document.querySelector("#dit");
+    const attendre = (ms) => new Promise((fini) => setTimeout(fini, ms));
+
+    /* Le curseur pilote la barre : on écoute `input`, on pose `.value`. Rien d'autre. */
+    pilote.addEventListener("input", (evenement) => { barre.value = evenement.target.value; });
+
+    /* L'envoi simulé : inconnu d'abord, puis par paliers. Le composant affiche un nombre,
+       c'est la page qui raconte l'histoire. */
+    let enCours = false;
+    envoi.addEventListener("click", async () => {
+      if (enCours) return;
+      enCours = true;
+      dit.textContent = "connexion… (indeterminate)";
+      barre.indeterminate = true;
+      await attendre(900);
+      barre.indeterminate = false;
+      for (let pas = 0; pas <= 100; pas += 10) {
+        barre.value = pas;
+        pilote.value = pas;
+        dit.textContent = `${pas} %`;
+        await attendre(120);
+      }
+      dit.textContent = "envoyé";
+      enCours = false;
+    });
+  </script>
+
+</html>

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-stepper — démo</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+  if (location.protocol === "file:") document.write(
+    '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+    '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+    'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+    'puis passe par <code>http://localhost:5173/</code>.</div>'
+  );
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+  /* Le retour se lit JUSTE SOUS le stepper qui l'a produit — jamais à l'autre bout. */
+  .echo { font-size: .85rem; margin-top: .5rem; }
+  .echo b { color: var(--z-accent); }
+  .libelle { color: var(--z-ink-soft); }
+</style>
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact></z-contact>
+
+<h1><code>z-stepper</code></h1>
+<p class="lead">Zoé <b>entoure</b> un <code>&lt;input type="number"&gt;</code> natif au lieu de le remplacer : l'input garde le formulaire, les flèches <kbd>↑</kbd> <kbd>↓</kbd>, la saisie et les bornes ; z-stepper ajoute « − » et « + ». Changez la peau en haut à droite — tout suit.</p>
+
+<h2>1 · La forme canonique — un input dedans</h2>
+<div class="stack">
+  <z-stepper aria-label="Quantité">
+    <input type="number" name="qty" value="3" min="0" max="9" step="1">
+  </z-stepper>
+</div>
+<pre class="z-code-manuel">&lt;z-stepper aria-label="Quantité"&gt;
+  &lt;input type="number" name="qty" value="3" min="0" max="9" step="1"&gt;
+&lt;/z-stepper&gt;</pre>
+<p class="note">L'input est la <b>source de vérité</b> : valeur, bornes et pas sont lus dessus. Les deux boutons sont peints (<code>::before</code> / <code>::after</code>), jamais injectés. Cliquez au centre et tapez : c'est le champ natif.</p>
+
+<h2>2 · Les bornes — <code class="tag">at-min</code> · <code class="tag">at-max</code></h2>
+<div class="stack" data-code>
+  <div class="rangee">
+    <span class="libelle" id="l-min">Au plancher</span>
+    <z-stepper aria-labelledby="l-min">
+      <input type="number" value="0" min="0" max="5">
+    </z-stepper>
+  </div>
+  <div class="rangee">
+    <span class="libelle" id="l-max">Au plafond</span>
+    <z-stepper aria-labelledby="l-max">
+      <input type="number" value="5" min="0" max="5">
+    </z-stepper>
+  </div>
+  <div class="rangee">
+    <span class="libelle" id="l-libre">Sans bornes</span>
+    <z-stepper aria-labelledby="l-libre">
+      <input type="number" value="0">
+    </z-stepper>
+  </div>
+  <div class="rangee">
+    <span class="libelle" id="l-demi">Par demi</span>
+    <z-stepper aria-labelledby="l-demi">
+      <input type="number" value="1.5" min="0" max="3" step="0.5">
+    </z-stepper>
+  </div>
+</div>
+<p class="note">À la borne, le bouton mort <b>se grise</b> : le composant pose <code>at-min</code> / <code>at-max</code> sur l'hôte et le CSS les peint. Sans <code>min</code>/<code>max</code>, rien ne se grise jamais. Un libellé visible + <code>aria-labelledby</code> nomme le groupe.</p>
+
+<h2>3 · Coupé</h2>
+<div class="stack" data-code>
+  <div class="rangee">
+    <span class="libelle" id="l-off">Stepper désactivé</span>
+    <z-stepper aria-labelledby="l-off" disabled>
+      <input type="number" value="2" min="0" max="9">
+    </z-stepper>
+  </div>
+  <div class="rangee">
+    <span class="libelle" id="l-input-off">Input désactivé</span>
+    <z-stepper aria-labelledby="l-input-off">
+      <input type="number" value="2" min="0" max="9" disabled>
+    </z-stepper>
+  </div>
+</div>
+<p class="note"><code>disabled</code> sur le stepper coupe les zones et grise l'ensemble ; <code>disabled</code> sur l'input bloque la frappe (et grise les deux boutons aussi). Un <code>&lt;fieldset disabled&gt;</code> fait les deux.</p>
+
+<h2>4 · Les événements partent de l'input</h2>
+<div class="stack" data-code>
+  <div class="rangee">
+    <span class="libelle" id="l-vivant">Invités</span>
+    <z-stepper id="vivant" aria-labelledby="l-vivant">
+      <input type="number" value="2" min="1" max="12">
+    </z-stepper>
+  </div>
+</div>
+<pre class="z-code-manuel">stepper.addEventListener("input", () => echo.textContent = stepper.value);  // bulle depuis l'input
+stepper.stepUp();          // le même chemin que le « + » : borné, puis input + change</pre>
+<p class="echo">Valeur : <b id="echo-vivant">—</b> · dernier événement : <b id="echo-evenement">—</b></p>
+<p class="note">Un cran déclenche <code>input</code> puis <code>change</code> <b>sur l'input</b>, qui bulle : écoutez le stepper ou le formulaire, tout écouteur natif suit. Déjà à la borne : rien ne part.</p>
+
+<h2>5 · Il part dans le formulaire — par l'input</h2>
+<form id="formulaire" class="stack" data-code="bloc">
+  <div class="rangee">
+    <span class="libelle" id="l-qty">Quantité <b>(requise, 1 à 12)</b></span>
+    <z-stepper aria-labelledby="l-qty">
+      <input type="number" name="qty" value="1" min="1" max="12" required>
+    </z-stepper>
+  </div>
+  <div class="rangee">
+    <z-button type="submit">Envoyer</z-button>
+    <z-button type="reset" tone="soft">Réinitialiser</z-button>
+  </div>
+</form>
+<p class="note" id="envoi">Rien envoyé pour l'instant.</p>
+
+<script type="module">
+  import "../../examples/skin-switch.js";
+  import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+  import "../../tools/z-contact/z-contact.js";
+  import "../z-button/z-button.js";
+  import "./z-stepper.js";
+
+  /* Le retour s'écrit sous le stepper (la VUE d'abord). On écoute le STEPPER : l'événement
+     bulle depuis l'input, c'est le même. */
+  const vivant = document.querySelector("#vivant");
+  const echoValeur = document.querySelector("#echo-vivant");
+  const echoEvenement = document.querySelector("#echo-evenement");
+  const montre = (type) => { echoValeur.textContent = String(vivant.value); echoEvenement.textContent = type; };
+  vivant.addEventListener("input", () => montre("input"));
+  vivant.addEventListener("change", () => montre("change"));
+  echoValeur.textContent = String(vivant.value);
+
+  /* Le formulaire : on montre ce qui PART vraiment — c'est l'input natif qui porte le name. */
+  const formulaire = document.querySelector("#formulaire");
+  const envoi = document.querySelector("#envoi");
+  formulaire.addEventListener("submit", (evenement) => {
+    evenement.preventDefault();
+    const donnees = [...new FormData(formulaire)].map(([cle, valeur]) => `${cle}=${valeur}`);
+    envoi.textContent = donnees.length ? `Envoyé : ${donnees.join(" · ")}` : "Envoyé : rien du tout.";
+  });
+  formulaire.addEventListener("reset", () => { envoi.textContent = "Remis à zéro."; });
+</script>
+</html>

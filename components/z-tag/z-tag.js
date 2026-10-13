@@ -15,9 +15,10 @@
 	  · au CLIC dans la zone de la croix (le bord droit) ;
 	  · au clavier, quand l'étiquette a le focus : Suppr ou Retour arrière.
 	Le retrait émet `zoe:remove` ANNULABLE : l'auteur peut `preventDefault()` pour gérer
-	lui-même (confirmation, animation) ; sinon l'étiquette se retire seule.
+	lui-même (confirmation, refus) ; sinon l'étiquette JOUE sa sortie (état `exit`, le temps
+	de --z-dur-exit) puis se détache — rien ne disparaît sec (loi Zoé, comme z-toast).
 
-	Doc narrative : z-tag.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-tag.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 7.0
 	============================================================
 */
@@ -35,7 +36,7 @@ export class ZTag extends ZElement {
 <z-tag size="s" tone="soft">brouillon</z-tag>`,
 		members: [
 			{ kind: "field", name: "removable", type: "boolean", description: { en: "Mirrors the `removable` attribute.", fr: "Reflet de l'attribut `removable`.", es: "Reflejo del atributo `removable`." } },
-			{ kind: "method", name: "remove()", type: "void", description: { en: "Removes the tag: fires cancelable `zoe:remove`, then plays `exit` and detaches.", fr: "Retire l'étiquette : émet `zoe:remove` (annulable), puis joue `exit` et se détache.", es: "Quita la etiqueta: emite `zoe:remove` (cancelable), luego reproduce `exit` y se separa." } }
+			{ kind: "method", name: "remove()", type: "Promise<void>", description: { en: "Removes the tag: fires cancelable `zoe:remove`, then plays `exit` and detaches.", fr: "Retire l'étiquette : émet `zoe:remove` (annulable), puis joue `exit` et se détache.", es: "Quita la etiqueta: emite `zoe:remove` (cancelable), luego reproduce `exit` y se separa." } }
 		],
 		summary: {
 			en: "A tag/chip for keywords, filters, categories — inherits tone & size; optionally removable.",
@@ -65,7 +66,11 @@ export class ZTag extends ZElement {
 		]
 	};
 
+	/* Déjà en train de partir : on ne rejoue pas la sortie (un double clic sur la croix). */
+	#removing = false;
+
 	connectedCallback() {
+		this.#removing = false;   /* re-monter (un « annuler ») redonne le droit de partir */
 		this.#syncRemovable();
 		this.addEventListener("pointerdown", this.#onPointer);
 		this.addEventListener("keydown", this.#onKey);
@@ -88,12 +93,19 @@ export class ZTag extends ZElement {
 	}
 
 	/*
-		Le retrait — un seul chemin pour le clic ET le clavier. On PRÉVIENT d'abord
-		(`zoe:remove`, annulable) : si personne ne s'y oppose, l'étiquette se retire.
+		Le retrait — un seul chemin pour le clic, le clavier ET l'API (c'est le `remove()`
+		natif, redéfini). On PRÉVIENT d'abord (`zoe:remove`, annulable) ; si personne ne
+		s'y oppose, on JOUE la sortie puis on détache. Sans l'attente, disconnectedCallback
+		arriverait trop tard pour animer (même raison que `exit` dans z-element / z-toast).
+		@returns {Promise<void>} résolue une fois le nœud retiré (ou tout de suite si annulé)
 	*/
-	remove() {
+	async remove() {
+		if (this.#removing) return;
 		const allowed = this.dispatchEvent(new CustomEvent("zoe:remove", { bubbles: true, cancelable: true }));
-		if (allowed) super.remove();
+		if (!allowed) return;   /* l'auteur a pris la main (preventDefault) */
+		this.#removing = true;
+		await this.play("exit");   /* joue :state(exit) le temps de --z-dur-exit, puis rend la main */
+		super.remove();
 	}
 
 	/* Une étiquette retirable est focusable (le clavier doit pouvoir l'atteindre). */

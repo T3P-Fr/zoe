@@ -58,7 +58,7 @@
     /*
     Le cadran : l'arc parcouru, en dégradé conique. Un seul calque, aucune image.
 
-    PIÈGE, et il m'a coûté un premier jet mort : le composant pose `top: 50%` +
+    PIÈGE, et il a coûté un premier jet mort : le composant pose `top: 50%` +
     `translate` pour centrer une piste fine. Il faut annuler ces deux-là, mais SANS
     écrire `top: auto` après `inset: 0` — l'ordre compte, et le `top: auto` rendait la
     boîte haute de zéro. Rien ne s'affichait, et rien ne le disait.
@@ -199,7 +199,7 @@
     </z-slider>
   </div>
   <p class="note">
-    Attrape-les et glisse. Le <code>marker</code> ne remplit plus une piste : il devient
+    Attrapez-les et glissez. Le <code>marker</code> ne remplit plus une piste : il devient
     le <b>pivot</b> et tourne ; le <code>dot</code> n'est qu'un trait accroché à son
     extrémité, et il ne sait même pas qu'il tourne. Le cadran est un
     <code>conic-gradient</code>, évidé par un masque — un seul calque, aucune image.

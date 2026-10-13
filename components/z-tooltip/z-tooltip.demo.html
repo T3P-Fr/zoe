@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-tooltip — démo</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+  if (location.protocol === "file:") document.write(
+    '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+    '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+    'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+    'puis passe par <code>http://localhost:5173/</code>.</div>'
+  );
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+  /* Les bulles sortent au-dessus de leur déclencheur : on laisse de l'air à chaque exemple. */
+  .stack[data-code] { padding-top: 2.4rem; }
+  /*
+    LA BULLE À L'ARRÊT — forcée ouverte par le CSS de la PAGE, pour la regarder sans
+    survoler. Rien ici ne touche au composant : la même règle que son :hover.
+  */
+  .ouverte > [part=tip], .ouverte[tip]::after { opacity: 1; translate: -50% 0; }
+  .ouverte[placement="bottom"] > [part=tip] { translate: -50% 0; }
+  .avec-bas { padding-bottom: 2.4rem; }
+</style>
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact></z-contact>
+
+<h1><code>z-tooltip</code></h1>
+<p class="lead">Une bulle d'aide montrée au <b>survol</b> et au <b>focus clavier</b> — les deux, jamais l'un sans l'autre. La forme accessible relie la bulle à son déclencheur (<code>aria-describedby</code>). Changez la peau en haut à droite — tout suit.</p>
+
+<h2>1 · La forme accessible — <code class="tag">&lt;z-layer part="tip"&gt;</code></h2>
+<div class="stack" data-code>
+  <z-tooltip>
+    <button>?</button>
+    <z-layer part="tip">On habille le natif, on ne le remplace pas.</z-layer>
+  </z-tooltip>
+</div>
+<p class="note">Survolez, ou <kbd>Tab</kbd> jusqu'au bouton : la bulle remonte en fondu. La pièce reçoit <code>role="tooltip"</code> et un <code>id</code> ; le bouton la référence par <code>aria-describedby</code>. <kbd>Échap</kbd> la masque.</p>
+
+<h2>2 · La forme courte — <code class="tag">tip="…"</code></h2>
+<div class="stack" data-code>
+  <z-tooltip tip="Explication rapide"><button>?</button></z-tooltip>
+</div>
+<p class="note">Le texte en attribut, posé en <code>::after</code>. Visuellement identique, mais rien ne relie la bulle au bouton pour un lecteur d'écran — à réserver à une aide dont l'absence ne coûte rien.</p>
+
+<h2>3 · Placement — <code class="tag">placement="bottom"</code></h2>
+<div class="stack avec-bas" data-code>
+  <z-tooltip placement="bottom">
+    <button>Dessous</button>
+    <z-layer part="tip">La bulle descend au lieu de monter.</z-layer>
+  </z-tooltip>
+</div>
+<p class="note">Centrée sur le déclencheur, à <code>--z-tooltip__offset</code> de distance. Le positionnement reste simple : il ne détecte pas les bords de la fenêtre.</p>
+
+<h2>4 · Sans élément focalisable — l'hôte devient l'arrêt</h2>
+<div class="stack" data-code>
+  <p style="margin:0">Le prix est <z-tooltip><span style="text-decoration:underline dotted">TTC</span><z-layer part="tip">Toutes taxes comprises : la TVA est incluse.</z-layer></z-tooltip> et sans frais cachés.</p>
+</div>
+<p class="note">Un simple <code>&lt;span&gt;</code> : rien à focaliser. Le composant rend alors l'hôte atteignable (<code>tabindex="0"</code>) et lui donne le lien — le clavier n'est pas exclu.</p>
+
+<h2>5 · Les bulles à l'arrêt — pour les regarder</h2>
+<div class="stack avec-bas" data-code>
+  <div class="rangee" style="gap:5rem">
+    <z-tooltip class="ouverte">
+      <button>Au-dessus</button>
+      <z-layer part="tip">Fond d'encre, texte couleur de page.</z-layer>
+    </z-tooltip>
+    <z-tooltip class="ouverte" tip="Forme courte, même bulle"><button>Attribut</button></z-tooltip>
+    <z-tooltip class="ouverte" placement="bottom">
+      <button>Dessous</button>
+      <z-layer part="tip">Placement bas.</z-layer>
+    </z-tooltip>
+  </div>
+</div>
+<p class="note">Ici la bulle est <b>forcée ouverte</b> par le CSS de la page (<code>.ouverte</code>), pour la voir sans survoler. En vrai, elle attend le survol ou le focus.</p>
+
+<script type="module">
+  import "../../examples/skin-switch.js";
+  import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+  import "../../tools/z-contact/z-contact.js";
+  import "../../core/z-layer/z-layer.js";
+  import "./z-tooltip.js";
+</script>
+</html>

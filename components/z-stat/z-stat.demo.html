@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-stat — démo</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+  if (location.protocol === "file:") document.write(
+    '<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+    '<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+    'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+    'puis passe par <code>http://localhost:5173/</code>.</div>'
+  );
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact></z-contact>
+
+<h1><code>z-stat</code></h1>
+<p class="lead">Une tuile de KPI : un intitulé, un grand nombre, une variation. Trois pièces que <b>vous</b> écrivez, un attribut (<code>trend</code>) que le CSS lit tout seul. Changez la peau en haut à droite — tout suit.</p>
+
+<h2>1 · La tuile — <code class="tag">label · value · delta</code></h2>
+<div class="stack" data-code>
+  <z-stat trend="up">
+    <span part="label">Chiffre d'affaires</span>
+    <strong part="value">1,24 M€</strong>
+    <span part="delta">+12,4 %</span>
+  </z-stat>
+</div>
+<p class="note">Vos balises natives, un <code>part</code> pour nommer le rôle. Le <code>&lt;strong&gt;</code> garde son poids pour un lecteur d'écran : Zoé n'injecte <b>aucune</b> balise.</p>
+
+<h2>2 · Le sens de la variation — <code class="tag">trend</code></h2>
+<div class="stack" data-code>
+  <div class="rangee">
+    <z-stat trend="up">
+      <span part="label">Commandes</span>
+      <strong part="value">1 208</strong>
+      <span part="delta">+8,1 %</span>
+    </z-stat>
+    <z-stat trend="down">
+      <span part="label">Retours</span>
+      <strong part="value">37</strong>
+      <span part="delta">−3,2 %</span>
+    </z-stat>
+    <z-stat>
+      <span part="label">Panier moyen</span>
+      <strong part="value">84 €</strong>
+      <span part="delta">stable</span>
+    </z-stat>
+    <z-stat>
+      <span part="label">Clients actifs</span>
+      <strong part="value">9 412</strong>
+    </z-stat>
+  </div>
+</div>
+<p class="note"><code>up</code> : succès + ↑. <code>down</code> : danger + ↓. Sans <code>trend</code> : encre atténuée, pas de flèche. Sans <code>delta</code> : la tuile s'arrête au nombre. Tout est lu dans l'attribut par le CSS — zéro JS.</p>
+
+<h2>3 · <code class="tag">tone</code> et <code class="tag">size</code></h2>
+<div class="stack" data-code>
+  <div class="rangee">
+    <z-stat tone="main" trend="up">
+      <span part="label">Visites</span>
+      <strong part="value">48 k</strong>
+      <span part="delta">+21 %</span>
+    </z-stat>
+    <z-stat tone="complement">
+      <span part="label">Pages vues</span>
+      <strong part="value">212 k</strong>
+    </z-stat>
+    <z-stat tone="soft">
+      <span part="label">Rebond</span>
+      <strong part="value">41 %</strong>
+    </z-stat>
+  </div>
+  <div class="rangee">
+    <z-stat size="s" trend="up">
+      <span part="label">Petite</span>
+      <strong part="value">12</strong>
+      <span part="delta">+1</span>
+    </z-stat>
+    <z-stat size="l" trend="down">
+      <span part="label">Grande</span>
+      <strong part="value">1 024</strong>
+      <span part="delta">−12</span>
+    </z-stat>
+  </div>
+</div>
+<p class="note">Le <code>tone</code> repeint le fond et l'encre (<code>--z-tone__fill/ink</code>). <code>size</code> règle la taille du texte, l'espacement suit en <code>em</code> ; le grand nombre, lui, lit <code>--z-font-size-2xl</code> de la peau.</p>
+
+<h2>4 · Vivante — le contenu change, la tuile suit</h2>
+<div class="stack">
+  <div class="rangee">
+    <z-stat id="vivante" trend="up">
+      <span part="label">Ventes du jour</span>
+      <strong part="value">128</strong>
+      <span part="delta">+6,0 %</span>
+    </z-stat>
+    <z-button id="actualiser" tone="soft">Actualiser</z-button>
+  </div>
+</div>
+<pre class="z-code-manuel">tuile.querySelector("[part=value]").textContent = "131";
+tuile.querySelector("[part=delta]").textContent = "+2,3 %";
+tuile.setAttribute("trend", "up");     // ou "down" : la couleur et la flèche suivent</pre>
+<p class="note">Aucune API : une tuile est du texte. Vous changez le texte, vous changez <code>trend</code>, c'est tout.</p>
+
+<script type="module">
+  import "../../examples/skin-switch.js";
+  import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+  import "../../tools/z-contact/z-contact.js";
+  import "../z-button/z-button.js";
+  import "./z-stat.js";
+
+  /* Des chiffres qui bougent : du code d'auteur, la tuile ne calcule rien (zéro logique métier). */
+  const tuile = document.querySelector("#vivante");
+  const valeur = tuile.querySelector("[part=value]");
+  const delta = tuile.querySelector("[part=delta]");
+  let ventes = 128;
+  document.querySelector("#actualiser").addEventListener("click", () => {
+    const variation = Math.round((Math.random() - 0.4) * 20);
+    ventes = Math.max(0, ventes + variation);
+    const pourcent = (variation / Math.max(1, ventes - variation) * 100).toFixed(1).replace(".", ",");
+    valeur.textContent = String(ventes);
+    delta.textContent = `${variation >= 0 ? "+" : "−"}${pourcent.replace("-", "")} %`;
+    tuile.setAttribute("trend", variation >= 0 ? "up" : "down");
+  });
+</script>
+</html>

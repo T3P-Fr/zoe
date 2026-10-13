@@ -54,7 +54,7 @@ Le remplissage, la poignée, les graduations et l'étiquette sont du CSS qui lit
    s'interpole : une valeur posée par API *glisse* au lieu de sauter, et une peau
    change la courbe du geste sans toucher au composant.
 2. **Rien n'est injecté.** Les graduations sont un `repeating-gradient`, l'étiquette un
-   `counter()`. Le DOM que tu écris est le DOM que tu debug (ADR-0018).
+   `counter()`. Le DOM que vous écrivez est le DOM que vous déboguez (ADR-0018).
 3. **Le canal marche tout seul.** N'importe quel CSS de la page peut lire `progress` et
    s'en servir : le curseur pilote sans rien connaître de ce qu'il pilote.
 
@@ -82,8 +82,8 @@ C'est le seul moyen d'écrire un nombre en CSS pur. C'est aussi sa limite : un
 `counter()` n'accepte qu'un entier, donc `12.5` ne s'affichera pas, et « 40 % » ou
 « 12,50 € » non plus.
 
-Ce n'est pas un mur — c'est une porte à côté. Écris ton texte dans le calque `label` et
-écoute `input` : le CSS se tait dès que le calque n'est plus vide.
+Ce n'est pas un mur — c'est une porte à côté. Écrivez votre texte dans le calque `label` et
+écoutez `input` : le CSS se tait dès que le calque n'est plus vide.
 
 ```html
 <z-slider value="40" label="over">
@@ -102,7 +102,7 @@ slider.addEventListener("input", (e) => {
 
 `markers` dessine des graduations **régulières** — c'est le chemin court. Pour des
 positions arbitraires (0, 25, 90…), le gradient ne suffit plus, et Zoé ne va pas
-injecter des nœuds à ta place. Tu écris les tiens dans la piste :
+injecter des nœuds à votre place. Vous écrivez les vôtres dans la piste :
 
 ```html
 <z-layer part="background">
@@ -111,7 +111,7 @@ injecter des nœuds à ta place. Tu écris les tiens dans la piste :
 </z-layer>
 ```
 
-C'est ton DOM, tu le places, tu le peins. Le vocabulaire court est un chemin rapide,
+C'est votre DOM, vous le placez, vous le peignez. Le vocabulaire court est un chemin rapide,
 pas un périmètre.
 
 ## Le geste

@@ -18,7 +18,7 @@
 	(aria-expanded) et pointe le panneau (aria-controls) ; le panneau fermé passe `inert`
 	(hors tabulation ET hors lecture d'écran) — un contenu caché ne doit pas se faire lire.
 
-	Doc narrative : z-disclosure.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-disclosure.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 12.0
 	============================================================
 */
@@ -44,7 +44,8 @@ export class ZDisclosure extends ZElement {
 			es: "Un desplegable (título → contenido plegable) — hereda los estados de z-element, accesible (aria-expanded/controls, inert cerrado), animable."
 		},
 		attributes: [
-			{ name: "open", type: "boolean", description: { en: "Open: reveals the panel.", fr: "Ouvert : révèle le panneau.", es: "Abierto: revela el panel." } }
+			{ name: "open", type: "boolean", description: { en: "Open: reveals the panel.", fr: "Ouvert : révèle le panneau.", es: "Abierto: revela el panel." } },
+			{ name: "disabled", type: "boolean", description: { en: "Disabled: the label no longer opens or closes (pointer and keyboard).", fr: "Désactivé : le label n'ouvre ni ne ferme plus (pointeur et clavier).", es: "Deshabilitado: la etiqueta ya no abre ni cierra (puntero y teclado)." } }
 		],
 		events: [
 			{ name: "toggle", description: { en: "Emitted when it opens or closes. Read `.open`.", fr: "Émis à l'ouverture ou la fermeture. Lire `.open`.", es: "Emitido al abrir o cerrar. Leer `.open`." } },
@@ -99,12 +100,15 @@ export class ZDisclosure extends ZElement {
 		this.dispatchEvent(new Event("toggle", { bubbles: true }));
 	}
 
+	/* `disabled` coupe le geste (loi du socle : c'est le seul état qui AGIT) — sans ce
+	   garde, un dépli désactivé s'ouvrirait quand même au clic. */
 	#onClick = (event) => {
+		if (this.disabled) return;
 		if (this.#label && this.#label.contains(event.target)) this.toggle();
 	};
 
 	#onKey = (event) => {
-		if (!this.#label || !this.#label.contains(event.target)) return;
+		if (this.disabled || !this.#label || !this.#label.contains(event.target)) return;
 		if (event.key === "Enter" || event.key === " " || event.key === "Spacebar") {
 			event.preventDefault();
 			this.toggle();

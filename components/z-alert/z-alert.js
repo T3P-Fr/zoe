@@ -13,9 +13,10 @@
 	ACCESSIBLE : `role="status"` par défaut (annonce polie) ; un message de danger passe
 	`role="alert"` (annonce immédiate) — sauf si l'auteur a posé son propre role. `dismissible`
 	ajoute une croix (peinte, jamais injectée — ADR-0018) qui émet `zoe:dismiss` ANNULABLE
-	avant de retirer la bannière : l'auteur peut `preventDefault()` pour animer ou confirmer.
+	avant de partir. La sortie s'ANIME (état `exit`) : le nœud n'est retiré qu'une fois
+	l'animation finie. L'auteur peut `preventDefault()` pour confirmer, ou fermer lui-même.
 
-	Doc narrative : z-alert.doc.md (à venir) · API machine : `static api` ci-dessous.
+	Doc narrative : z-alert.doc.md · API machine : `static api` ci-dessous.
 	Styleguide 13.0
 	============================================================
 */
@@ -31,7 +32,7 @@ export class ZAlert extends ZElement {
 		example: `<z-alert tone="success">Vos modifications sont enregistrées.</z-alert>
 <z-alert tone="danger" dismissible>Le paiement a été refusé.</z-alert>`,
 		members: [
-			{ kind: "method", name: "dismiss()", type: "void", description: { en: "Closes the alert: fires cancelable `zoe:dismiss`, then plays `exit` and removes the node.", fr: "Ferme l'alerte : émet `zoe:dismiss` (annulable), puis joue `exit` et retire le nœud.", es: "Cierra la alerta: emite `zoe:dismiss` (cancelable), luego reproduce `exit` y quita el nodo." } }
+			{ kind: "method", name: "dismiss()", type: "Promise<void>", description: { en: "Closes the alert: fires cancelable `zoe:dismiss`, then plays `exit` and removes the node.", fr: "Ferme l'alerte : émet `zoe:dismiss` (annulable), puis joue `exit` et retire le nœud.", es: "Cierra la alerta: emite `zoe:dismiss` (cancelable), luego reproduce `exit` y quita el nodo." } }
 		],
 		summary: {
 			en: "A contextual message — tone drives the colour, role=status (or alert for danger). Optionally dismissible.",
@@ -60,19 +61,28 @@ export class ZAlert extends ZElement {
 		]
 	};
 
+	/*
+		`dismissible` change le COMPORTEMENT (focusable, fermable), pas le rendu d'un état :
+		on l'observe pour rebrancher la focusabilité quand il change, et on l'intercepte
+		avant le socle pour qu'il ne devienne pas un :state(dismissible) sans sens.
+	*/
+	static get observedAttributes() {
+		return [...super.observedAttributes, "dismissible"];
+	}
+
 	connectedCallback() {
 		if (!this.hasAttribute("role")) {
 			this.setAttribute("role", this.getAttribute("tone") === "danger" ? "alert" : "status");
 		}
-		if (this.removableEnabled) this.#syncDismissable();
+		this.#syncDismissable();
 		this.addEventListener("pointerdown", this.#onPointer);
 		this.addEventListener("keydown", this.#onKey);
 		super.connectedCallback();
 	}
 
 	attributeChangedCallback(name, previous, value) {
+		if (name === "dismissible") { this.#syncDismissable(); return; }
 		super.attributeChangedCallback(name, previous, value);
-		if (name === "dismissible") this.#syncDismissable();
 	}
 
 	/* Fermable ? @returns {boolean} */
@@ -80,15 +90,30 @@ export class ZAlert extends ZElement {
 		return this.hasAttribute("dismissible");
 	}
 
-	/* Ferme la bannière — prévient d'abord (`zoe:dismiss`, annulable). */
-	dismiss() {
+	/*
+		Ferme la bannière — prévient d'abord (`zoe:dismiss`, annulable), puis ANIME la sortie
+		(état `exit`) avant de retirer le nœud. Sans l'attente, disconnectedCallback
+		arriverait trop tard pour animer (même raison que `exit` dans z-element).
+		@returns {Promise<void>} résolue une fois le nœud retiré (ou tout de suite si annulé)
+	*/
+	async dismiss() {
 		const allowed = this.dispatchEvent(new CustomEvent("zoe:dismiss", { bubbles: true, cancelable: true }));
-		if (allowed) this.remove();
+		if (!allowed) return;
+		await this.play("exit");   /* joue :state(exit) le temps de --z-dur-exit, puis rend la main */
+		this.remove();
 	}
 
-	/* Une bannière fermable est focusable (le clavier doit pouvoir la fermer). */
+	/*
+		Une bannière fermable est focusable (le clavier doit pouvoir la fermer) ; une
+		bannière qui cesse de l'être sort de la tabulation. On ne touche qu'au tabindex
+		qu'on a posé nous-mêmes, jamais à celui de l'auteur.
+	*/
 	#syncDismissable() {
-		if (this.removableEnabled && !this.hasAttribute("tabindex")) this.tabIndex = 0;
+		if (this.removableEnabled) {
+			if (!this.hasAttribute("tabindex")) this.tabIndex = 0;
+		} else if (this.getAttribute("tabindex") === "0") {
+			this.removeAttribute("tabindex");
+		}
 	}
 
 	/* Clic dans la zone de la croix (bord droit) → fermeture. */

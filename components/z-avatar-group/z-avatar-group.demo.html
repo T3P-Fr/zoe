@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>z-avatar-group — démo</title>
+
+<!--
+	GARDE-FOU file:// — script CLASSIQUE volontairement (surtout pas `type="module"`) :
+	c'est le seul qui s'exécute encore hors serveur, donc le seul capable de prévenir que
+	les modules ES sont bloqués et que la page va paraître morte. Copie identique dans
+	chaque page ouvrable à la main ; l'original vit dans index.html (racine).
+-->
+<script>
+	if (location.protocol === "file:") document.write(
+		'<div style="padding:1rem 1.2rem;background:#7a1d0c;color:#fff;font:15px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+		'<b>Ouverte en file:// — le navigateur bloque les modules ES.</b><br>' +
+		'Les composants ne se définiront pas. Lance <code>node scripts/serve.mjs 5173</code> ' +
+		'puis passe par <code>http://localhost:5173/</code>.</div>'
+	);
+</script>
+
+<link rel="stylesheet" href="../../zoe.css">
+<link rel="stylesheet" href="../../examples/page.css">
+<style>
+	/* Section 2 — les trois tokens du groupe, et rien d'autre. */
+	.serre { --z-avatar-group__overlap: -1.1em; --z-avatar-group__ring: .22em; }
+	.aere  { --z-avatar-group__overlap: -.25em; --z-avatar-group__ring: 0px; --z-avatar-group__lift: .5em; }
+</style>
+
+<!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
+<z-contact></z-contact>
+
+<h1><code>z-avatar-group</code></h1>
+<p class="lead">Une pile de <code>z-avatar</code> qui se chevauchent, chacun cerné de la
+	couleur de page. <b>Survolez</b> un visage : il remonte et passe devant. Changez la peau
+	en haut à droite — tout suit.</p>
+
+<h2>1 · La pile — <code class="tag">&lt;z-avatar-group&gt;</code></h2>
+<div class="stack" data-code>
+	<z-avatar-group max="3" aria-label="L'équipe">
+		<z-avatar name="Ada Lovelace">AL</z-avatar>
+		<z-avatar name="Grace Hopper" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='%23b8744a'/%3E%3Ccircle cx='4' cy='3.2' r='1.5' fill='%23f6e9da'/%3E%3Cpath d='M1 8a3 2.4 0 0 1 6 0z' fill='%23f6e9da'/%3E%3C/svg%3E"></z-avatar>
+		<z-avatar name="Margaret Hamilton">MH</z-avatar>
+		<z-avatar name="4 autres personnes" tone="soft">+4</z-avatar>
+	</z-avatar-group>
+</div>
+<p class="note">Le groupe ne peint aucun avatar : il les met en ligne, les fait se recouvrir et
+	les détache d'un liseré (un <code>box-shadow</code>, qui n'agrandit pas la boîte).
+	<code>max</code> est un repère : le <code>+4</code>, c'est vous qui l'écrivez — et le nommez.</p>
+
+<h2>2 · Serré, aéré — trois tokens</h2>
+<div class="stack" data-code>
+	<z-avatar-group class="serre" aria-label="Serré">
+		<z-avatar name="Ada Lovelace" tone="main">AL</z-avatar>
+		<z-avatar name="Grace Hopper" tone="main">GH</z-avatar>
+		<z-avatar name="Margaret Hamilton" tone="main">MH</z-avatar>
+		<z-avatar name="Katherine Johnson" tone="main">KJ</z-avatar>
+	</z-avatar-group>
+	<z-avatar-group class="aere" aria-label="Aéré">
+		<z-avatar name="Ada Lovelace">AL</z-avatar>
+		<z-avatar name="Grace Hopper">GH</z-avatar>
+		<z-avatar name="Margaret Hamilton">MH</z-avatar>
+		<z-avatar name="Katherine Johnson">KJ</z-avatar>
+	</z-avatar-group>
+</div>
+<pre class="z-code-manuel">.serre { --z-avatar-group__overlap: -1.1em; --z-avatar-group__ring: .22em; }
+.aere  { --z-avatar-group__overlap: -.25em; --z-avatar-group__ring: 0px; --z-avatar-group__lift: .5em; }</pre>
+<p class="note">Le recouvrement, le liseré, la remontée au survol : tout le réglage tient en
+	trois variables. Survolez la pile aérée — elle saute plus haut.</p>
+
+<h2>3 · La taille se pose sur le groupe</h2>
+<div class="stack" data-code>
+	<div class="rangee">
+		<z-avatar-group size="s" aria-label="Petit">
+			<z-avatar name="Ada Lovelace">AL</z-avatar>
+			<z-avatar name="Grace Hopper">GH</z-avatar>
+			<z-avatar name="Margaret Hamilton">MH</z-avatar>
+		</z-avatar-group>
+		<z-avatar-group aria-label="Moyen">
+			<z-avatar name="Ada Lovelace">AL</z-avatar>
+			<z-avatar name="Grace Hopper">GH</z-avatar>
+			<z-avatar name="Margaret Hamilton">MH</z-avatar>
+		</z-avatar-group>
+		<z-avatar-group size="l" aria-label="Grand">
+			<z-avatar name="Ada Lovelace">AL</z-avatar>
+			<z-avatar name="Grace Hopper">GH</z-avatar>
+			<z-avatar name="Margaret Hamilton">MH</z-avatar>
+		</z-avatar-group>
+	</div>
+</div>
+<p class="note">Tout est en <code>em</code> : un <code>size</code> sur le groupe, et les disques,
+	le recouvrement et le liseré suivent ensemble.</p>
+
+<h2>4 · Un groupe dans un groupe garde les siens</h2>
+<div class="stack" data-code>
+	<z-avatar-group aria-label="Deux équipes">
+		<z-avatar name="Ada Lovelace" tone="main">AL</z-avatar>
+		<z-avatar name="Grace Hopper" tone="main">GH</z-avatar>
+		<z-avatar-group class="aere" aria-label="Invités">
+			<z-avatar name="Margaret Hamilton">MH</z-avatar>
+			<z-avatar name="Katherine Johnson">KJ</z-avatar>
+		</z-avatar-group>
+	</z-avatar-group>
+</div>
+<p class="note">Les règles visent les enfants <b>directs</b> (<code>&gt; z-avatar</code>) : le
+	groupe intérieur garde ses propres réglages, le parent ne le repeint pas.</p>
+
+<script type="module">
+	import "../../examples/skin-switch.js";
+	import "../../examples/code.js";   /* LOI : jamais une démo sans le code qui la produit */
+	import "../../tools/z-contact/z-contact.js";
+	import "../../core/z-layer/z-layer.js";
+	import "../z-avatar/z-avatar.js";
+	import "./z-avatar-group.js";
+</script>
+</html>

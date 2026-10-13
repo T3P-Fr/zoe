@@ -2,8 +2,8 @@
 
 Un bouton radio bâti sur [`z-element`](../../core/z-element/z-element.doc.md), à la même
 anatomie que [`z-checkbox`](../z-checkbox/z-checkbox.doc.md) : le **marker** (le rond) et
-le **label** (ton texte). Zoé n'injecte **aucune balise** — le marker est un `::before`,
-le label reste ton light DOM.
+le **label** (votre texte). Zoé n'injecte **aucune balise** — le marker est un `::before`,
+le label reste votre light DOM.
 
 ```html
 <z-radio value="fr">Français</z-radio>
@@ -70,7 +70,7 @@ Accessibilité : `role="radio"` + `aria-checked` suivent `current` tout seuls. L
 | `--z-radio--marker__background-checked` | le fond une fois choisie |
 | `--z-radio--dot__color` | le point qui zoome (blanc par défaut) |
 | `--z-radio--halo__color` | l'onde au clic (accent par défaut) |
-| `--z-radio--label__weight` | le poids du label choisie |
+| `--z-radio--label__weight` | le poids du label choisi |
 
 ## Le geste
 

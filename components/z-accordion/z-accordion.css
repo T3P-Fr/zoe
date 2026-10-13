@@ -6,13 +6,19 @@
 	ne fait qu'EMPILER ses déplis et lisser les bords — un cadre discret autour du groupe,
 	et le dernier filet effacé pour ne pas doubler le bord du cadre.
 
+	Un seul token propre : `--z-accordion__gap`, l'écart entre les déplis (0 par défaut —
+	les filets se touchent ; une peau qui veut des rangées séparées le pose).
 	Requiert : une peau (tokens) + core/z-layer + z-disclosure.
 	Styleguide 27.1
 	============================================================
 */
 
 z-accordion {
-	display: block;
+	/* Une colonne et non un bloc : c'est `gap` qui porte l'écart entre les déplis, et
+	   une marge sur chaque dépli déborderait du cadre arrondi (overflow: hidden). */
+	display: flex;
+	flex-direction: column;
+	gap: var(--z-accordion__gap, 0);
 	/* Le groupe posé comme une carte sobre : un cadre, des coins, et les déplis dedans. */
 	border: var(--z-border-width, 1px) solid var(--z-line);
 	border-radius: var(--z-radius, 8px);
