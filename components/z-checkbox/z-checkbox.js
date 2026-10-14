@@ -2,30 +2,19 @@
 	============================================================
 	z-checkbox — une case à cocher, bâtie SUR z-element (Chemin A)
 	------------------------------------------------------------
-	Premier composant à ANATOMIE, et il s'écrit de DEUX façons — Zoé n'injecte jamais
-	rien (ADR-0018), c'est l'auteur (ou l'éditeur Zoé) qui décide du niveau de détail :
+	Premier composant à ANATOMIE. UNE seule forme (principe « peint, pas posé »,
+	2026-10-14) : l'auteur écrit la ligne, les pièces sont PEINTES par z-checkbox.css.
+	Zoé n'injecte jamais rien (ADR-0018), et n'exige jamais rien non plus.
 
-	    FORME COURTE — le CSS peint l'hôte, un `::before` fait la case
 	    <z-checkbox>J'accepte les conditions</z-checkbox>
 	    <z-checkbox current>Déjà cochée</z-checkbox>
 	    <z-checkbox disabled>Indisponible</z-checkbox>
 
-	    FORME EN CALQUES — chaque pièce est un élément, donc animable SEULE
-	    <z-checkbox>
-	      <z-layer part="background"></z-layer>
-	      <z-layer part="marker">
-	        <z-layer part="ring"></z-layer>
-	        <z-layer part="dot"></z-layer>
-	      </z-layer>
-	      <z-layer part="infos">
-	        <z-layer part="label">J'accepte les conditions</z-layer>
-	      </z-layer>
-	      <z-layer part="contact"></z-layer>
-	    </z-checkbox>
-
-	Les deux lisent les MÊMES tokens (`--z-checkbox--marker__background`,
-	`--z-checkbox--dot__color`…) : une skin écrite pour l'une marche sur l'autre. Le
-	comportement, lui, est identique — ce fichier ne sait même pas quelle forme il porte.
+	Les pièces : `marker` (la case, son `ring` et son `dot`) est le ::before ; `contact`
+	(la zone du doigt, 44 px au moins, centrée sur la case) est le ::after posé par le
+	socle. Le texte est le label. Une peau les peint par les tokens du pacte
+	(`--z-checkbox--marker__background`, `--z-checkbox--dot__color`…) et peut animer le
+	::before : la case tourne, respire, rebondit, sans que le texte bouge.
 
 	`current` = cochée : une SÉLECTION durable, posée EXPRÈS par le composant (clic /
 	Espace) — jamais par le clic du socle (z-element ne touche plus current). ZButton
@@ -82,30 +71,24 @@ export class ZCheckbox extends ZElement {
 		],
 		states: [...ZElement.api.states, "indeterminate"],
 		/*
-			LES CALQUES du composant — la liste des rôles qu'il connaît, dans l'ordre où on
-			les écrit. C'est ce que l'éditeur Zoé produira, et ce que la doc affiche.
-			Les rôles se PARTAGENT entre composants : `dot` veut dire la même chose ici et
-			sur une radio, donc une skin peut les peindre d'un coup.
+			LES PIÈCES du composant, dans l'ordre où elles se superposent. Une pièce avec
+			`pseudo` est PEINTE par le CSS (rien à écrire) ; sans `pseudo`, c'est du CONTENU
+			que l'auteur écrit s'il en a. Les rôles se PARTAGENT entre composants : `dot`
+			veut dire la même chose ici et sur une radio, donc une peau les peint d'un coup.
 		*/
 		layers: [
-			{ part: "background", description: { en: "The backdrop of the whole line — usually transparent, it carries effects.", fr: "Le fond de toute la ligne — souvent transparent, il porte les effets.", es: "El fondo de toda la línea — normalmente transparente, lleva los efectos." } },
 			{
 				part: "marker",
-				description: { en: "The box itself (its surface).", fr: "La case elle-même (sa surface).", es: "La casilla en sí (su superficie)." },
+				pseudo: "::before",
+				description: { en: "The box itself — painted, nothing to write. Its outline is `ring`, its mark is `dot`.", fr: "La case elle-même — peinte, rien à écrire. Son cerclage est `ring`, sa marque est `dot`.", es: "La casilla en sí — pintada, nada que escribir. Su cerco es `ring`, su marca es `dot`." },
 				children: [
-					{ part: "ring", description: { en: "The box outline — animatable on its own (it can spin, dash…).", fr: "Le cerclage de la case — animable seul (il peut tourner, pointiller…).", es: "El cerco de la casilla — animable por sí solo (puede girar, punteado…)." } },
-					{ part: "dot", description: { en: "The mark that appears once checked.", fr: "La marque qui apparaît une fois cochée.", es: "La marca que aparece al marcar." } }
+					{ part: "ring", pseudo: "::before", description: { en: "The box outline (the border of the painted box).", fr: "Le cerclage de la case (le filet de la pièce peinte).", es: "El cerco de la casilla (el borde de la pieza pintada)." } },
+					{ part: "dot", pseudo: "::before", description: { en: "The mark that appears once checked (the box's inner square).", fr: "La marque qui apparaît une fois cochée (le carré au centre de la case).", es: "La marca que aparece al marcar (el cuadrado central de la casilla)." } }
 				]
 			},
-			{
-				part: "infos",
-				description: { en: "What informs — moved, hidden or animated as one block.", fr: "Ce qui informe — déplacé, caché ou animé d'un bloc.", es: "Lo que informa — movido, ocultado o animado en bloque." },
-				children: [
-					{ part: "icon", optional: true, description: { en: "Optional, before the label.", fr: "Optionnel, avant le label.", es: "Opcional, antes de la etiqueta." } },
-					{ part: "label", description: { en: "Your text.", fr: "Votre texte.", es: "Su texto." } }
-				]
-			},
-			{ part: "contact", description: { en: "What receives the gesture — covers (and may overflow) the component, invisible.", fr: "Ce qui reçoit le geste — couvre (et peut déborder) le composant, invisible.", es: "Lo que recibe el gesto — cubre (y puede desbordar) el componente, invisible." } }
+			{ part: "icon", optional: true, description: { en: "Optional content, before the text: `<z-layer part=\"icon\">✳</z-layer>`.", fr: "Contenu optionnel, avant le texte : `<z-layer part=\"icon\">✳</z-layer>`.", es: "Contenido opcional, antes del texto: `<z-layer part=\"icon\">✳</z-layer>`." } },
+			{ part: "label", description: { en: "Your text — written directly inside the element.", fr: "Votre texte — écrit directement dans l'élément.", es: "Su texto — escrito directamente en el elemento." } },
+			{ part: "contact", pseudo: "::after", description: { en: "The touch zone — invisible, at least --z-contact-zone (44px), centred on the box. Set by the core.", fr: "La zone du doigt — invisible, au moins --z-contact-zone (44px), centrée sur la case. Posée par le socle.", es: "La zona táctil — invisible, al menos --z-contact-zone (44px), centrada en la casilla. Puesta por el núcleo." } }
 		]
 	};
 

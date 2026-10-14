@@ -209,6 +209,13 @@
 	   « sortait d'on ne sait où » (décision produit). Le contour seul suffit et respecte la
 	   loi 2. La recette expose `--z-contact-fill` si une autre peau en veut un. */
 
+	/* LA ZONE DU DOIGT — pas un visuel, une garantie (2026-10-14) : tout élément
+	   interactif reçoit une zone tactile invisible d'au moins cette taille, centrée sur
+	   lui, qui déborde si le dessin est plus petit. 44 px = le minimum des guides mobiles
+	   (Apple 44 pt, WCAG 2.5.5). Dense, HighTech ne va pas au-delà. Écart assumé à la
+	   source, qui ne connaît pas le tactile : ce token ne change AUCUN pixel. */
+	--z-contact-zone: 44px;
+
 	color-scheme: light;
 }
 

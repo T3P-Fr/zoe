@@ -57,21 +57,17 @@ export class ZButton extends ZElement {
 		events: [{ name: "z-state", description: { en: "Emitted on every state change. detail: { states, changed, on }.", fr: "Émis à chaque changement d'état. detail : { states, changed, on }.", es: "Emitido en cada cambio de estado. detail: { states, changed, on }." } }],
 		states: ZElement.api.states,
 		/*
-			LES CALQUES — la structure canonique de Zoé, MOINS le marker : un bouton n'a
-			pas de pièce d'état à montrer. On n'écrit que les rôles qu'on a. Ce que ça
-			débloque : le FOND bouge sans emmener le texte (il gonfle, glisse, clignote).
+			LES PIÈCES du bouton, dans l'ordre où elles se superposent. Une pièce avec
+			`pseudo` est PEINTE par le CSS (rien à écrire) ; sans `pseudo`, c'est du CONTENU
+			que l'auteur écrit s'il en a. Pas de `marker` : un bouton n'a pas de pièce d'état
+			à montrer. Ce que la pièce `background` débloque : le FOND bouge sans emmener le
+			texte (il gonfle, glisse, clignote).
 		*/
 		layers: [
-			{ part: "background", description: { en: "The button's surface and outline — a piece of its own, it can move without the text.", fr: "La surface et le filet du bouton — une pièce à part, elle peut bouger sans le texte.", es: "La superficie y el borde del botón — una pieza propia, puede moverse sin el texto." } },
-			{
-				part: "infos",
-				description: { en: "What informs — moved, hidden or animated as one block.", fr: "Ce qui informe — déplacé, caché ou animé d'un bloc.", es: "Lo que informa — movido, ocultado o animado en bloque." },
-				children: [
-					{ part: "icon", optional: true, description: { en: "Optional, before the label.", fr: "Optionnel, avant le label.", es: "Opcional, antes de la etiqueta." } },
-					{ part: "label", description: { en: "Your text.", fr: "Votre texte.", es: "Su texto." } }
-				]
-			},
-			{ part: "contact", description: { en: "What receives the gesture — covers (and may overflow) the component, invisible.", fr: "Ce qui reçoit le geste — couvre (et peut déborder) le composant, invisible.", es: "Lo que recibe el gesto — cubre (y puede desbordar) el componente, invisible." } }
+			{ part: "background", pseudo: "::before", description: { en: "The button's surface and outline — painted, a piece of its own: it can move without the text.", fr: "La surface et le filet du bouton — peinte, une pièce à part : elle peut bouger sans le texte.", es: "La superficie y el borde del botón — pintada, una pieza propia: puede moverse sin el texto." } },
+			{ part: "icon", optional: true, description: { en: "Optional content, before the text: `<z-layer part=\"icon\">★</z-layer>`.", fr: "Contenu optionnel, avant le texte : `<z-layer part=\"icon\">★</z-layer>`.", es: "Contenido opcional, antes del texto: `<z-layer part=\"icon\">★</z-layer>`." } },
+			{ part: "label", description: { en: "Your text — written directly inside the element.", fr: "Votre texte — écrit directement dans l'élément.", es: "Su texto — escrito directamente en el elemento." } },
+			{ part: "contact", pseudo: "::after", description: { en: "The touch zone — invisible, at least --z-contact-zone (44px), centred on the button. Set by the core.", fr: "La zone du doigt — invisible, au moins --z-contact-zone (44px), centrée sur le bouton. Posée par le socle.", es: "La zona táctil — invisible, al menos --z-contact-zone (44px), centrada en el botón. Puesta por el núcleo." } }
 		]
 	};
 

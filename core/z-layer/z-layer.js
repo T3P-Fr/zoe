@@ -3,16 +3,15 @@
 	z-layer — LE CALQUE : une couche, un rôle
 	------------------------------------------------------------
 	La deuxième brique du noyau, à côté de z-element. Là où z-element porte les ÉTATS
-	(le vivant), z-layer porte les PIÈCES (le visible). Un composant Zoé, c'est une pile
-	de calques qui jouent chacun UN rôle :
+	(le vivant), z-layer porte du CONTENU qui a un rôle (le visible que l'auteur écrit).
 
-	    <z-checkbox>
-	      <z-layer part="background"></z-layer>
-	      <z-layer part="marker"></z-layer>
-	      <z-layer part="ring"></z-layer>
-	      <z-layer part="dot"></z-layer>
-	      <z-layer part="label">J'accepte</z-layer>
-	    </z-checkbox>
+	DEPUIS LE 2026-10-14 (« peint, pas posé ») : les pièces d'un composant sont PEINTES
+	par son CSS — surface, case, zone tactile sont ses pseudo-éléments (::before, ::after).
+	L'auteur n'écrit JAMAIS `background`, `marker` ou `contact`. Un z-layer sert à deux
+	choses : une icône, ou une pièce de plus qu'il veut animer. Il prend sa place en flux
+	et ne change pas la forme du composant (il n'y a qu'une forme) :
+
+	    <z-button><z-layer part="icon">★</z-layer> Favori</z-button>
 
 	POURQUOI UNE balise + un rôle, et pas une balise PAR rôle
 	---------------------------------------------------------
@@ -24,11 +23,12 @@
 	Et surtout : ça donne enfin au pacte sa traduction en HTML. Le `--{part}` du CSS
 	existait déjà, il lui manquait son élément.
 
-	    --z-checkbox--marker__background      ce que la SKIN peint
-	    z-checkbox z-layer[part="marker"]     ce que le CSS vise
-	    <z-layer part="marker">               ce que l'AUTEUR écrit
+	    --z-button--icon__color               ce que la SKIN peint
+	    z-button > z-layer[part="icon"]       ce que le CSS vise
+	    <z-layer part="icon">                 ce que l'AUTEUR écrit
 
-	Trois écritures, UN mot : `marker`.
+	Trois écritures, UN mot : `icon`. (Une pièce PEINTE n'a que les deux premières : le
+	CSS vise son pseudo-élément, `z-checkbox::before`, et l'auteur n'écrit rien.)
 
 	`part` est l'attribut du web standard (celui de `::part()`) : aujourd'hui inerte en
 	light DOM, donc gratuit — et si un composant passe un jour en shadow, il est déjà là.

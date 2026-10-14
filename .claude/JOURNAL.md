@@ -2,6 +2,35 @@
 
 ## Historique
 
+## Session du 2026-10-14 (suite) — « PEINT, PAS POSÉ » : une forme, et le doigt a sa place
+
+**Impact (1-5) :** 5
+
+**Fait :**
+- Branche `peint-pas-pose`. Mandat : « Résous-le, garde seulement la hit area de Flash, invente
+  un principe. » Fiche : `.claude/concepts/2026-10-14--peint-pas-pose.md`.
+- **Le principe** : UNE forme. L'auteur écrit le contenu, Zoé PEINT les pièces (`::before` =
+  la pièce qui bouge, `::after` = `contact`), et tout élément interactif reçoit du socle une
+  zone tactile invisible ≥ `--z-contact-zone` (44 px), centrée, qui déborde. Plus de
+  `:has(z-layer)`, plus de forme en calques ; `z-layer` = contenu (icône) seulement.
+- **Essai livré** : socle (z-element.css 0.5.5 + `elementsFromPoint`, preset `halo`, token
+  dans les 2 peaux), z-manifest (`pseudo`, liste du contact déduite de l'API, 28 tests),
+  z-button + z-checkbox (CSS une forme, API, démos « le fond est une pièce » et « sur
+  téléphone », docs au patron utiliser · peindre · brancher · sous le capot), la loi dans
+  ZOE.md / GRAMMAR.md / z-layer.
+- **Preuve CDP** : bouton `xs` 43×32 px, zone 44 px ; un tap 3 px sous le bord visible →
+  `click` + `release` ; un tap 14 px plus bas → rien.
+- Au passage : z-alert réécrite au nouveau patron de doc (commit précédent sur master).
+
+**Décisions :**
+- La loi des pièces remplace la loi des calques (2026-07-20). Le halo du clic devient le
+  preset `halo` (box-shadow) : chaque composant n'a qu'un `::before` libre.
+- Le contact est centré sur le marker quand il y en a un (checkbox), sur l'élément sinon.
+
+**Prochain pas :**
+- 👁 Christophe regarde les deux démos (z-button §2 et §6, z-checkbox §2 et §3) et dit
+  « garde ». Puis l'extension : 34 composants, 18 démos, z-layer.css réduit au contenu.
+
 ## Session du 2026-10-14 — L'AUDIT (ce qui manque pour être révolutionnaire)
 
 **Impact (1-5) :** 4

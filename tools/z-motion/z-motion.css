@@ -42,3 +42,13 @@
 /* ── Surface ── */
 @keyframes shimmer { from { background-position: 250% 0; } to { background-position: -250% 0; } }
 @keyframes ripple  { from { opacity: .55; transform: scale(1); } to { opacity: 0; transform: scale(1.6); } }
+
+/*
+	halo — l'onde SANS pseudo-élément dédié : l'ombre de la pièce grandit et se fond.
+	Pour une pièce peinte (le fond d'un bouton, la case d'une checkbox) qui n'a plus de
+	::after à prêter à l'onde (c'est la zone du doigt). Elle n'anime QUE box-shadow :
+	ni l'opacité ni l'échelle de la pièce ne bougent, le fond reste en place.
+	Couleur et course : `--z-motion--halo__color` (l'humeur de l'état, en général) et
+	`--z-motion--halo__spread`, posés par le composant sur la pièce.
+*/
+@keyframes halo    { from { box-shadow: 0 0 0 0 var(--z-motion--halo__color, currentColor); } to { box-shadow: 0 0 0 var(--z-motion--halo__spread, .75em) transparent; } }

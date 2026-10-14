@@ -7,7 +7,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
 	pickText, parseUnionType, attributeValues, extractTokens, parseRootTokens, braceBlock,
-	extractKeyframes, regenerateVariantLists, regenerateReadmeTable, scanRepository, toManifest, toVscode, toLlms
+	extractKeyframes, regenerateVariantLists, regenerateContactList, contactTags, regenerateReadmeTable, scanRepository, toManifest, toVscode, toLlms
 } from "./z-manifest.lib.js";
 
 test("pickText : chaîne = anglais, objet = langue demandée, repli sur en", () => {
@@ -70,6 +70,19 @@ test("regenerateVariantLists : chaque :is/:where(z-element, …) reçoit la list
 	const css = ":where(z-element, z-old) { a: b } :is(z-element, z-old)[size=\"l\"] { c: d }";
 	const out = regenerateVariantLists(css, index);
 	assert.equal(out, ":where(z-element, z-button, z-card, z-cursor) { a: b } :is(z-element, z-button, z-card, z-cursor)[size=\"l\"] { c: d }");
+});
+
+test("regenerateContactList : la zone du doigt va aux éléments dont `contact` est peint en ::after", () => {
+	const index = { elements: [
+		{ tag: "z-button", kind: "components", layers: [{ part: "contact", pseudo: "::after", children: [] }] },
+		{ tag: "z-badge", kind: "components", layers: [] },
+		{ tag: "z-radio", kind: "components", layers: [{ part: "marker", pseudo: "::before", children: [{ part: "contact", pseudo: "::after", children: [] }] }] },
+		{ tag: "z-slider", kind: "components", layers: [{ part: "contact", pseudo: null, children: [] }] }
+	] };
+	assert.deepEqual(contactTags(index), ["z-button", "z-radio"]);
+	const css = ":where(z-x)::after /* zoe:contact */ { content: \"\"; }\n:where(z-x)::after { content: \"\"; }";
+	assert.equal(regenerateContactList(css, index), ":where(z-button, z-radio)::after /* zoe:contact */ { content: \"\"; }\n:where(z-x)::after { content: \"\"; }");
+	assert.equal(regenerateContactList(css, { elements: [] }), css, "sans élément, le CSS reste intact");
 });
 
 test("regenerateReadmeTable : remplit entre les marqueurs, laisse le reste", () => {

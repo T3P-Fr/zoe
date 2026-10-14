@@ -1,21 +1,19 @@
 # z-layer — le calque
 
 La deuxième brique du noyau, à côté de [`z-element`](../z-element/z-element.doc.md).
-`z-element` porte les **états** (le vivant) ; `z-layer` porte les **pièces** (le visible).
-Un composant Zoé, c'est une pile de calques qui jouent chacun **un rôle**.
+`z-element` porte les **états** (le vivant) ; `z-layer` porte du **contenu** qui a un
+rôle (le visible que vous écrivez).
+
+> **Depuis le 2026-10-14 (« peint, pas posé »)** : les pièces d'un composant sont
+> **peintes** par son CSS (sa surface, sa case, sa zone tactile sont ses pseudo-éléments).
+> Vous n'écrivez **jamais** `background`, `marker` ou `contact`. Un `z-layer` sert à
+> deux choses : une icône (`part="icon"`), ou une pièce de plus que vous voulez animer.
+> Il prend sa place dans la ligne et ne change pas la forme du composant. Le reste de
+> cette page décrit la grammaire des rôles, qui n'a pas changé.
 
 ```html
-<z-checkbox>
-  <z-layer part="background"></z-layer>
-  <z-layer part="marker">
-    <z-layer part="ring"></z-layer>
-    <z-layer part="dot"></z-layer>
-  </z-layer>
-  <z-layer part="infos">
-    <z-layer part="label">J'accepte</z-layer>
-  </z-layer>
-  <z-layer part="contact"></z-layer>
-</z-checkbox>
+<z-button><z-layer part="icon">★</z-layer> Favori</z-button>
+<z-checkbox><z-layer part="icon">✳</z-layer> J'accepte</z-checkbox>
 ```
 
 ## Grammaire commune, anatomie propre

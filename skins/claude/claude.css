@@ -79,6 +79,10 @@
 	--z-contact-duration: .6s;   /* elle s'épanouit et sèche sans hâte */
 	--z-contact-color: var(--z-accent);   /* terre cuite : l'encre de la maison */
 
+	/* La zone du doigt (invisible, garantie à tout élément interactif) : généreuse,
+	   comme le reste de cette peau. Ne change aucun pixel. */
+	--z-contact-zone: 48px;
+
 	--z-scale-xs: .8;
 	--z-scale-s: .9;
 	--z-scale-m: 1;

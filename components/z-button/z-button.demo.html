@@ -20,7 +20,14 @@
 
 <link rel="stylesheet" href="../../zoe.css">
 <link rel="stylesheet" href="../../examples/page.css">
+<style>
+	/* Section 2 : la pièce `background` (le ::before) respire, le texte ne bouge pas. */
+	z-button.respire::before { animation: respire 2.4s var(--z-ease) infinite; }
+	@keyframes respire { 50% { scale: 1.06 1.14; } }
 
+	/* Section 6 : la zone du doigt, rendue visible à la demande. */
+	#doigt.voir z-button::after { outline: 1px dashed var(--z-accent); background: color-mix(in srgb, var(--z-accent) 8%, transparent); }
+</style>
 
 <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
 <z-contact></z-contact>
@@ -41,20 +48,17 @@
 <p class="note">Un mot dans le HTML, et le composant sait quoi montrer. Ce sont les états de
 	<code>z-element</code> — z-button n'en écrit aucun.</p>
 
-<h2>2 · La même chose, <b>en calques</b></h2>
+<h2>2 · Le fond est une pièce : il respire, le texte ne bouge pas</h2>
 <div class="stack" data-code>
-	<z-button>
-		<z-layer part="background"></z-layer>
-		<z-layer part="infos">
-			<z-layer part="icon">★</z-layer>
-			<z-layer part="label">Favori</z-layer>
-		</z-layer>
-		<z-layer part="contact"></z-layer>
-	</z-button>
+	<z-button class="respire">Le fond respire</z-button>
+	<z-button><z-layer part="icon">★</z-layer> Favori</z-button>
 </div>
-<p class="note">Le <b>fond</b> devient une pièce à part : il peut bouger sans emmener le
-	texte — impossible quand fond et texte sont le même élément. Pas de <code>marker</code>
-	ici : un bouton n'a pas de pièce d'état à montrer, on n'écrit que les rôles qu'on a.</p>
+<pre class="z-code-manuel">/* la pièce `background` est le ::before — une peau l'anime sans toucher au texte */
+z-button.respire::before { animation: respire 2.4s var(--z-ease) infinite; }
+@keyframes respire { 50% { scale: 1.06 1.14; } }</pre>
+<p class="note">Rien à écrire dans le HTML : les pièces sont <b>peintes</b>, pas posées. Le
+	fond (<code>::before</code>) a sa vie, le texte reste en place. Une icône ? C'est du
+	contenu : vous l'écrivez, elle prend sa place dans la ligne.</p>
 
 <h2>3 · Trois tailles, trois tons, une largeur</h2>
 <div class="stack" data-code>
@@ -103,13 +107,46 @@ btn.setState("success");     // le CSS sait qu'on ARRIVE de loading : :state(suc
 <p class="note" id="envoyé">Rien envoyé pour l'instant. <kbd>Tab</kbd> puis <kbd>Entrée</kbd>
 	marchent aussi : un bouton qui n'obéit qu'à la souris n'est pas un bouton.</p>
 
+<h2>6 · Sur téléphone : le doigt a sa place</h2>
+<div class="stack" id="doigt" data-code="bloc">
+	<div class="rangee" style="gap:1.4rem">
+		<z-button size="xs">xs</z-button>
+		<z-button size="xs" tone="soft">×</z-button>
+		<z-button size="xs" tone="danger">−</z-button>
+	</div>
+</div>
+<div class="rangee" style="margin:.6rem 0 .2rem">
+	<z-checkbox id="voir-zone">Voir la zone du doigt</z-checkbox>
+	<label class="note" style="display:inline-flex;align-items:center;gap:.5rem">
+		<code>--z-contact-zone</code>
+		<input id="zone" type="range" min="24" max="72" value="44" step="4" style="width:9rem">
+		<output id="zone-val">44px</output>
+	</label>
+	<span class="note" id="touche">Tapez JUSTE à côté d'un bouton, dans le pointillé.</span>
+</div>
+<p class="note">Un bouton <code>xs</code> fait à peine 30 px de haut : injouable au pouce. Chaque
+	élément interactif reçoit du socle une <b>zone de contact</b> invisible d'au moins 44 px,
+	centrée sur lui, qui déborde. Rien à écrire. La peau fixe le minimum ; montez le curseur
+	et la zone grandit, le dessin ne bouge pas.</p>
+
 <script type="module">
 	import "../../examples/skin-switch.js";
 	import "../../tools/z-contact/z-contact.js";
-	import "../../core/z-layer/z-layer.js";
 	import "../z-checkbox/z-checkbox.js";
 	import "./z-button.js";
 	import "../../examples/code.js";
+
+	/* La zone du doigt : on la MONTRE (pointillé sur le ::after) et on la règle en direct. */
+	const doigt = document.querySelector("#doigt");
+	const zone = document.querySelector("#zone");
+	const zoneVal = document.querySelector("#zone-val");
+	const touche = document.querySelector("#touche");
+	document.querySelector("#voir-zone").addEventListener("change", (e) => doigt.classList.toggle("voir", e.target.checked));
+	zone.addEventListener("input", () => { doigt.style.setProperty("--z-contact-zone", `${zone.value}px`); zoneVal.value = `${zone.value}px`; });
+	doigt.addEventListener("click", (e) => {
+		const bouton = e.target.closest("z-button");
+		if (bouton) touche.textContent = `« ${bouton.textContent.trim()} » touché — le doigt était à côté, le bouton a répondu.`;
+	});
 
 	/* La séquence : deux lignes d'auteur, aucune animation écrite ici. */
 	const envoi = document.querySelector("#envoi");

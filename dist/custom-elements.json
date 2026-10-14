@@ -86,6 +86,10 @@
             {
               "name": "--z-dur-release",
               "description": "Duration of the `release` ripple."
+            },
+            {
+              "name": "--z-contact-zone",
+              "description": "Minimum size of the invisible touch zone every interactive element gets (skin token, 44px by default). Override it locally to enlarge one element's zone."
             }
           ],
           "cssParts": [],
@@ -1798,10 +1802,6 @@
               "description": "Paints `color-current` of the `background` part."
             },
             {
-              "name": "--z-button--contact__bleed",
-              "description": "Paints `bleed` of the `contact` part."
-            },
-            {
               "name": "--z-button--halo__color",
               "description": "Paints `color` of the `halo` part."
             },
@@ -1817,23 +1817,19 @@
           "cssParts": [
             {
               "name": "background",
-              "description": "The button's surface and outline — a piece of its own, it can move without the text."
-            },
-            {
-              "name": "infos",
-              "description": "What informs — moved, hidden or animated as one block."
+              "description": "The button's surface and outline — painted, a piece of its own: it can move without the text."
             },
             {
               "name": "icon",
-              "description": "infos › Optional, before the label. (optional)"
+              "description": "Optional content, before the text: `<z-layer part=\"icon\">★</z-layer>`. (optional)"
             },
             {
               "name": "label",
-              "description": "infos › Your text."
+              "description": "Your text — written directly inside the element."
             },
             {
               "name": "contact",
-              "description": "What receives the gesture — covers (and may overflow) the component, invisible."
+              "description": "The touch zone — invisible, at least --z-contact-zone (44px), centred on the button. Set by the core."
             }
           ],
           "cssStates": [
@@ -2133,10 +2129,6 @@
           ],
           "cssProperties": [
             {
-              "name": "--z-checkbox--background__bleed",
-              "description": "Paints `bleed` of the `background` part."
-            },
-            {
               "name": "--z-checkbox--background__color",
               "description": "Paints `color` of the `background` part."
             },
@@ -2145,28 +2137,12 @@
               "description": "Paints `radius` of the `background` part."
             },
             {
-              "name": "--z-checkbox--contact__bleed",
-              "description": "Paints `bleed` of the `contact` part."
-            },
-            {
               "name": "--z-checkbox--dot__bar-height",
               "description": "Paints `bar-height` of the `dot` part."
             },
             {
-              "name": "--z-checkbox--dot__bar-scale",
-              "description": "Paints `bar-scale` of the `dot` part."
-            },
-            {
               "name": "--z-checkbox--dot__color",
               "description": "Paints `color` of the `dot` part."
-            },
-            {
-              "name": "--z-checkbox--dot__radius",
-              "description": "Paints `radius` of the `dot` part."
-            },
-            {
-              "name": "--z-checkbox--dot__size",
-              "description": "Paints `size` of the `dot` part."
             },
             {
               "name": "--z-checkbox--halo__color",
@@ -2215,36 +2191,28 @@
           ],
           "cssParts": [
             {
-              "name": "background",
-              "description": "The backdrop of the whole line — usually transparent, it carries effects."
-            },
-            {
               "name": "marker",
-              "description": "The box itself (its surface)."
+              "description": "The box itself — painted, nothing to write. Its outline is `ring`, its mark is `dot`."
             },
             {
               "name": "ring",
-              "description": "marker › The box outline — animatable on its own (it can spin, dash…)."
+              "description": "marker › The box outline (the border of the painted box)."
             },
             {
               "name": "dot",
-              "description": "marker › The mark that appears once checked."
-            },
-            {
-              "name": "infos",
-              "description": "What informs — moved, hidden or animated as one block."
+              "description": "marker › The mark that appears once checked (the box's inner square)."
             },
             {
               "name": "icon",
-              "description": "infos › Optional, before the label. (optional)"
+              "description": "Optional content, before the text: `<z-layer part=\"icon\">✳</z-layer>`. (optional)"
             },
             {
               "name": "label",
-              "description": "infos › Your text."
+              "description": "Your text — written directly inside the element."
             },
             {
               "name": "contact",
-              "description": "What receives the gesture — covers (and may overflow) the component, invisible."
+              "description": "The touch zone — invisible, at least --z-contact-zone (44px), centred on the box. Set by the core."
             }
           ],
           "cssStates": [

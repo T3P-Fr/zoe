@@ -34,7 +34,7 @@ const I18N = {
 		eventsHint: "What the component signals. Listen with addEventListener.",
 		statesHint: "They HAPPEN — on gesture, or set by code. You don't set them here, you paint them: z-button:state(over) { … }",
 		cssVarsHint: "Written in CSS, and flows DOWN to everything inside. The fine-grained setting; an attribute is a shortcut that sets several at once. Tokens follow the pact: --z-{component}[--{part}]__{css-property}.",
-		layersHint: "The pieces YOU write, as <z-layer part=\"…\"> (or native tags carrying part=\"…\"). Zoé never generates them. Same word, same meaning in every component.",
+		layersHint: "A piece marked ::before / ::after is painted by the CSS — nothing to write. A piece without one is content you write (<z-layer part=\"…\">, or a native tag carrying part=\"…\"). Zoé never generates a node. Same word, same meaning in every component.",
 		membersHint: "The JavaScript surface, when you want to drive the element from code. HTML and CSS never require it.",
 		exampleHint: "Rendered live, with the exact HTML that produced it. Change the skin (top right): the rendering follows, the HTML does not move.",
 		core: "core", tools: "tools", components: "components", attributes: "Attributes", type: "Type", values: "Values", boolPresent: "present / absent", role: "Role", events: "Events", event: "Event", states: "States :state()", cssVars: "CSS variables", variable: "Variable", layers: "Layers", layer: "Part", optional: "optional", members: "JS API", member: "Member", example: "Example", demo: "Full demo", lab: "Lab", source: "Source",
@@ -46,7 +46,7 @@ const I18N = {
 		eventsHint: "Ce que le composant signale. À écouter avec addEventListener.",
 		statesHint: "Ils ARRIVENT — au geste, ou posés par le code. On ne les règle pas ici, on les peint : z-button:state(over) { … }",
 		cssVarsHint: "S'écrit en CSS, et descend sur tout le contenu. Le réglage fin ; un attribut n'est qu'un raccourci qui en pose plusieurs d'un coup. Les tokens suivent le pacte : --z-{composant}[--{pièce}]__{propriété-css}.",
-		layersHint: "Les pièces que VOUS écrivez, en <z-layer part=\"…\"> (ou en balises natives portant part=\"…\"). Zoé ne les génère jamais. Un même mot, un même sens dans tous les composants.",
+		layersHint: "Une pièce marquée ::before / ::after est peinte par le CSS — rien à écrire. Une pièce sans marque est du contenu que vous écrivez (<z-layer part=\"…\">, ou une balise native portant part=\"…\"). Zoé ne génère jamais un nœud. Un même mot, un même sens dans tous les composants.",
 		membersHint: "La surface JavaScript, pour piloter l'élément depuis du code. Le HTML et le CSS ne l'exigent jamais.",
 		exampleHint: "Rendu en direct, avec le HTML exact qui le produit. Changez la peau (en haut à droite) : le rendu suit, le HTML ne bouge pas.",
 		core: "noyau", tools: "outils", components: "composants", attributes: "Attributs", type: "Type", values: "Valeurs", boolPresent: "présent / absent", role: "Rôle", events: "Événements", event: "Événement", states: "États :state()", cssVars: "Variables CSS", variable: "Variable", layers: "Calques", layer: "Pièce", optional: "optionnel", members: "API JS", member: "Membre", example: "Exemple", demo: "Démo complète", lab: "Lab", source: "Source",
@@ -58,7 +58,7 @@ const I18N = {
 		eventsHint: "Lo que el componente señala. Escúchelo con addEventListener.",
 		statesHint: "OCURREN — con el gesto, o puestos por el código. No se ajustan aquí, se pintan: z-button:state(over) { … }",
 		cssVarsHint: "Se escribe en CSS, y BAJA a todo lo que hay dentro. El ajuste fino; un atributo solo es un atajo que pone varios de una vez. Los tokens siguen el pacto: --z-{componente}[--{pieza}]__{propiedad-css}.",
-		layersHint: "Las piezas que USTED escribe, como <z-layer part=\"…\"> (o etiquetas nativas con part=\"…\"). Zoé nunca las genera. Misma palabra, mismo significado en todos los componentes.",
+		layersHint: "Una pieza marcada ::before / ::after la pinta el CSS — nada que escribir. Una pieza sin marca es contenido que usted escribe (<z-layer part=\"…\">, o una etiqueta nativa con part=\"…\"). Zoé nunca genera un nodo. Misma palabra, mismo significado en todos los componentes.",
 		membersHint: "La superficie JavaScript, para dirigir el elemento desde código. El HTML y el CSS nunca la exigen.",
 		exampleHint: "Renderizado en vivo, con el HTML exacto que lo produce. Cambie la piel (arriba a la derecha): el renderizado sigue, el HTML no se mueve.",
 		core: "núcleo", tools: "herramientas", components: "componentes", attributes: "Atributos", type: "Tipo", values: "Valores", boolPresent: "presente / ausente", role: "Función", events: "Eventos", event: "Evento", states: "Estados :state()", cssVars: "Variables CSS", variable: "Variable", layers: "Capas", layer: "Pieza", optional: "opcional", members: "API JS", member: "Miembro", example: "Ejemplo", demo: "Demo completa", lab: "Laboratorio", source: "Fuente",
@@ -354,6 +354,9 @@ function layersTable(layers) {
 			const cell = el("span", { class: `depth-${depth}` });
 			if (depth) cell.append(el("span", { class: "tree", text: "↳ " }));
 			cell.append(code(layer.part));
+			/* Une pièce PEINTE porte son pseudo-élément : rien à écrire, c'est le CSS qui
+			   la fait. Sans pseudo, c'est du contenu que l'auteur écrit. */
+			if (layer.pseudo) cell.append(el("span", { class: "val-def", text: layer.pseudo }));
 			if (layer.optional) cell.append(el("span", { class: "val-def", text: t("optional") }));
 			rows.push([cell, desc(layer.description)]);
 			walk(layer.children || [], depth + 1);

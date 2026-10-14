@@ -23,40 +23,43 @@
   <style>
 
     /*
-    LA PREUVE DES CALQUES — une skin locale qui n'anime QUE des pièces, chacune à sa
-    façon. Impossible à écrire sur la forme courte : là-bas, tout est un seul ::before.
-    Rien ici ne touche au composant : que des tokens et des rôles.
-  */
+      LA PREUVE DE LA PIÈCE PEINTE — une peau locale qui anime la case (le ::before)
+      sans toucher au texte. Rien ici ne touche au composant : des tokens, et le pseudo
+      de la pièce. Aucune balise à écrire dans le HTML.
+    */
     .fou {
       --z-checkbox--marker__size: 1.5em;
       --z-checkbox--background__color: color-mix(in srgb, var(--z-accent) 8%, transparent);
-      --z-checkbox--dot__radius: 50%;
+      --z-checkbox--marker__radius: 50%;
     }
 
-    /* l'anneau tourne d'un quart de tour en se cochant… */
-    .fou:state(current)>z-layer[part="marker"]>z-layer[part="ring"] {
+    /* la case tourne d'un quart de tour et grandit en se cochant, en ressort… */
+    .fou::before {
+      transition:
+        rotate .5s var(--z-ease-spring),
+        scale .5s var(--z-ease-spring),
+        background-size .4s .12s var(--z-ease-spring),   /* …et le point arrive en retard */
+        background-color var(--z-dur) var(--z-ease),
+        border-color var(--z-dur) var(--z-ease);
+    }
+    .fou:state(current)::before {
       rotate: 90deg;
       scale: 1.15;
     }
 
-    /* …le fond respire… */
-    .fou:state(current)>z-layer[part="background"] {
-      scale: 1.06;
-    }
-
-    /* …et le point arrive en retard, en rebondissant (son propre délai). */
-    .fou>z-layer[part="marker"]>z-layer[part="dot"] {
-      transition-delay: .08s;
-    }
+    /* la zone du doigt, rendue visible à la demande */
+    #doigt.voir z-checkbox::after { outline: 1px dashed var(--z-accent); background: color-mix(in srgb, var(--z-accent) 8%, transparent); }
   </style>
 
   <!-- la recette du clic, écrite UNE fois pour la page (z-contact, opt-in) -->
   <z-contact></z-contact>
 
   <h1><code>z-checkbox</code></h1>
-  <p class="lead">Un composant, <b>deux écritures</b> : la forme courte (une ligne) et la forme <b>en calques</b> (chaque pièce animable seule). Mêmes tokens, même comportement. Changez la peau en haut à droite — tout suit.</p>
+  <p class="lead">Une ligne à écrire, et c'est tout : la case est <b>peinte</b>, la zone du doigt est
+    <b>garantie</b>. Cochez, lâchez <b>dehors</b>, naviguez au <kbd>Tab</kbd> puis <kbd>Espace</kbd>.
+    Changez la peau en haut à droite — tout suit.</p>
 
-  <h2>1 · Forme courte — <code class="tag">&lt;z-checkbox&gt;texte&lt;/z-checkbox&gt;</code></h2>
+  <h2>1 · Les états — <code class="tag">&lt;z-checkbox&gt;texte&lt;/z-checkbox&gt;</code></h2>
   <div class="stack" data-code>
     <z-checkbox>J'accepte les conditions</z-checkbox>
     <z-checkbox current>Recevoir la newsletter</z-checkbox>
@@ -65,63 +68,32 @@
     <z-checkbox disabled>Indisponible</z-checkbox>
     <z-checkbox current disabled>Cochée, verrouillée</z-checkbox>
   </div>
-  <p class="note">Rien à apprendre, rien à écrire : le CSS peint l'hôte. Zoé n'injecte <b>aucune</b> balise.</p>
+  <p class="note">Rien à apprendre, rien à écrire : la case est peinte par le CSS (son <code>::before</code>). Zoé n'injecte <b>aucune</b> balise, et n'en demande aucune.</p>
 
-  <h2>2 · Forme en calques — un <code class="tag">&lt;z-layer part="…"&gt;</code> par rôle</h2>
-  <div class="stack" data-code>
-    <z-checkbox>
-      <z-layer part="background"></z-layer>
-      <z-layer part="marker">
-        <z-layer part="ring"></z-layer>
-        <z-layer part="dot"></z-layer>
-      </z-layer>
-      <z-layer part="infos">
-        <z-layer part="label">J'accepte les conditions</z-layer>
-      </z-layer>
-      <z-layer part="contact"></z-layer>
-    </z-checkbox>
-
-    <z-checkbox current>
-      <z-layer part="background"></z-layer>
-      <z-layer part="marker">
-        <z-layer part="ring"></z-layer>
-        <z-layer part="dot"></z-layer>
-      </z-layer>
-      <z-layer part="infos">
-        <z-layer part="label">Recevoir la newsletter</z-layer>
-      </z-layer>
-      <z-layer part="contact"></z-layer>
-    </z-checkbox>
-
-    <z-checkbox disabled>
-      <z-layer part="background"></z-layer>
-      <z-layer part="marker">
-        <z-layer part="ring"></z-layer>
-        <z-layer part="dot"></z-layer>
-      </z-layer>
-      <z-layer part="infos">
-        <z-layer part="label">Indisponible</z-layer>
-      </z-layer>
-      <z-layer part="contact"></z-layer>
-    </z-checkbox>
+  <h2>2 · Sur téléphone : le doigt a sa place</h2>
+  <div class="stack" id="doigt" data-code="bloc">
+    <div class="rangee" style="gap:1.4rem">
+      <z-checkbox size="xs">Petite</z-checkbox>
+      <z-checkbox size="xs" current>Cochée</z-checkbox>
+    </div>
   </div>
-  <p class="note">Exactement le même rendu que la forme courte — c'est le but : la structure change, la peau ne bouge pas.</p>
-
-  <h2>3 · Ce que les calques permettent (et que la forme courte ne peut pas)</h2>
-  <div class="stack" data-code>
-    <z-checkbox class="fou">
-      <z-layer part="background"></z-layer>
-      <z-layer part="marker">
-        <z-layer part="ring"></z-layer>
-        <z-layer part="dot"></z-layer>
-      </z-layer>
-      <z-layer part="infos">
-        <z-layer part="label">Cochez-moi : l'anneau tourne, le fond respire, le point arrive après</z-layer>
-      </z-layer>
-      <z-layer part="contact"></z-layer>
-    </z-checkbox>
+  <div class="rangee" style="margin:.6rem 0 .2rem">
+    <z-checkbox id="voir-zone">Voir la zone du doigt</z-checkbox>
+    <span class="note" id="touche">Tapez À CÔTÉ de la petite case, à moins de 10 px.</span>
   </div>
-  <p class="note">Trois pièces, trois mouvements, trois horloges — <b>une</b> case. Aucune ligne de JS : que des rôles et des tokens.</p>
+  <p class="note">La case <code>xs</code> fait 15 px : injouable au pouce. Le socle donne à chaque élément
+    interactif une <b>zone de contact</b> invisible d'au moins <code>--z-contact-zone</code> (44 px),
+    et la checkbox la centre sur sa case. Rien à écrire. La ligne entière reste cliquable.</p>
+
+  <h2>3 · La case est une pièce : elle bouge, le texte ne bouge pas</h2>
+  <div class="stack" data-code>
+    <z-checkbox class="fou">Cochez-moi : la case tourne et grandit, le point arrive après</z-checkbox>
+  </div>
+  <pre class="z-code-manuel">/* la pièce `marker` est le ::before — une peau l'anime, le texte reste en place */
+.fou:state(current)::before { rotate: 90deg; scale: 1.15; }
+.fou::before { transition: rotate .5s var(--z-ease-spring), scale .5s var(--z-ease-spring),
+               background-size .4s .12s var(--z-ease-spring); }</pre>
+  <p class="note">Une pièce, deux mouvements, deux horloges — <b>une</b> ligne de HTML. Aucune balise de plus : que des tokens et le pseudo de la pièce.</p>
 
   <p class="note">Clic ou <kbd>Espace</kbd> : coche/décoche. Chaque bascule émet <code>change</code> — lisez <code>.checked</code>.</p>
 
@@ -154,9 +126,17 @@
   <script type="module">
     import "../../examples/skin-switch.js";
     import "../../tools/z-contact/z-contact.js";
-    import "../../core/z-layer/z-layer.js";
     import "./z-checkbox.js";
     import "../../examples/code.js";
+
+    /* La zone du doigt : on la MONTRE (pointillé sur le ::after). */
+    const doigt = document.querySelector("#doigt");
+    const touche = document.querySelector("#touche");
+    document.querySelector("#voir-zone").addEventListener("change", (e) => doigt.classList.toggle("voir", e.target.checked));
+    doigt.addEventListener("change", (e) => {
+      const boite = e.target.closest("z-checkbox");
+      if (boite) touche.textContent = `« ${boite.textContent.trim()} » ${boite.checked ? "cochée" : "décochée"} — le doigt était à côté, la case a répondu.`;
+    });
 
     /*
       La case « tout cocher » : trois lignes, et c'est du CODE D'AUTEUR — le composant

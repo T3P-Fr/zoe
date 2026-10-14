@@ -17,36 +17,39 @@ et **animés**, pour le « gradev » (mi-graphiste / mi-dev). *Less code, more c
   élément (Chemin B, `<z-element><button/></z-element>`). *« z-state, c'était son nom de
   prototype ; il EST le z-element. »*
 
-- **`core/z-layer`** — le **calque** : une pièce d'un composant, portant **un rôle**
-  (`<z-layer part="marker">`). z-element porte les états (le vivant), z-layer porte les
-  pièces (le visible). Une balise, un ensemble de rôles **ouvert** — la traduction en
-  HTML du `--{part}` du pacte. Les rôles se partagent entre composants. **Un calque peut
-  en contenir d'autres.** *(C'est ce que l'ADR-0016 appelait `z-part`.)*
+- **`core/z-layer`** — le **calque** : du **contenu** qui porte un rôle
+  (`<z-layer part="icon">★</z-layer>`), ou une pièce de plus que l'auteur veut animer.
+  Il n'écrit **jamais** une pièce peinte. Les rôles se partagent entre composants ; un
+  calque peut en contenir d'autres. *(C'est ce que l'ADR-0016 appelait `z-part`.)*
 
-**LA LOI DES CALQUES — tranchée le 2026-07-20**
+**LA LOI DES PIÈCES — « peint, pas posé » — tranchée le 2026-10-14**
 
-Ce qui est **commun** à tous les composants n'est **pas** un arbre unique : on n'impose
-pas à un bouton la structure d'une case. C'est la **grammaire** et le **lexique**.
-L'**anatomie**, elle, appartient à chaque composant.
+*(Remplace la loi des calques du 2026-07-20. Deux formes, c'était chaque état écrit deux
+fois dans 36 CSS, et un seul calque ajouté qui faisait basculer la forme courte. Le
+principe du calque est simple, c'était son prix qui ne l'était pas.)*
+
+**UNE forme.** L'auteur écrit le contenu ; Zoé PEINT les pièces. Un élément est un seul
+nœud, et ses pièces sont ses pseudo-éléments :
 
 ```
-GRAMMAIRE (commune)  une balise z-layer · un attribut part · imbricable
-LEXIQUE   (commun)   le même mot pour le même rôle, partout
-ANATOMIE  (propre)   quels rôles CE composant a — déclarés dans son static api.layers
-
-  z-button    background · infos(icon, label) · contact
-  z-checkbox  background · marker(ring, dot) · infos(icon, label) · contact
-  z-radio     les MÊMES mots que la case (forme ronde) → la même skin les peint
-  z-field     son anatomie à lui (input, etc.) — quand on l'écrira
+l'hôte     la boîte, la typo, LE TEXTE (le label, c'est le texte de l'élément)
+::before   LA pièce qui bouge seule : `background` (un bouton) OU `marker` (une case)
+::after    `contact` : la zone du doigt, ≥ --z-contact-zone (44 px), posée par le SOCLE
+contenu    `icon`, et toute pièce de plus : un <z-layer part="…"> écrit par l'auteur,
+           en flux, qui ne change jamais la forme
 ```
 
-**Interdit d'inventer un synonyme** : si le rôle existe déjà (`label`, `icon`,
-`background`, `contact`…), on reprend le mot. C'est le **lexique partagé** qui permet à
-une skin de peindre un composant qu'elle ne connaît pas — pas l'uniformité des arbres.
+**La seule chose gardée de l'esprit Flash : la HIT AREA.** Un petit bouton sur un
+téléphone est injouable, et personne ne l'agrandit « plus tard ». Alors tout élément
+interactif reçoit du socle une zone tactile invisible, centrée, d'au moins 44 px, qui
+déborde ; et « lâché dedans » se juge sur elle. Rien à écrire, jamais.
 
-Le placement des rôles **universels** (background, infos, contact) vit dans
-`core/z-layer` ; un composant ne décide que de **ses tailles et de ses couleurs**.
-Schéma : `core/z-layer/z-layer.anatomie.txt`.
+Ce qui ne change pas : la **grammaire** du pacte (`--z-checkbox--marker__size` nomme
+une pièce peinte, la peau ne voit pas la différence), le **lexique** partagé (interdit
+d'inventer un synonyme de `label`, `background`, `contact`…), l'**anatomie** propre à
+chaque composant, déclarée dans son `static api.layers` avec le `pseudo` de chaque pièce
+peinte. La recette du contact vit dans `core/z-element/z-element.css` (liste régénérée
+par z-manifest) ; `core/z-layer` ne place plus que du contenu.
 
 **Les états** (le cœur de z-element)
 - cycle : `default ⇄ over → press → release / releaseOut` · `drag` · `focus`

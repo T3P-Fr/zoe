@@ -167,3 +167,38 @@
 :is(z-element, z-accordion, z-alert, z-avatar, z-avatar-group, z-badge, z-breadcrumb, z-button, z-card, z-checkbox, z-checkbox-group, z-code, z-dialog, z-disclosure, z-divider, z-drawer, z-field, z-kbd, z-menu, z-meter, z-pagination, z-popover, z-progress, z-radio, z-radio-group, z-rating, z-segmented, z-skeleton, z-slider, z-spinner, z-stat, z-stepper, z-switch, z-tabs, z-tag, z-toast, z-tooltip, z-cursor):state(disabled) {
 	--z-state__color: var(--z-disabled);
 }
+
+/*
+	LE CONTACT — la zone du doigt, garantie à tout élément interactif
+	Styleguide 0.5.5
+
+	La seule chose qu'on garde de l'esprit Flash : la HIT AREA (2026-10-14). Un petit
+	bouton sur un téléphone est injouable, et personne ne l'agrandit « plus tard ». Alors
+	le socle le fait pour tous : un `::after` invisible, centré sur l'élément, d'au moins
+	`--z-contact-zone` (la peau : 44 px) dans les deux sens, qui DÉBORDE si le dessin est
+	plus petit. L'élément reçoit les événements de ce pseudo comme s'ils étaient les siens
+	(le navigateur hit-teste le contenu généré), et z-element juge « lâché dedans » sur
+	cette zone, pas sur la boîte visible.
+
+	C'est la pièce `contact` du pacte : `--z-contact-zone` se redéfinit localement
+	(`z-button.minuscule { --z-contact-zone: 56px }`). Un composant qui vise une sous-partie
+	(une case, une croix) déplace la zone sur elle dans SON CSS (`left`, `width`) ; la
+	recette, elle, ne s'écrit qu'ici. `:where()` : spécificité zéro, le composant gagne.
+
+	Deux petites cibles plus proches que la zone se chevauchent : la suivante dans le DOM
+	gagne sur la bande commune. Ce n'est pas la zone qu'il faut réduire, c'est l'écart
+	qu'il faut agrandir : c'est exactement le bug qu'elle rend visible.
+
+	La liste est DÉDUITE de l'API (une pièce `contact` peinte en `::after`) et régénérée
+	par z-manifest : le marqueur `zoe:contact` sur la règle est ce qu'il remplace.
+*/
+:where(z-button, z-checkbox)::after /* zoe:contact */ {
+	content: "";
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	translate: -50% -50%;
+	width: max(100%, var(--z-contact-zone, 44px));
+	height: max(100%, var(--z-contact-zone, 44px));
+	z-index: 10;
+}

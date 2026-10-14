@@ -31,6 +31,14 @@ s'ouvre, un chiffre), pas quand le code est écrit.
     TOUS les composants. → une garde, et l'élément se dégrade en HTML nu.
   **Fini quand** : pour chacun, un test rouge avant, vert après.
 
+- [ ] **« Peint, pas posé » : étendre l'essai aux 34 autres composants.** 🤖
+  L'essai (branche `peint-pas-pose`, 2026-10-14) a réglé le socle, z-button et z-checkbox :
+  une forme, pièces en `::before` / `::after`, zone du doigt garantie. 👁 regarde les deux
+  démos et dit « garde ». Puis : les 15 CSS qui ont encore `:has(z-layer)`, les 18 démos en
+  forme calques, `z-layer.css` réduit au contenu.
+  **Fini quand** : `grep ":has(z-layer)"` ne rend rien, chaque élément interactif a sa
+  pièce `contact` en `::after` dans son API, et la preuve du tap passe sur chacun.
+
 - [ ] **Robustesse de base.** 🤖
   - `:not(:defined)` : avant le JS, les éléments s'affichent nus (FOUC). Une règle dans
     `core/z-element.css`.

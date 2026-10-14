@@ -203,6 +203,14 @@
             "fr": "Durée de l'onde `release`.",
             "es": "Duración de la onda `release`."
           }
+        },
+        {
+          "name": "--z-contact-zone",
+          "description": {
+            "en": "Minimum size of the invisible touch zone every interactive element gets (skin token, 44px by default). Override it locally to enlarge one element's zone.",
+            "fr": "Taille minimale de la zone tactile invisible que reçoit tout élément interactif (token de peau, 44px par défaut). Redéfinissez-la localement pour agrandir la zone d'un élément.",
+            "es": "Tamaño mínimo de la zona táctil invisible de todo elemento interactivo (token de la piel, 44px por defecto). Redefínalo localmente para agrandar la zona de un elemento."
+          }
         }
       ],
       "tokens": [],
@@ -1158,7 +1166,8 @@
         "fadeIn",
         "fadeOut",
         "shimmer",
-        "ripple"
+        "ripple",
+        "halo"
       ],
       "name": "z-motion"
     },
@@ -1764,6 +1773,7 @@
         {
           "part": "background",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The banner surface — carries the tone.",
             "fr": "La surface de la bannière — porte le ton.",
@@ -1774,6 +1784,7 @@
         {
           "part": "infos",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "What informs — icon + message.",
             "fr": "Ce qui informe — icône + message.",
@@ -1783,6 +1794,7 @@
             {
               "part": "icon",
               "optional": true,
+              "pseudo": null,
               "description": {
                 "en": "Optional status icon.",
                 "fr": "Icône de statut optionnelle.",
@@ -1793,6 +1805,7 @@
             {
               "part": "label",
               "optional": false,
+              "pseudo": null,
               "description": {
                 "en": "The message.",
                 "fr": "Le message.",
@@ -1975,6 +1988,7 @@
         {
           "part": "background",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The disc — carries the image or the tone.",
             "fr": "Le disque — porte l'image ou le ton.",
@@ -1985,6 +1999,7 @@
         {
           "part": "label",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The initials (fallback when there's no image).",
             "fr": "Les initiales (repli quand il n'y a pas d'image).",
@@ -2355,6 +2370,7 @@
         {
           "part": "background",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The pill surface — carries tone and effects.",
             "fr": "La surface de la pastille — porte le ton et les effets.",
@@ -2365,6 +2381,7 @@
         {
           "part": "infos",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "What informs — the badge's text/number.",
             "fr": "Ce qui informe — le texte/nombre du badge.",
@@ -2374,6 +2391,7 @@
             {
               "part": "label",
               "optional": false,
+              "pseudo": null,
               "description": {
                 "en": "Your text.",
                 "fr": "Votre texte.",
@@ -2706,51 +2724,44 @@
         {
           "part": "background",
           "optional": false,
+          "pseudo": "::before",
           "description": {
-            "en": "The button's surface and outline — a piece of its own, it can move without the text.",
-            "fr": "La surface et le filet du bouton — une pièce à part, elle peut bouger sans le texte.",
-            "es": "La superficie y el borde del botón — una pieza propia, puede moverse sin el texto."
+            "en": "The button's surface and outline — painted, a piece of its own: it can move without the text.",
+            "fr": "La surface et le filet du bouton — peinte, une pièce à part : elle peut bouger sans le texte.",
+            "es": "La superficie y el borde del botón — pintada, una pieza propia: puede moverse sin el texto."
           },
           "children": []
         },
         {
-          "part": "infos",
-          "optional": false,
+          "part": "icon",
+          "optional": true,
+          "pseudo": null,
           "description": {
-            "en": "What informs — moved, hidden or animated as one block.",
-            "fr": "Ce qui informe — déplacé, caché ou animé d'un bloc.",
-            "es": "Lo que informa — movido, ocultado o animado en bloque."
+            "en": "Optional content, before the text: `<z-layer part=\"icon\">★</z-layer>`.",
+            "fr": "Contenu optionnel, avant le texte : `<z-layer part=\"icon\">★</z-layer>`.",
+            "es": "Contenido opcional, antes del texto: `<z-layer part=\"icon\">★</z-layer>`."
           },
-          "children": [
-            {
-              "part": "icon",
-              "optional": true,
-              "description": {
-                "en": "Optional, before the label.",
-                "fr": "Optionnel, avant le label.",
-                "es": "Opcional, antes de la etiqueta."
-              },
-              "children": []
-            },
-            {
-              "part": "label",
-              "optional": false,
-              "description": {
-                "en": "Your text.",
-                "fr": "Votre texte.",
-                "es": "Su texto."
-              },
-              "children": []
-            }
-          ]
+          "children": []
+        },
+        {
+          "part": "label",
+          "optional": false,
+          "pseudo": null,
+          "description": {
+            "en": "Your text — written directly inside the element.",
+            "fr": "Votre texte — écrit directement dans l'élément.",
+            "es": "Su texto — escrito directamente en el elemento."
+          },
+          "children": []
         },
         {
           "part": "contact",
           "optional": false,
+          "pseudo": "::after",
           "description": {
-            "en": "What receives the gesture — covers (and may overflow) the component, invisible.",
-            "fr": "Ce qui reçoit le geste — couvre (et peut déborder) le composant, invisible.",
-            "es": "Lo que recibe el gesto — cubre (y puede desbordar) el componente, invisible."
+            "en": "The touch zone — invisible, at least --z-contact-zone (44px), centred on the button. Set by the core.",
+            "fr": "La zone du doigt — invisible, au moins --z-contact-zone (44px), centrée sur le bouton. Posée par le socle.",
+            "es": "La zona táctil — invisible, al menos --z-contact-zone (44px), centrada en el botón. Puesta por el núcleo."
           },
           "children": []
         }
@@ -2776,11 +2787,6 @@
           "name": "--z-button--background__color-current",
           "part": "background",
           "property": "color-current"
-        },
-        {
-          "name": "--z-button--contact__bleed",
-          "part": "contact",
-          "property": "bleed"
         },
         {
           "name": "--z-button--halo__color",
@@ -2994,6 +3000,7 @@
         {
           "part": "background",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The card surface — radius, border, elevation.",
             "fr": "La surface de la carte — radius, filet, élévation.",
@@ -3004,6 +3011,7 @@
         {
           "part": "media",
           "optional": true,
+          "pseudo": null,
           "description": {
             "en": "Optional visual at the head of the card (image, banner).",
             "fr": "Visuel optionnel en tête de carte (image, bannière).",
@@ -3014,6 +3022,7 @@
         {
           "part": "infos",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "What informs — the card's content block.",
             "fr": "Ce qui informe — le bloc de contenu de la carte.",
@@ -3023,6 +3032,7 @@
             {
               "part": "label",
               "optional": false,
+              "pseudo": null,
               "description": {
                 "en": "The card's title/text.",
                 "fr": "Le titre/texte de la carte.",
@@ -3250,95 +3260,75 @@
       ],
       "layers": [
         {
-          "part": "background",
-          "optional": false,
-          "description": {
-            "en": "The backdrop of the whole line — usually transparent, it carries effects.",
-            "fr": "Le fond de toute la ligne — souvent transparent, il porte les effets.",
-            "es": "El fondo de toda la línea — normalmente transparente, lleva los efectos."
-          },
-          "children": []
-        },
-        {
           "part": "marker",
           "optional": false,
+          "pseudo": "::before",
           "description": {
-            "en": "The box itself (its surface).",
-            "fr": "La case elle-même (sa surface).",
-            "es": "La casilla en sí (su superficie)."
+            "en": "The box itself — painted, nothing to write. Its outline is `ring`, its mark is `dot`.",
+            "fr": "La case elle-même — peinte, rien à écrire. Son cerclage est `ring`, sa marque est `dot`.",
+            "es": "La casilla en sí — pintada, nada que escribir. Su cerco es `ring`, su marca es `dot`."
           },
           "children": [
             {
               "part": "ring",
               "optional": false,
+              "pseudo": "::before",
               "description": {
-                "en": "The box outline — animatable on its own (it can spin, dash…).",
-                "fr": "Le cerclage de la case — animable seul (il peut tourner, pointiller…).",
-                "es": "El cerco de la casilla — animable por sí solo (puede girar, punteado…)."
+                "en": "The box outline (the border of the painted box).",
+                "fr": "Le cerclage de la case (le filet de la pièce peinte).",
+                "es": "El cerco de la casilla (el borde de la pieza pintada)."
               },
               "children": []
             },
             {
               "part": "dot",
               "optional": false,
+              "pseudo": "::before",
               "description": {
-                "en": "The mark that appears once checked.",
-                "fr": "La marque qui apparaît une fois cochée.",
-                "es": "La marca que aparece al marcar."
+                "en": "The mark that appears once checked (the box's inner square).",
+                "fr": "La marque qui apparaît une fois cochée (le carré au centre de la case).",
+                "es": "La marca que aparece al marcar (el cuadrado central de la casilla)."
               },
               "children": []
             }
           ]
         },
         {
-          "part": "infos",
-          "optional": false,
+          "part": "icon",
+          "optional": true,
+          "pseudo": null,
           "description": {
-            "en": "What informs — moved, hidden or animated as one block.",
-            "fr": "Ce qui informe — déplacé, caché ou animé d'un bloc.",
-            "es": "Lo que informa — movido, ocultado o animado en bloque."
+            "en": "Optional content, before the text: `<z-layer part=\"icon\">✳</z-layer>`.",
+            "fr": "Contenu optionnel, avant le texte : `<z-layer part=\"icon\">✳</z-layer>`.",
+            "es": "Contenido opcional, antes del texto: `<z-layer part=\"icon\">✳</z-layer>`."
           },
-          "children": [
-            {
-              "part": "icon",
-              "optional": true,
-              "description": {
-                "en": "Optional, before the label.",
-                "fr": "Optionnel, avant le label.",
-                "es": "Opcional, antes de la etiqueta."
-              },
-              "children": []
-            },
-            {
-              "part": "label",
-              "optional": false,
-              "description": {
-                "en": "Your text.",
-                "fr": "Votre texte.",
-                "es": "Su texto."
-              },
-              "children": []
-            }
-          ]
+          "children": []
+        },
+        {
+          "part": "label",
+          "optional": false,
+          "pseudo": null,
+          "description": {
+            "en": "Your text — written directly inside the element.",
+            "fr": "Votre texte — écrit directement dans l'élément.",
+            "es": "Su texto — escrito directamente en el elemento."
+          },
+          "children": []
         },
         {
           "part": "contact",
           "optional": false,
+          "pseudo": "::after",
           "description": {
-            "en": "What receives the gesture — covers (and may overflow) the component, invisible.",
-            "fr": "Ce qui reçoit le geste — couvre (et peut déborder) le composant, invisible.",
-            "es": "Lo que recibe el gesto — cubre (y puede desbordar) el componente, invisible."
+            "en": "The touch zone — invisible, at least --z-contact-zone (44px), centred on the box. Set by the core.",
+            "fr": "La zone du doigt — invisible, au moins --z-contact-zone (44px), centrée sur la case. Posée par le socle.",
+            "es": "La zona táctil — invisible, al menos --z-contact-zone (44px), centrada en la casilla. Puesta por el núcleo."
           },
           "children": []
         }
       ],
       "cssVars": [],
       "tokens": [
-        {
-          "name": "--z-checkbox--background__bleed",
-          "part": "background",
-          "property": "bleed"
-        },
         {
           "name": "--z-checkbox--background__color",
           "part": "background",
@@ -3350,34 +3340,14 @@
           "property": "radius"
         },
         {
-          "name": "--z-checkbox--contact__bleed",
-          "part": "contact",
-          "property": "bleed"
-        },
-        {
           "name": "--z-checkbox--dot__bar-height",
           "part": "dot",
           "property": "bar-height"
         },
         {
-          "name": "--z-checkbox--dot__bar-scale",
-          "part": "dot",
-          "property": "bar-scale"
-        },
-        {
           "name": "--z-checkbox--dot__color",
           "part": "dot",
           "property": "color"
-        },
-        {
-          "name": "--z-checkbox--dot__radius",
-          "part": "dot",
-          "property": "radius"
-        },
-        {
-          "name": "--z-checkbox--dot__size",
-          "part": "dot",
-          "property": "size"
         },
         {
           "name": "--z-checkbox--halo__color",
@@ -3637,6 +3607,7 @@
         {
           "part": "label",
           "optional": true,
+          "pseudo": null,
           "description": {
             "en": "The group's title, any native tag — it names the group (aria-labelledby).",
             "fr": "L'intitulé du groupe, en balise native — il nomme le groupe (aria-labelledby).",
@@ -3647,6 +3618,7 @@
         {
           "part": "all",
           "optional": true,
+          "pseudo": null,
           "description": {
             "en": "The master z-checkbox: toggles every box, reflects the list (checked / indeterminate / none). Never submitted, never counted.",
             "fr": "La z-checkbox maîtresse : bascule toutes les cases, reflète la liste (cochée / indéterminée / rien). Jamais envoyée, jamais comptée.",
@@ -3869,6 +3841,7 @@
         {
           "part": "background",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The sunken code surface.",
             "fr": "La surface de code, creusée.",
@@ -3879,6 +3852,7 @@
         {
           "part": "infos",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "What informs — the code itself.",
             "fr": "Ce qui informe — le code lui-même.",
@@ -3888,6 +3862,7 @@
             {
               "part": "label",
               "optional": false,
+              "pseudo": null,
               "description": {
                 "en": "Your code text.",
                 "fr": "Votre texte de code.",
@@ -4119,6 +4094,7 @@
         {
           "part": "header",
           "optional": true,
+          "pseudo": null,
           "description": {
             "en": "The title row — your heading, and a close button if you want one.",
             "fr": "La ligne de titre — votre titre, et un bouton de fermeture si vous en voulez un.",
@@ -4129,6 +4105,7 @@
         {
           "part": "body",
           "optional": true,
+          "pseudo": null,
           "description": {
             "en": "The content.",
             "fr": "Le contenu.",
@@ -4139,6 +4116,7 @@
         {
           "part": "footer",
           "optional": true,
+          "pseudo": null,
           "description": {
             "en": "The actions — laid out in a row, pushed to the right.",
             "fr": "Les actions — en ligne, poussées à droite.",
@@ -4436,6 +4414,7 @@
         {
           "part": "label",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The trigger — a button that reveals/hides the panel.",
             "fr": "Le déclencheur — un bouton qui révèle/masque le panneau.",
@@ -4446,6 +4425,7 @@
         {
           "part": "panel",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The collapsible content.",
             "fr": "Le contenu repliable.",
@@ -4637,6 +4617,7 @@
         {
           "part": "infos",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "What informs — the centred label, if any.",
             "fr": "Ce qui informe — le label centré, s'il y en a un.",
@@ -4646,6 +4627,7 @@
             {
               "part": "label",
               "optional": true,
+              "pseudo": null,
               "description": {
                 "en": "Optional centred text (the two rules frame it).",
                 "fr": "Texte centré optionnel (les deux filets l'encadrent).",
@@ -4857,6 +4839,7 @@
         {
           "part": "header",
           "optional": true,
+          "pseudo": null,
           "description": {
             "en": "The title row — your heading, and a close button if you want one.",
             "fr": "La ligne de titre — votre titre, et un bouton de fermeture si vous en voulez un.",
@@ -4867,6 +4850,7 @@
         {
           "part": "body",
           "optional": true,
+          "pseudo": null,
           "description": {
             "en": "The content.",
             "fr": "Le contenu.",
@@ -4877,6 +4861,7 @@
         {
           "part": "footer",
           "optional": true,
+          "pseudo": null,
           "description": {
             "en": "The actions — laid out in a row, pushed to the right.",
             "fr": "Les actions — en ligne, poussées à droite.",
@@ -5152,6 +5137,7 @@
         {
           "part": "label",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "A native <label> — linked to the control (for/id) by the field.",
             "fr": "Un <label> natif — relié au contrôle (for/id) par le champ.",
@@ -5162,6 +5148,7 @@
         {
           "part": "control",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The native <input>, <textarea> or <select>, direct child — the only required piece, and the single source of truth (name, required, type, maxlength live on it).",
             "fr": "Le <input>, <textarea> ou <select> natif, enfant direct — la seule pièce obligatoire, et l'unique source de vérité (name, required, type, maxlength vivent sur lui).",
@@ -5172,6 +5159,7 @@
         {
           "part": "hint",
           "optional": true,
+          "pseudo": null,
           "description": {
             "en": "Help text under the control (aria-describedby); the counter is written at its end.",
             "fr": "L'aide sous le contrôle (aria-describedby) ; le compteur s'écrit à son bout.",
@@ -5182,6 +5170,7 @@
         {
           "part": "error",
           "optional": true,
+          "pseudo": null,
           "description": {
             "en": "The error message — shown only in :state(error). Left empty, the field writes the browser's validationMessage in it.",
             "fr": "Le message d'erreur — visible seulement en :state(error). Laissé vide, le champ y écrit le validationMessage du navigateur.",
@@ -5465,6 +5454,7 @@
         {
           "part": "background",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The key cap surface — border and relief.",
             "fr": "La surface du capuchon — filet et relief.",
@@ -5475,6 +5465,7 @@
         {
           "part": "infos",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "What informs — the key's text.",
             "fr": "Ce qui informe — le texte de la touche.",
@@ -5484,6 +5475,7 @@
             {
               "part": "label",
               "optional": false,
+              "pseudo": null,
               "description": {
                 "en": "The key legend (e.g. \"Ctrl\").",
                 "fr": "La légende de la touche (ex. « Ctrl »).",
@@ -5707,6 +5699,7 @@
         {
           "part": "trigger",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The menu button — any focusable element. Gets aria-haspopup=\"menu\", aria-expanded, aria-controls.",
             "fr": "Le bouton du menu — n'importe quel élément focusable. Reçoit aria-haspopup=\"menu\", aria-expanded, aria-controls.",
@@ -5717,6 +5710,7 @@
         {
           "part": "panel",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The list of actions (role=menu) — anchored, in the top layer, animated by z-popover.",
             "fr": "La liste des actions (role=menu) — ancrée, en top layer, animée par z-popover.",
@@ -5726,6 +5720,7 @@
             {
               "part": "item",
               "optional": false,
+              "pseudo": null,
               "description": {
                 "en": "One action (role=menuitem, tabindex=-1) — a <button> or an <a href>. `value` names it in `select`; `disabled` / aria-disabled skips it.",
                 "fr": "Une action (role=menuitem, tabindex=-1) — un <button> ou un <a href>. `value` la nomme dans `select` ; `disabled` / aria-disabled la saute.",
@@ -5736,6 +5731,7 @@
             {
               "part": "separator",
               "optional": true,
+              "pseudo": null,
               "description": {
                 "en": "A rule between two groups of actions (role=separator).",
                 "fr": "Un trait entre deux groupes d'actions (role=separator).",
@@ -6082,6 +6078,7 @@
         {
           "part": "background",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The track (the empty rail).",
             "fr": "La piste (le rail vide).",
@@ -6092,6 +6089,7 @@
         {
           "part": "marker",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The fill — its width is the measurement, its colour follows the threshold.",
             "fr": "Le remplissage — sa largeur est la mesure, sa couleur suit le seuil.",
@@ -6300,6 +6298,7 @@
         {
           "part": "page",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "A page link — any direct child without `part` (writing part=\"page\" is allowed). Its text is its number. The current one carries aria-current + current; hidden ones carry far; one preceded by a hole carries gap.",
             "fr": "Un lien de page — tout enfant direct sans `part` (écrire part=\"page\" est permis). Son texte est son numéro. Le courant porte aria-current + current ; les cachés portent far ; celui qui suit un trou porte gap.",
@@ -6310,6 +6309,7 @@
         {
           "part": "prev",
           "optional": true,
+          "pseudo": null,
           "description": {
             "en": "The « previous » link — disabled (aria-disabled + disabled) on the first page.",
             "fr": "Le lien « précédent » — désactivé (aria-disabled + disabled) sur la première page.",
@@ -6320,6 +6320,7 @@
         {
           "part": "next",
           "optional": true,
+          "pseudo": null,
           "description": {
             "en": "The « next » link — disabled on the last page.",
             "fr": "Le lien « suivant » — désactivé sur la dernière page.",
@@ -6609,6 +6610,7 @@
         {
           "part": "trigger",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "What opens it — any focusable element (a z-button, a button). Gets aria-expanded + aria-controls.",
             "fr": "Ce qui l'ouvre — n'importe quel élément focusable (un z-button, un button). Reçoit aria-expanded + aria-controls.",
@@ -6619,6 +6621,7 @@
         {
           "part": "panel",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "What opens — your content. Gets popover=\"auto\", an id, and data-placement (the effective side).",
             "fr": "Ce qui s'ouvre — votre contenu. Reçoit popover=\"auto\", un id, et data-placement (le côté effectif).",
@@ -6997,6 +7000,7 @@
         {
           "part": "background",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The track (the empty rail).",
             "fr": "La piste (le rail vide).",
@@ -7007,6 +7011,7 @@
         {
           "part": "marker",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The fill — its width is the progress.",
             "fr": "Le remplissage — sa largeur est la progression.",
@@ -7230,6 +7235,7 @@
         {
           "part": "background",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The backdrop of the whole line — usually transparent, it carries effects.",
             "fr": "Le fond de toute la ligne — souvent transparent, il porte les effets.",
@@ -7240,6 +7246,7 @@
         {
           "part": "marker",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The round itself (its surface).",
             "fr": "Le rond lui-même (sa surface).",
@@ -7249,6 +7256,7 @@
             {
               "part": "ring",
               "optional": false,
+              "pseudo": null,
               "description": {
                 "en": "Its outline — animatable on its own.",
                 "fr": "Son cerclage — animable seul.",
@@ -7259,6 +7267,7 @@
             {
               "part": "dot",
               "optional": false,
+              "pseudo": null,
               "description": {
                 "en": "The mark that appears once chosen.",
                 "fr": "La marque qui apparaît une fois choisie.",
@@ -7271,6 +7280,7 @@
         {
           "part": "infos",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "What informs — moved, hidden or animated as one block.",
             "fr": "Ce qui informe — déplacé, caché ou animé d'un bloc.",
@@ -7280,6 +7290,7 @@
             {
               "part": "icon",
               "optional": true,
+              "pseudo": null,
               "description": {
                 "en": "Optional, before the label.",
                 "fr": "Optionnel, avant le label.",
@@ -7290,6 +7301,7 @@
             {
               "part": "label",
               "optional": false,
+              "pseudo": null,
               "description": {
                 "en": "Your text.",
                 "fr": "Votre texte.",
@@ -7302,6 +7314,7 @@
         {
           "part": "contact",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "What receives the gesture — covers (and may overflow) the component, invisible.",
             "fr": "Ce qui reçoit le geste — couvre (et peut déborder) le composant, invisible.",
@@ -7825,6 +7838,7 @@
         {
           "part": "background",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The backdrop of the row — usually transparent, it carries effects.",
             "fr": "Le fond de la rangée — souvent transparent, il porte les effets.",
@@ -7835,6 +7849,7 @@
         {
           "part": "marker",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The stars: an empty row with a filled row clipped to the value.",
             "fr": "Les étoiles : une rangée vide et une rangée pleine clippée à la valeur.",
@@ -7845,6 +7860,7 @@
         {
           "part": "contact",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "What receives the gesture — covers the row, invisible.",
             "fr": "Ce qui reçoit le geste — couvre la rangée, invisible.",
@@ -8065,6 +8081,7 @@
         {
           "part": "segment",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "One option — the author writes as many as needed (2 to 5). Carries a `value`.",
             "fr": "Une option — l'auteur en écrit autant que besoin (2 à 5). Porte un `value`.",
@@ -8313,6 +8330,7 @@
         {
           "part": "background",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The shimmering surface — the decoy block itself.",
             "fr": "La surface qui scintille — le bloc-leurre lui-même.",
@@ -8586,6 +8604,7 @@
         {
           "part": "background",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The track: the empty rail, from min to max.",
             "fr": "La piste : le rail vide, de min à max.",
@@ -8595,6 +8614,7 @@
             {
               "part": "ticks",
               "optional": true,
+              "pseudo": null,
               "description": {
                 "en": "The graduations, drawn as a gradient — animatable as one block.",
                 "fr": "Les graduations, dessinées en dégradé — animables d'un bloc.",
@@ -8607,6 +8627,7 @@
         {
           "part": "marker",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The filled part, from min to the value. It IS the state, made visible.",
             "fr": "La part remplie, de min à la valeur. C'est l'état, rendu visible.",
@@ -8616,6 +8637,7 @@
             {
               "part": "dot",
               "optional": false,
+              "pseudo": null,
               "description": {
                 "en": "The handle, sitting at the end of the fill.",
                 "fr": "La poignée, posée au bout du remplissage.",
@@ -8628,6 +8650,7 @@
         {
           "part": "infos",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "What informs — follows the handle, placed by the `label` attribute.",
             "fr": "Ce qui informe — suit la poignée, placé par l'attribut `label`.",
@@ -8637,6 +8660,7 @@
             {
               "part": "label",
               "optional": false,
+              "pseudo": null,
               "description": {
                 "en": "The value written out. Left empty, the CSS fills it from --z-slider__value.",
                 "fr": "La valeur écrite. Laissé vide, le CSS l'y écrit depuis --z-slider__value.",
@@ -8649,6 +8673,7 @@
         {
           "part": "contact",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "What receives the gesture — overflows the thin track so it stays easy to grab.",
             "fr": "Ce qui reçoit le geste — déborde la piste fine pour rester attrapable.",
@@ -9066,6 +9091,7 @@
         {
           "part": "marker",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The spinning ring.",
             "fr": "L'anneau qui tourne.",
@@ -9283,6 +9309,7 @@
         {
           "part": "label",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The caption — small, soft, often spaced capitals.",
             "fr": "L'intitulé — petit, atténué, souvent en capitales espacées.",
@@ -9293,6 +9320,7 @@
         {
           "part": "value",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The big number.",
             "fr": "Le grand nombre.",
@@ -9303,6 +9331,7 @@
         {
           "part": "delta",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The variation (optional) — coloured and arrowed by `trend`.",
             "fr": "La variation (optionnelle) — colorée et fléchée par `trend`.",
@@ -9703,6 +9732,7 @@
         {
           "part": "background",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The backdrop of the whole line — usually transparent, it carries effects.",
             "fr": "Le fond de toute la ligne — souvent transparent, il porte les effets.",
@@ -9713,6 +9743,7 @@
         {
           "part": "marker",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The track (the rail the thumb slides on).",
             "fr": "La piste (le rail sur lequel glisse la pastille).",
@@ -9722,6 +9753,7 @@
             {
               "part": "dot",
               "optional": false,
+              "pseudo": null,
               "description": {
                 "en": "The thumb — slides from off to on.",
                 "fr": "La pastille — glisse d'éteint à allumé.",
@@ -9734,6 +9766,7 @@
         {
           "part": "infos",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "What informs — moved, hidden or animated as one block.",
             "fr": "Ce qui informe — déplacé, caché ou animé d'un bloc.",
@@ -9743,6 +9776,7 @@
             {
               "part": "label",
               "optional": false,
+              "pseudo": null,
               "description": {
                 "en": "Your text.",
                 "fr": "Votre texte.",
@@ -9755,6 +9789,7 @@
         {
           "part": "contact",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "What receives the gesture — invisible, may overflow.",
             "fr": "Ce qui reçoit le geste — invisible, peut déborder.",
@@ -9943,6 +9978,7 @@
         {
           "part": "tablist",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The rail that holds the tabs (role=tablist).",
             "fr": "Le rail qui porte les onglets (role=tablist).",
@@ -9953,6 +9989,7 @@
         {
           "part": "tab",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "A tab (role=tab) — active one carries aria-selected + current.",
             "fr": "Un onglet (role=tab) — l'actif porte aria-selected + current.",
@@ -9963,6 +10000,7 @@
         {
           "part": "panel",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "A tab's content (role=tabpanel) — hidden unless active.",
             "fr": "Le contenu d'un onglet (role=tabpanel) — caché sauf s'il est actif.",
@@ -10235,6 +10273,7 @@
         {
           "part": "background",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The chip surface — carries tone and effects.",
             "fr": "La surface de l'étiquette — porte le ton et les effets.",
@@ -10245,6 +10284,7 @@
         {
           "part": "infos",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "What informs — moved or animated as one block.",
             "fr": "Ce qui informe — déplacé ou animé d'un bloc.",
@@ -10254,6 +10294,7 @@
             {
               "part": "icon",
               "optional": true,
+              "pseudo": null,
               "description": {
                 "en": "Optional, before the label.",
                 "fr": "Optionnel, avant le label.",
@@ -10264,6 +10305,7 @@
             {
               "part": "label",
               "optional": false,
+              "pseudo": null,
               "description": {
                 "en": "Your text.",
                 "fr": "Votre texte.",
@@ -10485,6 +10527,7 @@
         {
           "part": "background",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The card surface — carries the tone.",
             "fr": "La surface de la carte — porte le ton.",
@@ -10495,6 +10538,7 @@
         {
           "part": "infos",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "What informs — icon + message.",
             "fr": "Ce qui informe — icône + message.",
@@ -10504,6 +10548,7 @@
             {
               "part": "icon",
               "optional": true,
+              "pseudo": null,
               "description": {
                 "en": "Optional status icon.",
                 "fr": "Icône de statut optionnelle.",
@@ -10514,6 +10559,7 @@
             {
               "part": "label",
               "optional": false,
+              "pseudo": null,
               "description": {
                 "en": "The message.",
                 "fr": "Le message.",
@@ -10681,6 +10727,7 @@
         {
           "part": "tip",
           "optional": false,
+          "pseudo": null,
           "description": {
             "en": "The bubble content (accessible form).",
             "fr": "Le contenu de la bulle (forme accessible).",
@@ -10744,6 +10791,7 @@
         "--z-contact-size": "40px",
         "--z-contact-duration": ".6s",
         "--z-contact-color": "var(--z-accent)",
+        "--z-contact-zone": "48px",
         "--z-scale-xs": ".8",
         "--z-scale-s": ".9",
         "--z-scale-m": "1",
@@ -10854,7 +10902,8 @@
         "--z-contact-size": "20px",
         "--z-contact-width": "1.5px",
         "--z-contact-duration": ".3s",
-        "--z-contact-color": "var(--z-accent)"
+        "--z-contact-color": "var(--z-accent)",
+        "--z-contact-zone": "44px"
       }
     }
   ],
@@ -10877,7 +10926,8 @@
       "fadeIn",
       "fadeOut",
       "shimmer",
-      "ripple"
+      "ripple",
+      "halo"
     ]
   },
   "globalTokens": [
@@ -10891,6 +10941,7 @@
     "--z-contact-fx",
     "--z-contact-size",
     "--z-contact-width",
+    "--z-contact-zone",
     "--z-control-height",
     "--z-danger",
     "--z-disabled",

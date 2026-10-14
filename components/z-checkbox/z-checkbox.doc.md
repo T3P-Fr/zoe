@@ -1,11 +1,8 @@
 # z-checkbox
 
-Une case à cocher bâtie sur [`z-element`](../../core/z-element/z-element.doc.md) — le
-**premier composant à anatomie**, et il s'écrit de **deux façons**. Zoé n'injecte
-**aucune balise** (ADR-0018) : c'est vous — ou l'éditeur Zoé — qui choisissez le niveau de
-détail.
-
-**Forme courte** — le CSS peint l'hôte, un `::before` fait la case :
+Une case à cocher. Elle a trois valeurs (cochée, décochée, indéterminée), elle part
+dans le formulaire comme une case native, et elle vit : survol, appui, onde au clic,
+erreur, succès, sans une ligne de votre part.
 
 ```html
 <z-checkbox>J'accepte les conditions</z-checkbox>
@@ -13,136 +10,122 @@ détail.
 <z-checkbox disabled>Indisponible</z-checkbox>
 ```
 
-**Forme en calques** ([`z-layer`](../../core/z-layer/z-layer.doc.md)) — chaque pièce est
-un élément, donc **animable seule** :
+Une ligne à écrire : votre texte. La case elle-même et sa zone tactile sont **peintes**
+par le CSS, jamais à taper.
 
-```html
-<z-checkbox>
-  <z-layer part="background"></z-layer>
-  <z-layer part="marker">
-    <z-layer part="ring"></z-layer>
-    <z-layer part="dot"></z-layer>
-  </z-layer>
-  <z-layer part="infos">
-    <z-layer part="icon">✳</z-layer>
-    <z-layer part="label">J'accepte les conditions</z-layer>
-  </z-layer>
-  <z-layer part="contact"></z-layer>
-</z-checkbox>
+## Utiliser
+
+| Vous voulez | Vous écrivez |
+|---|---|
+| une case | `<z-checkbox>Votre texte</z-checkbox>` |
+| cochée d'avance | ajoutez `current` |
+| ni cochée ni décochée (un « tout cocher » partagé) | ajoutez `indeterminate` |
+| qu'elle parte dans le formulaire | `name="cgu"` (et `value`, sinon `on`) |
+| obligatoire | `required` |
+| une icône avant le texte | `<z-checkbox><z-layer part="icon">✳</z-layer> Texte</z-checkbox>` |
+| la couper | `disabled` |
+
+Un clic ou <kbd>Espace</kbd> bascule. Une case indéterminée que l'on touche devient
+cochée, comme la case native.
+
+**Sur téléphone, le doigt a sa place.** Viser une case de 15 px au pouce, c'est dur.
+Chaque case reçoit une zone tactile invisible d'au moins 44 px, centrée sur la case.
+Rien à écrire. La ligne entière reste cliquable.
+
+## Peindre 🖌️
+
+La case prend les couleurs de la peau : filet au repos, accent une fois cochée, un carré
+blanc qui **zoome du fond**. Changez de peau, toutes les cases suivent.
+
+Le mouvement, fourni par la peau : la case rebondit quand elle se coche, recule sous le
+doigt, et une **onde** part de son bord au relâché (plus courte si vous lâchez dehors).
+Le texte s'épaissit sans sauter d'un pixel.
+
+Pour repeindre une case sans changer de peau, les tokens du pacte :
+
+| Token | Peint |
+|---|---|
+| `--z-checkbox__gap` | l'écart entre la case et le texte |
+| `--z-checkbox--marker__size` · `__radius` | la taille de la case et son rayon |
+| `--z-checkbox--marker__background` · `__background-checked` | son fond au repos, puis cochée |
+| `--z-checkbox--ring__color` · `__color-checked` | son contour au repos, puis cochée |
+| `--z-checkbox--dot__color` | la marque qui zoome (blanc par défaut) |
+| `--z-checkbox--dot__bar-height` | l'épaisseur de la barre quand elle est indéterminée |
+| `--z-checkbox--background__color` · `__radius` | le fond de la ligne entière |
+| `--z-checkbox--icon__color` | l'icône, si vous en écrivez une |
+| `--z-checkbox--halo__color` | l'onde du clic |
+| `--z-checkbox--label__weight` · `__emphasis` | le texte une fois cochée (vrai gras, ou faux-bold sans saut) |
+
+```css
+z-checkbox.rose:state(current) { --z-checkbox--marker__background-checked: #ff2d55; }
 ```
 
-Les calques sont **emboîtés** : `ring` et `dot` vivent dans `marker` (bouger la case
-emmène son cerclage et sa marque), `icon` et `label` dans `infos` (cacher l'info d'un
-bloc). Le CSS écrit les chemins en entier, donc une case imbriquée dans une autre ne se
-fait jamais peindre par le parent.
+Démo : `z-checkbox.demo.html`, avec le sélecteur de peau en haut.
 
-| Rôle | La pièce |
-|---|---|
-| `background` | le fond de toute la ligne (souvent transparent — il porte les effets) |
-| `marker` | la case, sa surface |
-| ↳ `ring` | son cerclage — animable seul (il peut tourner, pointiller) |
-| ↳ `dot` | la marque qui apparaît une fois cochée |
-| `infos` | ce qui informe — déplacé, caché ou animé d'un bloc |
-| ↳ `icon` | optionnel, avant le label |
-| ↳ `label` | votre texte |
-| `contact` | ce qui reçoit le geste — invisible, il déborde la case (viser 1.15em au doigt, c'est dur) |
+## Brancher </>
 
-Les deux formes lisent **exactement les mêmes tokens** : une skin écrite pour l'une
-marche sur l'autre. Le comportement est identique — le JS ne sait même pas quelle forme
-il porte. Ce que les calques débloquent : trois pièces, trois mouvements, **trois
-horloges** dans une seule case (démo, section 3) — impossible avec un `::before` unique.
-
-## Cochée = `current`
-
-Cocher, c'est poser une **sélection durable** : l'état `current`. Le composant le pose
-lui-même au clic ou à <kbd>Espace</kbd> — jamais le socle (z-element ne touche pas
-`current`, c'est le composant qui décide de ce qu'« être sélectionné » veut dire).
+**Lire et écrire** : `checked`, `indeterminate`, et l'événement `change`.
 
 ```js
-box.checked = true;         // API : coche
-box.checked;                // → true/false
+box.checked = true;
 box.addEventListener("change", () => console.log(box.checked));
 ```
 
-Accessibilité : `role="checkbox"` + `aria-checked` suivent `current` tout seuls ;
-<kbd>Espace</kbd> bascule (convention native).
+**L'indéterminée** ne se lève pas toute seule : `box.checked = false` ne la retire pas,
+c'est `box.indeterminate = false`. Les deux sont indépendants, sinon un « tout cocher »
+qui recalcule ses enfants s'effacerait lui-même selon l'ordre de vos deux lignes. La
+case **ne connaît pas ses enfants** : relier un « tout cocher » à son groupe, c'est trois
+lignes chez vous (démo, section 4).
 
-## Trois valeurs : `indeterminate`
-
-Une case a **trois** valeurs, pas deux. `indeterminate`, c'est celle d'un « tout cocher »
-dont les enfants ne sont pas d'accord : la marque s'écrase en **barre**, et
-`aria-checked` passe à `mixed`.
-
-```html
-<z-checkbox indeterminate>Tout cocher</z-checkbox>
-```
-
-Deux règles, les mêmes que la case native :
-
-- un **geste** (clic, <kbd>Espace</kbd>) tranche toujours dans le sens « oui » : la case
-  devient cochée ;
-- l'**API** ne tranche pas : `box.checked = false` ne lève pas l'indétermination. Les
-  deux sont indépendants, sinon un « tout cocher » qui recalcule ses enfants s'effacerait
-  lui-même selon l'ordre de vos deux lignes.
-
-Le composant **ne connaît pas ses enfants** (zéro logique métier) : relier une case au
-groupe qu'elle commande, c'est trois lignes chez vous — voir la démo, section 4.
-
-## Dans un formulaire
-
-Elle part comme un `<input type="checkbox">`, sans wrapper ni champ caché :
-
-```html
-<form>
-  <z-checkbox name="cgu" required>J'accepte</z-checkbox>
-  <z-checkbox name="lettre" value="hebdo" current>Recevoir la lettre</z-checkbox>
-</form>
-```
+**Dans un formulaire** : elle part comme un `<input type="checkbox">`.
 
 | | |
 |---|---|
 | `name` | le nom du champ |
-| `value` | ce qui part **si elle est cochée** (défaut `"on"`, comme le natif) |
-| décochée | **rien** ne part — elle n'apparaît pas dans les données |
-| indéterminée | rien ne part non plus : elle n'est pas « cochée » |
+| `value` | ce qui part **si elle est cochée** (défaut `on`) |
+| décochée ou indéterminée | **rien** ne part |
 | `required` | le formulaire refuse la soumission tant qu'elle n'est pas cochée |
-| `<fieldset disabled>` | la coupe, et tous ses visuels d'état suivent |
+| `<fieldset disabled>` | la coupe, et ses visuels suivent |
 | reset du formulaire | elle revient à son HTML d'origine |
 
-Le message de refus est en anglais comme le reste de l'API — remplacez-le d'une ligne :
-`box.setValidity("Coche cette case")`. Toute la plomberie vit dans
-[`z-element`](../../core/z-element/z-element.doc.md) : ici, la case décide seulement de
-**ce qu'elle envoie**.
+Le message de refus se remplace d'une ligne : `box.setValidity("Cochez cette case")`.
 
-## Anatomie & grammaire du pacte
+**Réagir à un état** en CSS, sans JS : `z-checkbox:state(current) { … }`. Cochée =
+`current`, l'état de sélection durable du socle, posé par la case elle-même.
 
-Chaque part se peint par un token à **double séparateur** — c'est ce que z-button
-(sans part) ne prouvait pas :
+**Lecteurs d'écran** : `role="checkbox"`, `aria-checked` (`true`, `false`, `mixed`)
+suit tout seul, <kbd>Espace</kbd> bascule.
 
-| Token | Peint |
-|---|---|
-| `--z-checkbox__gap` | l'écart marker ↔ label |
-| `--z-checkbox--marker__size` | la taille de la case |
-| `--z-checkbox--marker__radius` | son rayon |
-| `--z-checkbox--marker__background` | le fond au repos |
-| `--z-checkbox--marker__background-checked` | le fond une fois cochée |
-| `--z-checkbox--ring__color` | le contour au repos |
-| `--z-checkbox--ring__color-checked` | le contour une fois cochée |
-| `--z-checkbox--dot__color` · `__size` · `__radius` | la marque qui zoome (blanc, 60 %, carrée) |
-| `--z-checkbox--dot__bar-scale` · `__bar-height` | l'écrasement de la marque quand elle est indéterminée |
-| `--z-checkbox--background__color` · `__radius` · `__bleed` | le fond de la ligne, et de combien il déborde |
-| `--z-checkbox--icon__color` | l'icône optionnelle |
-| `--z-checkbox--contact__bleed` | de combien la zone touchable déborde |
-| `--z-checkbox--halo__color` | l'onde au clic (accent par défaut) |
-| `--z-checkbox--label__weight` · `__emphasis` | le poids du label coché (vrai gras, ou faux-bold sans saut) |
+Attributs, événements et états complets : la référence, plus bas.
 
-Défauts qui **consomment la peau** (`--z-accent`, `--z-line`, `--z-radius`…) : marche
-sur HighTech comme sur Claude sans une ligne de plus.
+## Sous le capot
 
-## Le geste
+Pour aller plus loin, ou pour écrire une peau.
 
-Au clic, un **halo** part de la case (l'onde `ripple`, la signature de Zoé — la même que
-`z-button` et `z-radio`) ; lâché **dehors**, il est plus court : il dit « annulé ».
-Puis, au coché, la case se remplit d'accent et un **carré blanc zoome du fond** (un seul
-`::before`, `background-size` 0 → 60 % en ressort). Le label s'épaissit **sans saut de
-pixel** (faux-bold). Démo : `z-checkbox.demo.html` (+ sélecteur de peau).
+**Un nœud, deux pièces peintes.** La case est un seul élément. L'hôte est la ligne
+(votre texte, et le fond `background`) ; la case est le `::before` (la pièce `marker`,
+dont le contour est `ring` et la marque `dot`) ; la zone tactile est le `::after` (la
+pièce `contact`, posée par le socle et recentrée sur la case). Rien à écrire, une seule
+forme.
+
+**La marque qui zoome** est une image de fond de la case (`background-size` de 0 à 60 %,
+en ressort). L'indéterminée est la **même** marque, écrasée en barre : le passage
+indéterminée → cochée est une seule transition continue.
+
+**Une peau anime la case sans toucher au texte** :
+
+```css
+z-checkbox.fou:state(current)::before { rotate: 90deg; scale: 1.15; }
+```
+
+**La zone du doigt** : le socle la centre sur l'élément entier ; la case la ramène sur
+elle (`left`, `width` sur le `::after`), parce que c'est la case que l'œil vise. Le socle
+juge « relâché dedans » sur cette zone, pas sur la boîte visible.
+
+**L'onde** est le preset `halo` de z-motion sur la case : son ombre grandit et se fond,
+à la couleur de l'état (`--z-state__color`).
+
+**Ce qu'elle lit dans la peau** : `--z-surface`, `--z-surface-sunken`, `--z-ink`,
+`--z-line`, `--z-accent`, `--z-danger`, `--z-success`, `--z-disabled`, `--z-radius`,
+`--z-border-width`, `--z-gap`, `--z-font`, `--z-dur` · `--z-dur-select`, `--z-ease` ·
+`--z-ease-spring`, `--z-focus-halo`, `--z-contact-zone`.

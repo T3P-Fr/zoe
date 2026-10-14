@@ -295,6 +295,9 @@ function normalizeLayers(layers) {
 	return (layers || []).map((layer) => ({
 		part: layer.part,
 		optional: Boolean(layer.optional),
+		/* `pseudo` : la pièce est PEINTE par ce pseudo-élément (::before / ::after), rien à
+		   écrire. Sans pseudo, c'est du contenu que l'auteur écrit. */
+		pseudo: typeof layer.pseudo === "string" ? layer.pseudo : null,
 		description: toLangs(layer.description),
 		children: normalizeLayers(layer.children)
 	}));
@@ -606,8 +609,8 @@ export function elementReference(entry, lang = "en") {
 		for (const state of own) lines.push(`- \`${state.name}\` — ${pickText(state.description, lang)}`);
 	}
 	if (entry.layers.length) {
-		lines.push("", "Layers (`<z-layer part=\"…\">`, author-written):");
-		for (const layer of flattenLayers(entry.layers)) lines.push(`- ${layer.trail}\`${layer.part}\`${layer.optional ? " (optional)" : ""} — ${pickText(layer.description, lang)}`);
+		lines.push("", "Pieces (`--z-" + entry.tag.replace(/^z-/, "") + "--{part}__{property}`; a piece with a pseudo-element is painted by the CSS, nothing to write; a piece without one is content the author writes as `<z-layer part=\"…\">`):");
+		for (const layer of flattenLayers(entry.layers)) lines.push(`- ${layer.trail}\`${layer.part}\`${layer.pseudo ? ` (${layer.pseudo})` : ""}${layer.optional ? " (optional)" : ""} — ${pickText(layer.description, lang)}`);
 	}
 	if (entry.cssVars.length) {
 		lines.push("", "CSS variables:");
@@ -637,7 +640,29 @@ export function elementReference(entry, lang = "en") {
 export function regenerateVariantLists(css, index) {
 	const tags = ["z-element", ...index.elements.filter((entry) => entry.kind === "components").map((entry) => entry.tag), "z-cursor"];
 	const list = tags.join(", ");
-	return css.replace(/:(is|where)\(z-element,[^)]*\)/g, (_, fn) => `:${fn}(${list})`);
+	const variants = css.replace(/:(is|where)\(z-element,[^)]*\)/g, (_, fn) => `:${fn}(${list})`);
+	return regenerateContactList(variants, index);
+}
+
+/*
+	La liste des éléments qui reçoivent LA ZONE DU DOIGT (le ::after `contact` posé par
+	z-element.css) : ceux dont l'API déclare une pièce `contact` peinte en `::after`.
+	Déduite de l'API, jamais écrite à la main — la règle porte le marqueur `zoe:contact`.
+	@param {string} css
+	@param {object} index
+	@returns {string}
+*/
+export function regenerateContactList(css, index) {
+	const tags = contactTags(index);
+	if (!tags.length) return css;
+	return css.replace(/:where\([^)]*\)::after \/\* zoe:contact \*\//g, `:where(${tags.join(", ")})::after /* zoe:contact */`);
+}
+
+/* Les balises dont une pièce `contact` est peinte en ::after. @param {object} index @returns {string[]} */
+export function contactTags(index) {
+	return index.elements
+		.filter((entry) => flattenLayers(entry.layers || []).some((layer) => layer.part === "contact" && layer.pseudo === "::after"))
+		.map((entry) => entry.tag);
 }
 
 /*

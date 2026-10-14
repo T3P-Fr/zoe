@@ -22,44 +22,39 @@ Pages must be served over HTTP (`npm run dev`): ES modules do not load from `fil
 
 ## 2. Writing an element
 
-**Short form** — the CSS paints the host. One line, nothing to learn:
+**One form.** The author writes the content; the pieces are painted:
 
 ```html
 <z-checkbox>Receive the newsletter</z-checkbox>
+<z-button><z-layer part="icon">★</z-layer> Favourite</z-button>
 ```
 
-**Layered form** — each piece is a `<z-layer part="…">`, so each piece can move on its
-own. The author writes the layers; Zoé never generates them (ADR-0018):
+An element is **one node**. Its pieces are not tags: the CSS paints them on the host and
+on its two pseudo-elements — `::before` is the piece that moves on its own (a
+`background` or a `marker`), `::after` is `contact`, the touch zone. There is nothing to
+write and no second form. Zoé never generates a node (ADR-0018) and never requires one.
 
-```html
-<z-checkbox>
-  <z-layer part="background"></z-layer>
-  <z-layer part="marker">
-    <z-layer part="ring"></z-layer>
-    <z-layer part="dot"></z-layer>
-  </z-layer>
-  <z-layer part="infos">
-    <z-layer part="label">Receive the newsletter</z-layer>
-  </z-layer>
-  <z-layer part="contact"></z-layer>
-</z-checkbox>
-```
+Each component declares **its own anatomy** (the `layers` of its API). A piece with a
+`pseudo` is painted; a piece without one is **content** the author writes when they have
+it (`<z-layer part="icon">`), and it takes its place in the flow without changing the
+form. The **lexicon is shared**: `background`, `marker`, `ring`, `dot`, `icon`, `label`,
+`contact` mean the same thing in every component — never invent a synonym for an
+existing role, and never name a part after a CSS property (`part="border"` is
+forbidden; the piece is `ring`).
 
-Both forms read the same tokens and behave the same. Each component declares **its own
-anatomy** (the `layers` of its API). The **lexicon is shared**: `background`, `marker`,
-`ring`, `dot`, `infos`, `icon`, `label`, `contact` mean the same thing in every
-component — never invent a synonym for an existing role, and never name a part after a
-CSS property (`part="border"` is forbidden; the piece is `ring`).
+Universal pieces:
 
-Universal roles and their placement (`core/z-layer/z-layer.css`):
-
-| part | role | placement |
+| part | role | where |
 |---|---|---|
-| `background` | the surface behind everything | absolute, `z-index: 0`, may bleed |
-| `marker` | the piece that shows state (box, dot, fill, track) | in flow, holds its place |
-| `ring` · `dot` | pieces of the marker | anchored inside `marker` |
-| `infos` | what informs — groups `icon` + `label` | inline-flex |
-| `contact` | what receives the gesture — invisible, may overflow | absolute, `z-index: 10` |
+| `background` | the surface and its outline, behind the text | `::before` — the host stays transparent, so the surface can move without the text |
+| `marker` | the piece that shows state (box, dot, fill, track); `ring` is its outline, `dot` its mark | `::before` — one painted piece, several names of the pact |
+| `icon` · `label` | what informs; the label **is** the element's text | content, in flow |
+| `contact` | the touch zone — invisible, at least `--z-contact-zone` (44px), centred, overflows a small element; a release inside it counts as `release` | `::after`, set by the core for every interactive element |
+
+A component has one `::before`: it is `background` **or** `marker`, never both (a button
+paints its surface, a checkbox its box). An author who needs one more piece writes a
+`<z-layer part="…">`: content, placed by its role (`core/z-layer/z-layer.css`), never a
+mode.
 
 ## 3. States — `z-x:state(name)`
 
@@ -145,15 +140,18 @@ Component CSS consumes tokens with a fallback to the **skin's global tokens**:
 `var(--z-button__background-color, var(--z-accent))`. Two levels, two names: a global
 token (`--z-accent`) is never also a component variable.
 
-**Targeting a piece** — direct child, by role, from the component:
+**Targeting a piece** — a painted piece is a pseudo-element of the component; a content
+piece is a direct child, by role:
 
 ```css
-z-checkbox:has(z-layer):state(current) > z-layer[part="marker"] > z-layer[part="dot"] { scale: 1; }
+z-button::before                  { scale: 1.04; }     /* the surface breathes, the text stays */
+z-checkbox:state(current)::before { rotate: 90deg; }   /* the box turns when checked */
+z-button > [part=icon]            { color: #ff2d55; }  /* content: direct child, by role */
 ```
 
 - `>` keeps a nested component from being repainted by its parent's CSS.
-- `:has(z-layer)` / `:not(:has(z-layer))` is the switch between layered and short form.
-- `::part()` does **not** apply: Zoé is light DOM. Use `> [part=…]`.
+- `::part()` does **not** apply: Zoé is light DOM. Use `::before` / `::after` for painted
+  pieces and `> [part=…]` for content.
 
 ## 6. Skins
 
@@ -174,6 +172,7 @@ switching one `<link>`. The global vocabulary every skin provides:
 --z-ease --z-ease-spring
 --z-scale-base --z-scale-xs --z-scale-s --z-scale-m --z-scale-l --z-scale-xl
 --z-contact-fx --z-contact-size --z-contact-width --z-contact-duration --z-contact-color
+--z-contact-zone                                                 the touch zone minimum
 ```
 
 Each state also exposes `--z-state__color` (accent at rest, danger on `error`, success
@@ -245,6 +244,8 @@ dialogs, sliders) become Zoé elements. Never generate semantics from JS
 | `::part(label)` | shadow-DOM only; Zoé is light DOM | `> [part=label]` |
 | `part="border"` | a CSS property, not a role | `part="ring"` |
 | `busy` | a second word for `loading` | `loading` |
+| `<z-layer part="background">`, `part="marker"`, `part="contact"` | painted pieces are never written — the CSS does them | nothing: `<z-checkbox>Label</z-checkbox>` |
+| `:has(z-layer)` | there is one form, not two | `z-x::before` |
 
 ## 12. Checklist for a generated page
 

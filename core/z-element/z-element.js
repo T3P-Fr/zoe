@@ -116,7 +116,8 @@ export class ZElement extends HTMLElement {
 		],
 		cssVars: [
 			{ name: "--z-dur-enter", description: { en: "Duration of the transient `enter` state (read from the cascade).", fr: "Durée de l'état transitoire `enter` (lue dans la cascade).", es: "Duración del estado transitorio `enter` (leída en la cascada)." } },
-			{ name: "--z-dur-release", description: { en: "Duration of the `release` ripple.", fr: "Durée de l'onde `release`.", es: "Duración de la onda `release`." } }
+			{ name: "--z-dur-release", description: { en: "Duration of the `release` ripple.", fr: "Durée de l'onde `release`.", es: "Duración de la onda `release`." } },
+			{ name: "--z-contact-zone", description: { en: "Minimum size of the invisible touch zone every interactive element gets (skin token, 44px by default). Override it locally to enlarge one element's zone.", fr: "Taille minimale de la zone tactile invisible que reçoit tout élément interactif (token de peau, 44px par défaut). Redéfinissez-la localement pour agrandir la zone d'un élément.", es: "Tamaño mínimo de la zona táctil invisible de todo elemento interactivo (token de la piel, 44px por defecto). Redefínalo localmente para agrandar la zona de un elemento." } }
 		]
 	};
 
@@ -536,9 +537,13 @@ export class ZElement extends HTMLElement {
 	#onUp = (event) => {
 		if (!this.#pressed) return;
 		this.#pressed = false;
-		const rect = this.getBoundingClientRect();
-		const inside = event.clientX >= rect.left && event.clientX <= rect.right
-			&& event.clientY >= rect.top && event.clientY <= rect.bottom;
+		/*
+			DEDANS = sous le doigt il y a MOI, y compris ma zone de contact (le ::after
+			posé par le socle, qui déborde la boîte visible). getBoundingClientRect ne la
+			voit pas : un relâché à 10 px d'un petit bouton serait « dehors » alors que le
+			doigt est toujours sur sa cible. elementsFromPoint hit-teste comme le navigateur.
+		*/
+		const inside = document.elementsFromPoint(event.clientX, event.clientY).includes(this);
 		this.#set("press", false);
 		this.#set("over", inside);
 		if (this.#dragging) { this.#dragging = false; this.#set("drag", false); }
