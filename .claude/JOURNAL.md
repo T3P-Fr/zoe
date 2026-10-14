@@ -2,6 +2,26 @@
 
 ## Historique
 
+## Session du 2026-10-14 — L'AUDIT (ce qui manque pour être révolutionnaire)
+
+**Impact (1-5) :** 4
+
+**Fait :**
+- Audit complet du dépôt (socle, 3 composants en profondeur, grammaire, peaux, outillage).
+  `check` et `test` verts. Verdict : l'idée est là ; manquent la **preuve** et la **portée**.
+- **`ROADMAP.md`** créé à la racine : 4 sections dans l'ordre (prouver · livrer · montrer ·
+  écosystème de peaux), qui fait quoi (👁/🤖), chaque case avec son « fini quand ».
+  Relié depuis `CLAUDE.md` (lu après `ZOE.md`).
+
+**Décisions :**
+- Pas de composant de plus tant que la section 1 (tests navigateur + 3 bugs de socle) n'est
+  pas verte.
+
+**Prochain pas :**
+- Section 1 de la roadmap : les tests en navigateur du socle, puis les 3 bugs de `z-element`
+  (écouteur `keydown` sur `window` jamais retiré · états CSS figés au premier scan ·
+  `CSSPropertyRule` sans garde). Christophe tranche la licence et reduced-motion.
+
 ## Session du 2026-10-13 — LA FINITION (carte blanche)
 
 **Impact (1-5) :** 5

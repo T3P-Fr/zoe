@@ -1,6 +1,8 @@
 # Zoé — les lois de travail
 
-**Avant tout : lire [`ZOE.md`](./ZOE.md)** (le manifeste : ce qu'EST Zoé, en une page).
+**Avant tout : lire [`ZOE.md`](./ZOE.md)** (le manifeste : ce qu'EST Zoé, en une page),
+puis [`ROADMAP.md`](./ROADMAP.md) (ce qu'il reste à faire, dans l'ordre, qui fait quoi :
+on y coche au commit, jamais avant).
 L'état de reprise (branche, derniers pas, décisions) est réinjecté tout seul par
 `.claude/session-start.js`. **Ne jamais repartir de zéro. Ne jamais réinventer un
 pattern déjà défini.** Si l'envie de « concevoir » arrive : STOP, lire, aligner.
